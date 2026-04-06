@@ -1,0 +1,146 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://keystone-intelligence.dev/schemas/research_md.schema.json",
+  "title": "RESEARCH.md Engagement Specification",
+  "description": "JSON Schema for validating the RESEARCH.md engagement specification. Every agent reads this, every output validates against it.",
+  "type": "object",
+  "required": [
+    "engagement_id",
+    "client_id",
+    "title",
+    "created_at",
+    "specification_version",
+    "engagement_type",
+    "decision_context",
+    "surprising_finding",
+    "questions",
+    "output_format",
+    "non_goals"
+  ],
+  "properties": {
+    "engagement_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unique engagement identifier"
+    },
+    "client_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Client identifier for data sandboxing"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Engagement title"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of spec creation"
+    },
+    "specification_version": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Spec version number"
+    },
+    "engagement_type": {
+      "type": "string",
+      "enum": ["sizing", "diagnostic", "evaluative", "exploratory", "strategic"],
+      "description": "Classified engagement type from the 5-type analytical taxonomy"
+    },
+    "decision_context": {
+      "type": "string",
+      "minLength": 1,
+      "description": "What decision will this research inform? Must be non-empty."
+    },
+    "surprising_finding": {
+      "type": "string",
+      "minLength": 1,
+      "description": "What would a surprising finding look like?"
+    },
+    "day_1_hypothesis": {
+      "type": ["string", "null"],
+      "description": "Initial testable hypothesis anchoring the research"
+    },
+    "alternative_hypothesis": {
+      "type": ["string", "null"],
+      "description": "The strongest competing interpretation"
+    },
+    "prior_confidence": {
+      "type": ["number", "null"],
+      "minimum": 0.0,
+      "maximum": 1.0,
+      "description": "Specification Engine's confidence before research begins"
+    },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "description": "At least one primary research question required",
+      "items": {
+        "type": "object",
+        "required": ["question", "is_primary"],
+        "properties": {
+          "question": {
+            "type": "string",
+            "minLength": 1
+          },
+          "is_primary": {
+            "type": "boolean"
+          },
+          "parent_question": {
+            "type": ["string", "null"]
+          }
+        }
+      }
+    },
+    "methodology": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["framework", "rationale"],
+        "properties": {
+          "framework": { "type": "string", "minLength": 1 },
+          "mandatory": { "type": "boolean", "default": true },
+          "rationale": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "source_requirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["source_type", "minimum_count"],
+        "properties": {
+          "source_type": { "type": "string", "minLength": 1 },
+          "minimum_count": { "type": "integer", "minimum": 1 },
+          "quality_threshold": { "type": ["number", "null"], "minimum": 0.0, "maximum": 1.0 }
+        }
+      }
+    },
+    "output_format": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Expected deliverable format"
+    },
+    "quality_bar": {
+      "type": "string",
+      "description": "Quality standard for this engagement"
+    },
+    "non_goals": {
+      "type": "array",
+      "minItems": 1,
+      "description": "Explicit boundaries. Must be non-empty (forces boundary-setting).",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "max_rounds": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 5,
+      "description": "Override for default 3-round cap. Null = use default."
+    }
+  },
+  "additionalProperties": true
+}

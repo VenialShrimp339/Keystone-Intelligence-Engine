@@ -1,0 +1,66 @@
+{
+  "engagement_id": "eng_autobody_001",
+  "client_id": "client_autobody_co",
+  "title": "Optimal Expansion Locations for Auto Body Repair Chain Across Top 50 US Metropolitan Areas",
+  "created_at": "2026-04-05T10:00:00Z",
+  "specification_version": 1,
+  "engagement_type": "sizing",
+  "decision_context": "An auto body repair chain with 35 existing locations across 12 metro areas is planning to expand to 60 locations over the next 18 months. The CEO needs to prioritize which of the top 50 US metro areas to enter, balancing market demand (auto body repair volume), competitive density, real estate costs, proximity to existing distribution hubs, and logistics optimization. Capital allocation committee meets monthly; first tranche of 8 new locations must be selected within 4 weeks.",
+  "surprising_finding": "Evidence that the highest-demand metro areas are NOT the optimal expansion targets due to competitive saturation, or that a hub-and-spoke logistics model changes the priority ranking significantly compared to pure demand-based ranking.",
+  "day_1_hypothesis": "The optimal expansion strategy prioritizes Tier 2 metro areas (population 1-3M) with below-average collision repair shop density, within 200 miles of existing distribution hubs, over Tier 1 metros where competitive saturation offsets demand advantages.",
+  "alternative_hypothesis": "Tier 1 metros remain optimal despite higher competition because the chain's operational efficiency and brand recognition provide sufficient competitive advantage to capture market share, and the logistics costs of serving dispersed Tier 2 markets offset the competition savings.",
+  "prior_confidence": 0.60,
+  "questions": [
+    {
+      "question": "Which of the top 50 US metropolitan areas offer the best risk-adjusted expansion opportunities for an auto body repair chain, considering demand, competition, logistics, and real estate?",
+      "is_primary": true,
+      "parent_question": null
+    },
+    {
+      "question": "What is the estimated annual demand for auto body repair services in each of the top 50 US metro areas, and what are the key demand drivers?",
+      "is_primary": false,
+      "parent_question": "Which of the top 50 US metropolitan areas offer the best risk-adjusted expansion opportunities for an auto body repair chain, considering demand, competition, logistics, and real estate?"
+    },
+    {
+      "question": "How does competitive density in auto body repair vary across metro areas, and what is the relationship between density and market profitability?",
+      "is_primary": false,
+      "parent_question": "Which of the top 50 US metropolitan areas offer the best risk-adjusted expansion opportunities for an auto body repair chain, considering demand, competition, logistics, and real estate?"
+    },
+    {
+      "question": "What is the optimal hub-and-spoke logistics configuration to minimize shipping/parts costs while maximizing geographic coverage?",
+      "is_primary": false,
+      "parent_question": "Which of the top 50 US metropolitan areas offer the best risk-adjusted expansion opportunities for an auto body repair chain, considering demand, competition, logistics, and real estate?"
+    }
+  ],
+  "methodology": [
+    {
+      "framework": "Market Sizing (Bottom-Up)",
+      "mandatory": true,
+      "rationale": "Demand estimation per metro area based on vehicle population, accident rates, and repair frequency"
+    },
+    {
+      "framework": "Location Optimization",
+      "mandatory": true,
+      "rationale": "Multi-factor scoring model for site selection incorporating demand, competition, logistics, and real estate"
+    },
+    {
+      "framework": "Competitive Density Analysis",
+      "mandatory": true,
+      "rationale": "Shops-per-capita and revenue-per-shop metrics to identify under-served markets"
+    }
+  ],
+  "source_requirements": [
+    { "source_type": "government", "minimum_count": 5, "quality_threshold": 0.8 },
+    { "source_type": "industry_reports", "minimum_count": 3, "quality_threshold": 0.7 },
+    { "source_type": "news", "minimum_count": 5, "quality_threshold": 0.5 }
+  ],
+  "output_format": "markdown",
+  "quality_bar": "Goldman-grade: would a domain expert at a top firm call this solid on its own merits?",
+  "non_goals": [
+    "Site-specific real estate selection (street-level location within a metro area)",
+    "Franchise agreement negotiation or legal analysis",
+    "Hiring and workforce planning for new locations",
+    "Political positioning or recommendation framing"
+  ],
+  "max_rounds": 3
+}

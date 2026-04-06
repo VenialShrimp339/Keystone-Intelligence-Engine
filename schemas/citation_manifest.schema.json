@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://keystone.internal/schemas/citation_manifest.schema.json",
+  "title": "CitationManifest",
+  "description": "Output of the CitationProcessor: deduplicated, verified citation inventory. Single source of truth for all citations in an engagement.",
+  "type": "object",
+  "required": [
+    "manifest_id",
+    "engagement_id",
+    "client_id"
+  ],
+  "properties": {
+    "manifest_id": {
+      "type": "string",
+      "description": "Unique manifest identifier"
+    },
+    "engagement_id": {
+      "type": "string",
+      "description": "Parent engagement for multi-tenancy isolation"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client identifier for data sandboxing"
+    },
+    "citations": {
+      "type": "array",
+      "items": { "$ref": "citation.schema.json" },
+      "description": "All deduplicated citations"
+    },
+    "corroboration_pairs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["citation_a", "citation_b", "overlap_score"],
+        "properties": {
+          "citation_a": {
+            "type": "string",
+            "description": "First citation ID"
+          },
+          "citation_b": {
+            "type": "string",
+            "description": "Second citation ID"
+          },
+          "overlap_score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1,
+            "description": "Degree of evidentiary overlap"
+          }
+        },
+        "additionalProperties": false
+      },
+      "description": "Pairs of citations with overlapping evidence"
+    },
+    "dead_urls": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Citation IDs with unreachable URLs"
+    },
+    "fabrication_flags": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Citation IDs flagged as potentially fabricated"
+    }
+  },
+  "additionalProperties": false
+}

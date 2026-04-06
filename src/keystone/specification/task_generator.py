@@ -1,0 +1,187 @@
+"""Step 7: Research task generation with DAG structure.
+
+Generates research-tasks.json from a prioritized issue tree. Each leaf
+node becomes one or more ResearchTasks with DAG dependencies,
+anti-confirmatory framing, and per-branch end_product specifications.
+
+Full implementation follows after template_registry and priority_scorer.
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+
+from pydantic import ValidationError
+
+from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.models.research import EngagementType, ResearchSpec
+from keystone.models.tasks import (
+    ModelTier,
+    ResearchTask,
+    TaskCategory,
+    TaskDecomposition,
+    TaskType,
+)
+from keystone.specification._prompts import extract_json, load_prompt
+from keystone.specification.decomposer import IssueTree
+from keystone.specification.priority_scorer import PriorityScore
+from keystone.specification.template_registry import TemplateRegistry
+from keystone.tool_names import DEFAULT_TOOLS
+
+logger = logging.getLogger(__name__)
+
+
+class TaskGenerator:
+    """Generate research-tasks.json from a prioritized issue tree.
+
+    For each leaf node:
+    1. Create ResearchTask with DAG dependencies
+    2. Assign anti-confirmatory framing
+    3. Specify end_product per branch
+    4. Match to agent template (via TemplateRegistry)
+    5. Assign 3-5 tools from matched template
+    """
+
+    def __init__(self, llm: LLMCallable, registry: TemplateRegistry) -> None:
+        self._llm = llm
+        self._registry = registry
+
+    async def generate(
+        self,
+        tree: IssueTree,
+        priorities: list[PriorityScore],
+        engagement_type: EngagementType,
+        spec: ResearchSpec,
+    ) -> TaskDecomposition:
+        """Generate a TaskDecomposition from the issue tree.
+
+        If the LLM produces cyclic dependencies, catches ValidationError
+        and retries (max 2 retries).
+        """
+        priority_map = {p.branch_id: p for p in priorities}
+
+        prompt = load_prompt(
+            "task_generation",
+            question=spec.questions[0].question if spec.questions else "",
+            engagement_type=engagement_type.value,
+            engagement_id=spec.engagement_id,
+            client_id=spec.client_id,
+            issue_tree=json.dumps(tree.model_dump(), indent=2),
+            priorities=json.dumps([p.model_dump() for p in priorities], indent=2),
+            day_1_hypothesis=spec.day_1_hypothesis or "",
+        )
+
+        last_error: Exception | None = None
+        for attempt in range(3):
+            raw = await retry_llm_call(
+                self._llm, prompt, description=f"task_generation_attempt_{attempt}"
+            )
+            data = extract_json(raw)
+
+            try:
+                tasks = self._parse_tasks(data, spec, engagement_type, priority_map)
+                decomposition = TaskDecomposition(
+                    project=spec.title,
+                    engagement_id=spec.engagement_id,
+                    client_id=spec.client_id,
+                    research_md_path=f"engagements/{spec.engagement_id}/RESEARCH.md",
+                    specification_version=spec.specification_version,
+                    decomposition_rationale=data.get(
+                        "decomposition_rationale",
+                        tree.metadata.synthesis_rationale,
+                    ),
+                    tasks=tasks,
+                )
+                return decomposition
+            except (ValidationError, ValueError, KeyError) as exc:
+                last_error = exc
+                logger.warning(
+                    "Task generation attempt %d failed: %s", attempt + 1, exc
+                )
+
+        msg = f"Task generation failed after 3 attempts: {last_error}"
+        raise RuntimeError(msg)
+
+    def _parse_tasks(
+        self,
+        data: dict,
+        spec: ResearchSpec,
+        engagement_type: EngagementType,
+        priority_map: dict[str, PriorityScore],
+    ) -> list[ResearchTask]:
+        """Parse LLM output into validated ResearchTask objects."""
+        tasks_raw = data.get("tasks", [])
+        tasks: list[ResearchTask] = []
+
+        for i, t in enumerate(tasks_raw):
+            task_id = t.get("id", f"task_{i + 1:03d}")
+            branch_id = t.get("issue_tree_branch_id")
+            priority_entry = priority_map.get(branch_id or "") if branch_id else None
+            priority_rank = i + 1
+
+            # Match template for tool assignment
+            category = self._resolve_category(t.get("category", "strategic_positioning"))
+            temp_task = ResearchTask(
+                id=task_id,
+                engagement_id=spec.engagement_id,
+                client_id=spec.client_id,
+                category=category,
+                type=TaskType(t.get("type", "estimative")),
+                target_decision_usefulness=t.get("target_decision_usefulness", 3),
+                description=t["description"],
+                required_sources=t.get("required_sources", []),
+                acceptance_criteria=t.get("acceptance_criteria", ["Meets quality bar"]),
+                deliverable_destination=t.get("deliverable_destination", "Section TBD"),
+                priority=priority_rank,
+                anti_confirmatory_framing=t["anti_confirmatory_framing"],
+                assigned_tools=self._resolve_tools(t, category, engagement_type),
+                assigned_model=ModelTier(t.get("assigned_model", "sonnet")),
+                end_product=t.get("end_product", "Structured analysis with supporting evidence"),
+                dependencies=t.get("dependencies", []),
+                issue_tree_branch_id=branch_id,
+                custom_category=t.get("custom_category"),
+            )
+            tasks.append(temp_task)
+
+        return tasks
+
+    def _resolve_category(self, raw: str) -> TaskCategory:
+        """Map raw category string to TaskCategory, defaulting gracefully."""
+        try:
+            return TaskCategory(raw)
+        except ValueError:
+            return TaskCategory.STRATEGIC_POSITIONING
+
+    def _resolve_tools(
+        self,
+        task_data: dict,
+        category: TaskCategory,
+        engagement_type: EngagementType,
+    ) -> list[str]:
+        """Resolve tool assignments: use LLM-provided if valid, else template match."""
+        tools = task_data.get("assigned_tools", [])
+        if isinstance(tools, list) and 3 <= len(tools) <= 5:
+            return tools
+
+        # Fall back to template tools
+        temp_task = ResearchTask(
+            id="temp",
+            engagement_id="temp",
+            client_id="temp",
+            category=category,
+            type=TaskType.ESTIMATIVE,
+            target_decision_usefulness=3,
+            description="temp",
+            acceptance_criteria=["temp"],
+            deliverable_destination="temp",
+            priority=1,
+            anti_confirmatory_framing="Evaluate whether this is the case, including evidence both for and against",
+            assigned_tools=list(DEFAULT_TOOLS) + [DEFAULT_TOOLS[0]],
+            end_product="temp",
+        )
+        match = self._registry.match(temp_task, engagement_type)
+        template_tools = match.template.tools[:5]
+        if len(template_tools) < 3:
+            template_tools = list(DEFAULT_TOOLS) + [DEFAULT_TOOLS[0]]
+        return template_tools[:5] if len(template_tools) >= 3 else template_tools + [DEFAULT_TOOLS[0]] * (3 - len(template_tools))

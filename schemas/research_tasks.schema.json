@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://keystone-intelligence.dev/schemas/research_tasks.schema.json",
+  "title": "Research Tasks Decomposition",
+  "description": "JSON Schema for validating research-tasks.json. DAG dependency structure, anti-confirmatory framing enforced, 3-5 tools per task.",
+  "type": "object",
+  "required": [
+    "project",
+    "engagement_id",
+    "client_id",
+    "research_md_path",
+    "specification_version",
+    "decomposition_rationale",
+    "tasks"
+  ],
+  "properties": {
+    "project": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Human-readable project name"
+    },
+    "engagement_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "client_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "research_md_path": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Path to the RESEARCH.md file"
+    },
+    "specification_version": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "decomposition_rationale": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Why the question was decomposed this way"
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/research_task"
+      }
+    }
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "research_task": {
+      "type": "object",
+      "required": [
+        "id",
+        "engagement_id",
+        "client_id",
+        "category",
+        "type",
+        "target_decision_usefulness",
+        "description",
+        "acceptance_criteria",
+        "deliverable_destination",
+        "priority",
+        "anti_confirmatory_framing",
+        "assigned_tools",
+        "end_product",
+        "dependencies"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^task_\\d{3}$",
+          "description": "Task identifier, format task_NNN"
+        },
+        "engagement_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "client_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "market_sizing",
+            "competitive_landscape",
+            "financial_analysis",
+            "technology_assessment",
+            "regulatory",
+            "strategic_positioning"
+          ],
+          "description": "Standard analytical domain"
+        },
+        "custom_category": {
+          "type": ["string", "null"],
+          "description": "Custom category override for non-standard engagements"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["estimative", "current"],
+          "description": "ICD 203 classification"
+        },
+        "target_decision_usefulness": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 5
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        },
+        "required_sources": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "acceptance_criteria": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "deliverable_destination": {
+          "type": "string",
+          "minLength": 1
+        },
+        "passes": {
+          "type": "boolean",
+          "default": false,
+          "description": "Quality gate flag. Only the Evaluator can set true."
+        },
+        "priority": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "priority_score": {
+          "type": ["number", "null"],
+          "description": "Computed: (decision_relevance x current_uncertainty) / estimated_cost"
+        },
+        "anti_confirmatory_framing": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Evaluative framing requiring evidence both for and against. REQUIRED on every task."
+        },
+        "assigned_tools": {
+          "type": "array",
+          "minItems": 3,
+          "maxItems": 5,
+          "items": { "type": "string", "minLength": 1 },
+          "description": "3-5 MCP tools this agent may use"
+        },
+        "assigned_model": {
+          "type": "string",
+          "enum": ["opus", "sonnet", "haiku"],
+          "default": "sonnet"
+        },
+        "end_product": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Specific output format for this branch. REQUIRED."
+        },
+        "dependencies": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^task_\\d{3}$"
+          },
+          "description": "Task IDs this task depends on. Empty array = no dependencies."
+        },
+        "issue_tree_branch_id": {
+          "type": ["string", "null"],
+          "description": "ID of the issue tree branch this task derives from"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["pending", "claimed", "in_progress", "completed", "failed", "passed"],
+          "default": "pending"
+        },
+        "assigned_agent_id": {
+          "type": ["string", "null"]
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

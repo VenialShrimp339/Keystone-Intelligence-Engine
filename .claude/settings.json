@@ -1,0 +1,22 @@
+{
+  "model": "claude-opus-4-6[1m]",
+  "effortLevel": "max",
+  "permissions": {
+    "Read": "allow",
+    "Glob": "allow",
+    "Grep": "allow",
+    "Write": "allow",
+    "Edit": "allow",
+    "Bash(wc *)": "allow",
+    "Bash(ls *)": "allow",
+    "Bash(cat *)": "allow",
+    "Bash(head *)": "allow",
+    "Bash(find *)": "allow",
+    "Bash(mkdir *)": "allow"
+  },
+  "env": {
+    "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-4-6",
+    "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
+    "DEFAULT_LLM_MODEL": "claude-opus-4-6[1m]"
+  }
+}

@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://keystone.internal/schemas/claim.schema.json",
+  "title": "Claim",
+  "description": "A synthesized analytical claim with full provenance chain. L1.5 -> L2 handoff intermediate representation.",
+  "type": "object",
+  "required": [
+    "claim_id",
+    "engagement_id",
+    "client_id",
+    "text",
+    "citation_ids",
+    "confidence",
+    "corroboration_count",
+    "provenance_chain",
+    "confidence_tier"
+  ],
+  "properties": {
+    "claim_id": {
+      "type": "string",
+      "pattern": "^CLM-\\d+$",
+      "description": "Unique identifier, format CLM-NNN"
+    },
+    "engagement_id": {
+      "type": "string",
+      "description": "Parent engagement for multi-tenancy isolation"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client identifier for data sandboxing"
+    },
+    "text": {
+      "type": "string",
+      "description": "The claim statement"
+    },
+    "source_chunk_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "IDs of source text chunks supporting this claim"
+    },
+    "citation_ids": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "References to Citation entities backing this claim"
+    },
+    "confidence": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Numerical confidence score"
+    },
+    "corroboration_count": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of agents that independently found supporting evidence"
+    },
+    "provenance_chain": {
+      "type": "string",
+      "description": "Trace from claim -> citations -> source documents"
+    },
+    "confidence_tier": {
+      "type": "string",
+      "enum": [
+        "high_above_80",
+        "moderate_60_80",
+        "weak_50_60",
+        "contested_below_50",
+        "insufficient_evidence"
+      ],
+      "description": "Discrete confidence tier derived from numerical confidence"
+    },
+    "ach_diagnosticity": {
+      "type": ["string", "null"],
+      "enum": ["high", "medium", "low", null],
+      "description": "How well this evidence discriminates between hypotheses"
+    },
+    "proposition_hashes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "pattern": "^[0-9a-f]{64}$"
+      },
+      "description": "Content hashes of specific propositions supporting this claim"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,18 @@
+## Market Growth Analysis: Auto Insurance Telematics
+
+The North American telematics insurance market has demonstrated robust growth over the past five years. According to our analysis of industry data, total premium volume grew from $18.2B in 2020 to $28.4B in 2024, representing a compound annual growth rate of approximately 15% year-over-year.
+
+### Growth by Segment
+
+| Segment | 2020 Premium ($B) | 2024 Premium ($B) | CAGR |
+|---------|-------------------|-------------------|------|
+| Incumbent Programs | 14.1 | 21.6 | 8.9% |
+| InsurTech Challengers | 2.3 | 5.4 | 23.7% |
+| OEM-Embedded | 1.8 | 4.2 | 12.3% |
+| **Total** | **18.2** | **31.2** | **14.4%** |
+
+The table above confirms the overall market trend, with InsurTech challengers showing the strongest growth trajectory. Total market growth of 12.3% year-over-year reflects steady but decelerating adoption as the technology matures.
+
+Several key observations emerge from this data. First, the segment totals in our analysis indicate the market reached $28.4B in 2024, with the incumbent segment accounting for roughly 70% of total volume. Second, the overall CAGR of approximately 15% validates the hypothesis that telematics adoption remains in a growth phase.
+
+The deceleration from 22% CAGR in the 2019-2022 period to the current 15% growth rate suggests the market is transitioning from early-adopter dynamics to mainstream adoption.

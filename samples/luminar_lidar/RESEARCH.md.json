@@ -1,0 +1,67 @@
+{
+  "engagement_id": "eng_luminar_001",
+  "client_id": "client_keystone",
+  "title": "Luminar Technologies Competitive Position in Autonomous Vehicle Lidar Market",
+  "created_at": "2026-04-05T10:00:00Z",
+  "specification_version": 1,
+  "engagement_type": "strategic",
+  "decision_context": "Keystone Group is advising a growth equity fund considering a $200M position in Luminar Technologies (LAZR). The fund needs to determine whether Luminar's technology lead in 1550nm lidar is sustainable through 2028 given Tesla's camera-only approach, Mobileye's imaging radar alternative, and multiple Chinese lidar competitors entering at 40-60% lower price points. The investment committee meets in 3 weeks.",
+  "surprising_finding": "Evidence that Luminar's technology moat is either significantly wider than consensus (e.g., 1550nm wavelength advantages are structurally unreplicable) or significantly narrower (e.g., Chinese competitors have already closed the gap and OEM switching costs are lower than assumed).",
+  "day_1_hypothesis": "Luminar's 1550nm lidar technology lead is sustainable through 2028 due to manufacturing complexity barriers and existing OEM design wins, but the addressable market is smaller than management guidance suggests because camera-only approaches will capture the L2+/L3 segment.",
+  "alternative_hypothesis": "Luminar's technology lead erodes by 2027 as Chinese competitors achieve manufacturing scale on comparable 1550nm systems, and the company's path to profitability depends on L4+ adoption timelines that are 3-5 years behind current projections.",
+  "prior_confidence": 0.55,
+  "questions": [
+    {
+      "question": "Is Luminar's competitive position in the autonomous vehicle lidar market sustainable through 2028, and what are the key risks to that position?",
+      "is_primary": true,
+      "parent_question": null
+    },
+    {
+      "question": "What is the realistic TAM for automotive-grade lidar in 2025-2030, disaggregated by autonomy level (L2+, L3, L4+)?",
+      "is_primary": false,
+      "parent_question": "Is Luminar's competitive position in the autonomous vehicle lidar market sustainable through 2028, and what are the key risks to that position?"
+    },
+    {
+      "question": "How do Luminar's unit economics compare to key competitors (Hesai, RoboSense, Innoviz, Aeva) at projected 2027 production volumes?",
+      "is_primary": false,
+      "parent_question": "Is Luminar's competitive position in the autonomous vehicle lidar market sustainable through 2028, and what are the key risks to that position?"
+    },
+    {
+      "question": "What is the probability and timeline for camera-only perception systems to achieve L4 certification, and what does that imply for lidar TAM?",
+      "is_primary": false,
+      "parent_question": "Is Luminar's competitive position in the autonomous vehicle lidar market sustainable through 2028, and what are the key risks to that position?"
+    }
+  ],
+  "methodology": [
+    {
+      "framework": "Porter's Five Forces",
+      "mandatory": true,
+      "rationale": "Structural competitive analysis of the lidar industry"
+    },
+    {
+      "framework": "Technology S-Curve Analysis",
+      "mandatory": true,
+      "rationale": "Assess where 1550nm lidar sits on the maturity curve"
+    },
+    {
+      "framework": "Scenario Planning",
+      "mandatory": false,
+      "rationale": "Model bull/base/bear cases for L4+ adoption timeline"
+    }
+  ],
+  "source_requirements": [
+    { "source_type": "financial_filings", "minimum_count": 5, "quality_threshold": 0.8 },
+    { "source_type": "industry_reports", "minimum_count": 3, "quality_threshold": 0.7 },
+    { "source_type": "patent_data", "minimum_count": 2, "quality_threshold": 0.6 },
+    { "source_type": "news", "minimum_count": 10, "quality_threshold": 0.5 }
+  ],
+  "output_format": "markdown",
+  "quality_bar": "Goldman-grade: would a domain expert at a top firm call this solid on its own merits?",
+  "non_goals": [
+    "Investment recommendation (buy/sell/hold) -- the system produces analysis, not advice",
+    "Price target or DCF valuation -- financial modeling is outside the research scope",
+    "Political positioning of findings for the investment committee",
+    "Assessment of fund portfolio fit or risk allocation implications"
+  ],
+  "max_rounds": 3
+}

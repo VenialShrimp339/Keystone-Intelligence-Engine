@@ -1,0 +1,101 @@
+{
+  "manifest_id": "MAN-TEST-001",
+  "engagement_id": "ENG-TEST-001",
+  "client_id": "CLT-TEST-001",
+  "citations": [
+    {
+      "citation_id": "CIT-001",
+      "engagement_id": "ENG-TEST-001",
+      "client_id": "CLT-TEST-001",
+      "url": "https://doi.org/10.1016/j.ijpe.2023.108932",
+      "doi": "10.1016/j.ijpe.2023.108932",
+      "title": "Telematics-based insurance pricing: A systematic review",
+      "authors": ["Zhang, L.", "Chen, W."],
+      "publication": "International Journal of Production Economics",
+      "date_published": "2023-06-15",
+      "access_date": "2026-03-15T10:30:00",
+      "source_type": "academic",
+      "quality_score": 0.92,
+      "url_live": true,
+      "crossref_verified": true,
+      "found_by_agents": ["agent_quant_001"]
+    },
+    {
+      "citation_id": "CIT-002",
+      "engagement_id": "ENG-TEST-001",
+      "client_id": "CLT-TEST-001",
+      "url": "https://www.iii.org/fact-statistic/telematics-2025",
+      "doi": null,
+      "title": "Insurance Information Institute: Telematics Facts & Statistics 2025",
+      "authors": [],
+      "publication": "Insurance Information Institute",
+      "date_published": "2025-01-20",
+      "access_date": "2026-03-15T11:00:00",
+      "source_type": "report",
+      "quality_score": 0.85,
+      "url_live": true,
+      "crossref_verified": null,
+      "found_by_agents": ["agent_quant_001", "agent_qual_002"]
+    },
+    {
+      "citation_id": "CIT-003",
+      "engagement_id": "ENG-TEST-001",
+      "client_id": "CLT-TEST-001",
+      "url": "https://doi.org/10.9999/fake.2024.0001",
+      "doi": "10.9999/fake.2024.0001",
+      "title": "Fabricated Study on Telematics Market Dynamics and Growth Trajectories",
+      "authors": ["Smith, J.", "Doe, A."],
+      "publication": "Journal of Insurance Innovation",
+      "date_published": "2024-03-01",
+      "access_date": "2026-03-15T12:00:00",
+      "source_type": "academic",
+      "quality_score": 0.88,
+      "url_live": null,
+      "crossref_verified": null,
+      "found_by_agents": ["agent_quant_001"]
+    },
+    {
+      "citation_id": "CIT-004",
+      "engagement_id": "ENG-TEST-001",
+      "client_id": "CLT-TEST-001",
+      "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany&CIK=PGR&type=10-K",
+      "doi": null,
+      "title": "Progressive Corporation 10-K Annual Report FY2024",
+      "authors": [],
+      "publication": "SEC EDGAR",
+      "date_published": "2025-02-28",
+      "access_date": "2026-03-16T09:00:00",
+      "source_type": "filing",
+      "quality_score": 0.95,
+      "url_live": true,
+      "crossref_verified": null,
+      "found_by_agents": ["agent_quant_001", "agent_contrarian_003"]
+    },
+    {
+      "citation_id": "CIT-005",
+      "engagement_id": "ENG-TEST-001",
+      "client_id": "CLT-TEST-001",
+      "url": "https://doi.org/10.1080/00036846.2023.2245678",
+      "doi": "10.1080/00036846.2023.2245678",
+      "title": "Consumer adoption of usage-based insurance: A behavioral economics perspective",
+      "authors": ["Patel, R.", "Kumar, S."],
+      "publication": "Applied Economics",
+      "date_published": "2023-09-20",
+      "access_date": "2026-03-16T10:00:00",
+      "source_type": "academic",
+      "quality_score": 0.90,
+      "url_live": true,
+      "crossref_verified": true,
+      "found_by_agents": ["agent_qual_002"]
+    }
+  ],
+  "corroboration_pairs": [
+    {
+      "citation_a": "CIT-001",
+      "citation_b": "CIT-005",
+      "overlap_score": 0.65
+    }
+  ],
+  "dead_urls": [],
+  "fabrication_flags": []
+}

@@ -1,0 +1,68 @@
+{
+  "engagement_id": "eng_specchem_001",
+  "client_id": "client_pe_fund",
+  "title": "Acquisition Target Evaluation in Specialty Chemicals Sector for $2B PE Fund",
+  "created_at": "2026-04-05T10:00:00Z",
+  "specification_version": 1,
+  "engagement_type": "evaluative",
+  "decision_context": "A $2B private equity fund focused on industrial materials is evaluating acquisition targets in the specialty chemicals sector. The fund's thesis centers on consolidation of fragmented niche chemical producers serving high-growth end markets (EV batteries, semiconductor fabrication, advanced composites). Investment committee needs a shortlist of 5-8 targets from an initial universe of 25+ candidates, with preliminary financial and strategic assessments. Decision deadline is 6 weeks; due diligence on top targets begins immediately after shortlist approval.",
+  "surprising_finding": "Evidence that the most attractive targets by financial metrics (margins, growth) are NOT the best acquisitions due to customer concentration risk, regulatory exposure, or IP vulnerability. Or conversely, that lower-growth targets in overlooked niches offer superior risk-adjusted returns due to switching cost moats.",
+  "day_1_hypothesis": "The highest-value acquisition targets are mid-market specialty chemical producers ($50-300M revenue) serving the EV battery supply chain, where fragmentation creates consolidation opportunities and the secular growth of EV adoption provides a tailwind that de-risks the investment.",
+  "alternative_hypothesis": "EV battery chemical suppliers are already overvalued due to consensus growth expectations, and better risk-adjusted returns exist in semiconductor-grade chemical producers where the market is less crowded and switching costs create durable competitive advantages.",
+  "prior_confidence": 0.50,
+  "questions": [
+    {
+      "question": "Which specialty chemical companies represent the most attractive acquisition targets for a $2B PE fund seeking to build a platform in high-growth industrial end markets?",
+      "is_primary": true,
+      "parent_question": null
+    },
+    {
+      "question": "What is the current M&A valuation landscape for specialty chemical companies by end market, and how do multiples compare to historical ranges?",
+      "is_primary": false,
+      "parent_question": "Which specialty chemical companies represent the most attractive acquisition targets for a $2B PE fund seeking to build a platform in high-growth industrial end markets?"
+    },
+    {
+      "question": "What are the key synergy opportunities in a specialty chemicals roll-up strategy, and what is a realistic synergy capture timeline?",
+      "is_primary": false,
+      "parent_question": "Which specialty chemical companies represent the most attractive acquisition targets for a $2B PE fund seeking to build a platform in high-growth industrial end markets?"
+    }
+  ],
+  "methodology": [
+    {
+      "framework": "Screening Criteria Framework",
+      "mandatory": true,
+      "rationale": "Systematic filtering of 25+ candidates to 5-8 shortlist using explicit criteria"
+    },
+    {
+      "framework": "Comparable Company Analysis",
+      "mandatory": true,
+      "rationale": "Valuation benchmarking across specialty chemicals sub-sectors"
+    },
+    {
+      "framework": "Porter's Five Forces",
+      "mandatory": true,
+      "rationale": "Industry structure analysis per end market to assess competitive dynamics"
+    },
+    {
+      "framework": "Synergy Assessment",
+      "mandatory": false,
+      "rationale": "Preliminary revenue and cost synergy estimation for top targets"
+    }
+  ],
+  "source_requirements": [
+    { "source_type": "financial_filings", "minimum_count": 10, "quality_threshold": 0.8 },
+    { "source_type": "industry_reports", "minimum_count": 5, "quality_threshold": 0.7 },
+    { "source_type": "news", "minimum_count": 10, "quality_threshold": 0.5 },
+    { "source_type": "academic", "minimum_count": 2, "quality_threshold": 0.6 }
+  ],
+  "output_format": "markdown",
+  "quality_bar": "Goldman-grade: would a domain expert at a top firm call this solid on its own merits?",
+  "non_goals": [
+    "Detailed financial due diligence on specific targets (that comes after shortlist approval)",
+    "Legal or regulatory clearance assessment for specific transactions",
+    "Tax structuring or deal mechanics analysis",
+    "Management team assessment or organizational due diligence",
+    "Political positioning of findings for investment committee"
+  ],
+  "max_rounds": 4
+}

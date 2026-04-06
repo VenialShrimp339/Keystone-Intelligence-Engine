@@ -1,0 +1,102 @@
+# RESEARCH.md -- Engagement Specification
+<!-- Template version: 1.0 | Based on CAPSTONE-PLAN-v2.md Section 3.2 -->
+<!-- Every agent reads this file. Every output validates against it. -->
+<!-- Every deliverable traces to it. This IS the engagement. -->
+
+## Engagement Metadata
+
+- **Engagement ID:** {{engagement_id}}
+- **Client ID:** {{client_id}}
+- **Title:** {{title}}
+- **Created:** {{created_at}}
+- **Specification Version:** {{specification_version}}
+- **Engagement Type:** {{engagement_type}}
+  <!-- One of: SIZING | DIAGNOSTIC | EVALUATIVE | EXPLORATORY | STRATEGIC -->
+  <!-- Drives pipeline profile (Light/Standard/Deep), evaluation weights, -->
+  <!-- and template registry queries. See CAPSTONE-PLAN Section 3.8. -->
+
+## Client Decision Context
+
+<!-- REQUIRED. What decision will this research inform? What are the -->
+<!-- client's constraints? What would a surprising finding look like? -->
+<!-- What evidence would change their mind? -->
+<!-- This is the highest-leverage field: if the decision context is wrong, -->
+<!-- all downstream research answers the wrong question thoroughly. -->
+
+**Decision:** {{decision_context}}
+
+**Surprising Finding:** {{surprising_finding}}
+<!-- What would genuinely surprise the decision-maker? If the system only -->
+<!-- finds what the client expects, is that a research success or failure? -->
+
+## Day-1 Hypothesis
+
+<!-- OPTIONAL but strongly recommended for all non-EXPLORATORY engagements. -->
+<!-- A specific, testable claim that the research will confirm, refute, or -->
+<!-- qualify. Prevents the AutoGPT infinite-loop failure mode by anchoring -->
+<!-- research to a falsifiable claim rather than open-ended exploration. -->
+
+**Primary Hypothesis:** {{day_1_hypothesis}}
+**Alternative Hypothesis:** {{alternative_hypothesis}}
+**Prior Confidence:** {{prior_confidence}}
+<!-- 0.0-1.0: Specification Engine's assessment before research begins -->
+**Evidence Thresholds:**
+- Confirming: {{confirming_evidence_threshold}}
+- Refuting: {{refuting_evidence_threshold}}
+
+## Research Questions
+
+<!-- At least one primary question required. Secondary questions support -->
+<!-- the primary and map to sub-branches of the issue tree. -->
+
+### Primary
+- {{primary_question}}
+
+### Secondary
+- {{secondary_question_1}}
+- {{secondary_question_2}}
+
+## Methodology Requirements
+
+<!-- Which analytical frameworks apply? What approaches are mandated vs. -->
+<!-- optional? Framework selection informed by engagement type. -->
+
+| Framework | Mandatory | Rationale |
+|-----------|-----------|-----------|
+| {{framework_name}} | {{yes_no}} | {{why_this_framework}} |
+
+## Source Requirements
+
+<!-- Minimum source types, preferred databases, required regulatory filings. -->
+<!-- Source diversity requirements (no single-source conclusions). -->
+
+| Source Type | Minimum Count | Quality Threshold |
+|-------------|---------------|-------------------|
+| {{source_type}} | {{min_count}} | {{quality_threshold}} |
+
+## Output Format & Quality Criteria
+
+**Deliverable Type:** {{output_format}}
+**Quality Bar:** Goldman-grade -- would a domain expert at a top firm call this solid on its own merits?
+
+<!-- Additional quality specifications per engagement -->
+
+## Timeline & Milestones
+
+- **Pipeline Profile:** {{pipeline_profile}}
+  <!-- Light | Standard | Deep -->
+- **Max Research Rounds:** {{max_rounds}}
+  <!-- Default 3, max 5. Never exceed 5 without logged justification. -->
+- **Phase 1 (Scout):** Broad exploration, specification refinement
+- **Phase 2 (Strike):** Focused execution based on scout findings
+
+## Explicit Non-Goals
+
+<!-- REQUIRED: at least one non-goal. Forces explicit boundary-setting. -->
+<!-- Political positioning, recommendation framing, and client -->
+<!-- relationship management are ALWAYS non-goals (Task-vs-Job boundary). -->
+
+- {{non_goal_1}}
+- {{non_goal_2}}
+- Political positioning and recommendation framing (ALWAYS a non-goal)
+- Client relationship management (ALWAYS a non-goal)

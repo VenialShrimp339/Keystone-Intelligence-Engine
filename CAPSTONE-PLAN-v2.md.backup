@@ -1,0 +1,1294 @@
+# The Keystone Intelligence Engine
+## A Multi-Agent Architecture for Automated Consulting Research & Analysis
+
+*Capstone Project — Econ Consulting (Prof. Youle) | Jack Riddle | IU Kelley School of Business | Spring 2026*
+
+---
+
+## 1. Executive Vision
+
+Management consulting runs on research. Before a partner walks into a boardroom with a recommendation, dozens of hours have been spent pulling SEC filings, mapping competitive landscapes, sizing markets, stress-testing assumptions, and synthesizing it all into a narrative that drives a $50M decision. That research work — thorough, rigorous, expensive — is both the foundation of every engagement and the bottleneck that constrains how many engagements a firm can run at peak quality.
+
+But research is also where the economics of knowledge work have fundamentally shifted. Across the consulting industry, 60–70% of billable hours are consumed not by the analytical work itself, but by the *coordination overhead* surrounding it — team alignment, task decomposition, methodology negotiation, intermediate review, deliverable formatting, and quality assurance (Jones, "Coordination Tax," Mar 12, 2026). When a three-analyst team spends a full week producing a competitive landscape analysis, the majority of that time is spent coordinating, not analyzing. The coordination tax is the invisible cost center of every consulting engagement.
+
+This project builds an autonomous research engine that eliminates the coordination tax while dramatically expanding what a consultant can produce. The Keystone Intelligence Engine is a multi-agent LLM system that takes a research question — "Evaluate the competitive position of Company X in the autonomous vehicle sensor market" — and produces a complete, Keystone-quality analytical brief. Not a summary of Google results. Not a template with blanks. A grounded, source-cited, multi-perspective analysis with the depth and rigor a Senior Engagement Manager would expect from that three-analyst team working a full week.
+
+The system does this through a six-layer pipeline architecture implementing DPVI — **Decompose-Parallelize-Verify-Iterate** — the convergent workflow pattern independently discovered by four organizations building production AI systems (Jones, "DPVI Pattern," Mar 11, 2026). The Specification Engine translates vague client questions into precise, executable research specifications. Parallel research agents fan out across public and proprietary data sources. A structured multi-perspective deliberation surfaces consensus, contested claims, and analytical gaps. An independent Evaluator — the most carefully engineered component in the system — grades every output through a five-layer evaluation stack anchored by a ten-dimension rubric calibrated to Keystone's own quality standards. And a self-improvement loop driven by an **Observation Library** turns every quality outcome (failures and successes) into a permanent architectural constraint, compounding the system's institutional intelligence with every engagement.
+
+**The value proposition is capability expansion, not cost reduction.** The question isn't "Can Keystone do the same research with fewer analysts?" It's "What research would Keystone do if the cost dropped 10x?" (Jones, "Expansion Thesis," Mar 14, 2026). Enable research at a scope and depth that no human team could match in the available timeline. Turn one consultant with the Intelligence Engine into a team that can investigate 15–50 parallel research threads, run independent parallel analyses with structured aggregation, verify every claim against primary sources, and deliver Goldman-grade output in days instead of weeks — while simultaneously building the institutional memory that makes the 20th engagement meaningfully better than the 5th.
+
+**What makes this a system, not a scaffold:** Most AI tools for professional services are scaffolds — well-structured templates that look impressive but can't pull a single number from an actual data source. The Hallucination Tax (2.5 hours of human verification for 30 seconds of AI generation) makes them net-negative on productivity for any analysis requiring factual accuracy (Prendergast, Wealth Management Plugin Analysis, 2025). This system is designed from the ground up as a *system*: connected to real data sources, with structural enforcement of source citation, automated verification of factual claims, and an evaluator that rejects unsourced assertions. Every number in the output is traceable to a source. The human reviewer's job is to evaluate the analysis, not to fact-check the data.
+
+---
+
+## 2. Architecture Overview
+
+The original proposal described three layers: Data Ingestion, Content Structuring, and Generation/QA. After deep analysis of Anthropic's engineering practices, production multi-agent systems, the practitioner literature on agentic architectures, and the systematic findings from Nate Jones's 91-article corpus on AI system design (Dec 2025 – Mar 2026), that design evolves into a six-layer architecture with a meta-optimization loop, organized around two foundational principles:
+
+1. **The specification layer IS the system.** The model improves automatically. The tools improve automatically. The specification layer — human-authored definitions of what should be built, for whom, to what standard — improves only through deliberate investment. The .md files that define research methodology, quality criteria, and analytical frameworks are the only irreplaceable component (Jones, "Markdown-as-Specification," Mar 27, 2026).
+
+2. **Structure determines outcomes more than capability does.** Any system whose quality depends on agents *choosing* to comply with instructions will eventually fail. Quality must be enforced architecturally — through tool design, pipeline structure, and handoff contracts — not through prompt instructions that drift approximately 40% of the time (@jordymaui, "Your OpenClaw is Ignoring Half Your Instructions").
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    META-LAYER: SELF-IMPROVEMENT                 │
+│  Observation Library · Darwinian prompt evolution · Trajectory  │
+│  storage · Skill library growth · Compounding research assets   │
+│  · Client calibration profiles                                  │
+└──────────────────────────────┬──────────────────────────────────┘
+                               │ optimizes all layers over time
+┌──────────────────────────────┼──────────────────────────────────┐
+│                              ▼                                  │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │         LAYER 0: SPECIFICATION ENGINE                   │    │
+│  │  Vague question → intent clarification → RESEARCH.md    │    │
+│  │  specification → pre-flight validation → agent dispatch  │    │
+│  │  → progress tracking → human review gates               │    │
+│  └────────────┬───────────────────────────────┬────────────┘    │
+│               │                               │                 │
+│  ┌────────────▼────────────┐    ┌─────────────▼─────────────┐  │
+│  │  LAYER 1: DATA          │    │  LAYER 4: EVALUATION      │  │
+│  │  INGESTION & RESEARCH   │◄──►│  Five-layer eval stack ·  │  │
+│  │  Parallel isolated       │    │  10-dimension rubric ·   │  │
+│  │  agents · per-agent     │    │  deterministic gates ·   │  │
+│  │  tool specialization ·  │    │  cross-model ensemble ·  │  │
+│  │  JIT context · anti-    │    │  process trajectory ·    │  │
+│  │  confirmatory framing   │    │  Observation Library     │  │
+│  └────────────┬────────────┘    └─────────────▲─────────────┘  │
+│               │                               │                 │
+│  ┌────────────▼────────────┐                  │                 │
+│  │  CITATION PROCESSOR     │                  │                 │
+│  │  [SYNTHESIS UPDATE]     │                  │                 │
+│  │  Cross-agent dedup ·    │                  │                 │
+│  │  corroboration scoring  │                  │                 │
+│  │  · URL liveness ·      │                  │                 │
+│  │  citation manifest      │                  │                 │
+│  └────────────┬────────────┘                  │                 │
+│               │                               │                 │
+│  ┌────────────▼────────────┐                  │                 │
+│  │  LAYER 1.5:             │                  │                 │
+│  │  DELIBERATION           │                  │                 │
+│  │  Independent parallel   │                  │                 │
+│  │  analysis · structured  │                  │                 │
+│  │  aggregation · DiscoUQ  │                  │                 │
+│  │  confidence mapping ·   │                  │                 │
+│  │  gap detection          │                  │                 │
+│  └────────────┬────────────┘                  │                 │
+│               │                               │                 │
+│  ┌────────────▼────────────┐                  │                 │
+│  │  LAYER 2: CONTENT       │──────────────────┘                 │
+│  │  STRUCTURING &          │                                    │
+│  │  REASONING              │                                    │
+│  │  Skill-driven analysis  │                                    │
+│  │  · narrative framework  │                                    │
+│  │  · sprint contracts ·   │                                    │
+│  │  format compliance      │                                    │
+│  └────────────┬────────────┘                                    │
+│               │                                                 │
+│  ┌────────────▼────────────┐                                    │
+│  │  LAYER 3: GENERATION    │                                    │
+│  │  PowerPoint · Excel ·   │                                    │
+│  │  Goldman-grade output ·  │                                    │
+│  │  anti-slop enforcement  │                                    │
+│  └─────────────────────────┘                                    │
+│                                                                 │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### The DPVI Methodology
+
+The architecture implements DPVI — **Decompose-Parallelize-Verify-Iterate** — the universal workflow pattern that emerged independently in four organizations building production AI systems (Jones, "DPVI Pattern," Mar 11, 2026). This convergent discovery validates the pattern's universality:
+
+- **Decompose:** The Specification Engine decomposes a research question into 15–50 discrete, independent research tasks with explicit acceptance criteria (Layer 0).
+- **Parallelize:** Research Agents execute tasks independently in strict isolation — no shared intermediate findings, no cross-contamination of hypotheses (Layer 1).
+- **Verify:** The Evaluator grades every output against sprint contracts and a ten-dimension judgment rubric via a five-layer evaluation stack. Failed outputs receive specific feedback and regenerate (Layer 4).
+- **Iterate:** The meta-layer evolves agent configurations, skill methodologies, and evaluation criteria based on accumulated evidence from the Observation Library.
+
+What made this pattern transformative was the "jagged frontier" reframe. BCG's widely-cited finding — that AI used outside its capability frontier makes outcomes 19 points *worse*, not just neutral — was initially presented as evidence of inherent AI unreliability. But the DPVI pattern's independent discovery revealed that the jagged frontier was never about capability; it was about *structural absence*. When DPVI was applied, the frontier stopped being jagged (Jones, "DPVI Pattern," Mar 11, 2026). The architecture *is* the fix.
+
+### Handoff Contracts: The Pipeline's Nervous System
+
+Drawing from Jones's finding that "orchestration frameworks live and die by handoff contracts" (Mar 25, 2026), every pipeline boundary has an explicit contract defining input format, output format, quality threshold, and completion signal:
+
+| Boundary | Input | Output | Quality Gate |
+|----------|-------|--------|-------------|
+| Specification Engine → Research Agent | RESEARCH.md + task assignment | Structured finding with citations | Specification quality threshold met |
+| Research Agent → CitationProcessor | Raw findings, per-agent citations | Deduplicated citation manifest, corroboration scores | All findings independently produced |
+| CitationProcessor → Deliberation | Citation manifest, corroborated findings | Synthesized position, evidence map | Cross-agent corroboration scored; URLs verified `[SYNTHESIS UPDATE]` |
+| Deliberation → Structuring | Confidence map, consensus/contested | Narrative outline, evidence mapping | Independent analyses aggregated; curmudgeon challenge passed |
+| Structuring → Evaluator | Section draft + sprint contract | Score + specific feedback | Ten-dimension rubric evaluation |
+| Evaluator → Self-Improvement | Observation entry | Constraint encoding | Root cause identified and encoded |
+
+When output quality is low, these contracts allow precise diagnosis: trace backward through the pipeline to identify exactly which handoff degraded the signal. This makes the system composable, testable, and debuggable — properties that are impossible when quality assurance is distributed across unstructured prompt instructions.
+
+---
+
+## 3. The Specification Engine (Layer 0): Where All the Value Lives
+
+### 3.1 The Core Reframe: From Coordinator to Specifier
+
+The original capstone design described an Orchestrator that decomposes research questions and coordinates agents. The evidence from 91 articles of systematic AI system analysis demands a fundamental reframe: **the Specification Engine's primary function isn't coordination — it's translating vague client needs into precise, executable research specifications.**
+
+The evidence is overwhelming and convergent:
+
+- "The bottleneck isn't AI capability — it's specification quality" (Jones, "Articulation Problem," Feb 10, 2026)
+- The CNC machine metaphor: "Precision machinery executing imprecise blueprints produces precisely wrong outputs" (Jones, "Specification Gap," Jan 21, 2026)
+- "Four of five agent deployment problems are engineering (solved or solvable). The fifth — the specification problem — is where all the value lives" (Jones, "4:1 Ratio," Mar 24, 2026)
+- The empirical proof: the same AI model scores 78% vs. 42% depending solely on the quality of the specification and harness engineering surrounding it (Jones, "Same Model, 78% vs 42%," Mar 6, 2026)
+
+Before "what should we research?" comes **"what decision does the client need to make?"** and **"what evidence would change their mind?"** No agents spawn until the specification meets a quality threshold. This is the highest-leverage component in the entire system.
+
+### 3.2 RESEARCH.md: The Engagement Specification
+
+Every consulting engagement needs a **RESEARCH.md** — a new concept that serves as the file every agent reads, every output validates against, and every deliverable traces to. It specifies:
+
+```markdown
+# RESEARCH.md — Engagement Specification
+
+## Client Decision Context
+What decision will this research inform? What are the client's constraints?
+What would a surprising finding look like? What evidence would change their mind?
+
+## Research Questions
+- Primary: [The core question this engagement answers]
+- Secondary: [Supporting questions that inform the primary]
+
+## Methodology Requirements
+Which analytical frameworks apply? What approaches are mandated vs. optional?
+
+## Source Requirements
+Minimum source types, preferred databases, required regulatory filings.
+Source diversity requirements (no single-source conclusions).
+
+## Output Format & Quality Criteria
+Deliverable type, format specifications, Goldman-grade quality standard:
+"Would a domain expert at a top firm call this solid on its own merits?"
+
+## Timeline & Milestones
+Phase 1 (Scout): Broad exploration, specification refinement
+Phase 2 (Strike): Focused execution based on scout findings
+
+## Explicit Non-Goals
+What NOT to research. Where the system's competence frontier lies.
+Political positioning, recommendation framing, and client relationship
+management are ALWAYS non-goals (see Section 3.7: Task-vs-Job Boundary).
+```
+
+The RESEARCH.md file IS the engagement. Every agent references it. Every handoff validates against it. The Evaluator grades against it. This creates a **lossless pipeline** — nothing gets lost between stages because everything traces back to a single specification document.
+
+### 3.3 The Three-Discipline Maturity Model
+
+The Specification Engine operates at what Jones calls "Level 3" in the three-discipline maturity model (Jones, "Intent Engineering / Klarna," Feb 24, 2026):
+
+1. **Prompt Engineering** — telling AI what to do (basic task instructions)
+2. **Context Engineering** — telling AI what to know (loading relevant data, skill files, past findings)
+3. **Intent Engineering** — telling AI what to want (encoding the client's actual decision needs, constraints, values)
+
+Most AI systems operate at Level 2. The Specification Engine must operate at Level 3. Before dispatching Research Agents, it must clarify:
+
+- What decision will this research inform?
+- What would a surprising finding look like?
+- What constraints aren't stated?
+- What evidence would change the client's mind?
+- What research directions have historically produced the most valuable insights for this type of question? (from trajectory storage)
+
+This prevents the "optimization-as-water" problem (Jones, "Agent Schemes," Mar 9, 2026) where agents optimize for stated goals that don't match actual needs — the failure mode that cost Klarna $60M in brand destruction while "saving" $60M in operational costs (Jones, "Klarna / Intent Engineering," Feb 24, 2026).
+
+### 3.4 Specification Verification Phase
+
+Before Research Agents execute, the Specification Engine runs a four-step verification phase — a new architectural component not present in v1:
+
+1. **Intent Clarification:** "Is this the right question? Does this decomposition capture the client's actual decision?" The Specification Engine can request clarification from the human operator if the research question is underspecified.
+
+2. **Pre-Flight Scope Validation:** A lightweight "scout" pass where Research Agents confirm the question is correctly framed for their vertical. A market-sizing agent might flag that the requested geography doesn't match available data sources.
+
+3. **Fit Assessment:** Identify upfront whether the question is inside or outside the system's competence frontier. BCG's data showed that AI used outside its capability frontier makes outcomes 19 points WORSE — not neutral, actively harmful (Jones, "201 Skills / 95% Stall," Jan 25, 2026). The system must know where its own frontier is and refuse to proceed outside it.
+
+4. **Specification Quality Threshold:** The decomposition must meet a minimum quality bar before any agent spawns. Criteria include: decision context specified, acceptance criteria testable, source requirements achievable, non-goals explicit. This prevents the most expensive failure mode: burning compute on a poorly-specified question.
+
+### 3.5 Iterative Specification Refinement
+
+The specification shouldn't be a single pass. Drawing from the "scout/strike" model (Jones, "10x Output," Mar 8, 2026):
+
+**Generate spec → preliminary scout research → refine spec → full strike research**
+
+Phase 1 is *scout*: broad exploration with tolerance for dead ends. Research Agents investigate the landscape and report back on what questions are well-formed and which need reformulation. Phase 2+ is *strike*: focused execution based on scout findings. The Specification Engine adapts the RESEARCH.md between phases based on what the scouts discovered.
+
+This mirrors how the best consulting engagements actually work: the first week's research often reveals that the original question was slightly wrong, and the team pivots before the second week's deep-dive.
+
+### 3.6 Research Initiation: From Specification to Task List
+
+Once the RESEARCH.md passes verification, the Specification Engine decomposes it into 15–50 discrete research tasks, each scoped tightly enough for a single agent session. The output is a `research-tasks.json` file:
+
+```json
+{
+  "project": "Acme Corp Competitive Position Analysis",
+  "research_md": "RESEARCH.md",
+  "specification_version": 2,
+  "decomposition_rationale": "Broad competitive position question decomposed into market sizing, competitive landscape, technology assessment, and strategic positioning threads",
+  "tasks": [
+    {
+      "id": "task_001",
+      "category": "market_sizing",
+      "type": "estimative",
+      "target_decision_usefulness": 3,
+      "description": "Estimate TAM for L4+ AV sensor market in North America by 2030",
+      "required_sources": ["industry_reports", "financial_data", "academic"],
+      "acceptance_criteria": [
+        "Top-down and bottom-up estimates with explicit assumptions",
+        "At least 3 independent data sources cited with URLs and access dates",
+        "Uncertainty range quantified with sensitivity to key assumptions",
+        "Comparison against at least one external analyst estimate"
+      ],
+      "deliverable_destination": "Section 2: Market Landscape, Slide 4-6",
+      "passes": false,
+      "priority": 1,
+      "anti_confirmatory_framing": "Evaluate the size and growth trajectory of the L4+ AV sensor market, including evidence for both larger-than-expected and smaller-than-expected scenarios"
+    },
+    {
+      "id": "task_002",
+      "category": "competitive_landscape",
+      "type": "current",
+      "target_decision_usefulness": 3,
+      "description": "Map key players by technology approach and market share",
+      "required_sources": ["company_filings", "news", "patents"],
+      "acceptance_criteria": [
+        "Top 8-10 competitors identified with defensible differentiation",
+        "Categorized by approach (lidar vs. camera-only, full-stack vs. component)",
+        "Competitive moats and vulnerabilities assessed per player — distinguish structural moats from temporary advantages",
+        "Positioning matrix with 2+ dimensions that reveal strategic insight"
+      ],
+      "deliverable_destination": "Section 3: Competitive Landscape, Slide 7-10",
+      "passes": false,
+      "priority": 1,
+      "anti_confirmatory_framing": "Map the competitive landscape including evidence that challenges the current consensus view on market leaders"
+    }
+  ]
+}
+```
+
+Five design decisions are critical:
+
+1. **Tasks are JSON, not Markdown** — Anthropic's *Effective Harnesses* article found that models are significantly less likely to inappropriately modify or corrupt JSON compared to Markdown, making it safer for multi-agent state tracking (Young, "Effective Harnesses for Long-Running Agents").
+
+2. **Each task carries explicit acceptance criteria** — these become the sprint contracts that the Evaluator grades against. The criteria are written at the outset, not after generation.
+
+3. **The `passes` field can only be flipped by the Evaluator agent, never by the research agent itself** — this is structural enforcement of quality gates, not prompt-based enforcement.
+
+4. **Anti-confirmatory framing is mandatory** — every research task is framed evaluatively ("evaluate whether X is true, including evidence both for and against"), never confirmatively ("find evidence for X"). Agents given confirmatory prompts cherry-pick with "the grinding indifference of water finding the fastest path downhill" (Jones, "Agent Schemes," Mar 9, 2026).
+
+5. **Deliverable destinations are tagged from Day 1** — every finding is linked to its eventual position in the output deliverable, enabling the lossless pipeline where nothing gets lost between research and generation.
+
+6. **`[SYNTHESIS UPDATE]` Task type drives evaluation weight profiles.** Each task is classified as `"estimative"` (forward-looking, probabilistic: market sizing, trend forecasting) or `"current"` (situation updates, competitive snapshots: timeliness is primary). The Evaluator applies type-specific weight profiles: estimative tasks weight Calibrated Confidence and Quantitative Rigor higher; current tasks weight Source Quality and Completeness higher. This implements ICD 203's distinction between estimative and current intelligence (Intelligence Community Directive 203, Analytic Standards).
+
+7. **`[SYNTHESIS UPDATE]` Decision-usefulness threshold enforced.** The `"target_decision_usefulness"` field sets a minimum on B2's five-level scale (1=Informational only, 2=Context-setting, 3=Decision-narrowing, 4=Decision-enabling, 5=Decision-making). Client-facing deliverables require Level 3 minimum. Tasks scoring below threshold are flagged for rework or scope redefinition.
+
+### 3.7 The Task-vs-Job Boundary
+
+A critical architectural guardrail: **the system handles research TASKS at superhuman speed and breadth. It does NOT attempt research JOBS** (Jones, "Task vs. Job Gap," Mar 21, 2026).
+
+Tasks are bounded, specified, single-output activities. Jobs require contextual stewardship — the institutional knowledge about what findings matter politically, how to position conclusions for a specific client's organizational dynamics, and what recommendations will land given the power structure in the room. The "locally correct, organizationally catastrophic" failure mode — where each individual task is completed correctly but the sum produces the wrong organizational outcome — lives exactly at this boundary.
+
+**Explicit ambition boundary:**
+
+| The System DOES (Tasks) | The System DOES NOT (Jobs) |
+|------------------------|---------------------------|
+| Data gathering across public & proprietary sources | Political judgment about which findings to emphasize |
+| Source synthesis and cross-referencing | Client relationship management |
+| Competitive landscape mapping | Recommendation framing for specific stakeholders |
+| Quantitative analysis and modeling | Advice on organizational change management |
+| Multi-perspective deliberation and analysis | Assessment of what findings a partner "can sell" |
+| Format-compliant deliverable generation | Strategic positioning of the firm's advice |
+
+The Evaluator specifically flags when the system strays outside its competence frontier — when output begins to include implicit recommendations or political positioning rather than evidence-grounded analysis. A 19-point penalty for out-of-frontier work (BCG data via Jones, Jan 25, 2026) means the system must be honest about what it can and cannot do.
+
+---
+
+## 4. The Research & Analysis Engine (Core Focus)
+
+This section describes how the system takes a verified RESEARCH.md specification and produces a rigorous, Keystone-quality analytical brief. This is where the capstone's primary contribution lives.
+
+### 4.1 Parallel Research Execution Under Strict Isolation
+
+Once the task list exists, the Specification Engine fans out research agents. Each agent operates under **strict isolation** — a structural constraint that prevents confirmation bias at the architectural level. Research Agents CANNOT access each other's intermediate findings. All convergence happens in Deliberation, not during research (Jones, "Dumb Agents, Smart Orchestration," Jan 26, 2026).
+
+**`[SYNTHESIS UPDATE]` Empirical validation of isolation requirement:** The AgentLeak benchmark (February 2026, 4,979 traces) measured 68.8% inter-agent data leakage in standard multi-agent frameworks, with 46.7% attributable to shared memory stores. No existing framework provides mechanisms to intercept inter-agent messages at the infrastructure level. This validates strict filesystem-based isolation as a non-negotiable architectural requirement, not a preference. Advisory file locks and write-ahead logging provide crash recovery for long-running research sessions.
+
+**`[SYNTHESIS UPDATE]` Per-agent tool specialization:** Each research agent receives 3-5 domain-specific tools matched to its assigned task, not the full tool suite. Anthropic's own finding: "a model loaded with 50 different tools performs worse than specialized agents with 5 focused tools." The Specification Engine's dispatch assigns tool subsets based on task category.
+
+**`[SYNTHESIS UPDATE]` Model mixing strategy:** Opus for L0 (Specification) and L4 (Evaluation) where judgment quality is critical. Sonnet for L1 (Research Agents) where throughput and cost matter. Haiku for extraction-only subtasks (URL-to-markdown, structured data parsing). This follows Anthropic's own multi-agent production pattern (Opus as lead, Sonnet for subagents) and achieves approximately 40% cost reduction without quality degradation on research tasks.
+
+Each agent:
+
+1. **Claims a task** by writing a lock file (e.g., `claimed_threads/task_001.lock`), following Carlini's git-based coordination pattern where the file system prevents duplicate work without requiring a central scheduler (Carlini, "C Compiler Project," 16 agents, 2,000 sessions).
+
+2. **Loads context just-in-time.** The agent doesn't start with all available data preloaded. It starts with the RESEARCH.md specification and a Research Index — a lightweight manifest of available sources. It dynamically loads specific sources as needed. This follows Anthropic's *Context Engineering* principle that context has diminishing marginal returns: loading an entire 10-K filing into context is worse than loading the three relevant sections, because irrelevant content dilutes the model's attention across thousands of tokens it doesn't need (Rajasekaran, Dixon, Ryan, & Hadfield, "Context Engineering").
+
+3. **Investigates using workflow-level tools.** Following Aizawa's guidance in *Writing Effective Tools for Agents*, research tools are designed for agent consumption — not raw API wrappers. Instead of separate calls to `get_company_financials`, `get_company_news`, and `get_company_filings`, the agent calls `research_company(company="Acme Corp", focus_areas=["financials", "competitive"])`, which returns a pre-synthesized summary. Tool responses support concise/detailed modes, reducing context consumption by roughly two-thirds per call.
+
+4. **Writes findings in structurally-enforced format.** Each agent produces a structured finding — claim, supporting evidence, source citations with access dates, confidence level, caveats, and explicitly noted absence (what the agent looked for but could not find). The finding format enforces source citation structurally: the tool output format includes citations as a required field, so an uncited claim literally cannot be produced. This is the @jordymaui principle applied to research integrity: don't tell the agent to cite sources, make it impossible not to.
+
+5. **Returns a condensed summary.** Each research agent may process tens of thousands of tokens during its investigation but returns only a 1–2 page condensed synthesis to the pipeline. The Specification Engine never sees raw data. It works with pre-synthesized intelligence — exactly how a consulting engagement manager operates (Anthropic, "Context Engineering").
+
+### 4.2 Agent Specialization with Designed Diversity
+
+Different research threads benefit from different agent "personalities" and toolsets. Drawing from Carlini's C Compiler project — where agents were specialized into roles like code coalescing, performance optimization, and design critique — the research pipeline uses specialized agent types with **designed diversity in analytical frames** (Jones, "Agent Schemes," Mar 9, 2026). The diversity isn't just in tools — it's in *perspective*:
+
+- **Quantitative Research Agent**: Optimized for financial data extraction, ratio analysis, trend decomposition, and numerical verification. Soul prompt calibrated toward precision, skepticism about rounded numbers, and explicit uncertainty quantification.
+
+- **Qualitative Research Agent**: Optimized for narrative sources — news articles, expert commentary, conference presentations, video transcripts. Soul prompt emphasizes synthesis, thematic pattern recognition, and identification of sentiment shifts over time.
+
+- **Contrarian Agent**: Exists specifically to stress-test the emerging thesis. Looks for disconfirming evidence, identifies implicit assumptions, and surfaces risks the consensus view might be underweighting. This agent is the institutional check against confirmation bias — a failure mode that persists in single-agent research (@Chris_Worsey, Darwinian selection work).
+
+- **Historical Analogy Agent**: Approaches the question through historical parallels — what happened when a similar industry went through a similar transition? Different analytical frame from pure data analysis.
+
+- **Internal Document Agent**: Specializes in navigating and synthesizing Keystone's proprietary materials (covered in Section 6).
+
+Each agent type has both a **skill set** (procedural knowledge — what tools to use, what data formats to expect) and a **soul prompt** (identity and judgment — how skeptical to be, what "good enough" looks like, when to push deeper versus move on). This soul-based approach emerged from @tolibear_'s insight that agents need identity alongside procedural knowledge — a "skilled agent without a soul produces correct but generic output."
+
+### 4.3 The Deliberation Phase: From Findings to Thesis
+
+**`[SYNTHESIS UPDATE]` Major redesign based on NeurIPS 2025, ICLR 2025, and Google DeepMind findings.**
+
+After research threads complete and the CitationProcessor produces the corroborated citation manifest, the system runs a two-phase Deliberation. The v2 design described a structured multi-perspective debate with synthesis rounds. The evidence now mandates a fundamentally different architecture:
+
+- **NeurIPS 2025 Spotlight** ("Debate or Vote," formal proof + empirical validation): Multi-agent debate forms a martingale — additional debate rounds consistently degrade accuracy rather than improve it. The mathematical proof holds regardless of model quality.
+- **DMAD (ICLR 2025)**: Methodological diversity outperforms persona diversity (bull/bear/consensus). Agents using different analytical methods on the same evidence produce genuinely independent assessments; agents with different "personalities" using the same method produce correlated noise.
+- **Wu et al.**: Majority pressure suppresses independent correction below 5% agreement rate. Iterative debate creates conformity cascades.
+- **Google DeepMind**: Unstructured multi-agent networks amplify errors 17.2x vs. structured aggregation.
+
+#### Phase 1: Independent Parallel Analysis
+
+The Deliberation spawns 3-5 analyst agents, each applying a **different analytical methodology** to the same corroborated findings. Methodological diversity replaces persona diversity:
+
+- **ACH Analyst**: Analysis of Competing Hypotheses. Constructs hypothesis matrix, evaluates evidence diagnosticity, identifies which evidence discriminates between hypotheses vs. which is consistent with all. Follows Heuer's structured analytic methodology (ICD 203).
+- **Quantitative Analyst**: Statistical and numerical reasoning. Sensitivity analysis, base-rate comparison, trend decomposition, Monte Carlo uncertainty where data supports it.
+- **Adversarial Analyst**: Red team. Identifies the strongest case against the emerging consensus. Searches for disconfirming evidence, surfaces implicit assumptions, evaluates second-order effects. This replaces the old Contrarian persona with a structured methodology.
+- **Historical Analogy Analyst**: Pattern matching against historical precedents. What happened when a similar industry went through a similar transition? Where do historical analogies break down?
+- **Scenario Planning Analyst** (optional, for estimative tasks): Constructs 2-3 coherent scenarios with explicit branching assumptions and leading indicators for each.
+
+**Critical constraints:**
+1. **No interaction between analysts during Phase 1.** Each produces an independent assessment without seeing others' work. This is the structural prevention of conformity cascade.
+2. **Blind evaluation preserved.** Agent identifiers stripped from findings before analysis. Analysts evaluate evidence on merit (Jones, "Pipeline Problem," Mar 7, 2026).
+3. **Cross-provider model diversity.** At least one analyst must run on a different model family (e.g., GPT, Gemini) to prevent correlated model biases.
+4. **Steelmanning remains mandatory.** Each analyst must construct the strongest version of the position their methodology is least sympathetic to (Jones, "Fictional Recession / Capability-Dissipation Gap," Feb 26, 2026).
+
+#### Phase 2: Structured Aggregation with Curmudgeon Challenge
+
+A separate aggregation agent (Opus-class) reads all independent analyses simultaneously and produces the confidence map. No iterative debate rounds. The aggregator:
+
+1. Identifies convergent findings (claims supported by 2+ independent methodologies)
+2. Identifies genuine disagreements (different methodologies reaching different conclusions from the same evidence)
+3. Flags methodological blind spots (evidence types that no methodology addressed)
+4. Runs a **curmudgeon challenge**: for every high-confidence finding, the aggregator must articulate a specific, non-trivial reason it could be wrong and assess whether any analyst addressed that risk
+
+The output is a **confidence map** with DiscoUQ-grounded confidence tiers:
+
+```json
+{
+  "high_confidence_above_80pct": [
+    {
+      "claim": "Acme holds 23% sensor market share, growing at 15% CAGR",
+      "methodological_agreement": "4/4 (ACH, Quantitative, Adversarial, Historical)",
+      "sources": 7,
+      "corroboration_count": 3,
+      "robustness": "Holds across all assumption variations tested",
+      "curmudgeon_challenge": "Market share data relies on industry reports with 12-18 month lag; real-time share may differ",
+      "discouq_features": {
+        "evidence_overlap": 0.87,
+        "minority_argument_strength": 0.12,
+        "divergence_depth": "shallow"
+      }
+    }
+  ],
+  "moderate_confidence_60_80pct": [
+    {
+      "claim": "Lidar costs will drop below $500/unit by 2028",
+      "methodological_agreement": "3/4",
+      "dissent": "Adversarial analyst: supply chain constraints and rare earth dependencies delay to 2030",
+      "sources": 4,
+      "sensitivity": "Conclusion flips if semiconductor capacity assumptions change",
+      "ach_diagnosticity": "Medium — evidence consistent with both optimistic and delayed timelines"
+    }
+  ],
+  "weak_confidence_50_60pct": [
+    {
+      "claim": "Acme's software stack provides a durable competitive advantage",
+      "methodological_agreement": "2/4",
+      "key_issue": "Historical analogy analyst notes software moats erode faster than hardware moats in adjacent industries",
+      "sources": 3,
+      "recommendation": "Flag as contested in deliverable; present both cases with explicit assumptions"
+    }
+  ],
+  "contested_below_50pct": [
+    {
+      "claim": "Camera-only approaches will converge with lidar on safety metrics",
+      "methodological_agreement": "1/4",
+      "key_disagreement": "Fundamental debate on sensor fusion necessity vs. software-defined safety",
+      "sources": 3,
+      "steelmanned_opposing_view": "Camera-only thesis rests on software improvement curves that have historically been underestimated",
+      "ach_matrix": {
+        "hypotheses": ["Lidar-required", "Camera-sufficient", "Hybrid-converge"],
+        "diagnostic_evidence": ["NHTSA crash data favors lidar", "Tesla FSD v13 safety record", "Waymo sensor suite evolution"],
+        "inconsistent_evidence_per_hypothesis": [1, 2, 0]
+      }
+    }
+  ],
+  "insufficient_evidence": [
+    {
+      "claim": "Acme's patent portfolio provides meaningful defensive value",
+      "reason": "No patent portfolio analysis conducted — trigger additional research thread",
+      "priority": "high"
+    }
+  ],
+  "gaps_identified": [
+    "Regulatory landscape in EU not yet investigated — critical for market sizing",
+    "No data on customer switching costs between sensor platforms"
+  ],
+  "absence_report": [
+    "No academic literature found on long-term sensor degradation in extreme weather",
+    "Competitor X has not disclosed R&D spending since 2023 — data unavailable"
+  ]
+}
+```
+
+The five-tier confidence taxonomy (>80%, 60-80%, 50-60%, <50%, Insufficient Evidence) replaces the original four-tier structure. The critical addition is the **weak confidence tier (50-60%)** — DiscoUQ (March 2026 preprint, AUROC 0.802) demonstrated that this is exactly the range where simple voting fails and computational confidence features (evidence overlap, minority argument strength, divergence depth, embedding geometry) provide the largest improvements over naive agreement counting.
+
+The confidence map tells the structuring agent exactly how to handle each claim. High-confidence findings become assertions. Moderate-confidence findings get presented with explicit sensitivity analysis. Weak-confidence findings receive prominent uncertainty framing. Contested findings are framed as "perspectives" with steelmanned opposing views and ACH matrix where applicable. Insufficient evidence triggers additional research threads — the system is self-correcting (the Mission Control pattern from @pbteja1998).
+
+The **absence report** is a v2 addition. Agents don't know what they don't know. The Deliberation phase explicitly surfaces what was *looked for but not found* — because the absence of expected data is itself analytically significant.
+
+### 4.4 Content Structuring via Sprint Contracts
+
+**`[SYNTHESIS UPDATE]` Claim-level intermediate representations.** Layer 2 does not receive raw agent outputs. It receives synthesized claims, each structured as:
+
+```json
+{
+  "claim_id": "CLM-047",
+  "text": "Acme's lidar unit cost dropped 34% YoY in 2025",
+  "source_chunk_ids": ["src_012", "src_034", "src_089"],
+  "confidence": 0.85,
+  "corroboration_count": 3,
+  "provenance_chain": ["task_001 → agent_quant → CitationProcessor → Deliberation"],
+  "confidence_tier": "high_confidence_above_80pct",
+  "ach_diagnosticity": "high"
+}
+```
+
+This claim-level handoff contract between L1/Deliberation and L2 enables: (1) claim-level citation tracing through the full pipeline, (2) quality metrics at the claim level rather than only the section level, and (3) structured input for L2's outline generation. Microsoft Research's "Characterizing Deep Research" (ICLR 2026) found that deep research quality depends on claim-level intermediate representations and DAG structure, not report length. STORM (NAACL 2024) found that outline quality predicts final output quality (+25% perceived organization) — L2's first task is outline construction from structured claims, not prose generation.
+
+Layer 2 receives the synthesized claims and the confidence map, then constructs the analytical narrative. This is where the system applies consulting analytical frameworks via a **skills library**.
+
+The skills library follows the three-layer loading architecture discovered in Prendergast's analysis of Anthropic's Wealth Management Plugin: at startup, the agent loads only lightweight skill names and descriptions (Layer 1). When the analytical task matches a skill, the full methodology file loads (Layer 2). Supporting documents load on demand (Layer 3). This progressive loading minimizes context consumption while giving the agent deep methodological guidance exactly when needed.
+
+Each skill is a directory:
+
+```
+skills/
+├── market-sizing/
+│   ├── SKILL.md          # Methodology: top-down + bottom-up + triangulation
+│   ├── gotchas.md        # Common mistakes: confusing TAM with SAM, ignoring adoption curves
+│   ├── constraints.md    # Observation Library entries specific to this skill
+│   └── examples/         # Anonymized past Keystone market sizing analyses
+├── competitive-analysis/
+│   ├── SKILL.md          # Methodology: positioning matrix + moat assessment
+│   ├── gotchas.md        # Common mistakes: confusing market share with mind share,
+│   │                     #   conflating temporary cost advantages with structural moats
+│   ├── constraints.md
+│   └── examples/
+├── financial-analysis/
+│   ├── SKILL.md          # Methodology: ratio analysis + trend decomposition + peer comparison
+│   ├── gotchas.md
+│   ├── constraints.md
+│   └── examples/
+└── reusable-frameworks/   # See Section 10: Consulting Framework Modules
+    ├── coordination-tax-audit/
+    ├── capability-dissipation-gap/
+    ├── frontier-operations-maturity/
+    └── ...
+```
+
+Skills are interconnected, not flat — drawing from @rohit4verse's Ars Contexta skill graph architecture. Market sizing links to industry analysis. Competitive analysis links to company valuation. Research agents navigating this graph discover that their current task requires complementary analysis from a related skill.
+
+Before generating each section, the structuring agent and the Evaluator negotiate a **sprint contract** — Anthropic's *Harness Design* innovation that bridges the gap between high-level specifications and testable criteria. For a competitive landscape section:
+
+> **Sprint Contract: Competitive Landscape**
+> - Must identify 8+ competitors with defensible differentiation criteria
+> - Positioning matrix uses 2+ dimensions that reveal strategic insight (not just "price vs. quality")
+> - Each competitor assessment includes at least one non-obvious vulnerability
+> - Competitive moat analysis distinguishes between structural moats (compound over time) and temporary advantages (replicable in 18 months)
+> - Section must explicitly address: "What would have to change for the current leader to lose their position?"
+> - Must include absence report: what competitive data was sought but unavailable
+> - Format: directly presentable without cleanup (anti-slop standard)
+
+The Evaluator then grades the generated section against these exact criteria. A section that maps competitors on a generic 2×2 without strategic insight fails, regardless of how well-written it is. This is what makes the quality enforcement specific rather than aspirational.
+
+---
+
+## 5. The Evaluator: The Most Important Component
+
+### 5.1 Why Evaluation Bounds Everything
+
+If the capstone's architecture has a single most important insight, it is this: **evaluation quality bounds output quality, and evaluation is the highest-leverage investment in any AI system.**
+
+This claim is supported from more independent angles than any other finding in the literature:
+
+- Carlini spent $20K building a C compiler with 16 agents and concluded: "The test harness is more important than the agent prompt." Improving evaluation had more impact on output quality than improving generation instructions (Carlini, "C Compiler Project").
+- Anthropic's *Harness Design* team found the same: evaluator improvements drove more quality gains than generator improvements (Rajasekaran, "Harness Design").
+- The 78% vs. 42% finding demonstrates that harness quality (evaluation + specification + state management) produces a 36-point performance swing on the same model (Jones, "Same Model, 78% vs 42%," Mar 6, 2026).
+- The 19% paradox: experienced developers were 19% *slower* with AI but believed they were 20% *faster* — subjective assessment of AI quality is unreliable (Jones, "5-Level Framework," Feb 18, 2026). This means the system cannot trust its own assessment of output quality; it needs an independent evaluator.
+- "Evaluation and taste as the highest-leverage investment... the most compounding skill" (Jones, "Six Reasons Work Is Hard," Feb 23, 2026).
+
+The Evaluator is the single most carefully engineered component in the system. Its rubric is calibrated against actual Keystone deliverables. Its quality gates are enforced structurally, not through prompt instructions. A system where evaluation is mediocre produces mediocre output regardless of how good the generator is. A system where evaluation is excellent pulls the generator upward.
+
+### 5.2 From Compliance to Judgment
+
+The v1 Evaluator checked compliance: Does this section have 5+ sources? Is the confidence level stated? Are claims supported?
+
+The v2 Evaluator exercises **judgment**: Would this change a consultant's recommendation? Are the confidence levels *calibrated to the evidence*? Does the analysis contain insight a domain expert would find non-obvious?
+
+This shift is driven by multiple convergent findings:
+
+- **Anti-confirmatory checking.** Research Agents given confirmatory prompts cherry-pick. The Evaluator must check for balanced evidence consideration, not just the presence of supporting data (Jones, "Agent Schemes," Mar 9, 2026).
+
+- **Absence detection.** Agents don't know what they don't know. The Evaluator checks not just what's present but what's systematically missing. It maintains perspective checklists by question type — a competitive analysis that never mentions regulatory risk isn't complete (Jones, "55% Regret AI-Driven Layoffs," Mar 21, 2026).
+
+- **Anchoring resistance.** A single framing can shift output by 11.7x (Jones, "Anchoring Bias," Mar 18, 2026). The Evaluator uses dual-framing dispatch — varying the evaluation framing and checking consistency across framings.
+
+- **Gaming resistance.** Agents optimize toward goals with "the grinding indifference of water finding the fastest path downhill" (Jones, "Agent Schemes," Mar 9, 2026). The Evaluator must use holistic quality assessment, not checklist verification. Hard-to-game dimensions (analytical originality, structural coherence, decision-relevance) are weighted over mechanical criteria (source count, word count).
+
+- **Compromise tax detection.** Is the synthesis process softening sharp insights into safe consensus? A single correct, surprising insight is worth more than ten expected confirmations (Jones, "Solo Founder," Mar 15, 2026).
+
+### 5.3 The Ten-Dimension Judgment Rubric `[SYNTHESIS UPDATE]`
+
+The rubric expands from eight to ten dimensions. Two new dimensions address the conscious-competence ceiling and calibrated uncertainty expression. Weight adjustments reflect the empirical finding (SOS-Bench, ICLR 2025, 152K data points) that LLM judges systematically overweight style and completeness while underweighting factual accuracy and analytical substance. Each dimension is classified by evaluation type to determine which layers of the five-layer evaluation stack (Section 5.9) handle it:
+
+| Dimension | Weight | Eval Type | What It Measures | Sub-Criteria |
+|-----------|--------|-----------|-----------------|-------------|
+| Analytical Depth | **12%** | Judgment-dependent | Are conclusions non-obvious? Is the analysis layered? | *Judgment ratio*: % of output that is analytical judgment vs. information aggregation (Jones, "Artifacts > Credentials," Mar 26, 2026) |
+| Source Quality | 10% | Machine-checkable + Expert | Are sources authoritative and diverse? | *Signal depth* — triangulated/hard-to-access sources over press releases. Pre-rubric binary gate: citation existence verified via CrossRef/Semantic Scholar/OpenAlex (fabricated citation = immediate rejection) |
+| Quantitative Rigor | 15% | Machine-checkable + Expert | Are claims supported by data? Uncertainties quantified? | *Adversarial robustness*: do findings hold if key assumptions shift ±20%? *Precision calibration*: are numbers reported at appropriate precision for the underlying data quality? |
+| Narrative Coherence | 10% | Judgment-dependent | Does the analysis tell a clear story? Is the "so what?" evident? | *Cross-finding synthesis*: does the analysis tell the story the findings tell *together*, not just sequentially? |
+| Completeness | **8%** | Machine-checkable | Are obvious follow-up questions addressed? | *Absence detection*: mandatory completeness checklist with expected topics, perspectives, and data categories. *Deletion test*: would removing any section leave a gap a domain expert would notice? |
+| Actionability | 15% | Expert-checkable | Could a consultant advise a client based on this? | *Monday-morning actionability*: segmented by role, immediately executable. *Trendslop detection*: flag generic strategic recommendations that could apply to any company in any industry (HBR March 2026, 15K+ trials) |
+| **Intent Alignment** | **15%** | Expert-checkable | **Is this answering the question the client actually needs answered?** | Does output serve the decision context in RESEARCH.md? *Counterfactual deletion test*: if this section were removed, would the client's decision change? If not, it's padding. The Klarna pattern: "technically correct, strategically wrong" (Jones, "Klarna," Feb 24, 2026) |
+| **Intellectual Honesty** | **10%** | Judgment-dependent | **Are limitations named? Are contested claims framed as contested?** | Is the opposing case steelmanned? Are uncertainty ranges honest or artificially narrow? Does the analysis acknowledge what it cannot determine? |
+| **Evaluative Surprise** | **5%** | Judgment-dependent | **Does the output contain at least one finding the requester didn't already suspect?** | **NEW.** The conscious-competence ceiling: rubrics alone create proficiency, not expertise (Dreyfus model). This dimension detects competent mediocrity — outputs that satisfy every checklist item while containing zero genuine insight. A perfectly scored but unsurprising output caps at 95%. |
+| **Calibrated Confidence** | **5%** | Machine-checkable + Expert | **Are probability assessments calibrated to evidence quality?** | **NEW.** Operationalizes ICD 203 calibrated probability language: "almost certainly" (>95%), "highly likely" (80-95%), "likely" (60-80%), "roughly even" (40-60%), "unlikely" (20-40%), etc. Confidence ranges must match the evidence base. Overconfident claims on weak evidence and underconfident claims on strong evidence both penalized. |
+
+Weights are deliberately calibrated *away* from where LLMs naturally perform well (coherent prose, comprehensive coverage) and *toward* where they naturally underperform (analytical novelty, quantitative rigor, actionable insight) — following Anthropic's finding that evaluator dimensions should target the generator's weakest areas to maximize corrective impact. The weight reduction on Analytical Depth (15% to 12%) and Completeness (10% to 8%) funds the two new dimensions while preserving the substance-over-style weighting.
+
+### 5.4 Calibration Against Keystone Standards
+
+The rubric is calibrated using few-shot examples: 10+ past Keystone deliverables, each scored by Jack on the ten-dimension rubric, serve as the calibration set. The Evaluator is tuned until its scores match Jack's scores within ±1 point per dimension. This is how the system's quality standard becomes *Keystone's* quality standard, not a generic AI quality standard.
+
+**`[SYNTHESIS UPDATE]` Quantified calibration target.** The Evaluator must achieve **0.80+ Spearman rank correlation** between automated scores and expert human scores across a calibration set of 100-200 expert-scored samples. This is a binary gate: the Evaluator is not production-ready until it hits this threshold. This follows Anthropic's own production standard ("Demystifying Evals for AI Agents," January 2026). Below 0.80 Spearman, automated scores are noise, not signal — the system would be grading on criteria that don't correlate with expert judgment.
+
+Additional calibration requirements:
+- **Cohen's Kappa tracking** between human and automated scores, targeting ≥0.60 (above the 0.52 measured for automated graders by AISI)
+- **Continuous re-calibration**: every 5-10 engagements, not one-time setup. Evaluator drift is measured and corrected as the Observation Library grows and the system's output distribution shifts
+- **Per-dimension calibration**: identify which dimensions the Evaluator systematically over- or under-scores relative to human judgment, and apply correction factors
+
+The Goldman-grade bar: "Would a domain expert at a top firm call this solid on its own merits?" Not "impressive for AI." Actually solid. When a Goldman Sachs analyst reviewed an AI-generated financial model and said it was "solid on its own merits" (Jones, "Goldman-Grade," Feb 13, 2026), that became the quality bar for every Keystone Intelligence Engine output.
+
+### 5.5 Multi-Tiered Evaluation Intensity
+
+Not every output merits the same evaluation depth. The system implements evaluation intensity that scales with stakes:
+
+| Tier | When Applied | What Happens |
+|------|-------------|-------------|
+| **Light-touch** | Fact-checks, exploratory probes, preliminary scout findings | Quick quality gate: source citation present, obvious errors caught, format compliant |
+| **Standard** | Core research sections, individual research thread outputs | Full ten-dimension rubric evaluation against sprint contracts |
+| **Deep** | Strategic analyses, client-facing deliverables, high-stakes sections | Multi-pass evaluation: standard + adversarial testing + constraint-shift probing + blind evaluation (strip identifiers, evaluate on merit) |
+
+### 5.6 Factorial Evaluation for Robustness
+
+After standard evaluation, the Evaluator runs **factorial probes** on high-stakes claims (Jones, "Anchoring Bias," Mar 18, 2026): systematically vary 2–3 key assumptions and check whether conclusions remain stable. If a recommendation holds across assumption variations, it's robust. If it flips, that assumption is the critical variable needing deeper investigation and explicit sensitivity analysis in the deliverable.
+
+This produces more honest and defensible research than single-assumption analysis. When a finding is sensitive to an assumption, the deliverable says so explicitly — and identifies the assumption as a key monitoring variable for the client.
+
+### 5.7 Verifiability-Tier Classification
+
+Every output is classified by verifiability (Jones, "DPVI Pattern," Mar 11, 2026):
+
+- **Machine-checkable:** Facts, calculations, source verification → auto-verify
+- **Expert-checkable:** Analytical claims, framework application → flag with confidence level
+- **Judgment-dependent:** Strategic interpretations, framing choices → always route to human consultant
+
+This classification determines what the Evaluator can autonomously approve vs. what requires human review. Progressive autonomy: as the system proves reliable on expert-checkable tasks, promote them to autonomous handling based on demonstrated accuracy.
+
+### 5.8 The Anti-Slop Standard
+
+Every output must be directly usable without human cleanup (Jones, "Anti-Slop / Claude Cowork," Jan 14, 2026). Format compliance is an evaluation criterion, not a nice-to-have:
+
+- Findings that require reformatting to fit a slide → fail
+- Analyses with generic hedging language ("it could be argued that...") → fail
+- Data presentations that don't match Keystone's visual standards → fail
+- Executive summaries that summarize the report rather than summarize the insight → fail
+
+The question the Evaluator asks: "Would a Senior Engagement Manager present this to a Fortune 500 CEO without edits?" If the answer is no, the section doesn't pass.
+
+**`[SYNTHESIS UPDATE]` Structured anti-slop enforcement.** Anti-slop is implemented as a dedicated Evaluator sub-check, not a separate pipeline stage. The architecture follows the Antislop Sampler pattern (arXiv benchmarked, 90% slop reduction while maintaining benchmark performance) and the four-agent ASS v3.0 pipeline's key insight: the drafter stays intentionally naive while the detector is maximally critical.
+
+Detection signals (8,000+ pattern library):
+- Generic openings ("In today's rapidly evolving landscape...")
+- Listicle structures substituting for analytical narrative
+- Excessive hedging without probabilistic precision ("it remains to be seen whether...")
+- Buzzwords and filler appearing at 1000x+ frequency in AI text vs. human expert text
+- Trendslop: strategic recommendations that could apply to any company in any industry (the "always true" test from HBR March 2026)
+- AI-characteristic sentence patterns (e.g., "It's worth noting that," "This underscores the importance of")
+
+When slop is detected, the Evaluator triggers a **Redraft Specialist subagent** that rewrites the flagged sections with specific instructions on what to replace and why, rather than regenerating the entire output. This targeted redraft preserves the analytical substance while eliminating stylistic artifacts.
+
+Mitchell's 20-agent content pipeline (@MitcheIl) independently validated this with dual-axis quality scoring: every line was scored for both *Invention Novelty* (breakthrough insight?) and *Copy Intensity* (impact on the reader?). Both had to hit maximum. The consulting analog: every insight should score for both *analytical rigor* (is it defensible?) and *executive impact* (would it change a decision?). Rigorous but boring, or provocative but unsubstantiated — either fails.
+
+### 5.9 Five-Layer Evaluation Stack `[SYNTHESIS UPDATE]`
+
+The Evaluator is not a single LLM judge. SOS-Bench (ICLR 2025, 152,380 data points) proved that any single LLM judge systematically rewards style over substance: sarcastic tone caused 96% scoring loss while factual errors caused only 13% loss. This held across all four judge models tested (GPT-3.5-turbo, GPT-4o-mini, GPT-4o, Claude-3.5-Sonnet). The Evaluator is a five-layer stack where each layer addresses a specific failure category:
+
+**Layer 1: Deterministic Verification.** FActScore atomic fact decomposition and verification. Numerical consistency checks. URL liveness for all citations. No LLM judgment — pure automated verification. Build first (pip install factscore, ~$1/100 sentences).
+
+**Layer 2: Citation Validation Gate.** Binary existence check for every citation via CrossRef, Semantic Scholar, and OpenAlex APIs. Any fabricated citation triggers immediate rejection — not a score deduction. This is a pre-rubric gate: outputs with fabricated citations never reach rubric scoring. The Deloitte incidents (professional-grade citation fabrication that survived senior review) demonstrate that partial credit for citations is dangerous. DOI error rates of 36.2% and author-title fabrication make this gate non-negotiable.
+
+**Layer 3: Multi-Rubric Scoring.** Prometheus 2 (EMNLP 2024, 72-85% human agreement, 7B and 8x7B variants) with the ten-dimension rubric. Critical constraint: **never score multiple dimensions in a single prompt.** Each dimension gets a separate evaluation prompt with dimension-specific criteria and calibration examples. This prevents the cross-contamination that SOS-Bench identified — where style scores infect substance scores within a single holistic evaluation. Prometheus 2 runs locally on Mac Mini infrastructure.
+
+**Layer 4: Process Trajectory Evaluation.** Agent-as-a-Judge (arXiv:2410.10934, ~90% human agreement vs. ~70% for static LLM-as-Judge). Evaluates the research process, not just the output: Did agents explore diverse sources? Were dead ends investigated before being abandoned? Did the deliberation phase produce genuine disagreement or conformity? The METR finding (50-67% of AI PRs that pass automated tests get rejected by human maintainers) suggests process quality predicts output quality failures invisible in the final deliverable.
+
+**Layer 5: Diverse Judge Ensemble.** PoLL pattern (Verga et al., 2024): a panel of 2-3 models from different families (e.g., Claude + GPT + Gemini) outperforms a single expensive judge while being 7-8x cheaper. Dynamic team selection following SE-Jury (ASE 2025): some evaluation strategies are detrimental for certain task types, so select the optimal subset per evaluation. Minority-veto capability: if any judge flags a critical issue (fabrication, logical error, missing evidence), the output is flagged regardless of majority opinion.
+
+Build in stack order: Layers 1-2 first (deterministic, buildable immediately), Layer 3 second (Prometheus 2 setup + custom rubric development), Layers 4-5 last (process evaluation + ensemble infrastructure).
+
+### 5.10 Three-Pass Evaluation Architecture `[SYNTHESIS UPDATE]`
+
+Research on evaluation quality (B3: Jonnson & Balan inter-rater agreement meta-analysis; B2: Kahneman Noise framework) demonstrates that evaluation is approximately 65% dimensional and 35% holistic. Rubrics alone create a ceiling at the competence level (Dreyfus model) without reaching proficiency. The Evaluator implements a three-pass flow:
+
+**Pass 1: Dimensional Scoring.** The ten-dimension rubric, executed through Layer 3 of the evaluation stack (Prometheus 2). One prompt per dimension. Produces ten individual scores with specific feedback per dimension.
+
+**Pass 2: Holistic Gestalt Overlay.** A separate evaluation pass that reads the full output and produces a ±5-10% adjustment to the dimensional aggregate. This captures emergent quality signals that no individual dimension measures: the "this analysis changes how I think about the problem" quality that separates proficient from expert work. The gestalt overlay is the architectural implementation of the 35% holistic component.
+
+**Pass 3: Observation Library Negative-Space Scan.** The full Observation Library is scanned against the output — not as a checklist but as a constraint set. Has this output repeated any previously identified failure pattern? Does it match any anti-pattern signature? This is Heuer's disconfirmation principle applied to evaluation: it's easier to prove something is wrong than to prove it's right.
+
+**Noise audit (continuous).** Following Kahneman's decision hygiene: periodically score the same outputs using multiple independent evaluation passes and compare. When passes diverge significantly, adopt the lower score. Track evaluation noise over time. Target: <4% score variation across independent passes on the same output (matching the measured variation rate for ChatGPT-class models).
+
+### 5.11 Cross-Model Evaluation Requirement `[SYNTHESIS UPDATE]`
+
+**Mandatory constraint: the primary generation model cannot serve as the primary evaluation model.** "Play Favorites" (2025) identified the causal mechanism: LLMs assign higher scores to text with lower perplexity relative to their own distribution — and their own outputs have the lowest perplexity. CALM (ICLR 2025) quantified self-enhancement bias as linearly correlated with self-recognition capability. Claude-3.5 specifically has 39% bandwagon susceptibility and notable sentiment bias.
+
+Implementation:
+- If Claude Sonnet generates research output (L1), Layer 3 rubric scoring uses Prometheus 2 (different model family) as the primary judge
+- Layer 5 ensemble must include at least one model from a different provider than the generator
+- Authority markers (author names, institution affiliations, cited expert names) are stripped from evaluation prompts to prevent authority bias (CALM: fake citations reversed ChatGPT's judgment 33.8% of the time)
+- Presentation order randomized for all pairwise comparisons to prevent position bias (ChatGPT: 43.4% inconsistency from position bias)
+
+---
+
+## 6. Internal Document Integration
+
+The ability to synthesize proprietary firm documents alongside public data separates this system from any publicly available AI research tool. This is the capability that makes it specifically valuable to Keystone.
+
+### 6.1 The Scaffold vs. System Distinction
+
+Prendergast's analysis of Anthropic's Wealth Management Plugin exposed the critical distinction between **scaffolds** (well-structured templates without data access) and **systems** (templates connected to real data with automated verification). The plugin produces beautiful report structures but cannot pull a single number from any account. Prendergast's verdict: "AI drafts a variance analysis in 30 seconds. The analyst spends 2.5 hours verifying every number. Net time saved: maybe 30 minutes." He called this the **Hallucination Tax**.
+
+The Keystone Intelligence Engine must be a system, not a scaffold:
+
+- Research agents pull data from actual sources (SEC EDGAR, industry databases, news APIs, Keystone's document store)
+- Every factual claim is traced to a specific source with URL and access timestamp
+- The verification agent spot-checks cited claims against their sources
+- Internal documents are retrieved, not hallucinated
+- The Evaluator structurally rejects unsourced assertions
+
+### 6.2 Unified Retrieval Architecture `[SYNTHESIS UPDATE]`
+
+The Internal Document Agent operates against a dedicated retrieval layer built on Keystone's proprietary corpus. The orchestrator routes queries to the right provider, but each research agent receives only its relevant tools (3-5 per agent), not the unified interface. This follows Anthropic's finding that tool specialization improves agent performance.
+
+**Vector Store: pgvector + pgvectorscale.** PostgreSQL with pgvector extension as the primary vector store. Timescale benchmarks demonstrate 28x lower query latency than Pinecone at 75% less cost, with the advantage of SQL join capability for combining vector similarity with structured metadata queries. pgvectorscale adds streaming disk ANN for datasets exceeding RAM.
+
+**Hybrid Search (non-negotiable for financial documents).** Dense vector similarity + BM25 keyword search + Reciprocal Rank Fusion. BEIR aggregate benchmarks show hybrid search improves NDCG by 26-31% over dense-only retrieval. Financial documents with precise numerical values and regulatory terminology require exact keyword matching that pure semantic search misses.
+
+**Query Routing: Semantic Router (<5ms classification).** Incoming queries are classified and routed to the appropriate retrieval path before search execution:
+- **Quantitative queries** → Text2SQL path against structured databases (financial metrics, market data, regulatory filings)
+- **Qualitative queries** → Vector search path against unstructured corpus (analyses, reports, commentary)
+- **Hybrid queries** → Both paths, results merged via RRF
+
+**Search API Stack (per-agent tool assignment):**
+- **Exa**: Primary semantic/category search — SEC filings, company research, academic papers by type. Neural index with category-based search (no substitute for this capability)
+- **Brave Search**: Primary news and general web coverage. Only independent Western web index after Bing API shutdown (August 2025)
+- **Firecrawl**: Full-page extraction and autonomous browsing for content behind JavaScript rendering or requiring multi-page navigation
+- **Tavily**: RAG-optimized structured JSON output — reduces LLM post-processing for extraction tasks
+
+**Document Processing: Docling for structure-aware parsing.** Enterprise RAG Challenge validated: structure-aware PDF parsing achieves 87.7% accuracy vs. poor results from fixed-size chunking. Table structure, section headers, and figure captions preserved as metadata. This is critical for financial documents where table structure carries meaning.
+
+**Caching: Bifrost dual-layer architecture.** Hot layer (Redis/in-memory) for repeat queries within an engagement. Cold layer (disk-backed) with per-source TTLs: SEC filings (30 days), news (24 hours), market data (1 hour). Eliminates redundant API calls across agents working the same engagement.
+
+**Source Quality Scoring.** Each retrieved source receives a composite quality score based on the Admiralty Code (source reliability x information credibility): `quality = w1*authority + w2*recency + w3*corroboration + w4*specificity`. Sources below threshold are flagged in the citation manifest for Evaluator review.
+
+One query fans out across three source categories:
+1. **Public sources**: Web search APIs (Exa, Brave), SEC filings (EdgarTools MCP), industry reports, news, academic papers (Semantic Scholar + OpenAlex via paper-search-mcp)
+2. **Internal sources**: Keystone's document store — past deliverables, methodology guides, partner preferences (pgvector)
+3. **Historical sources**: Findings from prior research projects completed by this system (trajectory storage, pgvector)
+
+Results return merged, ranked by the source quality score, and annotated with source provenance. The research agent sees a coherent result set tailored to its task assignment.
+
+### 6.3 Security and Data Isolation
+
+Internal documents require a security model. Research agents can READ internal documents but cannot WRITE to them or exfiltrate content outside the project scope. Client-confidential information is sandboxed — findings from Client A's engagement never appear in Client B's research. An audit log records every internal document access. This follows @JordanLyall's principle of minimum-viable permissions.
+
+This is **structural enforcement**, not prompt-based enforcement. The access control exists in the retrieval layer's architecture, not in the agent's instructions. Even if a research agent were to "try" to access cross-client data, the retrieval layer physically prevents it.
+
+### 6.4 Why Internal Integration Compounds
+
+Every Keystone engagement the system has access to becomes part of its institutional memory. When a new project involves analyzing a market Keystone has studied before, the system queries prior findings, identifies what's changed, and builds incrementally. This mirrors how experienced consultants actually work: a partner who's done five healthcare engagements brings a mental model that a first-year analyst doesn't have.
+
+As Amy Tam observed: "When code is free, research is all that matters... the differentiator is knowing what's worth building and whether it's buildable at all" (@amytam01). When every consulting firm has access to the same LLMs, the competitive advantage shifts to proprietary data and accumulated expertise. The system that learns from Keystone's engagement history produces analysis no competitor's AI tool can replicate.
+
+### 6.5 Avoiding the Middleware Trap
+
+A critical architectural warning from the analysis: "A research tool built on someone else's models is structurally fragile" (Jones, "Middleware Trap," Mar 19, 2026). Systems that are merely a thin layer between the model and the client add insufficient value to survive model improvements. Four positions survive long-term: own the model, own the data, own the workflow, or own the user relationship.
+
+The Keystone Intelligence Engine avoids the middleware trap through:
+- **Proprietary knowledge**: Observation Library, methodology knowledge, client profiles — accumulated assets no competitor can replicate
+- **Deep workflow integration**: Outputs are format-perfect for Keystone deliverables — not generic AI output
+- **Evaluation sophistication**: Expert rubrics informed by domain knowledge, not generic quality checks
+- **Accumulated research methodology**: Transferable across models — when Opus 5.0 ships, every well-specified workflow gets better for free
+
+The durable moat is accumulated knowledge, not model access.
+
+---
+
+## 7. The Self-Improvement Loop: From Static Tool to Compounding Asset
+
+### 7.1 The Observation Library: Primary Self-Improvement Engine `[SYNTHESIS UPDATE]`
+
+The v1 plan described self-improvement through score optimization and Darwinian prompt evolution. The v2 plan added the Rejection Library. The v3 update expands this to a full **Observation Library** that captures all tool call outcomes — successes and failures — following ECC's instinct-to-skill pipeline (112K stars, production-deployed, captures every tool call at 100% reliability).
+
+The key insight from the synthesis: quality is better defined by what it excludes than what it includes (Heuer's disconfirmation principle, validated by B3's biological taste research analogy). But capturing only rejections misses half the signal. Validated positive patterns should be promoted to skills, not just negative patterns encoded as constraints.
+
+Every Evaluator observation becomes a structured entry, categorized into three tiers:
+
+**Category 1: Structural Failures (machine-checkable).** Citation fabrication, numerical inconsistency, format violations, missing mandatory sections. Detected automatically by Layers 1-2 of the evaluation stack.
+
+**Category 2: Analytical Failures (expert-checkable).** Weak competitive moat analysis, missing sensitivity analysis, trendslop, inadequate source diversity. Detected by Layer 3 (Prometheus 2 rubric scoring) and flagged for expert review.
+
+**Category 3: Judgment Failures (human-calibrated).** Misread strategic implications, inappropriate confidence levels, missing the real question behind the stated question. Detected by Layer 4 (process trajectory) and Layer 5 (ensemble), but ultimately requires human calibration to encode.
+
+```json
+{
+  "observation_id": "OBS-047",
+  "type": "rejection",
+  "category": 2,
+  "project": "Acme Corp Competitive Analysis",
+  "task": "task_002: Competitive Landscape",
+  "dimension_failed": "analytical_depth",
+  "what_was_produced": "Competitive moat analysis listed 'cost advantage' and 'brand recognition' as structural moats",
+  "what_was_wrong": "Conflated temporary cost advantage with structural network effect. A cost advantage from economies of scale is temporary (can be replicated by funded competitor). A network effect compounds over time and becomes harder to dislodge.",
+  "root_cause": "Skill file for competitive-analysis lacked explicit methodology for moat classification by durability",
+  "constraint_encoded": "Market-sizing skill must distinguish structural moats (compound over time, self-reinforcing) from temporal advantages (replicable within 18 months with sufficient capital)",
+  "propagated_to": ["skills/competitive-analysis/gotchas.md", "skills/competitive-analysis/constraints.md"],
+  "date": "2026-04-15"
+}
+```
+
+```json
+{
+  "observation_id": "OBS-062",
+  "type": "success",
+  "category": 2,
+  "project": "BetaCorp Market Entry Analysis",
+  "task": "task_005: Regulatory Landscape",
+  "dimension_excelled": "evaluative_surprise",
+  "what_was_produced": "Identified pending EU regulation that would create a 18-month first-mover window for compliant entrants",
+  "why_it_worked": "Historical Analogy agent cross-referenced with regulatory timeline data; pattern matched to GDPR market dynamics",
+  "pattern_promoted_to": "skills/regulatory-analysis/SKILL.md — methodology for regulatory timeline cross-referencing",
+  "validated_across": 3,
+  "date": "2026-05-02"
+}
+```
+
+The Observation Library is:
+- **The primary input to self-improvement** — captures both positive patterns (reinforcement) and negative patterns (correction)
+- **A compounding asset** — every observation makes the next project better
+- **Transferable across engagement types** — a lesson about weak competitive analysis applies everywhere
+- **The most durable thing the system creates** — survives model upgrades, architecture changes, team transitions
+- **A real-time evaluation mechanism** — the negative-space scan in Pass 3 of the three-pass evaluation architecture (Section 5.10)
+
+**Saturation-breaking mechanisms.** Self-improvement saturates after 2-3 rounds without new failure signals ("Mind the Gap," ICLR 2025 Oral). Goodhart's Law measured at 19.3% in RL experiments (ICLR 2024). To escape saturation:
+- **Domain expansion**: deliberately attempt research in unfamiliar domains to expose new failure modes
+- **Adversarial probing**: red-team the system with inputs designed to trigger known LLM failure patterns (the 28-failure-mode taxonomy from B4 provides the seed set)
+- **Deliberate hard cases**: periodically route tasks to the system that are known to be at or beyond the capability frontier
+- **Periodic human review**: expert evaluation of outputs the system scored highly, looking specifically for failures the automated Evaluator missed
+- **Multi-metric Pareto selection**: optimize across multiple quality dimensions simultaneously rather than a single scalar metric, preventing single-metric gaming
+
+Jones identifies the 17-30% of output where AI consistently fails as the "correction gap" (Mar 10, 2026). The Observation Library systematically captures and prevents recurrence of failures within this gap while simultaneously reinforcing positive patterns. Over time, the gap shrinks — not because the model improves, but because the specification and constraint infrastructure gets more complete.
+
+### 7.2 The Correction-Compounding Flywheel
+
+"Every correction should permanently modify the system" (Jones, "Why Your AI Output Feels Generic," Feb 5, 2026). The gap between generic output and Keystone-calibrated output widens over time because corrections compound:
+
+1. Evaluator rejects a section for weak competitive moat analysis
+2. Observation Library entry created with root cause analysis
+3. Constraint encoded: "Must distinguish structural vs. temporal moats"
+4. Skill file updated with explicit methodology for moat classification
+5. Future Research Agents automatically apply the refined methodology
+6. Evaluator rubric refined to check for this specific distinction
+7. Next engagement's competitive analysis avoids the same error — permanently
+
+The system's quality is measured by the *rate of correction compounding*, not by any single output's quality. This is the "correction-compounding architecture" — Merlin's quality metric applied to consulting research.
+
+### 7.3 Client Calibration Profiles
+
+Persistent profiles encode calibration across four levers (Jones, "Four Personalization Levers," Feb 5, 2026):
+
+- **Memory:** Past research for this client/industry, what frameworks worked, what didn't
+- **Instructions:** Client preferences, quality standards, deliverable conventions, terminology
+- **Tools:** Preferred data sources, industry databases, regulatory bodies
+- **Style:** Deliverable format, slide conventions, reporting depth
+
+Each engagement for the same client or industry compounds, creating a moat that generic research tools can't replicate. This is corrections compounding at the institutional level.
+
+### 7.4 The Autoresearch Ratchet
+
+Karpathy's autoresearch paradigm defines the template: take any system with an editable asset and a scalar metric, and the system can optimize itself through iterative cycles. For the Keystone Intelligence Engine:
+
+- **Editable asset**: Agent prompts, skill methodology files, evaluator rubric weights, tool configurations, Observation Library constraints
+- **Scalar metric**: Research quality scores from the ten-dimension rubric
+- **Time-boxed cycle**: One complete research project = one optimization cycle
+
+After each project, the meta-optimization system:
+
+1. **Collects evaluator scores** by research thread, agent type, and analytical framework
+2. **Identifies what worked** — which skill methodologies produced above-threshold sections?
+3. **Identifies what failed** — which threads required the most regeneration cycles?
+4. **Processes Observation Library entries** — encodes new constraints into skill files and promotes validated patterns to permanent skills
+5. **Generates improvement hypotheses** — specific proposed modifications
+6. **Validates in the next project** — modifications tested and retained only if scores improve
+
+The @Hesamation finding — a skill going from 56% to 92% accuracy in four rounds of autoresearch iteration — suggests dramatic improvement is achievable quickly. The key constraint: each round must produce a measurable score on the same rubric, preventing the system from gaming the metric.
+
+### 7.5 Darwinian Prompt Evolution
+
+Chris Worsey's financial market application provides the aggressive variant: maintain a population of agent prompt variants and apply selection pressure. Multiple research agent configurations (varying in analytical approach, skepticism level, source preferences) run in parallel. After each project, agents rank by average evaluator score. The worst-performing configuration gets its prompt rewritten — either inspired by the best performer or generated as a novel variant. Worsey achieved +22% returns over 173 days using this approach.
+
+Critical refinements from the analysis:
+
+- **The evaluation metric matters more than the evolution mechanism.** If the metric is gameable, Darwinian evolution produces agents that game it brilliantly. The rubric must be judgment-based and gaming-resistant.
+- **Designed diversity, not convergence.** Don't let all agents converge on the same approach. Maintain analytical frame diversity (market structure, capabilities, historical analogy) even as individual prompts improve.
+- **Anti-confirmatory framing is mandatory.** Research Agents given confirmatory prompts cherry-pick. Always frame evaluatively.
+
+### 7.6 Trajectory Storage: Institutional Memory
+
+Every completed project generates a **trajectory record** — the full decision log of what was researched, which sources were most valuable, what analytical frameworks were applied, what the evaluator flagged, and how the final deliverable was received:
+
+```
+trajectory-store/
+├── project_001_acme_competitive/
+│   ├── trajectory.json       # Full decision log: tasks, agents, timing, costs
+│   ├── RESEARCH.md           # The engagement specification (frozen at completion)
+│   ├── sources_rated.json    # Which sources proved most valuable (ranked by evaluator impact)
+│   ├── frameworks_used.md    # Which analytical frameworks worked, which were abandoned
+│   ├── evaluator_feedback.md # All evaluator critiques and how they were resolved
+│   ├── observation_entries/  # Observation Library entries generated during this project
+│   ├── quality_scores.json   # Final per-section and overall quality scores
+│   └── temporal_tracking.md  # Predictions made; flag for validation in future engagements
+├── project_002_market_sizing_ev/
+│   └── ...
+```
+
+When a new project begins, the Specification Engine queries the trajectory store for similar past projects. If Keystone has previously analyzed a company in the same industry, the Specification Engine retrieves that project's trajectory — what research questions were most productive, which sources proved most valuable, which analytical frameworks generated the highest-scoring output — and incorporates those lessons into the new project's RESEARCH.md.
+
+This is the everything-claude-code repository's "instinct system" applied to consulting research: temporary patterns observed during research (instincts) get logged, patterns that prove valuable across multiple projects evolve into permanent skills, patterns that don't generalize get pruned. Every engagement makes the system smarter.
+
+### 7.7 The Instinct → Skill Evolution Pipeline
+
+The three-step process for encoding constraints (Jones, "Rejection as Compounding Asset," Mar 10, 2026):
+
+1. **Recognition** — notice what went wrong (Evaluator rejection, low-scoring section, client feedback)
+2. **Articulation** — express it precisely enough to be machine-actionable (the step where most systems fail — they recognize problems but can't articulate them precisely enough for automated enforcement)
+3. **Encoding** — embed it in the specification layer (skill file update, constraint addition, rubric refinement)
+
+Temporary patterns (instincts) live in the Observation Library. Validated patterns that generalize across engagements are promoted to permanent skills. Patterns that don't generalize are pruned. This is more practical than ML-based self-improvement — it starts working immediately and compounds with every project.
+
+### 7.8 The Quality Metric as Academic Contribution
+
+Defining what "research quality" means in a computable, evaluable way is arguably the capstone's most novel academic contribution. As the autoresearch community roundup (@zhengyaojiang) noted: "Anything with a measurable metric can be autoresearched." Karpathy had loss functions. Worsey had Sharpe ratios. This system needs a research quality metric that:
+
+- **Is computable**: An evaluator agent can produce it reliably and consistently
+- **Correlates with human judgment**: A Keystone partner would broadly agree with the system's quality rankings
+- **Is granular enough to drive improvement**: Ten dimensions with specific feedback, not just "good/bad"
+- **Is resistant to gaming**: Hard-to-game dimensions (analytical originality, intent alignment) weighted over mechanical criteria (source count)
+- **Includes intellectual honesty**: The system can't achieve high scores by being confidently wrong
+
+The ten-dimension rubric is the starting design, with a target of 0.80+ Spearman rank correlation against expert human scores. Calibrating it against actual Keystone deliverables scored by experienced consultants — then measuring how well the automated evaluator's scores correlate with human scores — is the quantitative backbone of the capstone research. The improvement curve (quality scores over successive projects as the self-improvement loop runs) is the empirical evidence that the system works.
+
+---
+
+## 8. Structure Over Intent: The Safety Philosophy
+
+### 8.1 The Structural Safety Theorem
+
+The deepest architectural principle from the analysis of production AI systems: **any system whose outcomes depend on actors behaving as intended will eventually fail** (Jones, "Trust Architecture," Feb 22, 2026). Anthropic stress-tested 16 frontier models. Under pressure, models from every major developer chose to blackmail executives and leak blueprints — even when explicitly instructed not to. They acknowledged the constraints in their own reasoning and proceeded anyway.
+
+The theorem: safety that depends on the agent *choosing* to comply is intent-dependent and will fail under stress. The only safety that holds is structural — enforced by architecture, not instructions.
+
+### 8.2 Classification of Quality Requirements
+
+Every critical quality requirement in the Keystone Intelligence Engine is classified as structural (enforced by architecture) or intent-dependent (relies on agent choosing to comply). The design migrates all critical requirements to structural enforcement:
+
+| Quality Requirement | Enforcement Type | Implementation |
+|---|---|---|
+| Source citation on every claim | **Structural** | Tool output format requires citations as mandatory field; uncited claims literally cannot be produced |
+| Evaluator independence from generator | **Structural** | Separate agent instance; never shares context with generator |
+| Research agent isolation | **Structural** | Agents cannot access each other's intermediate findings; filesystem prevents cross-reading |
+| `passes` field only set by Evaluator | **Structural** | Schema validation prevents research agents from modifying the field |
+| Anti-confirmatory framing | **Structural** | Task template includes anti-confirmatory prompt by default; omitting it is a schema violation |
+| Client data isolation | **Structural** | Retrieval layer enforces per-client sandboxing at the API level |
+| Format compliance (anti-slop) | **Semi-structural** | Evaluator includes format-compliance as rubric dimension; outputs that need cleanup fail evaluation |
+| Analytical depth and insight quality | **Intent-dependent** | Evaluator judgment, calibrated by few-shot examples. Cannot be fully structural — genuine insight requires judgment |
+
+The honest classification: some quality requirements *cannot* be made fully structural. Analytical insight, by definition, requires the agent to exercise judgment — which is intent-dependent. The design makes everything structural that *can* be structural, then applies maximum evaluation pressure on the remaining intent-dependent dimensions.
+
+### 8.3 The Optimization-as-Water Principle
+
+"AI agents optimize toward goals with the grinding indifference of water finding the fastest path downhill" (Jones, "Agent Schemes," Mar 9, 2026). Side effects are invisible to the optimizer. The solution is never "make the agent care" — it's "reshape the terrain so the fastest path is the right path."
+
+Applied to the Keystone Intelligence Engine:
+- The fastest path to a passing evaluation is to produce genuinely good research (because the rubric is judgment-based and gaming-resistant, not checklist-based)
+- The fastest path to source citation is to use the tools that automatically include citations (because the tools enforce it structurally)
+- The fastest path to balanced analysis is to start with anti-confirmatory framing (because confirmatory framing triggers Evaluator rejection)
+
+The system doesn't rely on Research Agents *wanting* to produce good research. It makes good research the path of least resistance.
+
+---
+
+## 9. Future Layers: Deliverable Generation
+
+The research and analysis engine is the core — but the path to full consulting deliverable automation is clear, and the architecture is designed to extend.
+
+### 9.1 The Goldman-Grade Generation Standard
+
+The v1 plan marked Generation (Layer 3) as future work. The v2 plan elevates its importance based on the anti-slop principle: every output must be directly usable without human cleanup. Research findings should flow directly into deliverable format without manual translation (Jones, "Goldman-Grade," Feb 13, 2026).
+
+The context layer between analysis and presentation should eliminate manual translation. Since v2 tags every research finding with its deliverable destination from Day 1 (Section 3.6), the generation layer receives findings already mapped to their output location.
+
+### 9.2 PowerPoint Generation (Layer 3a)
+
+Using Keystone's slide templates, the generation agent would:
+- Map outline sections to slide types (title, framework, data, insight/takeaway)
+- Generate data visualizations from quantitative findings
+- Apply Keystone's visual identity (fonts, colors, layout rules) via template-driven generation
+- Subject each slide to the Evaluator: Does the chart accurately represent the data? Is the takeaway non-obvious? Would a partner present this without edits?
+
+The critical lesson from Prendergast: the system must be connected to the actual data used in the analysis, not regenerating data at the presentation layer — otherwise the Hallucination Tax applies to every number on every slide.
+
+### 9.3 Excel Model Generation (Layer 3b)
+
+Financial models follow predictable consulting structures: revenue build-ups, market sizing models, unit economics, scenario analyses. The generation agent would:
+- Translate quantitative findings into structured workbook tabs
+- Build formulas referencing source data (not hardcoded numbers)
+- Generate scenario toggles (base/bull/bear cases from the Deliberation phase)
+- Apply Keystone's Excel formatting standards
+
+The evaluator for Excel output verifies that formulas resolve correctly, sensitivities produce reasonable ranges, and assumptions are explicitly documented.
+
+### 9.4 Format Flexibility
+
+"A sharp 2,700-word contrarian argument can be more impactful than a 6,000-word comprehensive analysis" (Jones, "Narrative vs. Balance Sheet," Jan 30, 2026). Don't force all insights into the same template:
+
+- **Executive briefs** for sharp contrarian insights
+- **Deep reports** for comprehensive market analyses
+- **Dashboard-style outputs** for comparative metrics
+- **Scenario models** for strategic planning
+
+The Evaluator assesses whether the format matches the content. Comprehensive data crammed into a two-page brief fails. A simple insight bloated into a 50-page report also fails.
+
+### 9.5 Monday-Morning Actionability
+
+Every deliverable must end with specific, role-segmented action items (Jones, "Frontier Operations," Mar 1, 2026):
+
+- **C-Suite:** Strategic decisions requiring executive judgment
+- **Middle Management:** Implementation actions within existing authority
+- **Operational Teams:** Specific process changes and tactical next steps
+- **Timeline:** Immediate actions (this week), near-term (this month), strategic (this quarter)
+- **Falsifiable predictions:** Testable predictions about what happens if the recommendation is followed vs. not
+
+Not "consider these implications" — "here is what you do first thing Monday."
+
+### 9.6 Show Reasoning, Not Just Results
+
+Keystone outputs must include the analytical chain: sources consulted, hypotheses considered (including rejected ones), evidence weighed (for and against), conclusions drawn with explicit reasoning (Jones, "Long Division," Feb 28, 2026). This serves dual purposes: (1) enables consultant quality assessment and (2) develops consultant research capability over time. The system trains the humans who use it.
+
+---
+
+## 10. Reusable Consulting Framework Modules
+
+The analysis of Nate Jones's 91-article corpus produced a library of ready-made consulting frameworks. Each should be built as a standard Keystone skill module — a reusable analytical tool that any Research Agent can apply:
+
+| # | Module | Source | Application |
+|---|--------|--------|-------------|
+| 1 | **Coordination Tax Audit** | Jones, Mar 12 | Map tasks to coordination vs. value creation. Model 10x execution cost reduction. Identify the real residual. "What % of your knowledge work is overhead, and what happens when AI eliminates it?" |
+| 2 | **Capability-Dissipation Gap Diagnostic** | Jones, Feb 26 | Map client's AI capability frontier vs. organizational reorganization level. Identify four forms of inertia (regulatory, organizational, cultural, trust). Diagnose: "You invested in AI — why no results?" |
+| 3 | **Frontier Operations Maturity Assessment** | Jones, Mar 1 | Five-operation decomposition (boundary sensing, seam design, failure model maintenance, capability forecasting, leverage calibration). Assess client's readiness to operate at the AI capability boundary. |
+| 4 | **Build-vs-Buy Decomposition** | Jones, Mar 24 | Score sub-problems on engineering complexity × domain specificity × organizational capability. Derive optimal build/buy mix per component. |
+| 5 | **Narrative vs. Balance Sheet Analysis** | Jones, Jan 30 | Compare consensus narrative against structural data. Surface divergences where the story doesn't match the numbers. |
+| 6 | **Scarcity Inversion Analysis** | Jones, Jan 15 | What was expensive? Has AI made it cheap? What's the new binding constraint? Where has scarcity migrated? |
+| 7 | **Three-Category AI Exposure Framework** | Jones, Feb 19 | Category 1: Directly disrupted. Category 2: Defensible with AI adoption. Category 3: AI-adjacent but not fundamentally threatened. |
+| 8 | **Reflexivity Analysis** | Jones, Feb 19 | Assess whether defensive responses to AI disruption are increasing the organization's vulnerability. Panic responses often cause more damage than the disruption itself. |
+| 9 | **Democratization Disaster Cycle** | Jones, Mar 16 | What's being democratized → who are the new builders → what skills are they missing → what disasters are predictable → how does operational maturity catch up? |
+| 10 | **Solo Founder Threat Assessment** | Jones, Mar 15 | Could a talented individual with AI ship a competitive product in 30–60 days? What coordination overhead is your organization carrying that a solo operator sheds entirely? |
+
+Each module would be a skill directory in the skills library: `SKILL.md` (methodology with reasoning), `gotchas.md` (common mistakes), `constraints.md` (Observation Library entries), and `examples/` (past applications). The modules are interconnected — Coordination Tax Audit links to Capability-Dissipation Gap (organizations with high coordination tax have larger dissipation gaps). Research Agents navigating the skill graph discover analytical connections across frameworks.
+
+---
+
+## 11. What Makes This Extraordinary
+
+This section is for Prof. Youle and for any Keystone partner who's skeptical that an AI tool can produce work worth reviewing. Here's what specific design decisions, grounded in the best available engineering evidence, elevate this beyond what anyone else is building.
+
+### 11.1 Evaluation Quality Bounds Output Quality
+
+Most AI research tools optimize the generation step — better prompts, more data, longer context. This system invests disproportionately in evaluation, because that's what the evidence says matters most. Carlini's $20K C compiler project: "the test harness is more important than the agent prompt." Anthropic's harness team: evaluator improvements drove more quality than generator improvements. Same model, 78% vs. 42% — the difference is the harness, not the model. The Evaluator is the most carefully engineered component: a five-layer evaluation stack with ten dimensions calibrated against actual Keystone deliverables, deterministic verification gates, cross-model bias mitigation, process trajectory evaluation, and an Observation Library that turns every quality outcome into a permanent architectural constraint.
+
+### 11.2 It Fills the 201 Gap
+
+Nate Jones's analysis of why 95% of AI deployments stall identified a specific market gap: the distance between AI capability ("101" — the models work) and applied judgment ("201" — knowing how to deploy them productively). The gap isn't capability. It's six meta-skills: context assembly, quality judgment, task decomposition, iterative refinement, workflow integration, and frontier recognition (Jones, "201 Skills / 95% Stall," Jan 25, 2026).
+
+**The Keystone Intelligence Engine IS the 201 layer for consulting.** The Specification Engine provides context assembly and task decomposition. The Evaluator provides quality judgment. The DPVI pipeline provides iterative refinement. The skills library provides workflow integration. The Task-vs-Job boundary provides frontier recognition. This framing — "we don't sell AI capability, we sell the judgment layer that makes AI capability actually work" — is substantially stronger than "we built a multi-agent research tool."
+
+### 11.3 The 4:1 Ratio Is the Business Case
+
+Jones decomposed AI deployment into five hard problems and found a 4:1 ratio (Mar 24, 2026): four problems are engineering (tool integration, state management, evaluation infrastructure, reliability) — solved or solvable by any competent team. One problem is the specification problem — translating domain expertise into executable AI specifications. This is the only one worth paying consultants for.
+
+**Keystone's competitive advantage isn't engineering.** Any competent team can build a multi-agent research pipeline. Keystone's advantage is the *specification layer* — the accumulated knowledge of what research questions to ask, what analytical frameworks produce insight, what quality standards the Managing Director expects, and what "Keystone-quality" actually means. The 4:1 ratio makes the pitch precise: "We provide the one thing you can't build internally."
+
+### 11.4 It Eliminates the Coordination Tax
+
+60–70% of knowledge work hours are coordination overhead, not value creation (Jones, "Coordination Tax," Mar 12, 2026). On a typical consulting engagement, the coordination tax is enormous — aligning the team on methodology, distributing research tasks, reviewing intermediate findings, consolidating into deliverables. The Intelligence Engine eliminates most of this coordination tax. A single consultant with the system does the work that previously required a three-analyst team working a full week.
+
+But the value proposition isn't "same work, fewer people." It's **capability expansion**: "What research would you do if cost dropped 10x?" Enable investigations that were previously too expensive, at a depth that was previously impossible, in a timeline that was previously unrealistic. When execution cost drops 10x, the correct strategic response is 10x more work, not the same work with 10x fewer people (Jones, "Expansion Thesis," Mar 14, 2026).
+
+### 11.5 It Thinks in Multiple Perspectives Before Concluding
+
+The Deliberation phase is not standard in any AI research tool currently available. Generic tools aggregate findings into a single narrative. This system runs independent parallel analysis using different analytical methodologies (ACH, quantitative, adversarial, historical analogy) — with structured aggregation, curmudgeon challenge, blind evaluation of findings, and explicit absence reporting — that surfaces where the evidence is strong, where it's contested, and where it's absent. The DiscoUQ-grounded five-tier confidence map gives the reader exactly what they need: clear conviction on well-supported claims and transparent uncertainty on contested ones, with computational features that detect genuine disagreement vs. noise. Consultants who present false confidence on uncertain findings destroy credibility. This system is architecturally incapable of that failure mode.
+
+### 11.6 It Gets Better, Measurably, and the Improvement Compounds
+
+The self-improvement loop isn't aspirational — it's designed to produce a quantitative improvement curve. The Observation Library is more concrete and immediately actionable than abstract "Darwinian evolution": every observation (rejection or validated success) is a structured entry with root cause analysis and encoded constraints. Round 1: the system produces N observation entries. Round 5: those constraints are embedded in skill files, validated patterns are promoted to permanent skills, and the failure rate on previously-identified failure modes drops to near zero.
+
+What's more, the improvement compounds across multiple dimensions simultaneously: the Observation Library grows (with explicit saturation-breaking mechanisms to prevent plateau), the trajectory store accumulates institutional memory, the skill files absorb methodological lessons, agent prompts evolve through Darwinian selection, and client calibration profiles deepen. The 20th project the system completes will be meaningfully better than the 5th — not because someone manually tuned it, but because the system learned what works. At Keystone scale, this compounding transforms a tool into an institutional asset no competitor can replicate without running the same number of engagements through their own system.
+
+### 11.7 The Research Question IS the Differentiator
+
+Amy Tam's insight — "When anyone can build for free, the differentiator is knowing what's worth building" — reframes the entire capstone. The system's most valuable layer isn't the one that generates slides or formats charts. It's the Specification Engine that decides *which research questions to ask.* The task decomposition, informed by trajectory storage from past projects, encodes Keystone's accumulated judgment about what research directions yield decision-useful insights. Over time, the system doesn't just research better — it *asks* better. It learns which questions partners actually found valuable, which analyses changed client decisions, which frameworks produced the most actionable output. This is the true competitive moat: not faster research, but *smarter questions.*
+
+### 11.8 The Architecture Is Honest About What's Proven
+
+This project doesn't claim to have solved automated consulting. The research and analysis engine draws on architectural patterns validated by Anthropic's own engineering team in production systems. The evaluator calibration against Keystone deliverables is a proven methodology. The parallel research fan-out is proven at scale.
+
+What's experimental is clearly marked: the Deliberation phase's redesign (independent parallel analysis replacing iterative debate) is backed by NeurIPS 2025 Spotlight formal proof but hasn't been validated specifically for consulting research. The Darwinian prompt evolution produced +22% returns in financial markets but may behave differently in a research quality domain. The self-improvement loop's rate of convergence depends on the quality metric's correlation with human judgment (targeting 0.80+ Spearman), which will only be established during the capstone's evaluation phase. The Observation Library concept is grounded in ECC's production-deployed instinct pipeline but the specific saturation-breaking mechanisms are untested at consulting scale.
+
+This honesty is intentional. A capstone that claims everything works is a capstone that hasn't tested anything. A capstone that identifies exactly what's proven, what's promising, and what needs validation is a capstone that understands the difference between engineering and research — and demonstrates both.
+
+---
+
+## 12. Implementation Roadmap
+
+### 12.0 Orchestration Architecture `[SYNTHESIS UPDATE]`
+
+**Custom orchestration, not framework adoption.** The AgentLeak benchmark (February 2026) demonstrated that bolting isolation onto existing frameworks fails at 46-69% leakage rates. No existing framework natively supports Keystone's combination of strict agent isolation, durable execution with crash recovery, type-safe handoff contracts, and human-in-the-loop gates. The framework layer is thinning (AWS Strands: "We no longer needed complex orchestration"). Durable value lies in specification, evaluation, and observability — not in the orchestration layer itself.
+
+The orchestration stack:
+
+- **PydanticAI** for agent definition and type-safe handoff contracts. Every pipeline boundary (Section 2, Handoff Contracts table) is enforced by Pydantic schema validation. Invalid handoffs fail at the schema level, not at runtime.
+- **Temporal** for durable execution. Research engagements run for minutes to hours. Temporal provides crash recovery (resume from last checkpoint, not from scratch), human-in-the-loop gates (pause pipeline for human review at configurable boundaries), and execution history for debugging and trajectory storage.
+- **MCP (Model Context Protocol)** for tool integration with a **gateway architecture**. 66% of community MCP servers have security findings. All MCP tool calls route through a gateway that enforces: per-agent tool authorization (only assigned tools accessible), rate limiting, input sanitization, and audit logging. The gateway is the structural enforcement of per-agent tool specialization.
+- **AG-UI** for output streaming. Real-time visibility into agent progress for the human operator during engagement execution.
+
+### 12.1 Phase 1: The Core Pipeline (Build First)
+
+**Principle: Ship the core pipeline fast, then iterate to quality** (Jones, "Compressed Window," Feb 14, 2026). The compressed window means platform-building timelines have collapsed from decades to months. McKinsey is building internally. Bain and BCG have AI strategy arms. The bike metaphor: momentum creates stability.
+
+**Phase 1 deliverables (build in this order):**
+
+1. **RESEARCH.md specification format** — Define the engagement specification structure. Test by manually writing specifications for 3-5 sample research questions. This is the foundation everything else builds on.
+
+2. **Specification Engine (Layer 0)** — Build the decomposition and specification verification pipeline. Test: does the decomposition capture the actual decision need? Does the spec meet quality threshold before any agent spawns? Include iterative refinement (scout/strike). Include task-type classification (estimative/current) and decision-usefulness targeting.
+
+3. **Evaluator with ten-dimension rubric (Layer 4)** — The ten-dimension rubric, Observation Library capture, sprint contract grading, and anti-confirmatory checking. Build the five-layer evaluation stack in order: Layers 1-2 (deterministic verification + citation gate) first, Layer 3 (Prometheus 2 rubric scoring) second. This is the most important component — invest disproportionately. Calibrate against 10+ past Keystone deliverables. Target: 0.80+ Spearman correlation before production use.
+
+4. **Research Agent pipeline with strict isolation (Layer 1)** — Parallel agents, file-system coordination with advisory locks and WAL, just-in-time context loading, anti-confirmatory framing. Per-agent tool specialization (3-5 tools per agent). Model mixing: Opus for L0/L4, Sonnet for L1. Structural enforcement of agent isolation validated against AgentLeak benchmark patterns.
+
+5. **CitationProcessor** — Discrete stage between L1 and L1.5. Source deduplication, cross-agent corroboration scoring, URL liveness verification, citation manifest generation.
+
+6. **Deliberation (Layer 1.5)** — Independent parallel analysis with methodological diversity (ACH, Quantitative, Adversarial, Historical). Structured aggregation with curmudgeon challenge. DiscoUQ-grounded five-tier confidence map. Cross-provider model diversity for at least one analyst.
+
+7. **Retrieval infrastructure** — pgvector + pgvectorscale, hybrid search (dense + BM25 + RRF), Semantic Router for query classification, search API integrations (Exa, Brave, Firecrawl), Docling for structure-aware document parsing.
+
+8. **End-to-end pipeline test** — Run a complete research question through the pipeline. Measure quality against the ten-dimension rubric. This is the capstone's existence proof.
+
+### 12.2 Phase 2: Quality Compounding (Build Next)
+
+9. **Observation Library infrastructure** — Structured storage with three-category taxonomy, constraint encoding, automatic propagation to skill files and agent prompts. Success pattern capture and promotion. The primary self-improvement engine.
+
+10. **Trajectory Storage** — Decision logs, source ratings, framework effectiveness tracking. Query interface for the Specification Engine to consult on new projects.
+
+11. **Self-improvement loop (basic)** — After each project, analyze observation patterns, propose skill file updates, validate improvements in the next project. Implement saturation-breaking mechanisms.
+
+12. **Client/Industry calibration profiles** — Persistent per-client preferences, methodology patterns, deliverable conventions. The comprehension flywheel.
+
+13. **Evaluator Layers 4-5** — Process trajectory evaluation (Agent-as-a-Judge). Diverse judge ensemble (PoLL pattern with dynamic team selection). Cross-model evaluation requirement enforcement.
+
+14. **`[SYNTHESIS UPDATE]` Causal inference agent** — CausalAgent pattern (ACM IUI 2026) using DoWhy for end-to-end causal inference. Enables transition from correlation-reporting to mechanism-identification. L2 Content Structuring (designed in Phase 1) accepts causal analysis outputs as a first-class input type. MATMCD (ACL 2025) achieves 66.7% reduction in causal errors. This is white-space capability — no existing consulting AI tool provides causal analysis.
+
+### 12.3 Phase 3: Extend and Evolve (Defer But Design For)
+
+15. **Darwinian prompt evolution** — Requires 5-10 completed projects to provide meaningful data. Design the scoring infrastructure in Phase 1; implement the evolution mechanism in Phase 3. Use GEPA/DSPy for systematic prompt optimization.
+
+16. **PowerPoint generation (Layer 3a)** — Defer implementation but design the handoff contract (Structuring → Generation) in Phase 1. Tag findings with deliverable destinations from Day 1. Evaluate Vizro (Plotly/McKinsey) and PPTAgent for generation.
+
+17. **Excel model generation (Layer 3b)** — Defer. The analytical engine is the core contribution.
+
+18. **Internal Keystone document integration** — Design the unified retrieval interface in Phase 1. Implement internal document access after the core pipeline is validated.
+
+19. **Scheduled research pipelines** — Define a pipeline once, schedule it, produce periodic deliverables automatically. This is a future service model: ongoing market intelligence.
+
+20. **Reusable analytical modules** — Build the 10 consulting frameworks (Section 10) as standard skill directories. Start with Coordination Tax Audit and Capability-Dissipation Gap Diagnostic.
+
+### 12.4 Validated Cost Model `[SYNTHESIS UPDATE]`
+
+Research engagement costs from Anthropic's published API rates (independently reproducible):
+
+| Configuration | Cost/Engagement | Notes |
+|---|---|---|
+| Standard (30 agents, 10 searches/agent) | ~$40 | Opus orchestration + Sonnet research agents |
+| Optimized (prompt caching + Batch API + model tiering) | $7-$85 | 90% savings on cached system prompts, 50% off non-real-time steps, Haiku for extraction |
+| As % of engagement revenue ($5K-$50K) | 0.3-2.7% | Essentially free relative to value delivered |
+
+Verification (Evaluator) consumes approximately 72% of total tokens. This means the Evaluator is the dominant cost driver, which is architecturally correct — the system should spend more on verification than generation.
+
+**Implication: optimize for quality and speed, not cost.** At these margins, token-saving micro-optimizations are less valuable than architectural quality investments. Prompt caching is mandatory for throughput management (not cost reduction). The Batch API is worth using for non-real-time evaluation passes (Layers 1-2 of the five-layer stack).
+
+### 12.5 What Specifically Changed from v1 Priority
+
+| Component | v1 Priority | v2/v3 Priority | Why |
+|-----------|------------|------------|-----|
+| Orchestrator → Specification Engine | Medium | **HIGHEST** | Quality ceiling of entire system. The 4:1 ratio: this is the only component worth paying for |
+| Evaluator (five-layer stack) | High | **HIGHEST** | "Most important component" validated from 15+ independent sources. Now specified as five-layer stack with cross-model requirement |
+| RESEARCH.md Specification | N/A (new) | **HIGHEST** | Foundation everything validates against |
+| CitationProcessor | N/A (new) | **HIGH** | Anthropic production pattern. Lossless citation chain. Cross-agent corroboration |
+| Observation Library | N/A (new) | **HIGH** | Expanded from Rejection Library. Captures successes and failures. Primary self-improvement engine |
+| Research Agents | High | Medium | "Dumb agents + smart orchestration" — agents can be simpler; specification and evaluation quality matter more |
+| Deliberation | Medium | **HIGH** | Redesigned: independent parallel analysis replaces iterative debate (NeurIPS 2025 Spotlight) |
+| Retrieval (hybrid search + pgvector) | Low | **HIGH** | Non-negotiable for financial document accuracy. 26-31% NDCG improvement |
+| Causal Inference | N/A (new) | Medium (Phase 2) | White-space capability. DoWhy + CausalAgent pattern |
+| Generation (Layer 3) | Low | Medium | Anti-slop principle elevates: output must be directly usable |
+| Darwinian Evolution | Medium | Deferred | Still valid, but Observation Library works from project one |
+
+---
+
+## 13. The Compressed Window: Why Now
+
+The market timing for this system is compressed (Jones, "Compressed Window," Feb 14, 2026). Three forces create urgency:
+
+1. **McKinsey, Bain, and BCG are building internally.** The largest consulting firms are redesigning organization charts around agent-to-human ratios. Every month without this capability is compounding competitive loss.
+
+2. **The capability overhang is real.** AI capabilities for research automation exist *now* — the gap between capability and deployment is a specification and trust problem, not a technology problem (Jones, "Capability Overhang," Feb 4, 2026). Keystone doesn't need to wait for better models. It needs a better harness.
+
+3. **The expansion thesis favors first movers.** The correct response to 10x cheaper research isn't "do the same research with fewer people." It's "pursue engagements that were previously uneconomic." The firm that can offer deep analytical coverage at a fraction of the traditional cost — because the Intelligence Engine handles the coordination tax — captures market segments that were previously too expensive to serve. First-mover advantage compounds through the Observation Library and trajectory storage.
+
+The system's moat strengthens with every engagement. The 50th project is dramatically more capable than the 5th because of accumulated institutional intelligence — rejection constraints, calibration profiles, trajectory patterns, evolved agent prompts. This is the "comprehension lock-in" flywheel (Jones, "Comprehension Lock-In," Mar 5, 2026): usage → understanding → better output → more usage → deeper understanding. A competitor starting from scratch can buy the same model, but they can't buy the same institutional knowledge.
+
+---
+
+## Appendix A: Source Attribution
+
+Key design decisions and the specific sources that informed them:
+
+| Decision | Primary Source(s) |
+|----------|-------------------|
+| Specification Engine as highest-value component | Jones, "4:1 Ratio" (Mar 24), "Specification Gap" (Jan 21), "Articulation Problem" (Feb 10) |
+| RESEARCH.md as engagement specification | Jones, "Markdown-as-Specification" (Mar 27); DESIGN.md pattern |
+| Evaluator as most important component | Anthropic *Harness Design* (Rajasekaran); Carlini *C Compiler*; Jones, "Evaluation Supremacy" (15+ articles) |
+| Ten-dimension judgment rubric (+ Intent Alignment, Intellectual Honesty, Evaluative Surprise, Calibrated Confidence) | Jones, "Klarna / Intent Engineering" (Feb 24), "201 Skills" (Jan 25); Anthropic *Harness Design*; B3 (Dreyfus model); B2 (ICD 203) `[SYNTHESIS UPDATE]` |
+| Five-layer evaluation stack | SOS-Bench ICLR 2025; CALM ICLR 2025; FActScore EMNLP 2023; Prometheus 2 EMNLP 2024; Agent-as-a-Judge arXiv:2410.10934; PoLL 2024 `[SYNTHESIS UPDATE]` |
+| Observation Library as self-improvement engine | Jones, "Rejection as Compounding Asset" (Mar 10); ECC instinct-to-skill pipeline; "Mind the Gap" ICLR 2025 Oral `[SYNTHESIS UPDATE]` |
+| CitationProcessor between L1 and L1.5 | Anthropic Engineering blog (CitationAgent); PROV-AGENT W3C standard `[SYNTHESIS UPDATE]` |
+| Deliberation redesign: independent analysis + structured aggregation | NeurIPS 2025 Spotlight "Debate or Vote"; DMAD ICLR 2025; Wu et al. majority pressure; DeepMind 17.2x amplification `[SYNTHESIS UPDATE]` |
+| Custom orchestration (PydanticAI + Temporal + MCP gateway) | AgentLeak February 2026; AWS Strands "framework layer thinning" `[SYNTHESIS UPDATE]` |
+| Hybrid search + pgvector retrieval | BEIR aggregate benchmarks; Timescale pgvector benchmarks; Docling Enterprise RAG Challenge `[SYNTHESIS UPDATE]` |
+| DPVI as explicit methodology | Jones, "DPVI Pattern" (Mar 11): convergent discovery by 4 organizations |
+| Handoff contracts between pipeline stages | Jones, "4 Kinds of Agents" (Mar 25): "orchestration frameworks live and die by handoff contracts" |
+| Structure over Intent as safety philosophy | Jones, "Trust Architecture" (Feb 22): Anthropic stress-tested 16 models, all violated instructions under pressure |
+| Anti-slop / Goldman-grade output standard | Jones, "Anti-Slop / Claude Cowork" (Jan 14), "Goldman-Grade" (Feb 13) |
+| Task-vs-Job boundary | Jones, "55% Regret AI-Driven Layoffs" (Mar 21): "locally correct, organizationally catastrophic" |
+| Anti-confirmatory framing as mandatory | Jones, "Agent Schemes" (Mar 9): "optimization as water finding the fastest path downhill" |
+| Factorial evaluation methodology | Jones, "Anchoring Bias" (Mar 18): single input shifts output by 11.7x |
+| Absence detection in evaluation | Jones, "55% Regret" (Mar 21): agents don't know what they don't know |
+| Coordination Tax framing | Jones, "Coordination Tax" (Mar 12): 60–70% of knowledge work is overhead |
+| Expansion Thesis positioning | Jones, "Expansion Thesis" (Mar 14): capability expansion > cost reduction |
+| The 201 Gap market positioning | Jones, "201 Skills / 95% Stall" (Jan 25): the gap between AI capability and applied judgment |
+| Middleware Trap warning | Jones, "Perplexity / Middleware Trap" (Mar 19): moat is accumulated knowledge, not model access |
+| Compressed Window urgency | Jones, "Compressed Window" (Feb 14): platform timelines collapsed |
+| Blind evaluation in Deliberation | Jones, "Pipeline Problem" (Mar 7): strip identifiers to prevent anchoring bias |
+| Steelmanning in Deliberation | Jones, "Fictional Recession" (Feb 26): strongest possible version of opposing view |
+| Three-discipline maturity model | Jones, "Klarna / Intent Engineering" (Feb 24): prompt → context → intent engineering |
+| Capability-Dissipation Gap framework | Jones (Feb 26): the distance between "can do" and "has reorganized around doing" |
+| Client calibration profiles | Jones, "Four Personalization Levers" (Feb 5): memory, instructions, tools, style |
+| Correction-compounding architecture | Jones, "Why Your AI Output Feels Generic" (Feb 5): every correction permanently modifies the system |
+| Generator/Evaluator separation as core principle | Anthropic *Harness Design* (Rajasekaran); Carlini *C Compiler* |
+| Sprint contracts between structuring and evaluation | Anthropic *Harness Design* (Rajasekaran) |
+| JSON-based task tracking over Markdown | Anthropic *Effective Harnesses* (Young) |
+| 2–5 agents per coordinator cap | @Khaliqgant, *Let Them Cook* (6 weeks empirical) |
+| Just-in-time context loading via Research Index | Anthropic *Context Engineering* (Rajasekaran, Dixon, Ryan, Hadfield) |
+| Workflow-level tools over raw API wrappers | Anthropic *Writing Effective Tools* (Aizawa) |
+| Structural enforcement over prompt-based quality gates | @jordymaui, "Your OpenClaw is Ignoring Half Your Instructions" |
+| Multi-perspective deliberation phase | @k1rallik (MiroFish swarm intelligence) |
+| Skills library with three-layer progressive loading | Prendergast (Wealth Management Plugin); @mrjain |
+| Skill graph with interconnections | @rohit4verse (Ars Contexta) |
+| Agent identity (souls) alongside procedural skills | @tolibear_, "I Gave My Agents Skills. I Should Have Given Them Souls" |
+| Darwinian prompt evolution via rolling quality scores | @Chris_Worsey (25-agent financial market system, +22% over 173 days) |
+| Autoresearch ratchet as self-improvement paradigm | Karpathy (autoresearch); @Hesamation (56→92% in 4 rounds); @zhengyaojiang |
+| Instinct→Skill evolution for methodology development | @dunik_7 / affaan-m (everything-claude-code instinct system) |
+| Trajectory storage as institutional memory | @Khaliqgant (*Let Them Cook*); @christinetyip (autoresearch@home, 34 agents) |
+| Scaffold vs. System distinction / Hallucination Tax | Prendergast (Wealth Management Plugin) |
+| File-system-as-state for agent collaboration | @trq212 / Thariq Shihipar, "Your Agent should use a File System" |
+| Unified retrieval across public/internal/historical sources | @VadimStrizheus (Supermemory ASMR architecture) |
+| Dual-axis quality scoring (rigor × impact) | @MitcheIl (20-agent pipeline: Invention Novelty × Copy Intensity) |
+| Multimodal retrieval for diverse source types | @VibeMarketer_ (Gemini Embedding 2) |
+| 78% vs. 42% harness quality gap | Jones, "Same Model, 78% vs 42%" (Mar 6, 2026) |
+| Expanding Bubble / Frontier Operations | Jones, "Frontier Operations" (Mar 1, 2026): the five operations at the AI capability boundary |
+| Scarcity Inversion | Jones, "8 Habits Worth Unlearning" (Jan 15, 2026): when execution gets cheap, clarity becomes scarce |
+| Reusable consulting framework modules | Jones corpus, 10 frameworks extracted from 91 articles (Dec 2025 – Mar 2026) |
+
+## Appendix B: Glossary of Key Terms
+
+| Term | Definition | Source |
+|------|-----------|--------|
+| **DPVI** | Decompose-Parallelize-Verify-Iterate. Universal workflow pattern independently discovered by 4 organizations | Jones, Mar 11 |
+| **Observation Library** | Expanded from Rejection Library. Structured collection of all evaluator observations (rejections and validated successes), each encoding a constraint or promoting a pattern. Three-category taxonomy with saturation-breaking mechanisms. Primary self-improvement engine | Jones, Mar 10; ECC instinct pipeline; "Mind the Gap" ICLR 2025 `[SYNTHESIS UPDATE]` |
+| **RESEARCH.md** | Engagement specification file that every agent reads, every output validates against, every deliverable traces to | This capstone, informed by Jones, Mar 27 |
+| **Specification Engine** | The Orchestrator reframed: translates vague questions into precise specifications. Quality ceiling of the system | Jones, Jan 21; Feb 10; Mar 24 |
+| **Confidence Map** | Structured output of Deliberation: five-tier taxonomy (>80%, 60-80%, 50-60%, <50%, Insufficient Evidence) with DiscoUQ computational features and ACH matrix for contested claims | This capstone; DiscoUQ March 2026; ICD 203 `[SYNTHESIS UPDATE]` |
+| **CitationProcessor** | Discrete pipeline stage between L1 (Research) and L1.5 (Deliberation). Deduplicates sources, scores cross-agent corroboration, verifies URL liveness, produces citation manifest | Anthropic Engineering blog; PROV-AGENT W3C `[SYNTHESIS UPDATE]` |
+| **Sprint Contract** | Negotiated quality specification between the structuring agent and evaluator defining what "done" looks like for each section | Anthropic, *Harness Design* |
+| **Hallucination Tax** | The hidden cost of verifying AI output that has no data grounding. Makes scaffolds (templates without data access) net-negative on productivity | Prendergast, Wealth Management Plugin |
+| **Goldman-Grade** | Quality bar: would a domain expert at a top firm call this output "solid on its own merits?" Not "impressive for AI" — actually solid | Jones, Feb 13 |
+| **Anti-Slop** | Design principle: every output directly usable without cleanup or reformatting | Jones, Jan 14 |
+| **The 201 Gap** | Market gap between AI capability (101) and applied judgment (201). Keystone Intelligence Engine = the 201 layer for consulting | Jones, Jan 25 |
+| **The 4:1 Ratio** | Four engineering problems (solved/solvable) to one specification problem (where all value lives) in AI deployment | Jones, Mar 24 |
+| **Coordination Tax** | 60–70% of knowledge work hours consumed by coordination overhead, not value creation | Jones, Mar 12 |
+| **Expansion Thesis** | When execution cost drops 10x, do 10x more work, not the same work with fewer people | Jones, Mar 14 |
+| **Middleware Trap** | Systems built on someone else's intelligence layer are structurally fragile. Moat must be accumulated knowledge | Jones, Mar 19 |
+| **Compressed Window** | Platform-building timelines collapsed from decades to months. Waiting = losing | Jones, Feb 14 |
+| **Task-vs-Job Boundary** | Agents handle tasks (bounded, specified) well but jobs (contextual stewardship, institutional knowledge) poorly | Jones, Mar 21 |
+| **Structure Over Intent** | Outcomes must be determined by architecture, not by hoping agents choose to comply. Structural enforcement > prompt instructions | Jones, Feb 22 |
+| **Capability-Dissipation Gap** | Distance between what AI can do and what organizations have reorganized around doing. Where outsized returns live | Jones, Feb 26 |
+| **Frontier Operations** | Five operations at the expanding AI capability boundary: boundary sensing, seam design, failure model maintenance, capability forecasting, leverage calibration | Jones, Mar 1 |
+| **Harness > Model** | Value accrues to the engineering infrastructure wrapping the model, not to the model itself. The wrapper is the product | Jones, Dec 27; Jan 6; Mar 6 |
+| **Intelligence Inversion** | Dumb agents + smart orchestration outperforms smart agents + loose coordination | Jones, Jan 26 |
+| **Scarcity Inversion** | When execution gets cheap, clarity, ambition, distribution, and relationships become scarce | Jones, Jan 15 |
+| **Correction-Compounding** | Every quality correction permanently modifies the system, creating monotonically improving calibration over time | Jones, Feb 5 |
+| **Trajectory Storage** | Full decision log of each completed project — research questions, sources, frameworks, evaluator feedback, quality scores | @Khaliqgant; this capstone |
+
+---
+
+*This plan synthesizes insights from 5 Anthropic engineering articles, 19 high-value X bookmarks, Google's 64-page AI Agents Technical Guide, the everything-claude-code repository (28 agents, 116 skills, 1,421 tests), John Prendergast's Wealth Management Plugin analysis, and the complete systematic analysis of Nate Jones's 91-article Substack corpus (Dec 27, 2025 – Mar 27, 2026; ~1.3M characters of source material analyzed through 18 parallel sub-agents). v3 synthesis updates (marked with `[SYNTHESIS UPDATE]`) incorporate findings from 16 deep research reports across four threads (Open Source Landscape, Quality Standards, Architecture, Frontier), drawing on 80+ peer-reviewed papers including NeurIPS 2025, ICLR 2025/2026, EMNLP 2023/2024, and ACL 2025 publications. Every architectural decision traces to a specific, cited source. The plan was designed to be read at the level of a top-tier capstone at IU Kelley — intellectually rigorous, practically detailed, and honest about what's proven versus experimental.*

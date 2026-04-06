@@ -1,0 +1,25 @@
+{
+  "id": "task_003",
+  "engagement_id": "ENG-TEST-001",
+  "client_id": "CLT-TEST-001",
+  "category": "competitive_landscape",
+  "type": "current",
+  "target_decision_usefulness": 4,
+  "description": "Analyze the competitive landscape for auto insurance telematics across the top 50 US metropolitan areas, focusing on market structure, pricing models, and competitive positioning",
+  "required_sources": ["industry_reports", "financial_data", "regulatory_filings"],
+  "acceptance_criteria": [
+    "Identify at least 5 major telematics insurance providers",
+    "Compare pricing models across providers",
+    "Assess competitive moats and barriers to entry",
+    "Include quantitative market share data"
+  ],
+  "deliverable_destination": "Section 2: Competitive Landscape",
+  "priority": 1,
+  "anti_confirmatory_framing": "Evaluate whether the telematics insurance market is consolidating around incumbents or fragmenting toward new entrants, including evidence for both dynamics",
+  "assigned_tools": ["web_search", "sec_filings", "news_api"],
+  "assigned_model": "sonnet",
+  "end_product": "comparison table with 8+ competitors and market share estimates, supported by trend analysis of OEM-embedded vs aftermarket adoption",
+  "dependencies": [],
+  "status": "pending",
+  "passes": false
+}

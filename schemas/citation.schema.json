@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://keystone.internal/schemas/citation.schema.json",
+  "title": "Citation",
+  "description": "A single source reference with verification metadata. Admiralty Code composite scoring.",
+  "type": "object",
+  "required": [
+    "citation_id",
+    "engagement_id",
+    "client_id",
+    "url",
+    "title",
+    "access_date",
+    "source_type",
+    "quality_score"
+  ],
+  "properties": {
+    "citation_id": {
+      "type": "string",
+      "pattern": "^CIT-\\d+$",
+      "description": "Unique identifier, format CIT-NNN"
+    },
+    "engagement_id": {
+      "type": "string",
+      "description": "Parent engagement for multi-tenancy isolation"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Client identifier for data sandboxing"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Source URL"
+    },
+    "doi": {
+      "type": ["string", "null"],
+      "description": "Digital Object Identifier if available"
+    },
+    "title": {
+      "type": "string",
+      "description": "Title of the source document"
+    },
+    "authors": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Author names"
+    },
+    "publication": {
+      "type": "string",
+      "description": "Publication or outlet name"
+    },
+    "date_published": {
+      "type": ["string", "null"],
+      "format": "date",
+      "description": "Publication date (ISO 8601)"
+    },
+    "access_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this source was accessed"
+    },
+    "source_type": {
+      "type": "string",
+      "enum": ["academic", "news", "filing", "report", "government", "internal"],
+      "description": "Classification of source origin"
+    },
+    "quality_score": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Admiralty Code composite: reliability x credibility, 0-1 scale"
+    },
+    "url_live": {
+      "type": ["boolean", "null"],
+      "description": "Whether URL was reachable at verification time"
+    },
+    "crossref_verified": {
+      "type": ["boolean", "null"],
+      "description": "Whether citation exists in CrossRef/Semantic Scholar/OpenAlex"
+    },
+    "found_by_agents": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Agent IDs that independently discovered this source"
+    },
+    "content_hash": {
+      "type": ["string", "null"],
+      "pattern": "^[0-9a-f]{64}$",
+      "description": "SHA-256 hash of source content at access time. Null if not yet hash-verified."
+    }
+  },
+  "additionalProperties": false
+}

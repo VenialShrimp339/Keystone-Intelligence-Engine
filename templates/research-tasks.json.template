@@ -1,0 +1,91 @@
+{
+  "$comment": "Template for research-tasks.json. DAG dependency structure, not flat list.",
+  "project": "{{project_name}}",
+  "engagement_id": "{{engagement_id}}",
+  "client_id": "{{client_id}}",
+  "research_md_path": "RESEARCH.md",
+  "specification_version": 1,
+  "decomposition_rationale": "{{rationale_for_this_decomposition}}",
+  "tasks": [
+    {
+      "$comment": "Root task: no dependencies, executes first",
+      "id": "task_001",
+      "engagement_id": "{{engagement_id}}",
+      "client_id": "{{client_id}}",
+      "category": "market_sizing",
+      "type": "estimative",
+      "target_decision_usefulness": 3,
+      "description": "{{what_to_investigate}}",
+      "required_sources": ["industry_reports", "financial_data", "academic"],
+      "acceptance_criteria": [
+        "Top-down and bottom-up estimates with explicit assumptions",
+        "At least 3 independent data sources cited with URLs and access dates",
+        "Uncertainty range quantified with sensitivity to key assumptions"
+      ],
+      "deliverable_destination": "Section 2: Market Landscape",
+      "passes": false,
+      "priority": 1,
+      "anti_confirmatory_framing": "Evaluate the size and growth trajectory, including evidence for both larger-than-expected and smaller-than-expected scenarios",
+      "assigned_tools": ["exa_search", "brave_search", "sec_filings"],
+      "assigned_model": "sonnet",
+      "end_product": "Market size table with TAM/SAM/SOM breakdown, growth rate chart (2024-2030)",
+      "dependencies": [],
+      "issue_tree_branch_id": "branch_1.1",
+      "custom_category": null,
+      "status": "pending"
+    },
+    {
+      "$comment": "Dependent task: needs task_001 to complete first (needs TAM data)",
+      "id": "task_002",
+      "engagement_id": "{{engagement_id}}",
+      "client_id": "{{client_id}}",
+      "category": "competitive_landscape",
+      "type": "current",
+      "target_decision_usefulness": 3,
+      "description": "Map key competitors by technology approach and market share",
+      "required_sources": ["company_filings", "news", "patents"],
+      "acceptance_criteria": [
+        "Top 8-10 competitors identified",
+        "Categorized by approach",
+        "Positioning matrix with 2+ strategic dimensions"
+      ],
+      "deliverable_destination": "Section 3: Competitive Landscape",
+      "passes": false,
+      "priority": 2,
+      "anti_confirmatory_framing": "Map the competitive landscape including evidence that challenges the current consensus view on market leaders",
+      "assigned_tools": ["exa_search", "brave_search", "patent_search"],
+      "assigned_model": "sonnet",
+      "end_product": "2x2 positioning matrix, per-player moat assessment table",
+      "dependencies": ["task_001"],
+      "issue_tree_branch_id": "branch_1.2",
+      "custom_category": null,
+      "status": "pending"
+    },
+    {
+      "$comment": "Custom category example: overrides enum when engagement needs non-standard category",
+      "id": "task_003",
+      "engagement_id": "{{engagement_id}}",
+      "client_id": "{{client_id}}",
+      "category": "strategic_positioning",
+      "type": "estimative",
+      "target_decision_usefulness": 4,
+      "description": "Assess strategic options and their risk profiles",
+      "required_sources": ["industry_reports", "news", "academic"],
+      "acceptance_criteria": [
+        "3+ strategic options identified with pros/cons",
+        "Risk assessment for each option"
+      ],
+      "deliverable_destination": "Section 5: Strategic Assessment",
+      "passes": false,
+      "priority": 3,
+      "anti_confirmatory_framing": "Evaluate each strategic option including evidence for why it might fail or underperform",
+      "assigned_tools": ["exa_search", "brave_search", "academic_search"],
+      "assigned_model": "sonnet",
+      "end_product": "Strategic options matrix with risk/reward scoring",
+      "dependencies": ["task_001", "task_002"],
+      "issue_tree_branch_id": "branch_2.1",
+      "custom_category": null,
+      "status": "pending"
+    }
+  ]
+}

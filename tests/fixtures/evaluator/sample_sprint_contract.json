@@ -1,0 +1,31 @@
+{
+  "section_id": "section_task_003",
+  "engagement_id": "ENG-TEST-001",
+  "client_id": "CLT-TEST-001",
+  "task_id": "task_003",
+  "section_title": "Section 2: Competitive Landscape",
+  "acceptance_criteria": [
+    "Identify at least 5 major telematics insurance providers with market share data",
+    "Compare pricing models across at least 3 distinct approaches (discount-based, UBI, PHYD)",
+    "Analyze competitive moats for top 3 players with specific data points",
+    "Include OEM-embedded vs. aftermarket hardware trend analysis",
+    "Address regulatory divergence across at least 3 state regulatory frameworks"
+  ],
+  "dimension_emphasis": {
+    "analytical_depth": 1.5,
+    "source_quality": 1.2,
+    "quantitative_rigor": 1.3
+  },
+  "mandatory_elements": [
+    "Competitive comparison table with 5+ providers",
+    "Market share data with sources cited",
+    "Pricing model comparison matrix",
+    "Regulatory landscape summary by state"
+  ],
+  "anti_patterns": [
+    "Generic SWOT analysis without company-specific data",
+    "Recommendations that could apply to any insurance market",
+    "Market size numbers without methodology or source disclosure",
+    "Treating all telematics providers as equivalent without differentiation"
+  ]
+}
