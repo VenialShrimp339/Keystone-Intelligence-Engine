@@ -2,11 +2,12 @@
 
 *Generated: 2026-04-06 | Planning Session 16*
 
-**Prerequisites before launching any session:**
-1. Initialize git: `git init && git add -A && git commit -m "Pre-switchover baseline: 7 components, 486 tests passing"`
-2. This gives us a rollback point and lets us merge parallel work safely.
+**Prerequisites:** Git initialized, baseline committed (Session 16). Ready to launch.
 
 **These three sessions touch zero overlapping files. They can run truly in parallel.**
+
+**Pre-Wave fix applied:** StructuredFinding model updated with missing fields
+(status, gaps, artifact_path) that Component #7 will need. See git log.
 
 ---
 
@@ -83,7 +84,20 @@ SPECIFIC CHANGES:
 10. src/keystone/specification/prompts/task_generation.md line 59:
     - "assigned_model": "sonnet" -> "assigned_model": "standard"
 
-11. pyproject.toml:
+11. schemas/research_tasks.schema.json line 156:
+    - "enum": ["opus", "sonnet", "haiku"] -> ["flagship", "standard", "fast", "light"]
+    - "default": "sonnet" -> "default": "standard"
+
+12. samples/ -- ALL three sample engagement directories have "assigned_model": "sonnet"
+    in their research-tasks.json files. Change ALL occurrences to "standard":
+    - samples/auto_body_chain/research-tasks.json (6 occurrences)
+    - samples/specialty_chemicals_ma/research-tasks.json (8 occurrences)
+    - samples/luminar_lidar/research-tasks.json (10 occurrences)
+
+13. templates/research-tasks.json.template (3 occurrences):
+    - "assigned_model": "sonnet" -> "assigned_model": "standard"
+
+14. pyproject.toml:
     - Uncomment and add: "openai>=1.60.0" and "pydantic-ai>=1.77.0" to dependencies
     - Remove the commented-out "anthropic" line
     - Add "pydantic-ai" to mypy overrides ignore_missing_imports list
@@ -99,7 +113,8 @@ TEST FILES TO UPDATE (same rename pattern):
 AFTER ALL CHANGES: Run the full test suite (pytest). All 486 tests must pass.
 If any test fails, fix it -- the failures will be because you missed a string
 literal or enum reference somewhere. Grep for "opus", "sonnet", "haiku",
-"anthropic" across src/ and tests/ to catch stragglers.
+"anthropic" across src/, tests/, schemas/, samples/, and templates/ to catch
+stragglers. There should be ZERO remaining occurrences in those directories.
 
 DO NOT:
 - Touch any prompt files in evaluator/prompts/ or specification/prompts/

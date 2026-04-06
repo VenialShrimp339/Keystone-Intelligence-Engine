@@ -199,12 +199,23 @@ class EngagementSpec(BaseModel):
     )
 
 
+class FindingStatus(StrEnum):
+    """Completion status of a research agent's finding."""
+
+    COMPLETE = "complete"
+    PARTIAL = "partial"
+    GAP_FOUND = "gap_found"
+
+
 class StructuredFinding(BaseModel):
     """Output of a single L1 research agent.
 
     Each agent produces structured findings with mandatory citations,
     confidence assessments, caveats, and an absence report. The absence
     report is analytically significant: what was looked for but not found.
+
+    The condensed output should be 1,000-2,000 tokens. Full artifacts
+    are written to {engagement_id}/memory/raw/ via artifact_path.
     """
 
     task_id: str = Field(description="Which task this finding addresses")
@@ -217,6 +228,18 @@ class StructuredFinding(BaseModel):
     )
     claims: list[FindingClaim] = Field(
         description="Structured claims with evidence and citations"
+    )
+    status: FindingStatus = Field(
+        default=FindingStatus.COMPLETE,
+        description="Whether the agent completed its task fully, partially, or found a gap",
+    )
+    gaps: list[str] = Field(
+        default_factory=list,
+        description="Research gaps identified during investigation",
+    )
+    artifact_path: str | None = Field(
+        default=None,
+        description="Path to full artifact in raw/ directory (condensed summary is in claims)",
     )
     absence_report: list[str] = Field(
         description="What was looked for but not found (analytically significant)"
