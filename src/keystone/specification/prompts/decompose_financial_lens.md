@@ -31,7 +31,8 @@ Consider these (use what's relevant, skip what isn't):
 
 ## Output Format
 
-Respond with ONLY a JSON object representing your tree:
+<analytical_contract>
+You MUST output exactly this JSON tree structure. Every node MUST have all four fields (id, name, description, children):
 
 ```json
 {
@@ -55,3 +56,26 @@ Respond with ONLY a JSON object representing your tree:
   ]
 }
 ```
+
+Structural requirements:
+- Tree depth: 2-3 levels. Do NOT exceed 3 levels.
+- Leaf count: 3-7 leaves from this lens. Do NOT exceed 7.
+- IDs: Use "fin_" prefix. Root is "fin_root", branches are "fin_1", "fin_2", leaves are "fin_1_1", "fin_1_2".
+- Every leaf node MUST have "children": [].
+- Sibling branches MUST be mutually exclusive (no analytical overlap).
+- Siblings together MUST be collectively exhaustive for the financial dimension.
+
+Do NOT omit any field from any node. Do NOT add commentary outside the JSON.
+Output only the JSON object. After the closing brace, output nothing further.
+</analytical_contract>
+
+<completeness_check>
+Before outputting, verify your tree satisfies:
+[ ] Root node has id "fin_root" with all 4 fields
+[ ] Every node has: id, name, description, children
+[ ] Depth is 2-3 levels (not deeper)
+[ ] 3-7 leaf nodes total
+[ ] All leaf nodes have "children": []
+[ ] Sibling branches are mutually exclusive
+[ ] Siblings are collectively exhaustive for the financial dimension
+</completeness_check>

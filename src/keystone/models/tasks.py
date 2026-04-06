@@ -39,12 +39,14 @@ class TaskType(StrEnum):
 class ModelTier(StrEnum):
     """Available model tiers for task assignment.
 
-    Opus for L0/L4 (judgment), Sonnet for L1 (throughput), Haiku for extraction.
+    Flagship for L0/L4 (judgment), Standard for L1 (throughput),
+    Fast for extraction/classification, Light for filtering/routing.
     """
 
-    OPUS = "opus"
-    SONNET = "sonnet"
-    HAIKU = "haiku"
+    FLAGSHIP = "flagship"
+    STANDARD = "standard"
+    FAST = "fast"
+    LIGHT = "light"
 
 
 class TaskStatus(StrEnum):
@@ -110,7 +112,7 @@ class ResearchTask(BaseModel):
         description="3-5 MCP tools this agent may use (structural enforcement via gateway)"
     )
     assigned_model: ModelTier = Field(
-        default=ModelTier.SONNET,
+        default=ModelTier.STANDARD,
         description="Which model tier runs this task",
     )
     status: TaskStatus = Field(

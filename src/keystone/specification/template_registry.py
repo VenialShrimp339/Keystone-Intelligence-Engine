@@ -34,7 +34,7 @@ _QUANTITATIVE_ANALYST = AgentDefinition(
     name="quantitative_analyst",
     description="Financial data analysis, SEC filings, economic indicators, and quantitative modeling",
     role=AgentRole.RESEARCH,
-    model=ModelTier.SONNET,
+    model=ModelTier.STANDARD,
     tools=[ToolName.EDGAR_FILINGS, ToolName.FINNHUB_MARKET, ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.FRED_DATA],
     system_prompt=(
         "You are a quantitative research analyst. Your methodology is data-driven: "
@@ -51,7 +51,7 @@ _MARKET_RESEARCHER = AgentDefinition(
     name="market_researcher",
     description="Competitive analysis, market sizing, industry trends, and strategic positioning",
     role=AgentRole.RESEARCH,
-    model=ModelTier.SONNET,
+    model=ModelTier.STANDARD,
     # news_search and industry_reports removed: no MCP servers registered yet.
     # Add back when dedicated news/industry-report MCP servers are available.
     tools=[ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.EDGAR_FILINGS, ToolName.FINNHUB_MARKET, ToolName.PAPER_SEARCH],
@@ -70,7 +70,7 @@ _ACADEMIC_RESEARCHER = AgentDefinition(
     name="academic_researcher",
     description="Academic literature, patent analysis, technology assessment, and expert consensus",
     role=AgentRole.RESEARCH,
-    model=ModelTier.SONNET,
+    model=ModelTier.STANDARD,
     # patent_search removed: no MCP server registered yet.
     tools=[ToolName.PAPER_SEARCH, ToolName.DOI_VERIFY, ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.EDGAR_FILINGS],
     system_prompt=(
@@ -88,7 +88,7 @@ _REGULATORY_ANALYST = AgentDefinition(
     name="regulatory_analyst",
     description="Regulatory landscape, compliance requirements, government policy, and legal frameworks",
     role=AgentRole.RESEARCH,
-    model=ModelTier.SONNET,
+    model=ModelTier.STANDARD,
     # government_search and news_search removed: no MCP servers registered yet.
     tools=[ToolName.EDGAR_FILINGS, ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.PAPER_SEARCH, ToolName.FRED_DATA],
     system_prompt=(
@@ -106,7 +106,7 @@ _GENERALIST = AgentDefinition(
     name="generalist_researcher",
     description="Broad research across multiple domains, trend analysis, and cross-cutting themes",
     role=AgentRole.RESEARCH,
-    model=ModelTier.SONNET,
+    model=ModelTier.STANDARD,
     tools=[ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.PAPER_SEARCH, ToolName.EDGAR_FILINGS, ToolName.FINNHUB_MARKET],
     system_prompt=(
         "You are a generalist research analyst. Your methodology is breadth-first: "
@@ -122,7 +122,7 @@ _CONTRARIAN_ANALYST = AgentDefinition(
     name="contrarian_analyst",
     description="Devil's advocate analysis, assumption challenging, and risk identification",
     role=AgentRole.RESEARCH,
-    model=ModelTier.SONNET,
+    model=ModelTier.STANDARD,
     tools=[ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.PAPER_SEARCH, ToolName.EDGAR_FILINGS, ToolName.FINNHUB_MARKET],
     system_prompt=(
         "You are a contrarian research analyst. Your methodology specifically "
@@ -139,7 +139,7 @@ _HISTORICAL_ANALYST = AgentDefinition(
     name="historical_analyst",
     description="Historical analogy analysis, pattern matching across industries and time periods",
     role=AgentRole.RESEARCH,
-    model=ModelTier.SONNET,
+    model=ModelTier.STANDARD,
     tools=[ToolName.PAPER_SEARCH, ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.FINNHUB_MARKET, ToolName.EDGAR_FILINGS],
     system_prompt=(
         "You are a historical analogy analyst. Your methodology identifies "

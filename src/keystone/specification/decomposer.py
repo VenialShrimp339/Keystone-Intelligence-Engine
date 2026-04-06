@@ -1,8 +1,8 @@
 """Step 3: MECE issue tree decomposition with heterogeneous consulting lenses.
 
-The core intellectual engine of the Specification Engine. Three Sonnet-tier
+The core intellectual engine of the Specification Engine. Three standard-tier
 agents independently construct issue trees from different analytical
-perspectives (financial, operational, market/competitive), then an Opus-tier
+perspectives (financial, operational, market/competitive), then a flagship-tier
 meta-agent synthesizes them into a unified tree.
 
 Implements Directive 2 (MECE Issue Tree Decomposition) and
@@ -101,7 +101,7 @@ class Decomposer:
     Three-phase decomposition:
     1. Spawn 3 parallel agents (financial, operational, market/competitive)
     2. Each produces an independent shallow tree (2-3 levels)
-    3. Opus meta-agent synthesizes into unified tree
+    3. Flagship meta-agent synthesizes into unified tree
     """
 
     def __init__(self, llm: LLMCallable) -> None:

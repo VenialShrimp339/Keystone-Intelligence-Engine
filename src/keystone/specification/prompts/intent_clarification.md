@@ -49,15 +49,38 @@ Determine whether the question is sufficiently specified for research to begin. 
 
 ## Output Format
 
-Respond with ONLY a JSON object:
+<analytical_contract>
+You MUST output exactly this JSON structure with ALL six fields present:
 
 ```json
 {
-  "day_1_hypothesis": "Specific testable claim anchoring the engagement",
+  "day_1_hypothesis": "A declarative, falsifiable statement that the research will confirm, refute, or qualify",
   "intent_clear": true,
   "unstated_constraints": ["constraint 1", "constraint 2"],
   "scope_boundaries": ["boundary 1", "boundary 2"],
-  "decision_context": "What decision this research informs, who the decision-maker is, and the timeline",
-  "surprising_finding": "A specific finding that would genuinely surprise the decision-maker"
+  "decision_context": "Names the decision-maker, the choice they face, and the timeline",
+  "surprising_finding": "A specific finding that would challenge a reasonable prior belief of the decision-maker"
 }
 ```
+
+Field requirements:
+- "day_1_hypothesis": MUST be a declarative statement (not a question). MUST be falsifiable. MUST be specific enough to guide research priorities.
+- "intent_clear": Boolean. true only if the decision context is identifiable, scope is bounded, and deliverable expectations are clear.
+- "unstated_constraints": 2-5 constraints the client likely has but did not mention. Be specific (e.g., "regulatory review timeline in Q3 2026"), not generic (e.g., "budget constraints").
+- "scope_boundaries": 2-4 explicit boundaries. What should this research NOT attempt?
+- "decision_context": MUST name the decision-maker, the choice, and the timeline. If inferred rather than stated, say so.
+- "surprising_finding": MUST describe a specific, concrete finding — not a vague category.
+
+Do NOT omit any field. Do NOT add commentary outside the JSON.
+Output only the JSON object. After the closing brace, output nothing further.
+</analytical_contract>
+
+<completeness_check>
+Before outputting, verify your response includes:
+[ ] day_1_hypothesis (declarative, falsifiable statement)
+[ ] intent_clear (boolean)
+[ ] unstated_constraints (2-5 specific constraints)
+[ ] scope_boundaries (2-4 explicit boundaries)
+[ ] decision_context (names decision-maker, choice, and timeline)
+[ ] surprising_finding (specific concrete finding)
+</completeness_check>

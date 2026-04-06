@@ -56,7 +56,7 @@ Respond with ONLY a JSON object:
       "priority": 1,
       "anti_confirmatory_framing": "Evaluate whether..., including evidence both for and against",
       "assigned_tools": ["exa_search", "brave_search", "sec_filings"],
-      "assigned_model": "sonnet",
+      "assigned_model": "standard",
       "end_product": "Specific deliverable format",
       "dependencies": [],
       "issue_tree_branch_id": "branch_1.1",

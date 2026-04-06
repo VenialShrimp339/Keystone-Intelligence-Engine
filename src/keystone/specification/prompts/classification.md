@@ -36,13 +36,32 @@ Analyze these signals before classifying:
 
 ## Output Format
 
-Respond with ONLY a JSON object:
+<analytical_contract>
+You MUST output exactly this JSON structure with ALL four fields present:
 
 ```json
 {
-  "engagement_type": "sizing|diagnostic|evaluative|exploratory|strategic",
-  "pipeline_profile": "light|standard|deep",
+  "engagement_type": "one of: sizing, diagnostic, evaluative, exploratory, strategic",
+  "pipeline_profile": "one of: light, standard, deep",
   "confidence": 0.85,
-  "reasoning": "One paragraph explaining the classification based on the five signals."
+  "reasoning": "One paragraph (3-5 sentences) explaining the classification. MUST reference at least 3 of the 5 classification signals above."
 }
 ```
+
+Field requirements:
+- "engagement_type": Exactly one of the five types. Do NOT use any other value.
+- "pipeline_profile": Exactly one of: light, standard, deep.
+- "confidence": A number between 0.0 and 1.0 representing classification confidence.
+- "reasoning": 3-5 sentences that explicitly reference the classification signals (specificity of deliverable, testable hypothesis, analytical framework, scope boundedness, decision type).
+
+Do NOT omit any field. Do NOT add commentary outside the JSON.
+Output only the JSON object. After the closing brace, output nothing further.
+</analytical_contract>
+
+<completeness_check>
+Before outputting, verify your response includes:
+[ ] engagement_type (one of the five types)
+[ ] pipeline_profile (one of: light, standard, deep)
+[ ] confidence (number 0.0-1.0)
+[ ] reasoning (3-5 sentences referencing at least 3 classification signals)
+</completeness_check>

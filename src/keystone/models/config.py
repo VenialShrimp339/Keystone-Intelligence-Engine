@@ -13,21 +13,25 @@ from pydantic import BaseModel, Field
 from pydantic_settings import BaseSettings
 
 
-class AnthropicConfig(BaseModel):
-    """Anthropic API configuration."""
+class LLMProviderConfig(BaseModel):
+    """LLM provider API configuration."""
 
-    api_key: str = Field(description="Anthropic API key")
-    opus_model: str = Field(
-        default="claude-opus-4-6",
-        description="Model ID for Opus tier (L0/L4 judgment tasks)",
+    api_key: str = Field(description="LLM provider API key")
+    flagship_model: str = Field(
+        default="gpt-5.4",
+        description="Model ID for flagship tier (L0/L4 judgment tasks)",
     )
-    sonnet_model: str = Field(
-        default="claude-sonnet-4-6",
-        description="Model ID for Sonnet tier (L1 throughput tasks)",
+    standard_model: str = Field(
+        default="gpt-5.4",
+        description="Model ID for standard tier (L1 throughput tasks)",
     )
-    haiku_model: str = Field(
-        default="claude-haiku-4-5-20251001",
-        description="Model ID for Haiku tier (extraction/classification)",
+    fast_model: str = Field(
+        default="gpt-5.4-mini",
+        description="Model ID for fast tier (extraction/classification)",
+    )
+    reasoning_effort: str = Field(
+        default="medium",
+        description="Default reasoning effort: low/medium/high/xhigh",
     )
 
 
@@ -77,8 +81,8 @@ class RateLimitConfig(BaseModel):
         le=50,
         description="Maximum concurrent research agents. Start at 3-5, tier up organically.",
     )
-    anthropic_rpm: int = Field(
-        default=60, description="Anthropic API requests per minute"
+    provider_rpm: int = Field(
+        default=60, description="LLM provider API requests per minute"
     )
     exa_rpm: int = Field(default=100, description="Exa API requests per minute")
     brave_rpm: int = Field(
@@ -89,35 +93,34 @@ class RateLimitConfig(BaseModel):
 class ModelMixingConfig(BaseModel):
     """Which model tier serves each pipeline layer.
 
-    Default: Opus for L0/L4 (judgment), Sonnet for L1 (throughput),
-    Haiku for extraction/classification. This is the validated
-    configuration from Anthropic's multi-agent research system
-    (90.2% improvement).
+    Default: Flagship for L0/L4 (judgment), Standard for L1 (throughput),
+    Fast for extraction/classification. Validated configuration from
+    multi-agent research system (90.2% improvement).
     """
 
     l0_specification: str = Field(
-        default="opus", description="Specification Engine model tier"
+        default="flagship", description="Specification Engine model tier"
     )
     l1_research: str = Field(
-        default="sonnet", description="Research Agent model tier"
+        default="standard", description="Research Agent model tier"
     )
     l1_5_analysts: str = Field(
-        default="sonnet", description="Deliberation analyst model tier"
+        default="standard", description="Deliberation analyst model tier"
     )
     l1_5_aggregator: str = Field(
-        default="opus", description="Deliberation aggregator model tier"
+        default="flagship", description="Deliberation aggregator model tier"
     )
     l2_structuring: str = Field(
-        default="sonnet", description="Content structuring model tier"
+        default="standard", description="Content structuring model tier"
     )
     l3_generation: str = Field(
-        default="sonnet", description="Deliverable generation model tier"
+        default="standard", description="Deliverable generation model tier"
     )
     l4_evaluator: str = Field(
-        default="opus", description="Evaluator model tier"
+        default="flagship", description="Evaluator model tier"
     )
     extraction: str = Field(
-        default="haiku", description="Extraction/classification model tier"
+        default="fast", description="Extraction/classification model tier"
     )
 
 
@@ -162,7 +165,7 @@ class AppConfig(BaseSettings):
     model_config = {"env_nested_delimiter": "__"}
 
     # Provider configuration
-    anthropic_api_key: str = Field(default="", description="Anthropic API key")
+    openai_api_key: str = Field(default="", description="OpenAI API key")
     exa_api_key: str = Field(default="", description="Exa API key")
     brave_search_api_key: str = Field(default="", description="Brave Search API key")
 
@@ -176,12 +179,12 @@ class AppConfig(BaseSettings):
 
     # Rate limits
     max_parallel_agents: int = Field(default=5)
-    anthropic_rpm_limit: int = Field(default=60)
+    provider_rpm_limit: int = Field(default=60)
 
     # Model IDs
-    opus_model: str = Field(default="claude-opus-4-6")
-    sonnet_model: str = Field(default="claude-sonnet-4-6")
-    haiku_model: str = Field(default="claude-haiku-4-5-20251001")
+    flagship_model: str = Field(default="gpt-5.4")
+    standard_model: str = Field(default="gpt-5.4")
+    fast_model: str = Field(default="gpt-5.4-mini")
 
     # Evaluation
     prometheus_model_path: str | None = Field(default=None)

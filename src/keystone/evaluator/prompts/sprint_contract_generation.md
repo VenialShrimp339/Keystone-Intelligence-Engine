@@ -35,7 +35,8 @@ Generate a sprint contract with:
 
 ## Output Format
 
-Return valid JSON:
+<analytical_contract>
+You MUST produce exactly this JSON structure with ALL four top-level fields present:
 
 ```json
 {
@@ -48,3 +49,21 @@ Return valid JSON:
   }
 }
 ```
+
+Field requirements:
+- "acceptance_criteria": 4-8 specific, measurable criteria. Each MUST be testable, not vague. Example: "identifies at least 3 competitive dynamics with supporting data" NOT "good analysis."
+- "mandatory_elements": 2-5 concrete deliverables that MUST appear in the output.
+- "anti_patterns": 2-4 specific failure modes. Reference the task category and engagement type. Example: "recommendations must reference the specific company's constraints" NOT "avoid generic advice."
+- "dimension_emphasis": Use ONLY these dimension names as keys: analytical_depth, source_quality, quantitative_rigor, actionability, evaluative_surprise, calibrated_confidence. Values are weight multipliers (0.7 = de-emphasized, 1.0 = normal, 1.5 = emphasized).
+
+Do NOT omit any field. Do NOT add commentary outside the JSON.
+Output only the JSON object. After the closing brace, output nothing further.
+</analytical_contract>
+
+<completeness_check>
+Before outputting, verify:
+[ ] acceptance_criteria (4-8 testable criteria)
+[ ] mandatory_elements (2-5 concrete deliverables)
+[ ] anti_patterns (2-4 specific failure modes)
+[ ] dimension_emphasis (valid dimension names with numeric multipliers)
+</completeness_check>

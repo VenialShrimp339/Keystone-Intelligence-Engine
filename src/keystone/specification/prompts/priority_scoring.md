@@ -32,7 +32,8 @@ Higher scores indicate branches that should be researched first (they matter mos
 
 ## Output Format
 
-Respond with ONLY a JSON object:
+<analytical_contract>
+You MUST output exactly this JSON structure. The "scores" array MUST contain one entry for EVERY leaf node provided in the input:
 
 ```json
 {
@@ -41,8 +42,28 @@ Respond with ONLY a JSON object:
       "branch_id": "branch_1.1",
       "decision_relevance": 0.9,
       "uncertainty_reduction": 0.8,
-      "reasoning": "One sentence explaining the scores"
+      "reasoning": "One sentence explaining why these scores were assigned for this specific branch"
     }
   ]
 }
 ```
+
+Field requirements:
+- "scores": One entry per leaf node. Do NOT skip any leaf. Do NOT add leaves not in the input.
+- "branch_id": Must exactly match the id from the input leaf nodes.
+- "decision_relevance": Number 0.0-1.0 calibrated to the scale above.
+- "uncertainty_reduction": Number 0.0-1.0 calibrated to the scale above.
+- "reasoning": Exactly one sentence per entry. MUST reference the Day-1 Hypothesis or the specific decision context.
+
+Do NOT omit any leaf node. Do NOT omit any field from any entry.
+Output only the JSON object. After the closing brace, output nothing further.
+</analytical_contract>
+
+<completeness_check>
+Before outputting, verify:
+[ ] scores array has exactly one entry per input leaf node (no missing, no extras)
+[ ] Each entry has all 4 fields: branch_id, decision_relevance, uncertainty_reduction, reasoning
+[ ] All branch_ids match the input leaf node ids exactly
+[ ] decision_relevance and uncertainty_reduction are numbers between 0.0 and 1.0
+[ ] Each reasoning sentence references the Day-1 Hypothesis or decision context
+</completeness_check>

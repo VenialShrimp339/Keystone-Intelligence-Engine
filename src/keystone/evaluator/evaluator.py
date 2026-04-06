@@ -51,7 +51,7 @@ class Evaluator:
     Implements EvaluatorContract Protocol.
 
     Usage:
-        evaluator = Evaluator(llm=anthropic_client, profile=EvaluationProfile.DEFAULT)
+        evaluator = Evaluator(llm=llm_client, profile=EvaluationProfile.DEFAULT)
         async for event in evaluator.evaluate(output_text, contract, task, manifest, spec):
             # Handle events (log, store in trajectory)
             pass

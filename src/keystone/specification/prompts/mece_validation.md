@@ -51,7 +51,8 @@ Is the tree depth and leaf count appropriate for the engagement type? Check for:
 
 ## Output Format
 
-Respond with ONLY a JSON object:
+<analytical_contract>
+You MUST output exactly this JSON structure with BOTH top-level fields ("dimensions" and "feedback") present. ALL five dimensions MUST appear in BOTH objects:
 
 ```json
 {
@@ -63,11 +64,27 @@ Respond with ONLY a JSON object:
     "depth_appropriateness": true
   },
   "feedback": {
-    "mutual_exclusivity": "Specific feedback on what passed or failed and why",
-    "collective_exhaustiveness": "Specific feedback",
-    "tailoring": "Specific feedback",
-    "actionability": "Specific feedback",
-    "depth_appropriateness": "Specific feedback"
+    "mutual_exclusivity": "2-3 sentences: what specific branches passed or failed and why",
+    "collective_exhaustiveness": "2-3 sentences: what analytical angles are present or missing",
+    "tailoring": "2-3 sentences: which branches reference question specifics vs. are generic",
+    "actionability": "2-3 sentences: which leaves can or cannot be assigned as concrete research tasks",
+    "depth_appropriateness": "2-3 sentences: leaf count, depth, and balance assessment"
   }
 }
 ```
+
+Field requirements:
+- "dimensions": Exactly 5 boolean values. Each is an independent pass/fail assessment per the criteria above.
+- "feedback": Exactly 5 entries. Each MUST be 2-3 specific sentences referencing actual branches from the tree. Do NOT use generic feedback like "looks good" or "could be improved."
+
+Do NOT omit any dimension. Do NOT add commentary outside the JSON.
+Output only the JSON object. After the closing brace, output nothing further.
+</analytical_contract>
+
+<completeness_check>
+Before outputting, verify:
+[ ] dimensions object has exactly 5 boolean entries
+[ ] feedback object has exactly 5 string entries
+[ ] All 5 dimension names match: mutual_exclusivity, collective_exhaustiveness, tailoring, actionability, depth_appropriateness
+[ ] Each feedback entry is 2-3 sentences referencing specific branches
+</completeness_check>

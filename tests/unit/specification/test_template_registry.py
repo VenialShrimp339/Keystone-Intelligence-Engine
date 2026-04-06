@@ -30,7 +30,7 @@ def _make_task(
         priority=1,
         anti_confirmatory_framing="Evaluate whether this is the case, including evidence both for and against",
         assigned_tools=["exa_search", "brave_search", "edgar_filings"],
-        assigned_model=ModelTier.SONNET,
+        assigned_model=ModelTier.STANDARD,
         end_product="Analysis table",
         required_sources=required_sources or [],
     )

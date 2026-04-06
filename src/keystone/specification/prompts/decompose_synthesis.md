@@ -41,7 +41,8 @@ Produce ONE unified issue tree that:
 
 ## Output Format
 
-Respond with ONLY a JSON object:
+<analytical_contract>
+You MUST output exactly this JSON structure with BOTH top-level fields ("root" and "synthesis_rationale") present. Every tree node MUST have all five fields (id, name, description, lens_annotations, children):
 
 ```json
 {
@@ -73,3 +74,26 @@ Respond with ONLY a JSON object:
   "synthesis_rationale": "One paragraph explaining why this structure was chosen, what was merged, and what was pruned."
 }
 ```
+
+Structural requirements:
+- 8-20 leaf nodes total. Fewer than 8 is too coarse; more than 20 is over-decomposed.
+- Depth: 2-3 levels. Do NOT exceed 3 levels. Flatten or consolidate if needed.
+- IDs: Use "branch_N" for top-level, "branch_N.M" for children.
+- lens_annotations: Record which lens (financial, operational, market) contributed what. Use {} for nodes from a single lens.
+- MECE at every level: sibling branches MUST NOT overlap; siblings together MUST cover the full analytical space.
+- synthesis_rationale: MUST explain what was merged from overlapping lenses, what was pruned as tangential, and what was promoted as central to the Day-1 Hypothesis.
+
+Do NOT omit any field from any node. Do NOT add commentary outside the JSON.
+Output only the JSON object. After the closing brace, output nothing further.
+</analytical_contract>
+
+<completeness_check>
+Before outputting, verify:
+[ ] "root" field present with complete tree
+[ ] "synthesis_rationale" field present (explains merges, prunes, and promotions)
+[ ] Every node has: id, name, description, lens_annotations, children
+[ ] 8-20 leaf nodes total
+[ ] Depth is 2-3 levels
+[ ] All leaf nodes have "children": []
+[ ] MECE holds at every level (no sibling overlap, no gaps)
+</completeness_check>

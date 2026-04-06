@@ -43,14 +43,35 @@ Grade against these SPECIFIC criteria in addition to the general rubric:
 
 ## Output Format
 
-Return valid JSON only:
+<evaluation_contract>
+You MUST produce exactly this JSON structure with ALL fields present:
 
 ```json
 {
   "score": 0,
-  "feedback": "2-3 sentences of specific, actionable feedback",
+  "feedback": "2-4 specific, actionable sentences. MUST include a direct quote from the evaluated text supporting the score.",
   "sub_criteria_notes": ["absence detection: ...", "deletion test: ...", "perspective coverage: ...", "data category coverage: ..."],
   "slop_detected": false,
-  "slop_details": null
+  "slop_details": "Describe the specific slop pattern if detected. Otherwise null."
 }
 ```
+
+Scoring guidance (calibrate to the detailed rubric above):
+- 90-100: Exceptional — thorough coverage that anticipates reader questions; no "what about X?" gaps.
+- 70-89: Strong — comprehensive coverage of required topics; minor gaps only in peripheral areas.
+- 50-69: Adequate — covers main topics but feels thin in places; no glaring omissions.
+- Below 50: Major categories of expected analysis are absent; a domain expert would list obvious omissions.
+
+You MUST quote a specific passage from the evaluated text that supports your score. Include this quote in your feedback.
+Do NOT omit any field. Do NOT add commentary outside the JSON.
+Output only the JSON object. After the closing brace, output nothing further.
+</evaluation_contract>
+
+<completeness_check>
+Before outputting, verify your response includes:
+[ ] score (integer 0-100, calibrated to the scoring rubric)
+[ ] feedback (2-4 specific, actionable sentences with a direct quote from the text)
+[ ] sub_criteria_notes (exactly 4 entries: absence detection, deletion test, perspective coverage, data category coverage)
+[ ] slop_detected (boolean)
+[ ] slop_details (string description or null)
+</completeness_check>

@@ -112,7 +112,7 @@ def _make_task_llm():
                 "priority": i,
                 "anti_confirmatory_framing": f"Evaluate whether topic {i} is valid, including evidence both for and against",
                 "assigned_tools": ["exa_search", "brave_search", "edgar_filings"],
-                "assigned_model": "sonnet",
+                "assigned_model": "standard",
                 "end_product": f"Analysis table for topic {i}",
                 "dependencies": [f"task_{i - 1:03d}"] if i > 3 else [],
                 "issue_tree_branch_id": f"branch_{(i - 1) // 3 + 1}.{(i - 1) % 3 + 1}" if i <= 9 else "branch_3.4",

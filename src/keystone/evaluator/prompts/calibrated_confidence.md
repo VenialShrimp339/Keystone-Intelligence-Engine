@@ -43,14 +43,35 @@ Grade against these SPECIFIC criteria in addition to the general rubric:
 
 ## Output Format
 
-Return valid JSON only:
+<evaluation_contract>
+You MUST produce exactly this JSON structure with ALL fields present:
 
 ```json
 {
   "score": 0,
-  "feedback": "2-3 sentences of specific, actionable feedback",
+  "feedback": "2-4 specific, actionable sentences. MUST include a direct quote from the evaluated text supporting the score.",
   "sub_criteria_notes": ["ICD 203 calibration: ...", "confidence variation: ...", "evidence-to-confidence mapping: ...", "uncertainty propagation: ..."],
   "slop_detected": false,
-  "slop_details": null
+  "slop_details": "Describe the specific slop pattern if detected. Otherwise null."
 }
 ```
+
+Scoring guidance (calibrate to the detailed rubric above):
+- 90-100: Exceptional — precise ICD 203-aligned calibration; confidence justified by explicit evidence references.
+- 70-89: Strong — confidence levels meaningfully track evidence quality; reader can distinguish high- from low-confidence claims.
+- 50-69: Adequate — some variation in confidence but calibration is loose; directionally correct but imprecise.
+- Below 50: No calibration; uniform confidence regardless of evidence quality.
+
+You MUST quote a specific passage from the evaluated text that supports your score. Include this quote in your feedback.
+Do NOT omit any field. Do NOT add commentary outside the JSON.
+Output only the JSON object. After the closing brace, output nothing further.
+</evaluation_contract>
+
+<completeness_check>
+Before outputting, verify your response includes:
+[ ] score (integer 0-100, calibrated to the scoring rubric)
+[ ] feedback (2-4 specific, actionable sentences with a direct quote from the text)
+[ ] sub_criteria_notes (exactly 4 entries: ICD 203 calibration, confidence variation, evidence-to-confidence mapping, uncertainty propagation)
+[ ] slop_detected (boolean)
+[ ] slop_details (string description or null)
+</completeness_check>

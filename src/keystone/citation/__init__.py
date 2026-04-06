@@ -14,9 +14,11 @@ from keystone.citation.hash import (
     compute_proposition_hash,
     verify_content_hash,
 )
+from keystone.citation.processor import CitationProcessor
 from keystone.citation.url_check import batch_check_urls, check_url_liveness
 
 __all__ = [
+    "CitationProcessor",
     "batch_check_urls",
     "check_url_liveness",
     "compute_content_hash",

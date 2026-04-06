@@ -32,11 +32,14 @@ dependencies = [
     "python-dotenv>=1.0.0",
     "structlog>=24.0.0",
     "tenacity>=8.2.0",
+
+
+    # LLM provider
+    "openai>=1.60.0",
+    "pydantic-ai>=1.77.0",
 ]
 
 # Dependencies to add back when the corresponding components are built:
-# "anthropic>=0.40.0"       -- Component #7 (Research Agents, real LLM calls)
-# "pydantic-ai>=1.0"        -- Component #7 (agent framework)
 # "mcp>=1.0.0"              -- Component #4 Phase 1B (real MCP server connections)
 # "exa-py>=1.0.0"           -- Component #3a or #7 (Exa search API)
 # "temporalio>=1.7.0"       -- Phase 2 (workflow orchestration)
@@ -78,6 +81,7 @@ warn_unused_configs = true
 [[tool.mypy.overrides]]
 module = [
     "anthropic.*",
+    "openai.*",
     "pydantic_ai.*",
     "temporalio.*",
     "exa_py.*",

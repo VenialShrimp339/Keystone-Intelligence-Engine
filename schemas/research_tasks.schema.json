@@ -153,8 +153,8 @@
         },
         "assigned_model": {
           "type": "string",
-          "enum": ["opus", "sonnet", "haiku"],
-          "default": "sonnet"
+          "enum": ["flagship", "standard", "fast", "light"],
+          "default": "standard"
         },
         "end_product": {
           "type": "string",

@@ -1,6 +1,6 @@
 """Step 4: MECE verification with 5 binary dimensions.
 
-Validates the issue tree using Opus as judge on five dimensions.
+Validates the issue tree using flagship model as judge on five dimensions.
 If validation fails, the orchestrator retries decomposition (max 2 retries).
 The retry loop lives in spec_engine.py, not here.
 """
@@ -41,7 +41,7 @@ class MECEValidationResult(BaseModel):
 
 
 class MECEValidator:
-    """Validate an issue tree on 5 binary dimensions using Opus as judge."""
+    """Validate an issue tree on 5 binary dimensions using flagship model as judge."""
 
     def __init__(self, llm: LLMCallable) -> None:
         self._llm = llm

@@ -28,7 +28,8 @@ You are a quantitative analyst reviewing research output for internal numerical 
 
 ## Output Format
 
-Return a JSON object:
+<evaluation_contract>
+You MUST produce exactly this JSON structure with ALL fields present:
 
 ```json
 {
@@ -46,11 +47,28 @@ Return a JSON object:
       "location_a": "paragraph 2",
       "value_b": "12.3%",
       "location_b": "data table row 4",
-      "severity": "high",
-      "explanation": "Same metric reported with contradictory values"
+      "severity": "high or low",
+      "explanation": "One sentence explaining why these values contradict"
     }
   ]
 }
 ```
 
-If no inconsistencies are found, return an empty "inconsistencies" array.
+Rules:
+- "numerical_claims" MUST include EVERY number in the research output: percentages, dollar amounts, growth rates, market sizes, headcounts, ratios, and rankings. Do NOT skip any numerical claim.
+- "inconsistencies" MUST list every pair of contradictory numbers. If no inconsistencies exist, return an empty array [].
+- "severity": Exactly "high" (contradiction changes a conclusion) or "low" (minor discrepancy).
+- Each inconsistency MUST reference two specific locations in the text.
+
+Do NOT omit the numerical_claims array even if no inconsistencies are found.
+Do NOT omit any field from any object.
+Output only the JSON object. After the closing brace, output nothing further.
+</evaluation_contract>
+
+<completeness_check>
+Before outputting, verify:
+[ ] numerical_claims includes every number in the research output
+[ ] Each claim has all 3 fields: value, metric, location
+[ ] inconsistencies array is present (empty [] if none found)
+[ ] Each inconsistency has all 7 fields: metric, value_a, location_a, value_b, location_b, severity, explanation
+</completeness_check>

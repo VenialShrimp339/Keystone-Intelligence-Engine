@@ -136,7 +136,7 @@ class TaskGenerator:
                 priority=priority_rank,
                 anti_confirmatory_framing=t["anti_confirmatory_framing"],
                 assigned_tools=self._resolve_tools(t, category, engagement_type),
-                assigned_model=ModelTier(t.get("assigned_model", "sonnet")),
+                assigned_model=ModelTier(t.get("assigned_model", "standard")),
                 end_product=t.get("end_product", "Structured analysis with supporting evidence"),
                 dependencies=t.get("dependencies", []),
                 issue_tree_branch_id=branch_id,

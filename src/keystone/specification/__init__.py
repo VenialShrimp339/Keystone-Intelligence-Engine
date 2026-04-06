@@ -8,7 +8,7 @@ and Day-1 Hypothesis.
 10-step pipeline:
 1. Classification (engagement type + pipeline profile)
 2. Intent clarification (Decision-First CoT + Day-1 Hypothesis)
-3. Issue tree decomposition (3 heterogeneous lens agents + Opus synthesis)
+3. Issue tree decomposition (3 heterogeneous lens agents + flagship synthesis)
 4. MECE validation (5 binary dimensions)
 5. Priority scoring (heuristic: decision_relevance x uncertainty_reduction)
 6. Template matching (seed AgentDefinition registry)

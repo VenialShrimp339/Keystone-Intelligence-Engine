@@ -70,9 +70,9 @@ class AgentDefinition(BaseModel):
     description: str = Field(description="What this agent does (one line)")
     role: AgentRole = Field(description="Which pipeline layer this agent serves")
     model: ModelTier = Field(
-        default=ModelTier.SONNET,
-        description="Model tier. Opus for L0/L4 (judgment), Sonnet for L1 (throughput), "
-        "Haiku for extraction.",
+        default=ModelTier.STANDARD,
+        description="Model tier. Flagship for L0/L4 (judgment), Standard for L1 (throughput), "
+        "Fast for extraction.",
     )
     tools: list[str] = Field(
         default_factory=list,

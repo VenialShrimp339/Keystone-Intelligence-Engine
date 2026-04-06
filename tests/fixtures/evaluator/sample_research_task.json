@@ -17,7 +17,7 @@
   "priority": 1,
   "anti_confirmatory_framing": "Evaluate whether the telematics insurance market is consolidating around incumbents or fragmenting toward new entrants, including evidence for both dynamics",
   "assigned_tools": ["web_search", "sec_filings", "news_api"],
-  "assigned_model": "sonnet",
+  "assigned_model": "standard",
   "end_product": "comparison table with 8+ competitors and market share estimates, supported by trend analysis of OEM-embedded vs aftermarket adoption",
   "dependencies": [],
   "status": "pending",

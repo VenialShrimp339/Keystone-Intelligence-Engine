@@ -40,11 +40,30 @@ Propose a numeric adjustment between -10 and +10 to be added to the dimensional 
 
 ## Output Format
 
-Return valid JSON only:
+<evaluation_contract>
+You MUST produce exactly this JSON structure with ALL fields present:
 
 ```json
 {
   "adjustment": 0,
-  "rationale": "1-2 sentences explaining what the dimensional scores miss, positively or negatively"
+  "rationale": "2-3 sentences explaining what the dimensional scores miss, positively or negatively. Reference specific sections or patterns in the output."
 }
 ```
+
+Adjustment range (calibrate to these tiers):
+- +6 to +10: The whole is significantly greater than the sum of its parts. Rare — requires exceptional emergent quality.
+- +1 to +5: Emergent qualities that dimensional scoring undervalues.
+- 0: Dimensional scores accurately capture quality. No adjustment needed.
+- -1 to -5: Specific holistic weaknesses: missed connections, inconsistent quality, competent-but-hollow.
+- -6 to -10: The whole is significantly less than the sum of its parts.
+
+The adjustment MUST be an integer between -10 and +10 inclusive.
+Do NOT omit any field. Do NOT add commentary outside the JSON.
+Output only the JSON object. After the closing brace, output nothing further.
+</evaluation_contract>
+
+<completeness_check>
+Before outputting, verify your response includes:
+[ ] adjustment (integer from -10 to +10)
+[ ] rationale (2-3 sentences referencing specific patterns in the output)
+</completeness_check>
