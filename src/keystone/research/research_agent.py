@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 import uuid
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
@@ -37,6 +38,68 @@ from keystone.research.finding_writer import FindingWriter
 logger = logging.getLogger(__name__)
 
 DEFAULT_ROUNDS = 3
+
+# Regex for markdown code fences: ```json ... ``` or ``` ... ```
+_FENCE_RE = re.compile(r"```(?:json)?\s*\n?(.*?)```", re.DOTALL)
+
+
+def _extract_json_text(response: str) -> str:
+    """Extract JSON from LLM response, handling markdown fences and trailing text.
+
+    Handles:
+    - ```json ... ``` wrapped output
+    - JSON followed by natural language commentary
+    - Clean JSON (passthrough)
+    """
+    text = response.strip()
+
+    # Strip markdown code fences
+    m = _FENCE_RE.search(text)
+    if m:
+        text = m.group(1).strip()
+
+    # Try parsing as-is first
+    try:
+        json.loads(text)
+        return text
+    except json.JSONDecodeError:
+        pass
+
+    # Try to find the outermost JSON array or object
+    for start_char, end_char in [("[", "]"), ("{", "}")]:
+        start = text.find(start_char)
+        if start == -1:
+            continue
+        # Find the matching closing bracket by counting nesting
+        depth = 0
+        in_string = False
+        escape = False
+        for i in range(start, len(text)):
+            c = text[i]
+            if escape:
+                escape = False
+                continue
+            if c == "\\":
+                escape = True
+                continue
+            if c == '"':
+                in_string = not in_string
+                continue
+            if in_string:
+                continue
+            if c == start_char:
+                depth += 1
+            elif c == end_char:
+                depth -= 1
+                if depth == 0:
+                    candidate = text[start : i + 1]
+                    try:
+                        json.loads(candidate)
+                        return candidate
+                    except json.JSONDecodeError:
+                        break
+
+    return text
 MAX_ROUNDS = 5
 QUALITY_THRESHOLD = 0.8
 
@@ -337,7 +400,11 @@ class ResearchAgent:
                 base_delay=0.01,
                 description="absence_report",
             )
-            return self._parse_absence(response)
+            result = self._parse_absence(response)
+            # Structural enforcement: absence report must be non-empty
+            if not result:
+                return [f"No specific absences identified for task {task.id}"]
+            return result
         except RuntimeError:
             return [f"Unable to generate absence report for task {task.id}"]
 
@@ -347,8 +414,9 @@ class ResearchAgent:
 
     def _parse_synthesis(self, response: str) -> list[dict]:
         """Parse LLM synthesis response into claim dicts."""
+        text = _extract_json_text(response)
         try:
-            data = json.loads(response)
+            data = json.loads(text)
             if isinstance(data, list):
                 return data
             if isinstance(data, dict) and "claims" in data:
@@ -360,8 +428,9 @@ class ResearchAgent:
 
     def _parse_absence(self, response: str) -> list[str]:
         """Parse LLM absence report response."""
+        text = _extract_json_text(response)
         try:
-            data = json.loads(response)
+            data = json.loads(text)
             if isinstance(data, list):
                 return [str(item) for item in data]
             return [str(data)]

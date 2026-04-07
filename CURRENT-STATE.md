@@ -1,34 +1,49 @@
 # Current State
-*Last updated: 2026-04-06 | Updated by: Session 15 (Overnight Audit + Cleanup)*
+*Last updated: 2026-04-07 | Updated by: Session 4a-10 (Wave 4a Research Agent + MCP Gateway Pressure Test)*
 
 ---
 
 ## Where we are
 
-**Phase:** Phase 1 build in progress. Components #1, #2, #3b, #4, #5, #6, and #HITL are complete and audited. Overnight session audit completed with all fixes applied.
+**Phase:** Phase 1 build complete. All 10 components + pipeline orchestrator + LLM client built. Wave 4a pressure testing in progress (4 parallel sessions). Sessions 10 and 12 complete.
 
-**Audit completed:** Full acceptance criteria audit of all 7 built components. One critical cross-session integration bug found and fixed (tool name mismatch between Spec Engine and Gateway). datetime deprecation warnings eliminated. Dependencies trimmed. docs/ARCHITECTURE.md regenerated.
+**Wave 4a status:** Sessions 10 (Research Agents) and 12 (Deliberation + CitationProcessor) complete. 43 integration tests pass with real GPT-5.4 + real search API calls. 4 bugs found and fixed total. Sessions 9 and 11 running in parallel.
 
-**Next immediate step:** Component #7 (Research Agent Pipeline). Unblocked by Components #4 and #5.
+**Next immediate step:** Merge Wave 4a results from all 4 sessions. Then Wave 4b (full pipeline end-to-end integration).
 
-## What was completed (Session 15 -- Overnight Audit + Cleanup)
+## What was completed (Session 4a-10 -- Research Agent + MCP Gateway Pressure Test)
 
-Audit and fixes:
-- **Tool name mismatch fixed:** Created `src/keystone/tool_names.py` as single source of truth. 9 of 11 tool names in Spec Engine templates were mismatched with Gateway registrations. Both now import from shared ToolName enum. 4 unregistered tools removed from templates.
-- **datetime.utcnow() fixed:** Replaced with datetime.now(UTC) in 4 source files and 5 test files. Test warnings: 207 -> 0.
-- **pyproject.toml trimmed:** Removed 11 unused dependencies. Documented as comments for when components need them.
-- **docs/ARCHITECTURE.md regenerated:** Now reflects actual codebase state (was stale since Session 6).
-- **Per-component acceptance criteria audit:** MET/UNTESTED/UNMET tables in audit/OVERNIGHT-AUDIT-RESULTS.md.
-- **L2/L3 resolved:** Confirmed as Phase 2 deferrals, not a gap. MVP pipeline: L0 -> L1 -> CitProc -> L1.5 -> L4 -> Markdown.
+First real LLM + real search API integration of L1 Research Agents and MCP Gateway:
+- **16 integration tests written and passing** (6 baseline + 5 probing + 5 infrastructure)
+- **~20 real GPT-5.4 LLM calls** + **~12 real Exa/Brave search API calls** via Codex OAuth
+- **3 bugs found and fixed** in `research_agent.py`: JSON parser didn't handle markdown fences or trailing text, absence report could return empty list
+- **SimpleMCPClient created** (`gateway/simple_client.py`): real HTTP calls to Exa and Brave Search APIs
+- **Search APIs work well:** Both Exa and Brave return 5 relevant results per query for market sizing topics
+- **Citation URL liveness: 62%** (8/13 live) -- dead URLs from market research 403s and truncated Exa snippets
+- **Parallel agents work:** AgentPool runs 2 agents concurrently, both produce 20+ claims
+- **Error recovery works:** Failed tools get dead-lettered, agent continues with remaining tools
+- **Structural enforcement validated:** FindingWriter correctly rejects unsubstantiated claims (no citations)
+
+## What was completed (Session 4a-12 -- Deliberation + CitationProcessor Pressure Test)
+
+First real LLM integration test of L1.5 Deliberation and CitationProcessor:
+- **27 integration tests written and passing** (13 citation, 14 deliberation)
+- **12 real GPT-5.4 calls** via Codex OAuth (~3,136 prompt + ~4,736 response tokens)
+- **1 bug fixed:** `citation/url_check.py` lacked User-Agent header; sites returned 403 for bare httpx requests
+- **0 JSON parsing failures:** GPT-5.4 produces clean JSON for all analyst/judge/WWHTB prompts
+- **Confidence map validated:** 2 high, 3 moderate, 4 contested claims across 9 total
+- **WWHTB works:** 7 assumption-elicitation calls produced specific, testable assumptions
+- **Gap detection works:** 4 gaps + 4 absence items correctly sourced from agent findings
 
 ## Known test coverage gaps
 
 These acceptance criteria are UNTESTED (code appears correct, but no test verifies the behavior):
-1. Real MCP server connectivity (Component #4) -- all calls through MockMCPClient
-2. Anti-slop detection scoring (Component #6) -- prompts contain language, no behavioral test
-3. Task type diversity (Component #5) -- no test asserts both estimative and current types
-4. Underspecified question rejection (Component #5) -- no vague-input test
+1. ~~Real MCP server connectivity (Component #4)~~ -- **RESOLVED Session 10**: SimpleMCPClient makes real Exa/Brave calls
+2. Anti-slop detection scoring (Component #6) -- prompts contain language, no behavioral test (Session 11 may address)
+3. Task type diversity (Component #5) -- no test asserts both estimative and current types (Session 9 may address)
+4. Underspecified question rejection (Component #5) -- no vague-input test (Session 9 may address)
 5. HITL Web UI -- deliberately deferred to CLI/REST
+6. SEC.gov URL liveness -- returns 403 for all automated access regardless of User-Agent. Not a code bug but limits citation verification for SEC filings.
 
 ## What's next
 
@@ -84,12 +99,14 @@ Build order:
 | **Component #3b: Knowledge Accumulation** | **1A-5** | **knowledge/ (6 modules, 45 tests)** |
 | **Component #5: Specification Engine (L0)** | **1A-6** | **specification/ (10 modules, 9 prompts, 58 tests)** |
 | **Overnight audit + cleanup** | **15** | **tool_names.py, OVERNIGHT-AUDIT-RESULTS.md, ARCHITECTURE.md** |
+| **Wave 4a: Delib+CitProc pressure test (12 real LLM calls)** | **4a-12** | **tests/integration/test_deliberation_live.py, test_citation_processor_live.py, citation/url_check.py** |
+| **Wave 4a: Research Agent+Gateway pressure test (20 LLM + 12 search)** | **4a-10** | **gateway/simple_client.py, tests/integration/test_research_agent_live.py, research/research_agent.py** |
 
 ## What's blocked
 
 | Blocker | Needed for | Action |
 |---------|-----------|--------|
-| API keys: Exa, Brave Search | Component #7 | Jack signs up. Both have free tiers. |
+| ~~API keys: Exa, Brave Search~~ | ~~Component #7~~ | **RESOLVED**: Both keys configured, tested in Session 4a-10 |
 | PostgreSQL + pgvector infrastructure | Component #3a | Defer; use MCP search for MVP. |
 | Jack provides 10+ scored deliverables | Component #10 | Not until pipeline produces output. |
 | Exemplar library (casing books) | Component #5 quality improvement | Content investment by Jack + team |

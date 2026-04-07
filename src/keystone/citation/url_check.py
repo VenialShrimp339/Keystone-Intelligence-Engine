@@ -13,6 +13,14 @@ import httpx
 
 from keystone.models.citations import Citation
 
+# Many sites (Wikipedia, SEC, Reuters) block requests without a polite
+# User-Agent.  Including a project URL satisfies the Wikimedia policy
+# and similar automated-access policies.
+USER_AGENT = (
+    "Keystone-Intelligence-Engine/1.0 "
+    "(https://github.com/keystone-intelligence; citation-verification)"
+)
+
 
 async def check_url_liveness(url: str, timeout: float = 10.0) -> bool:
     """Check if a URL is reachable. HEAD request with fallback to GET.
@@ -27,7 +35,11 @@ async def check_url_liveness(url: str, timeout: float = 10.0) -> bool:
     Returns:
         True if the URL is reachable, False otherwise.
     """
-    async with httpx.AsyncClient(timeout=timeout, follow_redirects=False) as client:
+    async with httpx.AsyncClient(
+        timeout=timeout,
+        follow_redirects=False,
+        headers={"User-Agent": USER_AGENT},
+    ) as client:
         # Try HEAD first (lightweight)
         try:
             resp = await client.head(url)
