@@ -30,7 +30,7 @@ For each leaf node in the issue tree, create a ResearchTask:
 
 6. **End product:** Specific output format. Examples: "comparison table with 8+ competitors", "sensitivity analysis with +/-20% assumption variation", "regulatory timeline by jurisdiction".
 
-7. **Assigned tools:** 3-5 MCP tools per task. Choose from: exa_search, brave_search, news_search, sec_filings, financial_data_api, academic_search, patent_search, government_search, doi_lookup, fred_api, industry_reports.
+7. **Assigned tools:** 3-5 MCP tools per task. Choose ONLY from this exact list: exa_search, brave_search, edgar_filings, fred_data, finnhub_market, paper_search, doi_verify. Do NOT use any tool names not in this list.
 
 8. **Decision usefulness:** 1-5 scale. Client-facing tasks must be >= 3.
 
@@ -55,7 +55,7 @@ Respond with ONLY a JSON object:
       "deliverable_destination": "Section 2: Market Landscape",
       "priority": 1,
       "anti_confirmatory_framing": "Evaluate whether..., including evidence both for and against",
-      "assigned_tools": ["exa_search", "brave_search", "sec_filings"],
+      "assigned_tools": ["exa_search", "brave_search", "edgar_filings"],
       "assigned_model": "standard",
       "end_product": "Specific deliverable format",
       "dependencies": [],
