@@ -26,7 +26,7 @@ from keystone.events import (
     ResearchStarted,
     SourceFound,
 )
-from keystone.gateway.mcp_gateway import MCPGateway, ToolCall, ToolResult
+from keystone.gateway.mcp_gateway import MCPGateway, ToolCall
 from keystone.models.agents import AgentInstance
 from keystone.models.citations import Citation, SourceType
 from keystone.models.research import EngagementSpec, StructuredFinding
