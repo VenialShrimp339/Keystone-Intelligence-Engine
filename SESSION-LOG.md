@@ -875,3 +875,162 @@ Two passes. Pass 1 (orientation): read all core project files (CLAUDE.md, CURREN
 1. Component #7 (Research Agent Pipeline) -- first real LLM integration
 2. Exa and Brave Search API keys needed
 3. Start with single-agent, single-round, then expand
+
+---
+
+## Session 16: Planning + Orchestration (OpenAI Switchover)
+- **Date:** 2026-04-06
+- **Agent:** Claude Code (Opus 4.6, 1M context)
+- **Task:** Plan and orchestrate the OpenAI provider switchover. Produce Wave 1-3 session prompts. Pre-wave audit. Project root cleanup.
+
+### Key outputs
+- Wave 1-3 session prompts written and dispatched
+- Pre-wave audit found StructuredFinding model gaps (missing `agent_type` and `tokens_consumed` fields) -- fixed in `629efa5`
+- 5 missing files in Session 1 prompt identified and fixed
+- Project root cleaned: 12 spent prompt files deleted, 4 reference files moved to `reference/`
+- Git repository initialized with baseline commit (`902e755`)
+
+### Files created/modified
+- `WAVE-2-SESSION-PROMPTS.md`, `WAVE-3-SESSION-PROMPTS.md` -- Session prompts for downstream waves
+- `reference/SESSION-HANDOFF-SCAFFOLDING.md`, `reference/PARALLEL-EXECUTION-PLAN.md`, `reference/COWORK-SESSION-HISTORY-CONDENSED.md`, `reference/RESEARCH-PROMPTS-FINAL.md` -- Moved from root
+
+### Key decisions
+- Three-wave execution: Wave 1 (provider swap + prompts + CitationProcessor), Wave 2 (Research Agents + Deliberation), Wave 3 (LLM client + pipeline + test gaps)
+- OpenAI GPT-5.4 as primary model, GPT-5.4-mini as fast model
+- Provider swap is config-level, not architecture-level -- no contract changes needed
+
+### What comes next
+Wave 1 sessions begin immediately.
+
+---
+
+## Session 1A-7: Provider Config Swap (Wave 1)
+- **Date:** 2026-04-06
+- **Agent:** Claude Code (Opus 4.6)
+- **Task:** Swap provider configuration from Anthropic to OpenAI. Rename ModelTier values, update config defaults, update sample fixtures.
+
+### Files modified (18)
+- `src/keystone/models/agents.py` -- ModelTier values updated (FLAGSHIP/STANDARD/FAST)
+- `src/keystone/models/config.py` -- Default models changed to gpt-5.4/gpt-5.4-mini, provider settings updated
+- `src/keystone/models/tasks.py` -- ModelTier references updated
+- `.env.example` -- OPENAI_API_KEY replaces ANTHROPIC_API_KEY, model names updated
+- `pyproject.toml` -- openai replaces anthropic in dependencies
+- `samples/` -- 3 research-tasks.json files updated with new ModelTier values
+- `schemas/research_tasks.schema.json` -- ModelTier enum values updated
+- `templates/research-tasks.json.template` -- ModelTier updated
+
+### What comes next
+Wave 1 continues with prompt migration.
+
+---
+
+## Session 1A-8: Prompt Migration for GPT-5.4 (Wave 1)
+- **Date:** 2026-04-06
+- **Agent:** Claude Code (Opus 4.6)
+- **Task:** Migrate all 22 prompt template files to GPT-5.4 format. Update model-specific instructions, remove Claude-specific directives.
+
+### Files modified (22 prompt files)
+- `src/keystone/evaluator/prompts/` -- 14 prompt templates updated
+- `src/keystone/specification/prompts/` -- 8 prompt templates updated
+
+### Key decisions
+- Prompts restructured for GPT-5.4's instruction-following strengths
+- Claude-specific features (extended thinking, artifact format) removed
+- JSON output instructions standardized across all prompts
+
+### What comes next
+CitationProcessor build (last Wave 1 component).
+
+---
+
+## Session 1A-9: Component #8 -- CitationProcessor MVP (Wave 1)
+- **Date:** 2026-04-06
+- **Agent:** Claude Code (Opus 4.6)
+- **Task:** Build Component #8 (CitationProcessor) -- the pipeline stage between L1 Research Agents and L1.5 Deliberation. Cross-agent dedup, corroboration scoring, URL verification, citation manifest production.
+
+### Files created
+- `src/keystone/citation/processor.py` (188 lines) -- CitationProcessor implementing CitationProcessorContract
+- `tests/unit/citation/__init__.py`
+- `tests/unit/citation/test_processor.py` (414 lines, 15 tests)
+
+### Files modified
+- `src/keystone/citation/__init__.py` -- Added CitationProcessor to exports
+
+### Test results
+15 new tests passing.
+
+### Key decisions
+- Reuses existing `citation/dedup.py`, `citation/hash.py`, `citation/url_check.py` utilities
+- Satisfies CitationProcessorContract Protocol (isinstance verified)
+- Events: CitationDeduped, CorroborationScored, URLVerified, ManifestProduced
+
+### What comes next
+Wave 2: Component #7 (Research Agents) and Component #9 (Deliberation).
+
+---
+
+## Session 1A-10: Component #7 -- Research Agent Pipeline (Wave 2)
+- **Date:** 2026-04-06
+- **Agent:** Claude Code (Opus 4.6)
+- **Task:** Build Component #7 (Research Agents) -- the L1 parallel research pipeline. Agent isolation, task claiming, finding synthesis, error recovery, multi-round context loading, agent pool management.
+
+### Files created (7 source modules, 1,187 lines)
+- `src/keystone/research/__init__.py` (34 lines) -- Module exports
+- `src/keystone/research/research_agent.py` (369 lines) -- Main agent implementing ResearchAgentContract
+- `src/keystone/research/agent_pool.py` (163 lines) -- Pool management for parallel agent execution
+- `src/keystone/research/task_claimer.py` (77 lines) -- Atomic task claiming with concurrency safety
+- `src/keystone/research/finding_writer.py` (210 lines) -- StructuredFinding production from raw LLM output
+- `src/keystone/research/isolation.py` (114 lines) -- Agent isolation boundaries (context, tools, state)
+- `src/keystone/research/error_recovery.py` (145 lines) -- Retry, fallback, dead-letter for agent failures
+- `src/keystone/research/context_loader.py` (75 lines) -- JIT wiki context for round N+1
+
+### Test files (7 files, 64 tests)
+- `tests/unit/research/test_research_agent.py` -- 10 tests (full pipeline, contract, rounds, events)
+- `tests/unit/research/test_agent_pool.py` -- 16 tests (parallel execution, scaling, failure isolation)
+- `tests/unit/research/test_task_claimer.py` -- 6 tests (claiming, concurrency, exhaustion)
+- `tests/unit/research/test_finding_writer.py` -- 16 tests (claim extraction, citation linking, absence reports)
+- `tests/unit/research/test_isolation.py` -- 6 tests (context isolation, tool subsetting, state boundaries)
+- `tests/unit/research/test_error_recovery.py` -- 10 tests (retry, backoff, dead-letter, recovery)
+
+### Key decisions
+- Multi-round research: agents can iterate (3 rounds default, configurable)
+- Context loader reads compiled wiki for rounds 2+ (Karpathy pattern)
+- Error recovery: 3 retries with exponential backoff, dead-letter after exhaustion
+- Agent pool manages parallel execution with configurable concurrency
+
+### What comes next
+Component #9 (Deliberation) in same wave.
+
+---
+
+## Session 1A-11: Component #9 -- Deliberation (Wave 2)
+- **Date:** 2026-04-06
+- **Agent:** Claude Code (Opus 4.6)
+- **Task:** Build Component #9 (Deliberation / L1.5) -- independent parallel analysis followed by structured aggregation. ACH, quantitative, adversarial, and historical analogy analysts. WWHTB challenge. Gap detection. Confidence map production. HITL Gate 2 integration.
+
+### Files created (6 source modules, 980 lines)
+- `src/keystone/deliberation/__init__.py` (41 lines) -- Module exports
+- `src/keystone/deliberation/deliberation.py` (187 lines) -- Main orchestrator implementing DeliberationContract
+- `src/keystone/deliberation/analyst.py` (224 lines) -- Independent analyst with methodology-specific prompts
+- `src/keystone/deliberation/aggregator.py` (208 lines) -- Structured claim aggregation across analysts
+- `src/keystone/deliberation/confidence_builder.py` (197 lines) -- ConfidenceMap production from aggregated claims
+- `src/keystone/deliberation/gap_detector.py` (55 lines) -- Finding gap and blind spot detection
+- `src/keystone/deliberation/wwhtb.py` (68 lines) -- "What Would Have To Be True" challenge
+
+### Test files (6 files, 78 tests)
+- `tests/unit/deliberation/test_deliberation.py` -- 14 tests (full pipeline, events, HITL, contract)
+- `tests/unit/deliberation/test_analyst.py` -- 16 tests (all 4 analyst types, claim scoring)
+- `tests/unit/deliberation/test_aggregator.py` -- 18 tests (claim merging, agreement ratios, judge selection)
+- `tests/unit/deliberation/test_confidence_builder.py` -- 16 tests (tier assignment, map completeness)
+- `tests/unit/deliberation/test_gap_detector.py` -- 8 tests (gap identification, blind spots)
+- `tests/unit/deliberation/test_wwhtb.py` -- 6 tests (assumption extraction, challenge generation)
+
+### Key decisions
+- Two-phase deliberation: Phase 1 (independent parallel analysis, no inter-agent communication) then Phase 2 (structured aggregation)
+- 4 default analyst types: ACH, Quantitative, Adversarial, Historical Analogy
+- Claim-level selection over synthesis (81% vs 51.2% accuracy per Batch 2 research)
+- HITL Gate 2 conditional on db_session_factory (skipped in tests without DB)
+- Confidence map uses 5-tier system matching models/confidence.py
+
+### What comes next
+Wave 3: LLM client, pipeline orchestrator, test gap coverage.

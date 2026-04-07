@@ -1,15 +1,18 @@
 """End-to-end tests for the Deliberation orchestrator.
 
 Validates: event ordering, contract compliance, HITL gate skip,
-confidence map production, and engagement context propagation.
+HITL gate positive path, confidence map production, and engagement
+context propagation.
 """
 
 from __future__ import annotations
 
 import json
 from datetime import UTC, datetime
+from unittest.mock import AsyncMock, patch
 
 import pytest
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from keystone.contracts import DeliberationContract
 from keystone.deliberation.deliberation import Deliberation
@@ -19,6 +22,8 @@ from keystone.events import (
     ConfidenceMapProduced,
     IndependentAnalysisComplete,
 )
+from keystone.hitl.models import Base
+from keystone.hitl.schemas import GateResponse, GateStatus, GateType
 from keystone.models.agents import DeliberationAnalystType
 from keystone.models.citations import (
     Citation,
@@ -217,6 +222,48 @@ class TestHITLGate:
         events = await _collect_events(delib, _manifest(), findings)
 
         assert any(isinstance(e, ConfidenceMapProduced) for e in events)
+
+    @pytest.mark.asyncio
+    async def test_gate_triggered_with_db_session_factory(self) -> None:
+        """HITL Gate 2 fires when db_session_factory is provided (positive path)."""
+        # Real in-memory SQLite database
+        engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        session_factory = async_sessionmaker(engine, expire_on_commit=False)
+
+        # Mock create_and_wait_for_gate to auto-approve
+        mock_gate_response = GateResponse(
+            id="gate-001",
+            engagement_id="ENG-001",
+            client_id="CLT-001",
+            gate_type=GateType.POST_DELIBERATION,
+            status=GateStatus.APPROVED,
+            created_at=datetime.now(UTC),
+        )
+        mock_create_gate = AsyncMock(return_value=mock_gate_response)
+
+        findings = [_finding("agent-1", [_fc("Claim", 0.8)])]
+        delib = Deliberation(
+            analyst_llm=_mock_llm(),
+            db_session_factory=session_factory,
+        )
+
+        with patch(
+            "keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate
+        ):
+            events = await _collect_events(delib, _manifest(), findings)
+
+        # Gate was called with correct gate_type
+        mock_create_gate.assert_awaited_once()
+        assert mock_create_gate.call_args.kwargs["gate_type"] == GateType.POST_DELIBERATION
+
+        # Pipeline still completed normally
+        assert any(isinstance(e, ConfidenceMapProduced) for e in events)
+        cm = await delib.get_confidence_map()
+        assert isinstance(cm, ConfidenceMap)
+
+        await engine.dispose()
 
 
 # ---------------------------------------------------------------------------
