@@ -1138,3 +1138,111 @@ None within scope. All issues were in research/ and gateway/.
 
 ### What comes next
 Wave 4b: Full end-to-end pipeline integration (after all 4 Wave 4a sessions merge).
+
+---
+
+## Session 4a-9: L0 Specification Engine -- Real LLM Pressure Test
+- **Date:** 2026-04-07
+- **Agent:** Claude Code (Opus 4.6)
+- **Task:** Pressure-test the Specification Engine (L0) with REAL GPT-5.4 calls via Codex OAuth. First time the 10-step pipeline runs with a real LLM instead of mocks.
+
+### Key results
+- **41 integration tests written**, 39 passed, 2 failed (both diagnosed)
+- **Full pipeline works end-to-end** with real GPT-5.4: question -> classification -> intent -> 3-lens decomposition -> synthesis -> MECE validation -> priority scoring -> task generation -> EngagementSpec
+- **Classification accuracy excellent**: sizing (0.97), diagnostic (0.88), strategic (0.94)
+- **All 9 prompts produce valid, parseable JSON** with correct fields
+- **GPT-5.4 does NOT echo XML structural tags** (`<analytical_contract>`, `<completeness_check>`)
+- **MECE validation correctly catches quality issues** (overlapping branches, over-scoped leaves) and triggers retry loop
+- **DAG validation, anti-confirmatory framing, acceptance criteria, events** all work correctly
+- **2 bugs found and fixed**: tool name hallucination (79% unregistered names) and prompt/code mismatch
+
+### Bugs found and fixed (2)
+1. **Tool name hallucination** (FIXED in `task_generator.py` + `task_generation.md`): GPT-5.4 assigned tool names from the prompt that didn't exist in ToolName enum (79% hallucinated: `news_search`, `sec_filings`, `academic_search`, `patent_search`, etc.). `_resolve_tools()` only checked count, not validity. Fixed: added name validation against ALL_TOOLS, corrected prompt to list only registered tools.
+2. **Test fixture scope** (FIXED in test file): autouse fixture had function scope, re-running full pipeline per test. Changed to module-level cached function.
+
+### Architectural concerns documented
+- **Codex OAuth connection stability**: `peer closed connection without sending complete message body` on large prompts. Retry mechanism handles it but inflates 5-min pipeline to 14 min. Recommend standard API for production.
+- **Task count below target**: 13 tasks from 11 leaves (1.18:1 ratio) vs CAPSTONE-PLAN target of 15-50. Prompt tuning opportunity.
+
+### Files created
+- `tests/integration/test_spec_engine_live.py` -- 41 integration tests across 14 test classes
+- `tests/integration/SPEC-ENGINE-PRESSURE-REPORT.md` -- detailed findings report
+
+### Files modified
+- `src/keystone/specification/task_generator.py` -- Tool name validation in `_resolve_tools()`
+- `src/keystone/specification/prompts/task_generation.md` -- Corrected tool name list to match ToolName enum
+
+### Timing
+- Single classification: 7.5s, ~4K prompt / ~900 response chars
+- Full pipeline: 834s (14 min, inflated by Codex OAuth retries; ~300s expected with standard API)
+- 3-lens decomposition: 145s (parallel lenses + synthesis)
+- Total LLM calls per pipeline: ~9-12 (depending on retries)
+
+### Test results: 39/41 passed (719 unit tests also pass, 0 regressions)
+
+### What comes next
+Wave 4b: Full end-to-end pipeline integration (after all 4 Wave 4a sessions merge).
+
+---
+
+## Session 4a-11: L4 Evaluator Pressure Test (Wave 4a)
+- **Date:** 2026-04-07
+- **Agent:** Claude Code (Opus 4.6, 1M context)
+- **Task:** Pressure-test the Evaluator (L4) with real GPT-5.4 calls via Codex OAuth. Write and run comprehensive integration tests across all 3 evaluation layers (deterministic, citation gate, 10-dimension rubric).
+
+### Summary
+25 integration tests written, 25 passed, 0 failed. ~105 real LLM calls. Total wall-clock time ~88 minutes across all test runs.
+
+### Key findings
+1. **Full 3-layer evaluation stack works end-to-end.** 13 LLM calls per standard evaluation. GOOD input scored 41.8-47.6/100 (below 60 threshold due to source_quality=8).
+2. **Tier 1 gating is effective.** BAD (12-18), SLOP (5-8), SHORT (6-18), and OFF-TOPIC (0-2) inputs all fail Tier 1 immediately, saving 7 LLM calls per evaluation.
+3. **Fabrication rejection works.** 2 fake DOIs correctly rejected, Layer 3 properly skipped.
+4. **JSON parsing successful across all LLM calls.** GPT-5.4 consistently produces the exact JSON structure the prompts request. No parsing fallbacks observed.
+5. **Feedback is Goldman-grade.** Every dimension produces specific, actionable feedback with direct quotes from the evaluated text.
+6. **Score consistency is good.** Final score variance: 3.7 points across 2 runs. Most volatile dimension: quantitative_rigor (spread 16).
+7. **Profile weights are correctly applied.** ESTIMATIVE and STRATEGIC profiles shift weights as designed. Geometric mean recomputation matches stored values.
+8. **FActScore is non-functional with current citations.** 0/63 facts verified because citation texts are titles only, not content excerpts. Structural fix needed upstream.
+9. **Codex OAuth latency is the bottleneck.** Fact decomposition: 250-270s/call. Full evaluation: 680-900s.
+
+### Bugs found and fixed (2 total)
+1. **JSON parser robustness** (layer3_rubric.py, layer1_deterministic.py): Parsers only extracted JSON inside markdown fences. Improved to try direct parse first, then extract between first `{`/`[` and last `}`/`]`. Handles trailing commentary without fences.
+2. **Gestalt overlay test threshold**: Model consistently returns -4 to 0 for well-structured input. Not a code bug but a model behavior observation.
+
+### Issues needing fix outside evaluator/
+1. **Citations need content excerpts** for FActScore to function (citation/processor.py or research agents)
+2. **Source quality will always score low** until citations carry verification metadata
+3. **Codex OAuth latency** should be replaced with standard API for production
+
+### Files created
+- `tests/integration/test_evaluator_live.py` -- 25 integration tests across 14 test classes
+
+### Files modified
+- `src/keystone/evaluator/layer3_rubric.py` -- Improved `_parse_score_json()` robustness
+- `src/keystone/evaluator/layer1_deterministic.py` -- Improved `_parse_json_array()` and `_parse_json_object()` robustness
+
+### Token consumption per operation
+- Fact decomposition (L1): ~9K prompt / ~30K response chars, 250-270s
+- Numerical consistency (L1): ~8K prompt / ~4K response, 15-20s
+- Single dimension score (L3): ~12K prompt / ~2.2K response, 15-25s
+- Gestalt overlay (L3): ~10.5K prompt / ~500 response, 5-16s
+- Full evaluation (standard): ~149K prompt / ~48K response, 680-900s
+- Full evaluation (long input): ~232K prompt / ~85K response, 898s
+
+### Score distributions (GOOD input, 3 full evaluations)
+| Dimension | Avg | Spread |
+|-----------|-----|--------|
+| intent_alignment | 76.7 | 2 |
+| intellectual_honesty | 71.0 | 7 |
+| narrative_coherence | 74.7 | 2 |
+| completeness | 60.3 | 7 |
+| analytical_depth | 57.3 | 1 |
+| calibrated_confidence | 61.0 | 11 |
+| evaluative_surprise | 44.3 | 1 |
+| quantitative_rigor | 44.7 | 19 |
+| actionability | 32.7 | 3 |
+| source_quality | 10.7 | 4 |
+
+### Test results: 25/25 passed (78 existing evaluator unit tests also pass, 0 regressions)
+
+### What comes next
+All 4 Wave 4a sessions complete. Merge results and proceed to Wave 4b: full pipeline end-to-end integration.

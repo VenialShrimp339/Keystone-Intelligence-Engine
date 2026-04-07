@@ -97,7 +97,13 @@ def _extract_json_text(response: str) -> str:
                         json.loads(candidate)
                         return candidate
                     except json.JSONDecodeError:
-                        break
+                        # Try stripping trailing commas (common LLM output error)
+                        cleaned = re.sub(r",\s*([}\]])", r"\1", candidate)
+                        try:
+                            json.loads(cleaned)
+                            return cleaned
+                        except json.JSONDecodeError:
+                            break
 
     return text
 MAX_ROUNDS = 5

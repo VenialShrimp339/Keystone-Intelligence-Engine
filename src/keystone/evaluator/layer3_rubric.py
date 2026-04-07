@@ -184,17 +184,25 @@ class Layer3RubricScorer:
 
 
 def _parse_score_json(raw: str) -> dict:
-    """Extract JSON from LLM output, tolerating markdown fences."""
+    """Extract JSON from LLM output, tolerating markdown fences and trailing text."""
     text = raw.strip()
-    if "```" in text:
-        start = text.find("{")
-        end = text.rfind("}")
-        if start != -1 and end != -1:
-            text = text[start : end + 1]
+    # Try direct parse first (fastest path)
     try:
         result = json.loads(text)
         if isinstance(result, dict):
             return result
     except json.JSONDecodeError:
-        logger.warning("Failed to parse score JSON from LLM output")
+        pass
+    # Extract JSON object between first '{' and last '}' (handles markdown
+    # fences, trailing commentary, and leading text)
+    start = text.find("{")
+    end = text.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        try:
+            result = json.loads(text[start : end + 1])
+            if isinstance(result, dict):
+                return result
+        except json.JSONDecodeError:
+            pass
+    logger.warning("Failed to parse score JSON from LLM output: %.100s...", text)
     return {}

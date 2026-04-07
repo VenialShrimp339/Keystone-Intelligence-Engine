@@ -732,9 +732,7 @@ class TestJsonParsing:
         """_parse_score_json should handle JSON with trailing text."""
         raw = '{"score": 60, "feedback": "test"}\n\nHere is some commentary.'
         parsed = _parse_score_json(raw)
-        # This may or may not parse depending on implementation
-        # The key is it doesn't crash
-        assert isinstance(parsed, dict)
+        assert parsed["score"] == 60, "Parser should extract JSON despite trailing text"
 
     def test_parse_score_json_handles_garbage(self):
         """_parse_score_json should return empty dict on garbage input."""

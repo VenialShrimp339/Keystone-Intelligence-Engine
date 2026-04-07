@@ -135,7 +135,8 @@ async def _call_standard_api(
     kwargs: dict = {"model": model_id, "input": prompt}
     if effort:
         kwargs["reasoning"] = {"effort": effort}
-    response = await client.responses.create(**kwargs)
+    async with asyncio.timeout(300):  # 5-minute ceiling per API call
+        response = await client.responses.create(**kwargs)
     return response.output_text
 
 
@@ -165,10 +166,11 @@ async def _call_codex_oauth(
         kwargs["reasoning"] = {"effort": effort}
 
     text_parts: list[str] = []
-    async with client.responses.stream(**kwargs) as stream:
-        async for event in stream:
-            if event.type == "response.output_text.delta":
-                text_parts.append(event.delta)
+    async with asyncio.timeout(300):  # 5-minute ceiling per streaming call
+        async with client.responses.stream(**kwargs) as stream:
+            async for event in stream:
+                if event.type == "response.output_text.delta":
+                    text_parts.append(event.delta)
     return "".join(text_parts)
 
 

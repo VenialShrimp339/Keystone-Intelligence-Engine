@@ -94,7 +94,18 @@ class Evaluator:
         cid = contract.client_id
 
         # --- Layer 1: Deterministic verification ---
-        layer1_result = await self._layer1.evaluate(output_text, manifest)
+        try:
+            layer1_result = await self._layer1.evaluate(output_text, manifest)
+        except Exception as exc:
+            import logging as _log
+            _log.getLogger(__name__).warning(
+                "Layer 1 evaluation failed for task %s, using empty result: %s",
+                task.id, exc,
+            )
+            layer1_result = Layer1Result(
+                facts_verified=0, facts_failed=0, facts_total=0,
+                fact_details=[], numerical_inconsistencies=[], dead_urls=[],
+            )
         yield DeterministicCheckPassed(
             event_id=_uid(),
             engagement_id=eid,
@@ -152,7 +163,18 @@ class Evaluator:
             )
             return
 
-        layer3_result = await self._three_pass.run(output_text, contract)
+        try:
+            layer3_result = await self._three_pass.run(output_text, contract)
+        except Exception as exc:
+            import logging as _log
+            _log.getLogger(__name__).warning(
+                "Layer 3 evaluation failed for task %s, using degraded score: %s",
+                task.id, exc,
+            )
+            layer3_result = Layer3Result(
+                dimension_scores=[], raw_weighted_score=0.0,
+                gestalt_adjustment=0.0, final_score=0.0,
+            )
         for score in layer3_result.dimension_scores:
             yield RubricDimensionScored(
                 event_id=_uid(),

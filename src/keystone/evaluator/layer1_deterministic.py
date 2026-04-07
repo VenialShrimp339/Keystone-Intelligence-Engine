@@ -113,34 +113,44 @@ class Layer1Evaluator:
 
 
 def _parse_json_array(raw: str) -> list[dict]:
-    """Extract a JSON array from LLM output, tolerating markdown fences."""
+    """Extract a JSON array from LLM output, tolerating markdown fences and trailing text."""
     text = raw.strip()
-    if "```" in text:
-        start = text.find("[")
-        end = text.rfind("]")
-        if start != -1 and end != -1:
-            text = text[start : end + 1]
     try:
         result = json.loads(text)
         if isinstance(result, list):
             return result
     except json.JSONDecodeError:
-        logger.warning("Failed to parse JSON array from LLM output")
+        pass
+    start = text.find("[")
+    end = text.rfind("]")
+    if start != -1 and end != -1 and end > start:
+        try:
+            result = json.loads(text[start : end + 1])
+            if isinstance(result, list):
+                return result
+        except json.JSONDecodeError:
+            pass
+    logger.warning("Failed to parse JSON array from LLM output: %.100s...", text)
     return []
 
 
 def _parse_json_object(raw: str) -> dict:
-    """Extract a JSON object from LLM output, tolerating markdown fences."""
+    """Extract a JSON object from LLM output, tolerating markdown fences and trailing text."""
     text = raw.strip()
-    if "```" in text:
-        start = text.find("{")
-        end = text.rfind("}")
-        if start != -1 and end != -1:
-            text = text[start : end + 1]
     try:
         result = json.loads(text)
         if isinstance(result, dict):
             return result
     except json.JSONDecodeError:
-        logger.warning("Failed to parse JSON object from LLM output")
+        pass
+    start = text.find("{")
+    end = text.rfind("}")
+    if start != -1 and end != -1 and end > start:
+        try:
+            result = json.loads(text[start : end + 1])
+            if isinstance(result, dict):
+                return result
+        except json.JSONDecodeError:
+            pass
+    logger.warning("Failed to parse JSON object from LLM output: %.100s...", text)
     return {}

@@ -160,9 +160,15 @@ class TaskGenerator:
         engagement_type: EngagementType,
     ) -> list[str]:
         """Resolve tool assignments: use LLM-provided if valid, else template match."""
+        from keystone.tool_names import ALL_TOOLS
+
+        registered = set(ALL_TOOLS)
         tools = task_data.get("assigned_tools", [])
-        if isinstance(tools, list) and 3 <= len(tools) <= 5:
-            return tools
+        if isinstance(tools, list):
+            # Filter to only registered tool names
+            valid_tools = [t for t in tools if t in registered]
+            if 3 <= len(valid_tools) <= 5:
+                return valid_tools
 
         # Fall back to template tools
         temp_task = ResearchTask(
