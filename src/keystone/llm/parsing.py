@@ -24,6 +24,7 @@ class ParseError(Exception):
 
     def __init__(self, message: str, raw_text: str) -> None:
         super().__init__(message)
+        self.message = message
         self.raw_text = raw_text
 
 

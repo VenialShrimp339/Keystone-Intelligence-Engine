@@ -194,7 +194,9 @@ class Aggregator:
                 if b_idx in claim_by_idx:
                     claim_by_idx[b_idx].consistency_passed = False
         except (ParseError, KeyError):
-            pass
+            logger.warning(
+                "Consistency check parse failed, all claims default to consistency_passed=True"
+            )
 
     @staticmethod
     def _build_unscored(claim: InputClaim) -> AggregatedClaim:
