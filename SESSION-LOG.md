@@ -1246,3 +1246,298 @@ Wave 4b: Full end-to-end pipeline integration (after all 4 Wave 4a sessions merg
 
 ### What comes next
 All 4 Wave 4a sessions complete. Merge results and proceed to Wave 4b: full pipeline end-to-end integration.
+
+---
+
+## Session 17a: Comprehensive Project Audit + Architecture Document
+- **Date:** 2026-04-09
+- **Agent:** Claude Code (Opus 4.6, 1M context) orchestrator + 5 parallel Opus audit agents
+- **Duration:** ~3 hours total
+- **Task:** Deep audit of the entire project across 5 dimensions, synthesis into a definitive architecture document for Prof. Youle, directory cleanup, README rewrite, setup/demo scripts.
+
+### Approach
+Phase 1: Orchestrator read all core project files (CURRENT-STATE, SESSION-LOG, CAPSTONE-PLAN-v2, JACK-ARCHITECTURAL-DIRECTIVES, all audit outputs, all synthesis docs, cowork history). Phase 2: Spawned 5 parallel Opus agents, each auditing a different dimension. Phase 3: Orchestrator synthesized all 5 audit outputs into a comprehensive document. Phase 4: Iterative revision pass reading as the professor. Phase 5: Directory cleanup, README, scripts via 3 parallel sessions.
+
+### Files created
+- `audit/comprehensive/decision-provenance.md` (43KB) -- 15 decisions traced to sources, provenance confidence HIGH on 12/15
+- `audit/comprehensive/implementation-verification.md` (40KB) -- 10/11 components BUILT, 22 acceptance criteria MET, 8 PARTIAL, 4 NOT MET
+- `audit/comprehensive/evolution-timeline.md` (58KB) -- Complete chronological narrative, 6 inflection points, 5 design reversals, 6 rationale-at-risk items
+- `audit/comprehensive/context-recovery.md` (40KB) -- Nate Jones corpus traced (30+ citations), 7 unincorporated insights surfaced, prompt quality audit documented
+- `audit/comprehensive/build-methodology.md` (63KB) -- Three-tool workflow, CLAUDE.md design rationale, 4-layer quality verification, 10 emerged principles
+- `docs/architecture-and-evolution.md` (9,300 words) -- Definitive architecture document: system overview, evolution narrative, 5 design reversals, per-component deep dives, research process, build methodology, roadmap
+- `docs/roadmap/full-product-vision.md` -- Complete product vision: UI, retrieval stack, self-improvement, output generation, infrastructure, prioritized deferred items
+- `scripts/setup.sh` -- Interactive setup (Python check, venv, deps, API key prompts)
+- `scripts/run_demo.sh` -- Pipeline demo runner
+
+### Files modified
+- `README.md` -- Complete rewrite (from stale 73 lines to current ~120 lines with quick start, directory guide, status)
+- `.env.example` -- Simplified for MVP (3 required keys, Phase 2 items commented out)
+- `.gitignore` -- Added reference/nano-claude-code/
+- Moved 5 WAVE-*.md files to `reference/session-prompts/`
+- Moved 3 OPENAI-SWITCHOVER-*.md to `reference/openai-switchover/`
+- Moved 12 old professor docs to `docs/archive/`
+
+### Key decisions
+1. Architecture doc written as narrative, not patchwork of audit outputs. Every claim verified against audit material.
+2. Five design reversals (debate, isolation, evaluator, aggregation, rubric) presented as the centerpiece story.
+3. Identified MECE casing-book gap (Directive 12 not yet executed). Added honest disclosure to the doc.
+4. Identified research depth gap (50-150 sources vs 3,000-8,000 in Jack's summer workflow). Led to Session 18.
+5. Roadmap structured into 4 phases with prioritized items and effort estimates.
+
+---
+
+## Session 17b: Claude CLI Provider Switchover
+- **Date:** 2026-04-09
+- **Agent:** Claude Code (Opus 4.6)
+- **Duration:** ~30 min
+- **Task:** Replace Codex OAuth LLM transport with Claude CLI (`claude -p`) running on Max subscription.
+
+### Files modified
+- `src/keystone/llm_client.py` -- Added `_call_claude_cli()`, `CLAUDE_MODEL_MAP`, `CLAUDE_EFFORT_MAP`, `_claude_semaphore`, `_resolve_provider()` routing
+- `src/keystone/models/config.py` -- Added `llm_provider` field, updated model defaults to Claude IDs
+- `.env` -- `LLM_PROVIDER=claude_cli`, Claude model IDs
+- `.env.example` -- Documented all provider options
+
+### Key findings during implementation
+- `--bare` breaks Max subscription auth (requires ANTHROPIC_API_KEY). Removed.
+- `--max-turns` flag doesn't exist. Removed (single-turn is default with `--tools ""`).
+- `--effort max` causes 2-3 minute waits. Changed FLAGSHIP to `high`.
+- `--tools ""` disables all tools (needed for pure LLM calls). `--allowedTools` whitelists specific tools.
+- `--system-prompt ""` strips CLAUDE.md injection (was causing 10x slowdown).
+
+### Test results
+- 721/721 unit tests pass
+- Smoke test: Opus 3.2s, Sonnet 2.6s, Haiku 2.9s (all clean JSON)
+- Pipeline runtime: ~15-20 min (down from 82 min on Codex OAuth, bounded by model inference)
+
+---
+
+## Session 17: First Real Pipeline Run (Wave 4b)
+- **Date:** 2026-04-09
+- **Agent:** Claude Code (Opus 4.6)
+- **Duration:** ~2.5 hours (including 82-minute pipeline run + diagnosis)
+- **Task:** Run the full DPVI pipeline end-to-end for the first time with real GPT-5.4 + real Exa/Brave search
+
+### Files created
+- `output/first_real_run/run_summary.md` -- detailed analysis of the first run
+- `output/first_real_run/test_log.txt` -- complete test output log
+
+### Files modified
+- `src/keystone/llm_client.py` -- added `service_tier: "fast"` to both API paths
+- `src/keystone/pipeline/orchestrator.py` -- added optional `max_eval_tasks` parameter
+- `tests/integration/test_pipeline_real.py` -- fixed `Citation.status` bug, added `max_eval_tasks=3`
+- `CURRENT-STATE.md` -- updated with Session 17 results
+- `SESSION-LOG.md` -- this entry
+
+### Key findings
+
+**The pipeline ran end-to-end.** All 6 stages executed: L0 (Specification) -> L1 (Research Agents) -> CitProc -> L1.5 (Deliberation) -> L4 (Evaluator) -> Markdown Render.
+
+**Stage timings (baseline service tier):**
+- L0: 1062.7s (17.7 min) -- 9 sequential LLM calls for spec generation
+- L1: 426 events -- 9+ agents, 3 rounds, real Exa/Brave search
+- CitProc: 22.1s -- URL liveness + dedup
+- L1.5: 1677.4s (28 min) -- 4 analysts + aggregation + WWHTB
+- L4: 2151.3s (35.9 min) -- 3 tasks evaluated (capped from 9+)
+
+**Three bugs found and fixed:**
+1. `service_tier: "fast"` was missing from API calls. All calls used baseline tier (~2-5 min/call). With fast tier, should drop to seconds/call. Estimated 82 min -> 5-10 min.
+2. Test referenced `Citation.status` which doesn't exist. Should be `Citation.url_live`. Crashed test before artifacts were saved.
+3. No way to cap L4 evaluation tasks. Added `max_eval_tasks` parameter to Pipeline.
+
+**Other issues observed:**
+- MECE validation failed 3/3 times (GPT-5.4 produces overlapping issue tree branches)
+- L4 Layer 1 connection drops ("peer closed connection") on 3/3 evaluated tasks. Graceful degradation worked.
+- Some citations have `content_snippet=None` (from stub tools, expected)
+
+### What comes next
+1. Re-run with `service_tier: "fast"` -- should complete in 5-10 min and save all artifacts
+2. Review deliverable quality
+3. Tune MECE validation prompts for GPT-5.4
+4. Investigate L4 Layer 1 connection reliability (may resolve with fast tier)
+
+---
+
+## Session 18: Deep Research Agent Architecture
+- **Date:** 2026-04-09
+- **Agent:** Claude Code (Opus 4.6, max effort)
+- **Duration:** ~60 min
+- **Task:** Redesign L1 research phase to achieve deep-research-level depth using `claude -p` with WebSearch + WebFetch tools.
+
+### The Problem
+Shallow research: 9 agents x 3 rounds x snippet-level results (1000 chars Exa, 150 chars Brave) = ~270 snippets in ~60s. No citation following, no full-page reading.
+
+### The Solution
+Hybrid architecture where L1 uses `claude -p --allowedTools "WebSearch,WebFetch"` for multi-turn web research, while L0/L1.5/L4 continue using `claude -p --tools ""` for fast controlled reasoning.
+
+### Files created
+- `tests/integration/test_deep_research.py` -- Single-task and full-pipeline deep research tests
+
+### Files modified
+- `src/keystone/llm_client.py` -- Added `_call_claude_cli_research()` (separate semaphore=5, 1200s timeout, --allowedTools WebSearch,WebFetch), `get_deep_research_callable()` factory
+- `src/keystone/research/research_agent.py` -- Added `deep_llm` parameter, `_execute_deep()` method (single-call deep research with JSON output), `_build_deep_research_prompt()`, `_parse_deep_response()`, source type inference from URL domains, graceful fallback to shallow on failure
+- `src/keystone/research/agent_pool.py` -- Added `deep_llm` parameter passthrough to ResearchAgent
+- `src/keystone/pipeline/orchestrator.py` -- Reads `DEEP_RESEARCH=1` env var, creates deep research callable for L1 AgentPool
+- `.env.example` -- Added DEEP_RESEARCH config documentation
+- `CURRENT-STATE.md` -- Updated to reflect deep research status
+
+### Key decisions
+1. **Option A (agent outputs JSON directly):** The claude -p prompt instructs the agent to output structured JSON matching FindingWriter's expected format. No second extraction call needed.
+2. **Separate semaphore (5 vs 10):** Deep research calls are heavier (5-15 min each vs 3-5s), so lower concurrency prevents resource exhaustion.
+3. **1200s timeout (configurable):** Initial 600s was insufficient. Deep research with 20+ claims can take 10-15 minutes. Configurable via `DEEP_RESEARCH_TIMEOUT` env var.
+4. **Graceful fallback:** Deep mode failure -> reset state -> run shallow mode. Pipeline never crashes due to deep research failure.
+5. **Source type inference:** URL domain patterns (sec.gov->FILING, arxiv->ACADEMIC, reuters->NEWS, etc.) applied to citations discovered during deep research.
+6. **No max-turns flag:** Multi-turn behavior happens naturally when tools (WebSearch, WebFetch) are available. `--max-turns` flag doesn't exist in claude CLI.
+
+### Test results
+- **Single-task deep research (confirmed):** 25 claims, 36 sources, all with real URLs. FindingWriter accepted output. Absence report: 15 items. Confidence range: 0.40-0.82.
+- **Timeout root cause identified:** Initial 600s timeout caused deep research to fall back to shallow mode. Increased to 1200s.
+- **Full pipeline test:** Deferred (concurrent claude -p sessions from within Claude Code session cause contention). Run standalone with: `DEEP_RESEARCH=1 .venv/bin/pytest tests/integration/test_deep_research.py::test_full_pipeline_deep_research -v -s`
+
+### Shallow vs Deep comparison (single task)
+| Metric | Shallow (Session 17) | Deep (Session 18) |
+|--------|---------------------|-------------------|
+| Claims | 5-10 | 25 |
+| Source URLs | 5 (mostly tool://) | 36 (real URLs) |
+| Citation quality | Snippet-level (150-1000 chars) | Full-page excerpts |
+| Time per task | ~60s | 5-15 min |
+| Absence report | Generic | 15 specific items |
+| Confidence range | N/A | 0.40-0.82 |
+
+### What comes next
+1. Run full pipeline test standalone with `DEEP_RESEARCH=1`
+2. Compare deep research deliverable quality to shallow
+3. Tune deep research prompt based on results
+4. Jack reviews the deep research deliverable
+
+---
+
+## Session 19: Remediation Phase 1D + Phase 2 (Design)
+- **Date:** 2026-04-11
+- **Agent:** Claude Code (Opus 4.6, 1M context)
+- **Task:** Execute Phases 1D and 2 of the remediation process. Consolidate all audit findings into a master issue list, draft architectural decisions, iterate through external reviews, and produce an implementation-ready decisions document.
+
+### Files created
+- `audit/remediation/MASTER-ISSUE-LIST.md` -- 68 unique issues deduplicated from ~123 gross findings. Organized by architectural decision (A-E) + documentation/schema/test categories.
+- `audit/remediation/decisions/FINAL-DECISIONS.md` -- v1 architectural decisions (superseded)
+- `audit/remediation/decisions/FINAL-DECISIONS-v2.md` -- v2 with 17 blocker fixes from reviews (superseded)
+- `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md` -- v2.1 FINAL. Zero Codex blockers. Implementation-ready.
+- `audit/remediation/decisions/REVIEW-SYNTHESIS.md` -- Cross-referencing both external reviews against actual code. 17 confirmed blockers, 3 overstated, 0 incorrect.
+- `audit/remediation/decisions/session-7-review.md` -- 5.4 Pro Session 7 architectural review output
+- `audit/remediation/decisions/codex-adversarial-review.md` -- Codex adversarial review of v1
+
+### Files modified
+- `SESSION-LOG.md` -- This entry
+- `CURRENT-STATE.md` -- Updated to reflect remediation design completion
+
+### Process
+1. **Phase 1D:** Read all 10 input files (EXECUTION-GUIDE, ROUND-2-CONTEXT, MASTER-REMEDIATION-PLAN, 7 round-2 outputs, canary test suite). Deduplicated ~123 findings into 68 unique issues across 5 systemic root causes.
+2. **Phase 2 v1:** Drafted 5 architectural decisions (A-E) based on 5.4 Pro Sessions 5-6 design proposals, evaluated each against codebase reality.
+3. **Codex adversarial review of v1:** 10 BLOCKERs found (frozen model mutations, enforcement matrix contradictions, wave ordering, test breakage).
+4. **5.4 Pro Session 7 review:** Architectural-level corrections. Key: move E before B, split L1 failure modes, resolve profile in L0.
+5. **REVIEW-SYNTHESIS:** Verified every blocker from both reviews against actual code. All 17 confirmed real.
+6. **Phase 2 v2:** Rewrote decisions with VERIFIED tags citing exact files/lines. Fixed all 17 blockers.
+7. **Codex re-review of v2:** 6 BLOCKERs found (circular import, missing edit files, test migration, labeling).
+8. **Phase 2 v2.1:** Fixed all 6. Codex re-review: 2 partial fixes (trivial). Applied final corrections. Zero blockers.
+
+### Key decisions
+1. **Dual-layer citation identity** (Decision A): source-instance IDs + canonical IDs post-dedup. Findings rewritten. Provenance carried through confidence map.
+2. **GovernanceState + enforcement matrix** (Decision B): 12-row matrix with scope (TASK/PIPELINE), N/A for inapplicable gates, split failure modes. Profile resolved in frozen ResearchSpec at L0 construction time.
+3. **PipelineProfile moved to models/research.py** to avoid circular import with engagement_classifier.py.
+4. **TaskImportance enum** (PRIMARY/CRITICAL/SUPPORTING/OPTIONAL) replaces boolean is_critical.
+5. **safe_llm_json** replaces all 6 existing JSON extractors. ParseError instead of silent fallbacks.
+6. **Per-run component construction** (Decision E1) with component-injection kwargs for testing.
+7. **Wave order:** 1A (E1+models) -> 1B (D parsing) -> 1C (A producers) -> 2A (A canonical) -> 2B (B governance) -> 3 (C+E2) -> 4 (polish).
+8. **HITL modified blocks pipeline** when patch not applied. Not log-and-continue.
+9. **B08 deferred to Phase 2** (iterative research reformulation). A13, A14, B07 deferred to Wave 3.
+
+### What comes next
+1. Start Wave 1A implementation in a fresh session using `claude --agent kie-implementer`
+2. Each wave gets Codex adversarial review before next wave starts
+3. Implementation follows BUILD-PROCESS.md exactly
+
+---
+
+## Session 20: Wave 1 Implementation (1A + 1B + 1C)
+- **Date:** 2026-04-11
+- **Agent:** Claude Code (Opus 4.6, 1M context) as team lead, with kie-implementer and kie-reviewer subagents
+- **Task:** Implement Waves 1A, 1B, and 1C from FINAL-DECISIONS-v2.md using agent teams (Lead + Implementer + Reviewer pattern).
+
+### Approach
+Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: spawned fresh kie-implementer and kie-reviewer agents, created sequential tasks with dependencies, implementer worked one task at a time with test verification, reviewer verified each change against the design doc before the next task started. Lead (this session) coordinated, triaged reviewer findings, and ran adversarial reviews between waves.
+
+### Commits (6 total)
+1. `9893a4d` -- Wave 1A: per-run lifecycle isolation + concurrency fixes (Decision E)
+2. `0344fb2` -- Wave 1B: unified LLM output parsing standard (Decision D)
+3. `884552f` -- Fix ParseError.message attribute and aggregator consistency_check logging
+4. `1583d03` -- Wave 1C: citation identity foundation + error recovery (Decision A producers + B prereqs)
+5. `38bba2a` -- Fix task manifest dedup regression and task generator validation gap
+
+### Wave 1A: Instance Lifecycle & Concurrency (Decision E)
+**Files modified (7):**
+- `src/keystone/pipeline/orchestrator.py` -- Per-run component construction via `_build_components()` and `PipelineComponents` dataclass. `__init__` stores only factories. `_pending_components` for test injection.
+- `src/keystone/deliberation/deliberation.py` -- `asyncio.gather` with `return_exceptions=True`. Failed analysts logged and excluded.
+- `src/keystone/llm_client.py` -- `try/finally` subprocess cleanup with `asyncio.shield(proc.wait())`. Unified legacy OpenAI auth resolver.
+- `src/keystone/gateway/circuit_breaker.py` -- HALF_OPEN holds lock through probe. `except BaseException` for CancelledError.
+- `tests/unit/pipeline/test_orchestrator.py` -- Migrated to `_pending_components` injection.
+- `tests/canary/test_architectural_guarantees.py` -- New canary tests + migration.
+- `tests/unit/test_llm_client.py` -- Auth resolver regression tests.
+
+**Reviewer findings:** Caught `asyncio.shield` requirement for `proc.wait()` in finally blocks (BLOCKER, fixed). Circuit breaker `except Exception` -> `except BaseException` (fixed post-review).
+
+### Wave 1B: LLM Parsing Standard (Decision D)
+**Files created (4):** `src/keystone/llm/__init__.py`, `src/keystone/llm/parsing.py`, `tests/unit/llm/__init__.py`, `tests/unit/llm/test_parsing.py`
+**Files modified (14):** All 6 JSON extractors replaced across `specification/` (6 files), `research/research_agent.py`, `deliberation/` (3 files), `evaluator/` (3 files), `tests/unit/specification/test_validator.py`.
+
+**Key correctness fixes:** `bool("false") == True` bug in MECE validator eliminated. Silent score-50 fabrication in rubric evaluator eliminated.
+
+**Codex adversarial review findings (7):** sprint_contract fallback (deferred to 2B), layer1 fail-open (deferred to 2B), fence regex edge case (practically irrelevant), ParseError not retried (deferred to 2B), gestalt 0.0 fabrication (deferred), aggregator bare pass (fixed), ParseError.message attribute (fixed).
+
+### Wave 1C: Citation Identity Foundation (Decision A producers + B prereqs)
+**Files modified (16):**
+- `models/research.py` -- `claim_id`, `citation_ids` on FindingClaim; `dropped_claims` on StructuredFinding
+- `models/citations.py` -- `metadata_hash` (with validator), `merged_from_ids` on Citation; `CitationAlias` model; `aliases` on CitationManifest
+- `research/research_agent.py` -- Engagement-unique source-instance IDs via `_make_source_instance_id()`. `citation_refs` pattern in shallow mode.
+- `research/finding_writer.py` -- `claim_id` minting, `citation_ids` derivation, partial-claim salvage with `FindingValidationError` on zero valid claims.
+- `citation/processor.py` -- `CitationProcessorResult`, `get_result()`, alias map, `_rewrite_findings_to_canonical()`.
+- `citation/dedup.py` -- `deduplicate_with_aliases()`, `merged_from_ids` population.
+- `contracts.py` -- `CitationProcessorContract` updated with `get_result()`.
+- `pipeline/orchestrator.py` -- `ErrorRecovery` wired through `AgentPool`. Uses `get_result()` for canonicalized findings.
+- `research/agent_pool.py` -- Passes through `error_recovery` parameter.
+- `hitl/gate.py` -- `event_collector` parameter, emits `ReviewGateCreated/Approved/Modified/Rejected`.
+- 6 test files updated/created.
+
+**Reviewer findings:** Caught zero-claims-COMPLETE silent data corruption (BLOCKER, fixed). Citation ID truncation collision risk (WARNING, mitigated).
+
+**Codex adversarial review findings (5):** Task manifest drops dedup losers (BLOCKER, fixed -- orchestrator now uses canonicalized findings). ErrorRecovery wiring dead at runtime (disputed -- design says "wire" not "route"). Task generator accepts malformed payloads (BLOCKER, fixed -- required_keys + ParseError in retry loop). Analyst failure inflates confidence (deferred to 2B). Canonical IDs = source-instance IDs (deferred to 2A).
+
+### Test results
+- Start of session: 721 unit tests
+- End of session: 773 unit tests (+52 new)
+- 1 pre-existing failure (`test_claim_level_citations_are_narrower_than_round_level` -- strict subset assertion, pre-dates this session)
+- 2 xfailed, 1 xpassed
+
+### Key observations
+1. **Agent team pattern works.** Real-time reviewer caught issues the implementer missed (asyncio.shield, zero-claims COMPLETE). Worth using for all remaining waves.
+2. **Cross-wave adversarial review is essential.** Codex caught two regressions that in-session reviews missed: task manifest dedup regression (Wave 1C broke Wave 1A's accidental collision-based matching) and task generator validation gap (Wave 1B's `.get()` weakened pre-existing validation).
+3. **Codex diff size limit.** Full working tree diff exceeds Codex's 1M char limit. Must scope reviews to specific commit ranges or use per-wave diffs.
+
+### Deferred items (tracked for future waves)
+
+| Item | Target Wave |
+|------|------------|
+| Evaluator fail-open on ParseError (layer1) | 2B |
+| sprint_contract ParseError -> {} fallback | 2B |
+| gestalt_overlay 0.0 fabrication | 2B |
+| ParseError not retried by retry_llm_call | 2B |
+| Analyst failure inflates confidence tiers | 2B |
+| Canonical IDs = source-instance IDs (mint fresh) | 2A |
+| ReviewDecisionSubmitted not emitted | 2B |
+| ErrorRecovery usage (not just wiring) | 2B |
+| Dead HALF_OPEN branch in _record_failure | 4 |
+| test_parse_failure_does_not_fabricate_score name | 4 |
+
+### What comes next
+1. Start Wave 2A (Citation Identity Completion) in a fresh session
+2. Wave 2A is the most file-heavy wave: metadata_hash migration across 8+ files, provenance fields on aggregator/confidence, deliberation consumes canonicalized findings
+3. Continue using agent teams with Codex adversarial review between waves
