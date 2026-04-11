@@ -9,13 +9,16 @@ Uses LLMCallable at FLAGSHIP tier for the judge.
 
 from __future__ import annotations
 
-import json
+import logging
 import statistics
 
 from pydantic import BaseModel, Field
 
 from keystone.deliberation.analyst import AnalystOutput, InputClaim
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.llm.parsing import ParseError, safe_llm_json
+
+logger = logging.getLogger(__name__)
 
 # Variance threshold above which analyst disagreement triggers judge selection.
 # 0.04 corresponds to stddev ~0.2 (a 20+ point spread between analysts).
@@ -144,13 +147,16 @@ class Aggregator:
             self._judge, prompt, description="judge_selection"
         )
         try:
-            parsed = json.loads(response)
+            parsed = safe_llm_json(response, required_keys=("selected_analyst",))
             selected = parsed.get("selected_analyst", "")
             sel_reasoning = parsed.get("reasoning", "")
             if selected in scores:
                 return selected, sel_reasoning
-        except (json.JSONDecodeError, KeyError):
-            pass
+        except (ParseError, KeyError):
+            logger.warning(
+                "Judge select parse failed for claim %d, falling back to max confidence",
+                claim.index,
+            )
 
         # Fallback: pick highest confidence analyst
         best = max(scores, key=scores.get)  # type: ignore[arg-type]
@@ -177,7 +183,7 @@ class Aggregator:
             self._judge, prompt, description="consistency_check"
         )
         try:
-            parsed = json.loads(response)
+            parsed = safe_llm_json(response)
             contradictions = parsed.get("contradictions", [])
             claim_by_idx = {c.index: c for c in claims}
             for cont in contradictions:
@@ -187,7 +193,7 @@ class Aggregator:
                     claim_by_idx[a_idx].consistency_passed = False
                 if b_idx in claim_by_idx:
                     claim_by_idx[b_idx].consistency_passed = False
-        except (json.JSONDecodeError, KeyError):
+        except (ParseError, KeyError):
             pass
 
     @staticmethod

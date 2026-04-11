@@ -6,11 +6,11 @@ supports Phase 2 bidirectional negotiation without rework (Section 5.13).
 
 from __future__ import annotations
 
-import json
 import logging
 from pathlib import Path
 
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.models.evaluation import RubricDimension, SprintContract
 from keystone.models.research import EngagementSpec
 from keystone.models.tasks import ResearchTask
@@ -50,7 +50,11 @@ class SprintContractGenerator:
         raw = await retry_llm_call(
             self._llm, prompt, description="sprint_contract_generation"
         )
-        parsed = _parse_contract_json(raw)
+        try:
+            parsed = safe_llm_json(raw)
+        except ParseError:
+            logger.warning("Failed to parse sprint contract JSON, using task defaults")
+            parsed = {}
 
         dimension_emphasis: dict[RubricDimension, float] = {}
         for dim_str, weight in parsed.get("dimension_emphasis", {}).items():
@@ -70,19 +74,3 @@ class SprintContractGenerator:
             mandatory_elements=parsed.get("mandatory_elements", []),
             anti_patterns=parsed.get("anti_patterns", []),
         )
-
-
-def _parse_contract_json(raw: str) -> dict:
-    text = raw.strip()
-    if "```" in text:
-        start = text.find("{")
-        end = text.rfind("}")
-        if start != -1 and end != -1:
-            text = text[start : end + 1]
-    try:
-        result = json.loads(text)
-        if isinstance(result, dict):
-            return result
-    except json.JSONDecodeError:
-        logger.warning("Failed to parse sprint contract JSON")
-    return {}

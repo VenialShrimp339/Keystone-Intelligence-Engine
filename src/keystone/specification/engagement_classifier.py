@@ -11,8 +11,9 @@ from enum import StrEnum
 from pydantic import BaseModel, Field
 
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.llm.parsing import safe_llm_json
 from keystone.models.research import EngagementType
-from keystone.specification._prompts import extract_json, load_prompt
+from keystone.specification._prompts import load_prompt
 
 
 class PipelineProfile(StrEnum):
@@ -76,9 +77,9 @@ class EngagementClassifier:
         raw = await retry_llm_call(
             self._llm, prompt, description="engagement_classification"
         )
-        data = extract_json(raw)
+        data = safe_llm_json(raw, required_keys=("engagement_type",))
 
-        engagement_type = EngagementType(data["engagement_type"])
+        engagement_type = EngagementType(data.get("engagement_type"))
         profile_raw = data.get("pipeline_profile")
 
         if profile_raw and profile_raw in PipelineProfile.__members__.values():

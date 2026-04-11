@@ -124,3 +124,30 @@ class TestMECEValidator:
         assert result.dimensions[ValidationDimension.TAILORING] is False
         assert result.dimensions[ValidationDimension.ACTIONABILITY] is False
         assert result.all_passed is False
+
+    async def test_mece_validator_string_false_fails_dimension(self):
+        """LLM returns string "false" — dimension must be False, not True.
+
+        The old code used bool(dims_raw.get(dim.value, False)) which returns True
+        for the string "false". The fix uses parse_llm_bool, which correctly
+        returns False. This test pins that the validator does not pass a dimension
+        whose LLM value is the string "false".
+        """
+        async def llm_returns_string_false(prompt: str) -> str:
+            # LLM returns string "false" for all dimensions instead of bool False
+            dimensions = {dim.value: "false" for dim in ValidationDimension}
+            feedback = {dim.value: "Did not pass." for dim in ValidationDimension}
+            return json.dumps({"dimensions": dimensions, "feedback": feedback})
+
+        validator = MECEValidator(llm_returns_string_false)
+        tree = _make_tree()
+        result = await validator.validate(tree, "Test question", EngagementType.EVALUATIVE)
+
+        # Every dimension should be False — "false" string must not be truthy
+        for dim in ValidationDimension:
+            assert result.dimensions[dim] is False, (
+                f"Dimension {dim.value} should be False when LLM returns string 'false', "
+                f"but got {result.dimensions[dim]}"
+            )
+        assert result.all_passed is False
+        assert result.regeneration_needed is True

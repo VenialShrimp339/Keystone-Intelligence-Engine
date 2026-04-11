@@ -11,8 +11,9 @@ from __future__ import annotations
 from pydantic import BaseModel, Field
 
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.llm.parsing import safe_llm_json
 from keystone.models.research import EngagementType
-from keystone.specification._prompts import extract_json, load_prompt
+from keystone.specification._prompts import load_prompt
 from keystone.specification.decomposer import IssueTree, IssueTreeNode
 
 
@@ -70,7 +71,7 @@ class PriorityScorer:
         raw = await retry_llm_call(
             self._llm, prompt, description="priority_scoring"
         )
-        data = extract_json(raw)
+        data = safe_llm_json(raw)
 
         scores_raw = data.get("scores", data if isinstance(data, list) else [])
         if isinstance(scores_raw, dict):
@@ -78,11 +79,11 @@ class PriorityScorer:
 
         scores: list[PriorityScore] = []
         for entry in scores_raw:
-            dr = float(entry["decision_relevance"])
-            ur = float(entry["uncertainty_reduction"])
+            dr = float(entry.get("decision_relevance", 0.0))
+            ur = float(entry.get("uncertainty_reduction", 0.0))
             scores.append(
                 PriorityScore(
-                    branch_id=entry["branch_id"],
+                    branch_id=entry.get("branch_id", ""),
                     decision_relevance=dr,
                     uncertainty_reduction=ur,
                     priority_score=round(dr * ur, 4),

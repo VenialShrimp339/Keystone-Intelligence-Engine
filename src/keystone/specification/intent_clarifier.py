@@ -11,8 +11,9 @@ from __future__ import annotations
 from pydantic import BaseModel, Field
 
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.llm.parsing import safe_llm_json
 from keystone.models.research import EngagementType
-from keystone.specification._prompts import extract_json, load_prompt
+from keystone.specification._prompts import load_prompt
 
 
 class IntentClarificationResult(BaseModel):
@@ -67,13 +68,17 @@ class IntentClarifier:
         raw = await retry_llm_call(
             self._llm, prompt, description="intent_clarification"
         )
-        data = extract_json(raw)
+        data = safe_llm_json(
+            raw,
+            required_keys=("day_1_hypothesis", "intent_clear", "decision_context", "surprising_finding"),
+            bool_keys=frozenset(["intent_clear"]),
+        )
 
         return IntentClarificationResult(
-            day_1_hypothesis=data["day_1_hypothesis"],
-            intent_clear=data["intent_clear"],
+            day_1_hypothesis=data.get("day_1_hypothesis"),
+            intent_clear=data.get("intent_clear"),
             unstated_constraints=data.get("unstated_constraints", []),
             scope_boundaries=data.get("scope_boundaries", []),
-            decision_context=data["decision_context"],
-            surprising_finding=data["surprising_finding"],
+            decision_context=data.get("decision_context"),
+            surprising_finding=data.get("surprising_finding"),
         )

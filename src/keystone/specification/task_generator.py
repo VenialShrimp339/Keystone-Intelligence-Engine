@@ -23,7 +23,8 @@ from keystone.models.tasks import (
     TaskDecomposition,
     TaskType,
 )
-from keystone.specification._prompts import extract_json, load_prompt
+from keystone.llm.parsing import safe_llm_json
+from keystone.specification._prompts import load_prompt
 from keystone.specification.decomposer import IssueTree
 from keystone.specification.priority_scorer import PriorityScore
 from keystone.specification.template_registry import TemplateRegistry
@@ -77,7 +78,7 @@ class TaskGenerator:
             raw = await retry_llm_call(
                 self._llm, prompt, description=f"task_generation_attempt_{attempt}"
             )
-            data = extract_json(raw)
+            data = safe_llm_json(raw)
 
             try:
                 tasks = self._parse_tasks(data, spec, engagement_type, priority_map)
@@ -129,12 +130,12 @@ class TaskGenerator:
                 category=category,
                 type=TaskType(t.get("type", "estimative")),
                 target_decision_usefulness=t.get("target_decision_usefulness", 3),
-                description=t["description"],
+                description=t.get("description", ""),
                 required_sources=t.get("required_sources", []),
                 acceptance_criteria=t.get("acceptance_criteria", ["Meets quality bar"]),
                 deliverable_destination=t.get("deliverable_destination", "Section TBD"),
                 priority=priority_rank,
-                anti_confirmatory_framing=t["anti_confirmatory_framing"],
+                anti_confirmatory_framing=t.get("anti_confirmatory_framing", "Evaluate evidence both for and against"),
                 assigned_tools=self._resolve_tools(t, category, engagement_type),
                 assigned_model=ModelTier(t.get("assigned_model", "standard")),
                 end_product=t.get("end_product", "Structured analysis with supporting evidence"),

@@ -12,8 +12,9 @@ from enum import StrEnum
 from pydantic import BaseModel, Field
 
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.llm.parsing import ParseError, parse_llm_bool, safe_llm_json
 from keystone.models.research import EngagementType
-from keystone.specification._prompts import extract_json, load_prompt
+from keystone.specification._prompts import load_prompt
 from keystone.specification.decomposer import IssueTree
 
 
@@ -67,7 +68,7 @@ class MECEValidator:
         raw = await retry_llm_call(
             self._llm, prompt, description="mece_validation"
         )
-        data = extract_json(raw)
+        data = safe_llm_json(raw)
 
         dims_raw = data.get("dimensions", {})
         feedback_raw = data.get("feedback", {})
@@ -76,7 +77,14 @@ class MECEValidator:
         feedback: dict[ValidationDimension, str] = {}
 
         for dim in ValidationDimension:
-            dimensions[dim] = bool(dims_raw.get(dim.value, False))
+            raw_val = dims_raw.get(dim.value)
+            if raw_val is None:
+                dimensions[dim] = False
+            else:
+                try:
+                    dimensions[dim] = parse_llm_bool(raw_val)
+                except ValueError:
+                    dimensions[dim] = False
             feedback[dim] = feedback_raw.get(dim.value, "")
 
         all_passed = all(dimensions.values())

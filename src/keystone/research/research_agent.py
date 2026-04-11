@@ -4,6 +4,13 @@ Takes a ResearchTask + EngagementSpec + AgentInstance. Runs an
 iterative loop: call tools via gateway -> process results ->
 synthesize via LLM -> repeat. Produces StructuredFinding.
 
+Two execution modes:
+  * **Shallow** (default): Iterative tool calls via MCPGateway + LLM
+    synthesis rounds. Fast (~60s) but snippet-level depth.
+  * **Deep** (when deep_llm provided): Single ``claude -p`` call with
+    WebSearch + WebFetch tools. Multi-turn web research producing
+    20+ claims with real source URLs. 5-10 minutes per task.
+
 Uses LLMCallable for all LLM calls. Tool calls go through MCPGateway.
 Satisfies ResearchAgentContract from contracts.py.
 """
@@ -12,12 +19,12 @@ from __future__ import annotations
 
 import json
 import logging
-import re
 import uuid
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.events import (
     AnyPipelineEvent,
     CitationExtracted,
@@ -37,75 +44,33 @@ from keystone.research.finding_writer import FindingWriter
 
 logger = logging.getLogger(__name__)
 
+# Source type inference from URL domain
+_SOURCE_TYPE_PATTERNS: list[tuple[str, SourceType]] = [
+    ("sec.gov", SourceType.FILING),
+    ("edgar", SourceType.FILING),
+    (".gov", SourceType.GOVERNMENT),
+    ("arxiv.org", SourceType.ACADEMIC),
+    ("scholar.google", SourceType.ACADEMIC),
+    ("doi.org", SourceType.ACADEMIC),
+    ("pubmed", SourceType.ACADEMIC),
+    ("reuters", SourceType.NEWS),
+    ("bloomberg", SourceType.NEWS),
+    ("wsj.com", SourceType.NEWS),
+    ("ft.com", SourceType.NEWS),
+    ("cnbc.com", SourceType.NEWS),
+    ("techcrunch", SourceType.NEWS),
+]
+
+
+def _infer_source_type(url: str) -> SourceType:
+    """Infer SourceType from URL domain patterns."""
+    lower = url.lower()
+    for pattern, stype in _SOURCE_TYPE_PATTERNS:
+        if pattern in lower:
+            return stype
+    return SourceType.REPORT
+
 DEFAULT_ROUNDS = 3
-
-# Regex for markdown code fences: ```json ... ``` or ``` ... ```
-_FENCE_RE = re.compile(r"```(?:json)?\s*\n?(.*?)```", re.DOTALL)
-
-
-def _extract_json_text(response: str) -> str:
-    """Extract JSON from LLM response, handling markdown fences and trailing text.
-
-    Handles:
-    - ```json ... ``` wrapped output
-    - JSON followed by natural language commentary
-    - Clean JSON (passthrough)
-    """
-    text = response.strip()
-
-    # Strip markdown code fences
-    m = _FENCE_RE.search(text)
-    if m:
-        text = m.group(1).strip()
-
-    # Try parsing as-is first
-    try:
-        json.loads(text)
-        return text
-    except json.JSONDecodeError:
-        pass
-
-    # Try to find the outermost JSON array or object
-    for start_char, end_char in [("[", "]"), ("{", "}")]:
-        start = text.find(start_char)
-        if start == -1:
-            continue
-        # Find the matching closing bracket by counting nesting
-        depth = 0
-        in_string = False
-        escape = False
-        for i in range(start, len(text)):
-            c = text[i]
-            if escape:
-                escape = False
-                continue
-            if c == "\\":
-                escape = True
-                continue
-            if c == '"':
-                in_string = not in_string
-                continue
-            if in_string:
-                continue
-            if c == start_char:
-                depth += 1
-            elif c == end_char:
-                depth -= 1
-                if depth == 0:
-                    candidate = text[start : i + 1]
-                    try:
-                        json.loads(candidate)
-                        return candidate
-                    except json.JSONDecodeError:
-                        # Try stripping trailing commas (common LLM output error)
-                        cleaned = re.sub(r",\s*([}\]])", r"\1", candidate)
-                        try:
-                            json.loads(cleaned)
-                            return cleaned
-                        except json.JSONDecodeError:
-                            break
-
-    return text
 MAX_ROUNDS = 5
 QUALITY_THRESHOLD = 0.8
 
@@ -117,7 +82,12 @@ def _make_event_id() -> str:
 class ResearchAgent:
     """Single research agent executor with iterative research loop.
 
-    Iterative loop (default 3 rounds, max 5):
+    Two modes:
+      * **Shallow** (deep_llm=None): Iterative gateway-based rounds.
+      * **Deep** (deep_llm provided): Single claude -p call with web
+        search tools. Produces 20+ claims with real source URLs.
+
+    Shallow iterative loop (default 3 rounds, max 5):
       1. Load JIT context from compiled wiki (round 2+)
       2. Call assigned tools via MCPGateway
       3. Synthesize round findings via LLM
@@ -134,12 +104,14 @@ class ResearchAgent:
         llm: LLMCallable,
         gateway: MCPGateway,
         *,
+        deep_llm: LLMCallable | None = None,
         finding_writer: FindingWriter | None = None,
         context_loader: ContextLoader | None = None,
         error_recovery: ErrorRecovery | None = None,
         max_rounds: int = DEFAULT_ROUNDS,
     ) -> None:
         self._llm = llm
+        self._deep_llm = deep_llm
         self._gateway = gateway
         self._finding_writer = finding_writer or FindingWriter()
         self._context_loader = context_loader
@@ -159,7 +131,207 @@ class ResearchAgent:
         spec: EngagementSpec,
         agent: AgentInstance,
     ) -> AsyncIterator[AnyPipelineEvent]:
-        """Execute research. Yields L1 pipeline events."""
+        """Execute research. Yields L1 pipeline events.
+
+        Dispatches to deep mode (multi-turn web research) when deep_llm
+        is available. Falls back to shallow mode on deep research failure.
+        """
+        if self._deep_llm is not None:
+            try:
+                async for event in self._execute_deep(task, spec, agent):
+                    yield event
+                return
+            except Exception as exc:  # noqa: BLE001
+                logger.warning(
+                    "Deep research failed for agent %s on task %s: %s. "
+                    "Falling back to shallow mode.",
+                    agent.agent_id,
+                    task.id,
+                    exc,
+                )
+                # Reset state for shallow fallback
+                self._all_claims = []
+                self._all_sources = []
+                self._round_citations = {}
+                self._tokens_consumed = 0
+                self._citation_counter = 0
+                self._finding = None
+
+        async for event in self._execute_shallow(task, spec, agent):
+            yield event
+
+    async def _execute_deep(
+        self,
+        task: ResearchTask,
+        spec: EngagementSpec,
+        agent: AgentInstance,
+    ) -> AsyncIterator[AnyPipelineEvent]:
+        """Deep research mode: single multi-turn claude -p call with web tools.
+
+        Builds a comprehensive prompt, runs one claude -p session that
+        searches the web, reads pages, follows citations, and outputs
+        structured JSON. Parses results through FindingWriter.
+
+        ARCHITECTURE NOTE: Deep mode bypasses MCPGateway. The claude -p
+        subprocess uses --allowedTools WebSearch,WebFetch directly, so
+        gateway-level auth, rate limiting, circuit breaking, and audit
+        logging do not apply. This is a known trade-off: deep mode gets
+        multi-turn web research capability at the cost of gateway governance.
+        Audit events (SourceFound, CitationExtracted) are still emitted
+        from this path for observability. Full gateway integration for deep
+        mode is a Phase 2 item -- requires wrapping provider-native tools
+        in gateway-owned abstractions.
+        """
+        assert self._deep_llm is not None
+        eid = agent.engagement_id
+        cid = agent.client_id
+
+        yield ResearchStarted(
+            event_id=_make_event_id(),
+            engagement_id=eid,
+            client_id=cid,
+            agent_id=agent.agent_id,
+            task_id=task.id,
+        )
+
+        # --- Build deep research prompt ---
+        prompt = self._build_deep_research_prompt(task, spec, agent)
+        logger.info(
+            "Deep research: agent %s starting for task %s (prompt: %d chars)",
+            agent.agent_id,
+            task.id,
+            len(prompt),
+        )
+
+        # --- Single deep call (5-10 minutes) ---
+        raw_response = await self._deep_llm(prompt)
+        logger.info(
+            "Deep research: agent %s completed (response: %d chars)",
+            agent.agent_id,
+            len(raw_response),
+        )
+
+        # Rough token estimate for the deep session
+        self._tokens_consumed = (len(prompt) + len(raw_response)) // 4
+
+        # --- Parse structured output ---
+        parsed = self._parse_deep_response(raw_response)
+        claims_data = parsed.get("claims", [])
+        absence_data = parsed.get("absence_report", [])
+
+        if not claims_data:
+            raise RuntimeError(
+                f"Deep research for task {task.id} returned 0 claims"
+            )
+
+        # --- Convert claims + sources -> Citation objects + raw_claims ---
+        for claim_dict in claims_data:
+            sources = claim_dict.pop("sources", [])
+            citations: list[Citation] = []
+
+            for src in sources:
+                self._citation_counter += 1
+                url = src.get("url", "")
+                citation = Citation(
+                    citation_id=f"CIT-{self._citation_counter:03d}",
+                    engagement_id=eid,
+                    client_id=cid,
+                    url=url,
+                    title=src.get("title", "Web Source"),
+                    content_snippet=src.get("content_snippet"),
+                    access_date=datetime.now(UTC),
+                    source_type=_infer_source_type(url),
+                    quality_score=0.7,
+                )
+                citations.append(citation)
+                self._all_sources.append(
+                    {"tool": "deep_research", "url": url, "title": citation.title}
+                )
+
+                yield SourceFound(
+                    event_id=_make_event_id(),
+                    engagement_id=eid,
+                    client_id=cid,
+                    agent_id=agent.agent_id,
+                    url=url,
+                    source_type="deep_research",
+                    quality_score=0.7,
+                )
+                yield CitationExtracted(
+                    event_id=_make_event_id(),
+                    engagement_id=eid,
+                    client_id=cid,
+                    agent_id=agent.agent_id,
+                    citation_id=citation.citation_id,
+                    title=citation.title,
+                )
+
+            claim_dict["citations"] = citations
+            # Ensure required fields have defaults
+            claim_dict.setdefault("evidence", claim_dict.get("text", ""))
+            claim_dict.setdefault("confidence", 0.5)
+            claim_dict.setdefault("caveats", [])
+            self._all_claims.append(claim_dict)
+
+        # --- Emit synthesis event ---
+        conf_values = [
+            c["confidence"] for c in self._all_claims if "confidence" in c
+        ]
+        conf_range = (
+            f"{min(conf_values):.2f}-{max(conf_values):.2f}"
+            if conf_values
+            else "N/A"
+        )
+        yield FindingSynthesized(
+            event_id=_make_event_id(),
+            engagement_id=eid,
+            client_id=cid,
+            agent_id=agent.agent_id,
+            claim_count=len(self._all_claims),
+            confidence_range=conf_range,
+        )
+
+        # --- Absence report ---
+        if not absence_data:
+            absence_data = await self._generate_absence_report(task, spec)
+
+        # --- Build StructuredFinding ---
+        agent_type = (
+            agent.definition.research_type.value
+            if agent.definition.research_type
+            else agent.definition.role.value
+        )
+
+        self._finding = self._finding_writer.build_finding(
+            task_id=task.id,
+            agent_id=agent.agent_id,
+            engagement_id=eid,
+            client_id=cid,
+            agent_type=agent_type,
+            raw_claims=self._all_claims,
+            absence_report=absence_data,
+            sources_consulted=len(self._all_sources),
+            tokens_consumed=self._tokens_consumed,
+        )
+
+        yield ResearchComplete(
+            event_id=_make_event_id(),
+            engagement_id=eid,
+            client_id=cid,
+            agent_id=agent.agent_id,
+            task_id=task.id,
+            sources_consulted=len(self._all_sources),
+            tokens_consumed=self._tokens_consumed,
+            absence_count=len(absence_data),
+        )
+
+    async def _execute_shallow(
+        self,
+        task: ResearchTask,
+        spec: EngagementSpec,
+        agent: AgentInstance,
+    ) -> AsyncIterator[AnyPipelineEvent]:
+        """Shallow research mode: iterative gateway-based rounds."""
         eid = agent.engagement_id
         cid = agent.client_id
 
@@ -222,6 +394,7 @@ class ResearchAgent:
                             client_id=cid,
                             url=cit_dict.get("url", f"tool://{tool_name}"),
                             title=cit_dict.get("title", tool_name),
+                            content_snippet=cit_dict.get("text"),
                             access_date=datetime.now(UTC),
                             source_type=SourceType.REPORT,
                             quality_score=0.7,
@@ -355,7 +528,117 @@ class ResearchAgent:
         return self._finding
 
     # ------------------------------------------------------------------
-    # Prompt builders
+    # Deep research prompt + parser
+    # ------------------------------------------------------------------
+
+    def _build_deep_research_prompt(
+        self,
+        task: ResearchTask,
+        spec: EngagementSpec,
+        agent: AgentInstance,
+    ) -> str:
+        """Build a comprehensive prompt for deep multi-turn web research."""
+        rs = spec.research_spec
+
+        # Collect research questions for context
+        questions = "\n".join(
+            f"  - {'[PRIMARY] ' if q.is_primary else ''}{q.question}"
+            for q in rs.questions
+        )
+
+        return f"""You are a senior research analyst conducting deep web research for a consulting engagement.
+
+ENGAGEMENT CONTEXT:
+- Title: {rs.title}
+- Client Decision Context: {rs.decision_context}
+- Quality Standard: {rs.quality_bar}
+
+RESEARCH QUESTIONS:
+{questions}
+
+YOUR SPECIFIC TASK:
+{task.description}
+
+ACCEPTANCE CRITERIA:
+{chr(10).join(f"  - {c}" for c in task.acceptance_criteria)}
+
+ANTI-CONFIRMATORY FRAMING (you MUST find evidence both for AND against):
+{task.anti_confirmatory_framing}
+
+EXPECTED OUTPUT:
+{task.end_product}
+
+RESEARCH INSTRUCTIONS:
+1. Search the web thoroughly for information related to this task.
+2. For each promising result, read the full page to extract detailed information.
+3. Follow citations and references to find primary sources.
+4. Cross-reference claims across multiple sources.
+5. Look for the most recent data available (2024-2026).
+6. Seek out contrarian evidence and counterarguments.
+7. Note what you searched for but could NOT find (absence is analytically significant).
+
+After completing your research, output ONLY a JSON object in this exact format (no other text before or after):
+
+```json
+{{
+  "claims": [
+    {{
+      "text": "Clear, specific factual claim statement",
+      "evidence": "Summary of the evidence supporting this claim, including specific data points, dates, and figures",
+      "confidence": 0.85,
+      "caveats": ["Any limitations or qualifications"],
+      "sources": [
+        {{
+          "url": "https://exact-source-url.com/page",
+          "title": "Title of the source page or article",
+          "content_snippet": "Relevant excerpt from the source (50-200 words)"
+        }}
+      ]
+    }}
+  ],
+  "absence_report": [
+    "Description of what was searched for but not found"
+  ]
+}}
+```
+
+REQUIREMENTS FOR YOUR OUTPUT:
+- Produce at least 20 claims (more is better if the evidence supports it)
+- Every claim MUST have at least one source with a real URL
+- Include content_snippet for every source (actual text from the page)
+- Confidence scores: 0.9+ = multiple corroborating sources with hard data; 0.7-0.89 = single strong source or multiple weak ones; 0.5-0.69 = limited or ambiguous evidence; below 0.5 = speculative or contested
+- The absence_report MUST list at least 3 things you looked for but could not find
+- Include evidence AGAINST the main thesis, not just supporting evidence
+- Prefer primary sources (SEC filings, company reports, peer-reviewed papers) over secondary (news articles, blog posts)
+
+OUTPUT THE JSON AND NOTHING ELSE."""
+
+    def _parse_deep_response(self, response: str) -> dict:
+        """Parse the JSON output from a deep research session."""
+        try:
+            data = safe_llm_json(response)
+            # data is always a dict here (safe_llm_json default)
+            if "claims" not in data:
+                return {"claims": [], "absence_report": []}
+            return data
+        except ParseError:
+            # Try list form (LLM returned array of claims directly)
+            try:
+                data = safe_llm_json(response, expect_list=True)
+                return {"claims": data, "absence_report": []}
+            except ParseError:
+                logger.error(
+                    "Failed to parse deep research JSON (%d chars). "
+                    "First 500 chars: %s",
+                    len(response),
+                    response[:500],
+                )
+                raise RuntimeError(
+                    "Deep research output was not parseable JSON"
+                ) from None
+
+    # ------------------------------------------------------------------
+    # Shallow mode prompt builders
     # ------------------------------------------------------------------
 
     def _build_synthesis_prompt(
@@ -420,25 +703,29 @@ class ResearchAgent:
 
     def _parse_synthesis(self, response: str) -> list[dict]:
         """Parse LLM synthesis response into claim dicts."""
-        text = _extract_json_text(response)
         try:
-            data = json.loads(text)
-            if isinstance(data, list):
-                return data
-            if isinstance(data, dict) and "claims" in data:
+            data = safe_llm_json(response, expect_list=True)
+            return data
+        except ParseError:
+            pass
+        try:
+            data = safe_llm_json(response)
+            if "claims" in data:
                 return data["claims"]
             return [data]
-        except json.JSONDecodeError:
+        except ParseError:
             logger.warning("Could not parse synthesis response as JSON")
             return []
 
     def _parse_absence(self, response: str) -> list[str]:
         """Parse LLM absence report response."""
-        text = _extract_json_text(response)
         try:
-            data = json.loads(text)
-            if isinstance(data, list):
-                return [str(item) for item in data]
+            data = safe_llm_json(response, expect_list=True)
+            return [str(item) for item in data]
+        except ParseError:
+            pass
+        try:
+            data = safe_llm_json(response)
             return [str(data)]
-        except json.JSONDecodeError:
+        except ParseError:
             return [response.strip()] if response.strip() else []

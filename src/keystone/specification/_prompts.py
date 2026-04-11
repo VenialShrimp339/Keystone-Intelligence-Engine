@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import json
-import re
 from pathlib import Path
+
+from keystone.llm.parsing import ParseError, safe_llm_json
 
 _PROMPTS_DIR = Path(__file__).parent / "prompts"
 
@@ -26,33 +26,12 @@ def load_prompt(name: str, **kwargs: str) -> str:
     return template
 
 
-def _strip_trailing_commas(text: str) -> str:
-    """Remove trailing commas before ] or } (common LLM output error)."""
-    return re.sub(r",\s*([}\]])", r"\1", text)
-
-
 def extract_json(text: str) -> dict:
     """Extract JSON object from an LLM response.
 
-    Handles responses wrapped in ```json ... ``` fences or raw JSON.
-    Strips trailing commas which LLMs sometimes produce.
+    Delegates to safe_llm_json. Raises ParseError on failure.
     """
-    # Try to find fenced JSON block
-    match = re.search(r"```(?:json)?\s*\n?(.*?)\n?\s*```", text, re.DOTALL)
-    if match:
-        candidate = match.group(1)
-        try:
-            return json.loads(candidate)
-        except json.JSONDecodeError:
-            return json.loads(_strip_trailing_commas(candidate))
+    return safe_llm_json(text)
 
-    # Try to find raw JSON object
-    match = re.search(r"\{.*\}", text, re.DOTALL)
-    if match:
-        candidate = match.group(0)
-        try:
-            return json.loads(candidate)
-        except json.JSONDecodeError:
-            return json.loads(_strip_trailing_commas(candidate))
 
-    raise ValueError(f"No JSON found in LLM response: {text[:200]}...")
+__all__ = ["extract_json", "load_prompt", "ParseError"]

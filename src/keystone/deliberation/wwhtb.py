@@ -7,12 +7,11 @@ assumptions and improves downstream uncertainty framing.
 
 from __future__ import annotations
 
-import json
-
 from pydantic import BaseModel, Field
 
 from keystone.deliberation.aggregator import AggregatedClaim
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.llm.parsing import ParseError, safe_llm_json
 
 CONFIDENCE_THRESHOLD = 0.6
 
@@ -53,9 +52,9 @@ async def run_wwhtb(
             llm, prompt, description=f"wwhtb_claim_{claim.index}"
         )
         try:
-            parsed = json.loads(response)
+            parsed = safe_llm_json(response)
             assumptions = parsed.get("assumptions", [])
-        except json.JSONDecodeError:
+        except ParseError:
             assumptions = ["Unable to elicit assumptions"]
 
         results.append(

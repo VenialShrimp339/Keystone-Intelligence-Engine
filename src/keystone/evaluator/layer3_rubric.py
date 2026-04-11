@@ -8,12 +8,12 @@ aggregation (Directive 7). Gestalt overlay for emergent quality signals.
 from __future__ import annotations
 
 import asyncio
-import json
 import logging
 import math
 from pathlib import Path
 
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.evaluator.rubric_config import (
     TIER_1_DIMENSIONS,
     TIER_2_DIMENSIONS,
@@ -162,11 +162,12 @@ class Layer3RubricScorer:
         raw = await retry_llm_call(
             self._llm, prompt, description=f"rubric_{dimension.value}"
         )
-        parsed = _parse_score_json(raw)
+        # ParseError propagates -- callers must not silently default to score=50
+        parsed = safe_llm_json(raw, required_keys=("score",))
 
         return DimensionScore(
             dimension=dimension,
-            score=max(0.0, min(100.0, float(parsed.get("score", 50)))),
+            score=max(0.0, min(100.0, float(parsed.get("score")))),
             feedback=parsed.get("feedback", "No feedback provided"),
             sub_criteria_notes=parsed.get("sub_criteria_notes", []),
         )
@@ -179,30 +180,9 @@ class Layer3RubricScorer:
         raw = await retry_llm_call(
             self._llm, prompt, description="gestalt_overlay"
         )
-        parsed = _parse_score_json(raw)
-        return float(parsed.get("adjustment", 0))
-
-
-def _parse_score_json(raw: str) -> dict:
-    """Extract JSON from LLM output, tolerating markdown fences and trailing text."""
-    text = raw.strip()
-    # Try direct parse first (fastest path)
-    try:
-        result = json.loads(text)
-        if isinstance(result, dict):
-            return result
-    except json.JSONDecodeError:
-        pass
-    # Extract JSON object between first '{' and last '}' (handles markdown
-    # fences, trailing commentary, and leading text)
-    start = text.find("{")
-    end = text.rfind("}")
-    if start != -1 and end != -1 and end > start:
         try:
-            result = json.loads(text[start : end + 1])
-            if isinstance(result, dict):
-                return result
-        except json.JSONDecodeError:
-            pass
-    logger.warning("Failed to parse score JSON from LLM output: %.100s...", text)
-    return {}
+            parsed = safe_llm_json(raw)
+            return float(parsed.get("adjustment", 0))
+        except ParseError:
+            logger.warning("Failed to parse gestalt overlay JSON, defaulting to 0 adjustment")
+            return 0.0

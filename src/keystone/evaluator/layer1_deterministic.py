@@ -7,12 +7,12 @@ is rule-based or network-based.
 
 from __future__ import annotations
 
-import json
 import logging
 from pathlib import Path
 
 from keystone.citation.url_check import batch_check_urls
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.models.citations import CitationManifest
 from keystone.models.evaluation import Layer1Result
 
@@ -68,6 +68,7 @@ class Layer1Evaluator:
         template = _load_prompt("fact_decomposition.md")
         citation_texts = "\n".join(
             f"[{c.citation_id}] {c.title} - {c.publication}"
+            + (f"\nContent: {c.content_snippet}" if c.content_snippet else "")
             for c in manifest.citations
         )
         prompt = (
@@ -79,7 +80,11 @@ class Layer1Evaluator:
         raw = await retry_llm_call(
             self._llm, prompt, description="fact_decomposition"
         )
-        claims = _parse_json_array(raw)
+        try:
+            claims = safe_llm_json(raw, expect_list=True)
+        except ParseError:
+            logger.warning("Failed to parse JSON array from LLM output: %.100s...", raw[:100])
+            claims = []
 
         verified = sum(1 for c in claims if c.get("status") == "SUPPORTED")
         failed = sum(
@@ -96,7 +101,12 @@ class Layer1Evaluator:
         raw = await retry_llm_call(
             self._llm, prompt, description="numerical_consistency"
         )
-        parsed = _parse_json_object(raw)
+        try:
+            parsed = safe_llm_json(raw)
+        except ParseError:
+            logger.warning("Failed to parse JSON object from LLM output: %.100s...", raw[:100])
+            parsed = {}
+
         inconsistencies = parsed.get("inconsistencies", [])
         return [
             f"{inc.get('metric', 'unknown')}: {inc.get('value_a')} vs {inc.get('value_b')} "
@@ -110,47 +120,3 @@ class Layer1Evaluator:
             return []
         results = await batch_check_urls(manifest.citations)
         return [cid for cid, is_live in results.items() if not is_live]
-
-
-def _parse_json_array(raw: str) -> list[dict]:
-    """Extract a JSON array from LLM output, tolerating markdown fences and trailing text."""
-    text = raw.strip()
-    try:
-        result = json.loads(text)
-        if isinstance(result, list):
-            return result
-    except json.JSONDecodeError:
-        pass
-    start = text.find("[")
-    end = text.rfind("]")
-    if start != -1 and end != -1 and end > start:
-        try:
-            result = json.loads(text[start : end + 1])
-            if isinstance(result, list):
-                return result
-        except json.JSONDecodeError:
-            pass
-    logger.warning("Failed to parse JSON array from LLM output: %.100s...", text)
-    return []
-
-
-def _parse_json_object(raw: str) -> dict:
-    """Extract a JSON object from LLM output, tolerating markdown fences and trailing text."""
-    text = raw.strip()
-    try:
-        result = json.loads(text)
-        if isinstance(result, dict):
-            return result
-    except json.JSONDecodeError:
-        pass
-    start = text.find("{")
-    end = text.rfind("}")
-    if start != -1 and end != -1 and end > start:
-        try:
-            result = json.loads(text[start : end + 1])
-            if isinstance(result, dict):
-                return result
-        except json.JSONDecodeError:
-            pass
-    logger.warning("Failed to parse JSON object from LLM output: %.100s...", text)
-    return {}

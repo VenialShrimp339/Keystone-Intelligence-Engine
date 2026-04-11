@@ -9,13 +9,16 @@ Methodological diversity replaces persona diversity (DMAD, ICLR 2025).
 
 from __future__ import annotations
 
-import json
+import logging
 import uuid
 from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
 
+logger = logging.getLogger(__name__)
+
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.models.agents import DeliberationAnalystType
 
 if TYPE_CHECKING:
@@ -181,8 +184,11 @@ class Analyst:
     ) -> list[ScoredClaim]:
         """Parse LLM JSON response into ScoredClaim list."""
         try:
-            items = json.loads(response)
-        except json.JSONDecodeError:
+            items = safe_llm_json(response, expect_list=True)
+        except ParseError:
+            logger.warning(
+                "Failed to parse analyst response for analyst %s", self._analyst_id
+            )
             # Fallback: preserve original confidence for all claims
             return [
                 ScoredClaim(
