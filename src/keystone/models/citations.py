@@ -85,11 +85,25 @@ class Citation(BaseModel):
         default_factory=list,
         description="Agent IDs that independently discovered this source",
     )
+    content_snippet: str | None = Field(
+        default=None,
+        description="Excerpt of source content at access time, for claim verification",
+    )
     content_hash: str | None = Field(
         default=None,
         description="SHA-256 hash of the source content at access time. "
         "Enables provenance tracking in compiled wiki (Karpathy pattern). "
         "None for citations not yet hash-verified.",
+    )
+    metadata_hash: str | None = Field(
+        default=None,
+        description="Hash of url:title metadata (Wave 1C addition). "
+        "Separates metadata identity from content identity. "
+        "Wave 2A will migrate existing url:title hashes from content_hash to this field.",
+    )
+    merged_from_ids: list[str] = Field(
+        default_factory=list,
+        description="Source instance IDs merged into this canonical citation during dedup",
     )
 
     @field_validator("citation_id")
@@ -106,6 +120,16 @@ class Citation(BaseModel):
             if not re.fullmatch(r"[0-9a-f]{64}", v):
                 raise ValueError(
                     "content_hash must be a 64-character lowercase hex string (SHA-256)"
+                )
+        return v
+
+    @field_validator("metadata_hash")
+    @classmethod
+    def validate_metadata_hash(cls, v: str | None) -> str | None:
+        if v is not None:
+            if not re.fullmatch(r"[0-9a-f]{64}", v):
+                raise ValueError(
+                    "metadata_hash must be a 64-character lowercase hex string (SHA-256)"
                 )
         return v
 
@@ -173,6 +197,20 @@ class CorroborationPair(BaseModel):
     )
 
 
+class CitationAlias(BaseModel):
+    """Maps a source-instance citation ID to its canonical post-dedup ID.
+
+    Built by CitationProcessor during dedup. Enables findings to reference
+    canonical IDs while preserving original provenance for each agent/task.
+    """
+
+    source_instance_id: str = Field(description="Original engagement-unique citation ID")
+    canonical_citation_id: str = Field(description="Canonical ID assigned post-dedup")
+    engagement_id: str = Field(description="Parent engagement")
+    task_id: str = Field(description="Task that produced this source instance")
+    agent_id: str = Field(description="Agent that produced this source instance")
+
+
 class CitationManifest(BaseModel):
     """Output of the CitationProcessor: deduplicated, verified citation inventory.
 
@@ -196,6 +234,10 @@ class CitationManifest(BaseModel):
     fabrication_flags: list[str] = Field(
         default_factory=list,
         description="Citation IDs flagged as potentially fabricated",
+    )
+    aliases: list[CitationAlias] = Field(
+        default_factory=list,
+        description="Maps source-instance IDs to canonical IDs (built during dedup)",
     )
 
 

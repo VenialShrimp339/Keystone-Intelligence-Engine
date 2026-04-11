@@ -33,6 +33,7 @@ from keystone.models.research import EngagementSpec, StructuredFinding
 from keystone.models.tasks import ModelTier, ResearchTask
 from keystone.pipeline.markdown_renderer import MarkdownRenderer
 from keystone.research.agent_pool import AgentPool
+from keystone.research.error_recovery import ErrorRecovery
 from keystone.specification.spec_engine import SpecificationEngine
 from keystone.specification.template_registry import TemplateRegistry
 
@@ -124,6 +125,7 @@ class Pipeline:
                 llm=self._llm_factory(ModelTier.STANDARD),
                 gateway=self._gateway,
                 deep_llm=deep_llm,
+                error_recovery=ErrorRecovery(llm_factory=self._llm_factory),
             ),
             citation_processor=CitationProcessor(),
             deliberation=Deliberation(

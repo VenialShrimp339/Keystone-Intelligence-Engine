@@ -11,6 +11,7 @@ Structural enforcement (not prompt-based):
 from __future__ import annotations
 
 import logging
+import uuid
 from pathlib import Path
 
 from keystone.models.citations import Citation, ConfidenceTier
@@ -74,32 +75,74 @@ class FindingWriter:
             confidence: float (0-1)
             caveats: list[str] (optional)
 
-        Raises FindingValidationError on structural violations.
+        Validates claims individually. Valid claims are kept; invalid claims
+        are recorded in dropped_claims with their reasons. Only raises
+        FindingValidationError when the finding is entirely unsalvageable
+        (no valid claims AND no absence report).
         """
-        issues: list[str] = []
+        finding_issues: list[str] = []
 
         if not absence_report:
-            issues.append("Absence report must be non-empty")
+            finding_issues.append("Absence report must be non-empty")
 
         claims: list[FindingClaim] = []
+        dropped_claims: list[dict] = []
+
         for i, raw in enumerate(raw_claims):
             claim_issues = self._validate_raw_claim(raw, i)
-            issues.extend(claim_issues)
-
-            if not claim_issues:
-                claims.append(
-                    FindingClaim(
-                        text=raw["text"],
-                        evidence=raw["evidence"],
-                        citations=raw["citations"],
-                        confidence=raw["confidence"],
-                        confidence_tier=_tier_from_confidence(raw["confidence"]),
-                        caveats=raw.get("caveats", []),
-                    )
+            if claim_issues:
+                dropped_claims.append({
+                    "index": i,
+                    "text": raw.get("text", ""),
+                    "reasons": claim_issues,
+                })
+                logger.debug(
+                    "Dropped claim %d: %s", i, "; ".join(claim_issues)
                 )
+                continue
 
-        if issues:
-            raise FindingValidationError(issues)
+            claim_id = f"{engagement_id}_{task_id}_{uuid.uuid4().hex[:8]}"
+            citation_ids = [cit.citation_id for cit in raw["citations"]]
+
+            claims.append(
+                FindingClaim(
+                    text=raw["text"],
+                    evidence=raw["evidence"],
+                    citations=raw["citations"],
+                    confidence=raw["confidence"],
+                    confidence_tier=_tier_from_confidence(raw["confidence"]),
+                    caveats=raw.get("caveats", []),
+                    claim_id=claim_id,
+                    citation_ids=citation_ids,
+                )
+            )
+
+        if dropped_claims:
+            logger.warning(
+                "Agent %s task %s: dropped %d/%d claims during validation",
+                agent_id,
+                task_id,
+                len(dropped_claims),
+                len(raw_claims),
+            )
+
+        # Finding-level validation: absence report is always required
+        if finding_issues:
+            raise FindingValidationError(finding_issues)
+
+        # When ALL claims failed validation there is nothing to salvage -- fail loudly
+        if not claims:
+            reasons = "; ".join(
+                d["reasons"][0] for d in dropped_claims if d.get("reasons")
+            )
+            raise FindingValidationError(
+                [f"All {len(dropped_claims)} claims failed validation: {reasons}"]
+            )
+
+        # Downgrade status to PARTIAL when some claims were salvaged (dropped > 0)
+        effective_status = status
+        if dropped_claims and claims:
+            effective_status = FindingStatus.PARTIAL
 
         artifact_path = None
         if self._artifact_dir:
@@ -118,12 +161,13 @@ class FindingWriter:
             client_id=client_id,
             agent_type=agent_type,
             claims=claims,
-            status=status,
+            status=effective_status,
             gaps=gaps or [],
             artifact_path=artifact_path,
             absence_report=absence_report,
             sources_consulted=sources_consulted,
             tokens_consumed=tokens_consumed,
+            dropped_claims=dropped_claims,
         )
 
     def write_artifact(self, finding: StructuredFinding) -> str | None:

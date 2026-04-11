@@ -130,13 +130,16 @@ def test_build_finding_with_multiple_claims() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Structural enforcement: citations required
+# Structural enforcement: all-claims-invalid raises; partial failure salvages.
+# When ALL claims fail, FindingValidationError is raised (nothing to salvage).
+# When SOME claims fail, valid ones are kept and dropped recorded.
 # ---------------------------------------------------------------------------
 
 
-def test_reject_claim_without_citations() -> None:
+def test_all_claims_invalid_raises() -> None:
+    """When every claim fails validation, FindingValidationError is raised."""
     writer = FindingWriter()
-    with pytest.raises(FindingValidationError, match="at least one citation"):
+    with pytest.raises(FindingValidationError, match="claims failed validation"):
         writer.build_finding(
             task_id="task_001",
             agent_id="agent_001",
@@ -150,11 +153,12 @@ def test_reject_claim_without_citations() -> None:
         )
 
 
-def test_reject_claim_missing_citations_key() -> None:
+def test_claim_missing_citations_key_raises_when_only_claim() -> None:
+    """Single claim with missing citations key raises (all claims fail)."""
     writer = FindingWriter()
     raw = _make_raw_claim()
     del raw["citations"]
-    with pytest.raises(FindingValidationError, match="at least one citation"):
+    with pytest.raises(FindingValidationError, match="claims failed validation"):
         writer.build_finding(
             task_id="task_001",
             agent_id="agent_001",
@@ -169,15 +173,16 @@ def test_reject_claim_missing_citations_key() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Structural enforcement: confidence required
+# Structural enforcement: confidence required (all-fail raises)
 # ---------------------------------------------------------------------------
 
 
-def test_reject_claim_missing_confidence() -> None:
+def test_claim_missing_confidence_raises_when_only_claim() -> None:
+    """Single claim missing confidence raises (all claims fail)."""
     writer = FindingWriter()
     raw = _make_raw_claim()
     del raw["confidence"]
-    with pytest.raises(FindingValidationError, match="missing 'confidence'"):
+    with pytest.raises(FindingValidationError, match="claims failed validation"):
         writer.build_finding(
             task_id="task_001",
             agent_id="agent_001",
@@ -191,9 +196,10 @@ def test_reject_claim_missing_confidence() -> None:
         )
 
 
-def test_reject_confidence_out_of_range() -> None:
+def test_claim_confidence_out_of_range_raises_when_only_claim() -> None:
+    """Single claim with confidence > 1.0 raises (all claims fail)."""
     writer = FindingWriter()
-    with pytest.raises(FindingValidationError, match="confidence must be 0.0-1.0"):
+    with pytest.raises(FindingValidationError, match="claims failed validation"):
         writer.build_finding(
             task_id="task_001",
             agent_id="agent_001",
@@ -229,13 +235,14 @@ def test_reject_empty_absence_report() -> None:
 
 
 # ---------------------------------------------------------------------------
-# Structural enforcement: text and evidence
+# Structural enforcement: text and evidence (all-fail raises)
 # ---------------------------------------------------------------------------
 
 
-def test_reject_claim_missing_text() -> None:
+def test_claim_missing_text_raises_when_only_claim() -> None:
+    """Single claim with empty text raises (all claims fail)."""
     writer = FindingWriter()
-    with pytest.raises(FindingValidationError, match="missing 'text'"):
+    with pytest.raises(FindingValidationError, match="claims failed validation"):
         writer.build_finding(
             task_id="task_001",
             agent_id="agent_001",
@@ -249,9 +256,10 @@ def test_reject_claim_missing_text() -> None:
         )
 
 
-def test_reject_claim_missing_evidence() -> None:
+def test_claim_missing_evidence_raises_when_only_claim() -> None:
+    """Single claim with empty evidence raises (all claims fail)."""
     writer = FindingWriter()
-    with pytest.raises(FindingValidationError, match="missing 'evidence'"):
+    with pytest.raises(FindingValidationError, match="claims failed validation"):
         writer.build_finding(
             task_id="task_001",
             agent_id="agent_001",
@@ -347,3 +355,122 @@ def test_finding_with_gaps() -> None:
     )
     assert finding.status == FindingStatus.GAP_FOUND
     assert len(finding.gaps) == 2
+
+
+# ---------------------------------------------------------------------------
+# claim_id minting and citation_ids derivation (Wave 1C)
+# ---------------------------------------------------------------------------
+
+
+def test_valid_claim_gets_claim_id() -> None:
+    """Every valid claim must have a minted claim_id."""
+    writer = FindingWriter()
+    finding = writer.build_finding(
+        task_id="task_001",
+        agent_id="agent_001",
+        engagement_id="eng_001",
+        client_id="client_001",
+        agent_type="quantitative",
+        raw_claims=[_make_raw_claim()],
+        absence_report=["No data found"],
+        sources_consulted=1,
+        tokens_consumed=100,
+    )
+    assert len(finding.claims) == 1
+    claim = finding.claims[0]
+    assert claim.claim_id is not None
+    assert claim.claim_id.startswith("eng_001_task_001_")
+
+
+def test_claim_ids_are_unique_across_claims() -> None:
+    """Each claim gets a distinct claim_id."""
+    writer = FindingWriter()
+    finding = writer.build_finding(
+        task_id="task_001",
+        agent_id="agent_001",
+        engagement_id="eng_001",
+        client_id="client_001",
+        agent_type="quantitative",
+        raw_claims=[
+            _make_raw_claim(text="Claim A"),
+            _make_raw_claim(text="Claim B"),
+        ],
+        absence_report=["No data found"],
+        sources_consulted=2,
+        tokens_consumed=200,
+    )
+    ids = [c.claim_id for c in finding.claims]
+    assert len(ids) == len(set(ids)), "claim_ids must be unique"
+
+
+def test_citation_ids_derived_from_embedded_citations() -> None:
+    """citation_ids on each claim must match its embedded Citation.citation_id values."""
+    writer = FindingWriter()
+    cit_a = _make_citation("CIT-A01")
+    cit_b = _make_citation("CIT-B02")
+    finding = writer.build_finding(
+        task_id="task_001",
+        agent_id="agent_001",
+        engagement_id="eng_001",
+        client_id="client_001",
+        agent_type="quantitative",
+        raw_claims=[_make_raw_claim(citations=[cit_a, cit_b])],
+        absence_report=["No data found"],
+        sources_consulted=2,
+        tokens_consumed=100,
+    )
+    assert finding.claims[0].citation_ids == ["CIT-A01", "CIT-B02"]
+
+
+# ---------------------------------------------------------------------------
+# Partial-claim salvage (Wave 1C)
+# ---------------------------------------------------------------------------
+
+
+def test_finding_writer_salvages_valid_claims_on_partial_failure() -> None:
+    """Canary: valid claims survive when some claims in the batch fail validation."""
+    writer = FindingWriter()
+    finding = writer.build_finding(
+        task_id="task_001",
+        agent_id="agent_001",
+        engagement_id="eng_001",
+        client_id="client_001",
+        agent_type="quantitative",
+        raw_claims=[
+            _make_raw_claim(text="Valid claim A"),           # good
+            _make_raw_claim(citations=[]),                    # dropped: no citations
+            _make_raw_claim(text="Valid claim B"),           # good
+            _make_raw_claim(text="", evidence="ev"),         # dropped: missing text
+        ],
+        absence_report=["Something was not found"],
+        sources_consulted=4,
+        tokens_consumed=400,
+    )
+
+    assert len(finding.claims) == 2
+    assert len(finding.dropped_claims) == 2
+    assert finding.status == FindingStatus.PARTIAL
+    assert finding.claims[0].text == "Valid claim A"
+    assert finding.claims[1].text == "Valid claim B"
+    # Verify dropped claim reasons are recorded
+    reasons_all = [r for d in finding.dropped_claims for r in d["reasons"]]
+    assert any("citation" in r for r in reasons_all)
+    assert any("text" in r for r in reasons_all)
+
+
+def test_partial_status_not_set_when_no_claims_dropped() -> None:
+    """Status is not degraded to PARTIAL when all claims are valid."""
+    writer = FindingWriter()
+    finding = writer.build_finding(
+        task_id="task_001",
+        agent_id="agent_001",
+        engagement_id="eng_001",
+        client_id="client_001",
+        agent_type="quantitative",
+        raw_claims=[_make_raw_claim()],
+        absence_report=["No data found"],
+        sources_consulted=1,
+        tokens_consumed=100,
+    )
+    assert finding.status == FindingStatus.COMPLETE
+    assert finding.dropped_claims == []

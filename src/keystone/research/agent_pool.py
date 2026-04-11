@@ -45,6 +45,9 @@ class AgentPool:
     Spawns N research agents concurrently. On mixed results
     (K of N succeed), combines successful findings and retries
     failures up to max_retries times.
+
+    When ``deep_llm`` is provided, agents use deep multi-turn web
+    research mode instead of the shallow gateway-based approach.
     """
 
     def __init__(
@@ -52,6 +55,7 @@ class AgentPool:
         llm: LLMCallable,
         gateway: MCPGateway,
         *,
+        deep_llm: LLMCallable | None = None,
         finding_writer: FindingWriter | None = None,
         context_loader: ContextLoader | None = None,
         error_recovery: ErrorRecovery | None = None,
@@ -59,6 +63,7 @@ class AgentPool:
     ) -> None:
         self._llm = llm
         self._gateway = gateway
+        self._deep_llm = deep_llm
         self._finding_writer = finding_writer or FindingWriter()
         self._context_loader = context_loader
         self._error_recovery = error_recovery
@@ -121,6 +126,7 @@ class AgentPool:
         research_agent = ResearchAgent(
             llm=self._llm,
             gateway=self._gateway,
+            deep_llm=self._deep_llm,
             finding_writer=self._finding_writer,
             context_loader=self._context_loader,
             error_recovery=self._error_recovery,

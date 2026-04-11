@@ -12,7 +12,7 @@ from unittest.mock import patch
 import pytest
 from pytest_httpx import HTTPXMock
 
-from keystone.citation.processor import CitationProcessor
+from keystone.citation.processor import CitationProcessor, CitationProcessorResult
 from keystone.contracts import CitationProcessorContract
 from keystone.events import (
     CitationDeduped,
@@ -400,6 +400,117 @@ class TestManifestSchema:
         restored = CitationManifest.model_validate_json(json_str)
         assert restored.manifest_id == manifest.manifest_id
         assert len(restored.citations) == len(manifest.citations)
+
+
+# ---------------------------------------------------------------------------
+# Alias map and canonical ID rewriting (Task #12)
+# ---------------------------------------------------------------------------
+
+
+class TestAliasMapAndCanonicalRewriting:
+    @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
+    async def test_citation_processor_builds_alias_map(self, _mock):
+        """Alias map in manifest covers all source-instance IDs including canonical."""
+        shared_url = "https://sec.gov/filing.pdf"
+        f1 = _finding("agent-1", [_claim("Revenue grew 15%", [
+            _cit("CIT-SRC-001", shared_url, agents=["agent-1"]),
+        ])])
+        f2 = _finding("agent-2", [_claim("Revenue increased", [
+            _cit("CIT-SRC-002", shared_url, agents=["agent-2"]),
+        ])])
+
+        processor = CitationProcessor()
+        await _collect(processor, [f1, f2])
+        manifest = await processor.get_manifest()
+
+        # Both source IDs should appear in alias map
+        alias_source_ids = {a.source_instance_id for a in manifest.aliases}
+        assert "CIT-SRC-001" in alias_source_ids
+        assert "CIT-SRC-002" in alias_source_ids
+
+        # Both aliases point to the same canonical ID
+        alias_by_src = {a.source_instance_id: a.canonical_citation_id for a in manifest.aliases}
+        assert alias_by_src["CIT-SRC-001"] == alias_by_src["CIT-SRC-002"]
+
+    @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
+    async def test_citation_processor_rewrites_findings_to_canonical_ids(self, _mock):
+        """get_result() returns findings with claim.citation_ids pointing to canonical IDs."""
+        shared_url = "https://sec.gov/filing.pdf"
+        # agent-1 cites shared URL: source ID CIT-SRC-001, will be merged into canonical
+        # agent-2 cites same URL: source ID CIT-SRC-002, will be aliased to same canonical
+        f1 = _finding("agent-1", [_claim("Revenue grew", [
+            _cit("CIT-SRC-001", shared_url, agents=["agent-1"]),
+        ])])
+        # Give the finding claims citation_ids as source-instance IDs
+        f1 = f1.model_copy(update={
+            "claims": [
+                f1.claims[0].model_copy(update={"citation_ids": ["CIT-SRC-001"]})
+            ]
+        })
+        f2 = _finding("agent-2", [_claim("Revenue up", [
+            _cit("CIT-SRC-002", shared_url, agents=["agent-2"]),
+        ])])
+        f2 = f2.model_copy(update={
+            "claims": [
+                f2.claims[0].model_copy(update={"citation_ids": ["CIT-SRC-002"]})
+            ]
+        })
+
+        processor = CitationProcessor()
+        await _collect(processor, [f1, f2])
+        result = await processor.get_result()
+
+        assert isinstance(result, CitationProcessorResult)
+        # Both findings' claims should reference the same canonical ID
+        canonical_ids_f1 = result.canonicalized_findings[0].claims[0].citation_ids
+        canonical_ids_f2 = result.canonicalized_findings[1].claims[0].citation_ids
+
+        assert len(canonical_ids_f1) == 1
+        assert len(canonical_ids_f2) == 1
+        # Both point to the same canonical ID
+        assert canonical_ids_f1[0] == canonical_ids_f2[0]
+        # The canonical ID is the winner from dedup (one of the two source IDs)
+        assert canonical_ids_f1[0] in {"CIT-SRC-001", "CIT-SRC-002"}
+
+    @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
+    async def test_task_manifest_contains_exact_canonical_citations(self, _mock):
+        """Manifest citations are deduplicated canonicals; no source-instance duplicates."""
+        shared_url = "https://reports.com/market-analysis.pdf"
+        unique_url = "https://other.com/report.pdf"
+
+        # Three agents: two cite shared_url, one cites unique_url
+        f1 = _finding("agent-1", [_claim("Market is $50B", [
+            _cit("CIT-A1", shared_url, quality=0.9, agents=["agent-1"]),
+        ])])
+        f2 = _finding("agent-2", [_claim("TAM $50B", [
+            _cit("CIT-A2", shared_url, quality=0.7, agents=["agent-2"]),
+        ])])
+        f3 = _finding("agent-3", [_claim("Unique finding", [
+            _cit("CIT-B1", unique_url, quality=0.8, agents=["agent-3"]),
+        ])])
+
+        processor = CitationProcessor()
+        await _collect(processor, [f1, f2, f3])
+        manifest = await processor.get_manifest()
+
+        # Exactly 2 canonical citations: one for shared_url, one for unique_url
+        assert len(manifest.citations) == 2
+        manifest_urls = {c.url for c in manifest.citations}
+        assert shared_url in manifest_urls
+        assert unique_url in manifest_urls
+
+        # The merged shared_url citation has both agents
+        merged = next(c for c in manifest.citations if c.url == shared_url)
+        assert set(merged.found_by_agents) == {"agent-1", "agent-2"}
+
+        # Alias map has 3 entries (one per source instance)
+        assert len(manifest.aliases) == 3
+
+    async def test_get_result_before_process_raises(self):
+        """Calling get_result before process raises RuntimeError."""
+        processor = CitationProcessor()
+        with pytest.raises(RuntimeError, match="process.*must be called"):
+            await processor.get_result()
 
 
 # ---------------------------------------------------------------------------

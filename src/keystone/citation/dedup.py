@@ -9,7 +9,7 @@ from __future__ import annotations
 from collections import defaultdict
 from itertools import combinations
 
-from keystone.models.citations import Citation, CorroborationPair
+from keystone.models.citations import Citation, CitationAlias, CorroborationPair
 from keystone.models.research import StructuredFinding
 
 
@@ -124,6 +124,10 @@ def _merge_group(citations: list[Citation]) -> Citation:
         if not publication and c.publication:
             publication = c.publication
 
+    # Collect all source-instance IDs that were merged into this canonical record.
+    # The canonical citation keeps best.citation_id; all others are aliases.
+    merged_from_ids = sorted({c.citation_id for c in citations if c.citation_id != best.citation_id})
+
     return Citation(
         citation_id=best.citation_id,
         engagement_id=best.engagement_id,
@@ -141,6 +145,7 @@ def _merge_group(citations: list[Citation]) -> Citation:
         crossref_verified=crossref_verified,
         found_by_agents=all_agents,
         content_hash=content_hash,
+        merged_from_ids=merged_from_ids,
     )
 
 
@@ -162,6 +167,52 @@ def deduplicate_citations(citations: list[Citation]) -> list[Citation]:
         return []
 
     return [_merge_group(group) for group in _group_duplicates(citations)]
+
+
+def deduplicate_with_aliases(
+    citations: list[Citation],
+    engagement_id: str,
+    task_id_by_citation: dict[str, str],
+    agent_id_by_citation: dict[str, str],
+) -> tuple[list[Citation], list[CitationAlias]]:
+    """Deduplicate citations and build the source-instance -> canonical alias map.
+
+    Returns a tuple of (deduped_citations, aliases). Each alias maps one
+    source-instance citation ID to the canonical citation ID that survived dedup.
+
+    Args:
+        citations: Raw citation list from all agents.
+        engagement_id: Parent engagement.
+        task_id_by_citation: Maps citation_id -> task_id for provenance.
+        agent_id_by_citation: Maps citation_id -> agent_id for provenance.
+
+    Returns:
+        (deduped, aliases) where aliases covers every source-instance ID
+        including those that were chosen as canonical (self-aliases).
+    """
+    if not citations:
+        return [], []
+
+    groups = _group_duplicates(citations)
+    deduped: list[Citation] = []
+    aliases: list[CitationAlias] = []
+
+    for group in groups:
+        canonical = _merge_group(group)
+        deduped.append(canonical)
+        # Every member of the group aliases to the canonical ID
+        for source_cit in group:
+            aliases.append(
+                CitationAlias(
+                    source_instance_id=source_cit.citation_id,
+                    canonical_citation_id=canonical.citation_id,
+                    engagement_id=engagement_id,
+                    task_id=task_id_by_citation.get(source_cit.citation_id, ""),
+                    agent_id=agent_id_by_citation.get(source_cit.citation_id, ""),
+                )
+            )
+
+    return deduped, aliases
 
 
 def find_corroboration_pairs(

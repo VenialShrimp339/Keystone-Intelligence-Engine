@@ -467,10 +467,15 @@ async def _two_round_shallow_llm(prompt: str) -> str:
     if "round:" in lower and "synthesize findings" in lower:
         match = re.search(r"round:\s*(\d+)", prompt, flags=re.IGNORECASE)
         round_num = int(match.group(1)) if match else 1
+        # Extract the first SRC ref from the prompt so the claim only references
+        # one of the round's citations (not all of them).
+        src_match = re.search(r"(SRC-\d+)", prompt)
+        first_ref = src_match.group(1) if src_match else "SRC-001"
         return json.dumps([
             {
                 "text": f"Round {round_num} claim",
                 "evidence": f"Evidence synthesized in round {round_num}",
+                "citation_refs": [first_ref],
                 "confidence": 0.55,
                 "caveats": [],
             },
@@ -895,6 +900,57 @@ async def test_claim_level_citations_are_narrower_than_round_level() -> None:
         round_ids = {citation.citation_id for citation in agent._round_citations[round_num]}
         claim_ids = {citation.citation_id for citation in claim.citations}
         assert claim_ids < round_ids
+
+
+async def test_source_instance_ids_unique_across_parallel_agents() -> None:
+    """Architectural claim: citation IDs must be unique across parallel agents.
+
+    Two agents running concurrently on the same engagement must not produce
+    colliding citation IDs. The engagement-unique source-instance ID format
+    (CIT-{eng}-{agent}-{seq}) guarantees this structurally.
+    """
+    gateway_a, client_a = _build_gateway()
+    gateway_b, client_b = _build_gateway()
+
+    for client in (client_a, client_b):
+        client.set_response(
+            "exa_search",
+            {"url": "https://example.com/exa", "title": "Exa source", "text": "Exa text"},
+        )
+        client.set_response(
+            "brave_search",
+            {"url": "https://example.com/brave", "title": "Brave source", "text": "Brave text"},
+        )
+        client.set_response(
+            "edgar_filings",
+            {"url": "https://sec.gov/filing", "title": "SEC filing", "text": "Filing text"},
+        )
+
+    task = _task("task_001")
+    spec = _spec([task])
+
+    agent_a = ResearchAgent(llm=_two_round_shallow_llm, gateway=gateway_a, max_rounds=1)
+    agent_b = ResearchAgent(llm=_two_round_shallow_llm, gateway=gateway_b, max_rounds=1)
+
+    instance_a = _agent(agent_id="agent_alpha")
+    instance_b = _agent(agent_id="agent_beta")
+
+    async for _ in agent_a.execute(task, spec, instance_a):
+        pass
+    async for _ in agent_b.execute(task, spec, instance_b):
+        pass
+
+    ids_a = {cit.citation_id for cits in agent_a._round_citations.values() for cit in cits}
+    ids_b = {cit.citation_id for cits in agent_b._round_citations.values() for cit in cits}
+
+    # No ID collisions between two parallel agents
+    assert ids_a.isdisjoint(ids_b), (
+        f"Citation ID collision between agents: {ids_a & ids_b}"
+    )
+
+    # All IDs satisfy the CIT- prefix required by Citation.citation_id validator
+    for cit_id in ids_a | ids_b:
+        assert cit_id.startswith("CIT-"), f"ID does not satisfy CIT- prefix: {cit_id}"
 
 
 async def test_deep_research_emits_audit_equivalent_events() -> None:

@@ -250,6 +250,10 @@ class StructuredFinding(BaseModel):
     tokens_consumed: int = Field(
         ge=0, description="Total tokens used by this agent"
     )
+    dropped_claims: list[dict] = Field(
+        default_factory=list,
+        description="Claims that failed validation, with reasons",
+    )
 
 
 class FindingClaim(BaseModel):
@@ -268,4 +272,9 @@ class FindingClaim(BaseModel):
     )
     caveats: list[str] = Field(
         default_factory=list, description="Known limitations or qualifications"
+    )
+    claim_id: str | None = Field(default=None, description="Stable claim identifier")
+    citation_ids: list[str] = Field(
+        default_factory=list,
+        description="Canonical citation IDs after processor rewrite",
     )

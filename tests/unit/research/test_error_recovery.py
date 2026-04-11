@@ -165,3 +165,33 @@ async def test_unknown_tier_uses_itself() -> None:
     recovery = ErrorRecovery()
     tiers = recovery._get_fallback_tiers(ModelTier.LIGHT)
     assert tiers == [ModelTier.LIGHT]
+
+
+# ---------------------------------------------------------------------------
+# llm_factory wiring (Task #13)
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_error_recovery_uses_wired_llm_factory() -> None:
+    """ErrorRecovery with wired llm_factory invokes factory to get fallback LLM."""
+    tiers_requested: list[ModelTier] = []
+
+    def factory(tier: ModelTier):
+        async def llm(prompt: str) -> str:
+            tiers_requested.append(tier)
+            if tier == ModelTier.STANDARD:
+                raise Exception("model overloaded")
+            return f"ok from {tier}"
+
+        return llm
+
+    recovery = ErrorRecovery(max_retries=1, base_delay=0.0, llm_factory=factory)
+    base_llm = factory(ModelTier.STANDARD)
+    result = await recovery.execute_with_recovery(
+        base_llm, "prompt", current_tier=ModelTier.STANDARD
+    )
+
+    # Factory must have been called for the fallback tier (FAST)
+    assert ModelTier.FAST in tiers_requested
+    assert result == f"ok from {ModelTier.FAST}"

@@ -14,10 +14,17 @@ The create_and_wait_for_gate interface stays the same.
 
 from __future__ import annotations
 
+import uuid
 from typing import TYPE_CHECKING
 
 import structlog
 
+from keystone.events import (
+    ReviewGateApproved,
+    ReviewGateCreated,
+    ReviewGateModified,
+    ReviewGateRejected,
+)
 from keystone.hitl.schemas import (
     CreateGateRequest,
     GateResponse,
@@ -63,6 +70,7 @@ async def create_and_wait_for_gate(
     items: list[ReviewItemCreate],
     poll_interval: float = 1.0,
     timeout: float = 3600.0,
+    event_collector: list | None = None,
 ) -> GateResponse:
     """Create a review gate and block until the human decides.
 
@@ -109,6 +117,18 @@ async def create_and_wait_for_gate(
         item_count=len(items),
     )
 
+    if event_collector is not None:
+        event_collector.append(
+            ReviewGateCreated(
+                event_id=str(uuid.uuid4()),
+                engagement_id=engagement_id,
+                client_id=client_id,
+                gate_id=gate.id,
+                gate_type=str(gate_type),
+                item_count=len(items),
+            )
+        )
+
     try:
         resolved = await service.wait_for_decision(
             session, gate.id, poll_interval=poll_interval, timeout=timeout
@@ -118,6 +138,17 @@ async def create_and_wait_for_gate(
 
     if resolved.status == GateStatus.REJECTED:
         reasoning = resolved.decision.reasoning if resolved.decision else None
+        if event_collector is not None:
+            event_collector.append(
+                ReviewGateRejected(
+                    event_id=str(uuid.uuid4()),
+                    engagement_id=engagement_id,
+                    client_id=client_id,
+                    gate_id=gate.id,
+                    gate_type=str(gate_type),
+                    reasoning=reasoning,
+                )
+            )
         raise GateRejectedError(gate.id, reasoning)
 
     logger.info(
@@ -127,6 +158,32 @@ async def create_and_wait_for_gate(
         decided_by=resolved.resolved_by,
         engagement_id=engagement_id,
     )
+
+    if event_collector is not None:
+        if resolved.status == GateStatus.MODIFIED:
+            modification_keys = list(resolved.decision.modifications.keys()) if (
+                resolved.decision and resolved.decision.modifications
+            ) else []
+            event_collector.append(
+                ReviewGateModified(
+                    event_id=str(uuid.uuid4()),
+                    engagement_id=engagement_id,
+                    client_id=client_id,
+                    gate_id=gate.id,
+                    gate_type=str(gate_type),
+                    modification_keys=modification_keys,
+                )
+            )
+        else:
+            event_collector.append(
+                ReviewGateApproved(
+                    event_id=str(uuid.uuid4()),
+                    engagement_id=engagement_id,
+                    client_id=client_id,
+                    gate_id=gate.id,
+                    gate_type=str(gate_type),
+                )
+            )
 
     return resolved
 

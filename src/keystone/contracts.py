@@ -19,6 +19,7 @@ if TYPE_CHECKING:
     from keystone.events import (
         AnyPipelineEvent,
     )
+    from keystone.citation.processor import CitationProcessorResult
     from keystone.hitl.schemas import GateResponse
     from keystone.models.agents import AgentInstance
     from keystone.models.citations import CitationManifest
@@ -119,6 +120,10 @@ class CitationProcessorContract(Protocol):
 
     async def get_manifest(self) -> CitationManifest:
         """Return the produced citation manifest."""
+        ...
+
+    async def get_result(self) -> CitationProcessorResult:
+        """Return both the manifest and canonicalized findings."""
         ...
 
 

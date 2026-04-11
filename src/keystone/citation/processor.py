@@ -11,7 +11,7 @@ import uuid
 from collections import defaultdict
 from collections.abc import AsyncIterator
 
-from keystone.citation.dedup import deduplicate_citations, find_corroboration_pairs
+from keystone.citation.dedup import deduplicate_with_aliases, find_corroboration_pairs
 from keystone.citation.hash import compute_content_hash
 from keystone.citation.url_check import batch_check_urls
 from keystone.events import (
@@ -21,8 +21,21 @@ from keystone.events import (
     ManifestProduced,
     URLVerified,
 )
-from keystone.models.citations import Citation, CitationManifest
-from keystone.models.research import StructuredFinding
+from keystone.models.citations import Citation, CitationAlias, CitationManifest
+from keystone.models.research import FindingClaim, StructuredFinding
+from pydantic import BaseModel
+
+
+class CitationProcessorResult(BaseModel):
+    """Output of CitationProcessor with both manifest and canonicalized findings.
+
+    Callers that only need the manifest use get_manifest() (backward-compatible).
+    Callers that need canonicalized findings (with citation IDs rewritten to
+    canonical form) use get_result().
+    """
+
+    manifest: CitationManifest
+    canonicalized_findings: list[StructuredFinding]
 
 
 class CitationProcessor:
@@ -41,6 +54,7 @@ class CitationProcessor:
 
     def __init__(self) -> None:
         self._manifest: CitationManifest | None = None
+        self._canonicalized_findings: list[StructuredFinding] | None = None
 
     async def process(
         self,
@@ -74,6 +88,7 @@ class CitationProcessor:
                 engagement_id=engagement_id,
                 client_id=client_id,
             )
+            self._canonicalized_findings = findings
             yield ManifestProduced(
                 event_id=_uid(),
                 engagement_id=engagement_id,
@@ -86,28 +101,32 @@ class CitationProcessor:
             )
             return
 
-        # 2. Deduplicate citations by URL/DOI
-        # Track originals for merge event emission
-        originals_by_url: dict[str, list[str]] = defaultdict(list)
-        originals_by_doi: dict[str, list[str]] = defaultdict(list)
-        for c in all_citations:
-            originals_by_url[c.url].append(c.citation_id)
-            if c.doi:
-                originals_by_doi[c.doi].append(c.citation_id)
+        # 2. Build provenance maps for alias construction
+        task_id_by_citation: dict[str, str] = {}
+        agent_id_by_citation: dict[str, str] = {}
+        for finding in findings:
+            for claim in finding.claims:
+                for cit in claim.citations:
+                    task_id_by_citation[cit.citation_id] = finding.task_id
+                    agent_id_by_citation[cit.citation_id] = finding.agent_id
 
-        deduped = deduplicate_citations(all_citations)
+        # 3. Deduplicate with alias map
+        deduped, aliases = deduplicate_with_aliases(
+            all_citations,
+            engagement_id=engagement_id,
+            task_id_by_citation=task_id_by_citation,
+            agent_id_by_citation=agent_id_by_citation,
+        )
 
+        # Emit CitationDeduped events for merged groups
         for citation in deduped:
-            merged_ids = set(originals_by_url.get(citation.url, []))
-            if citation.doi:
-                merged_ids |= set(originals_by_doi.get(citation.doi, set()))
-            if len(merged_ids) > 1:
+            if citation.merged_from_ids:
                 yield CitationDeduped(
                     event_id=_uid(),
                     engagement_id=engagement_id,
                     client_id=client_id,
                     citation_id=citation.citation_id,
-                    merged_from=sorted(merged_ids),
+                    merged_from=citation.merged_from_ids,
                     agents_involved=citation.found_by_agents,
                 )
 
@@ -154,7 +173,7 @@ class CitationProcessor:
                 )
             final_citations.append(citation)
 
-        # 6. Build manifest
+        # 6. Build manifest with alias map
         manifest_id = f"MAN-{_uid()[:8]}"
         self._manifest = CitationManifest(
             manifest_id=manifest_id,
@@ -163,6 +182,12 @@ class CitationProcessor:
             citations=final_citations,
             corroboration_pairs=pairs,
             dead_urls=dead_url_ids,
+            aliases=aliases,
+        )
+
+        # Rewrite findings so claim.citation_ids reference canonical IDs
+        self._canonicalized_findings = self._rewrite_findings_to_canonical(
+            findings, aliases
         )
 
         yield ManifestProduced(
@@ -182,6 +207,50 @@ class CitationProcessor:
             msg = "process() must be called before get_manifest()"
             raise RuntimeError(msg)
         return self._manifest
+
+    async def get_result(self) -> CitationProcessorResult:
+        """Return both the manifest and canonicalized findings."""
+        if self._manifest is None or self._canonicalized_findings is None:
+            msg = "process() must be called before get_result()"
+            raise RuntimeError(msg)
+        return CitationProcessorResult(
+            manifest=self._manifest,
+            canonicalized_findings=self._canonicalized_findings,
+        )
+
+    def _rewrite_findings_to_canonical(
+        self,
+        findings: list[StructuredFinding],
+        aliases: list[CitationAlias],
+    ) -> list[StructuredFinding]:
+        """Rewrite claim.citation_ids from source-instance IDs to canonical IDs.
+
+        Builds a lookup from source_instance_id -> canonical_citation_id,
+        then produces new StructuredFinding/FindingClaim objects with updated
+        citation_ids. Original citations list on each claim is preserved as-is
+        (it contains the canonical Citation objects after dedup).
+        """
+        alias_map: dict[str, str] = {
+            a.source_instance_id: a.canonical_citation_id for a in aliases
+        }
+
+        rewritten: list[StructuredFinding] = []
+        for finding in findings:
+            new_claims: list[FindingClaim] = []
+            for claim in finding.claims:
+                canonical_ids = [
+                    alias_map.get(cid, cid) for cid in claim.citation_ids
+                ]
+                # Deduplicate while preserving order
+                seen: set[str] = set()
+                deduped_ids: list[str] = []
+                for cid in canonical_ids:
+                    if cid not in seen:
+                        seen.add(cid)
+                        deduped_ids.append(cid)
+                new_claims.append(claim.model_copy(update={"citation_ids": deduped_ids}))
+            rewritten.append(finding.model_copy(update={"claims": new_claims}))
+        return rewritten
 
 
 def _uid() -> str:

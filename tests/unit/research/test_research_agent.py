@@ -36,17 +36,20 @@ from keystone.research.research_agent import ResearchAgent
 # Test fixtures and helpers
 # ---------------------------------------------------------------------------
 
-# Standard claims the mock LLM returns
+# Standard claims the mock LLM returns.
+# citation_refs must reference SRC-001 (the first citation in the round table).
 _MOCK_CLAIMS = json.dumps([
     {
         "text": "Global EV battery market projected at $150B by 2030",
         "evidence": "BloombergNEF and IEA projections converge",
+        "citation_refs": ["SRC-001"],
         "confidence": 0.85,
         "caveats": ["Projections vary by 20%"],
     },
     {
         "text": "CATL and LG lead with 50% combined market share",
         "evidence": "SEC filings and industry reports",
+        "citation_refs": ["SRC-001"],
         "confidence": 0.9,
         "caveats": [],
     },
@@ -319,6 +322,7 @@ async def test_iterative_loop_runs_multiple_rounds() -> None:
         {
             "text": "Preliminary market estimate around $100B",
             "evidence": "Early industry forecasts",
+            "citation_refs": ["SRC-001"],
             "confidence": 0.55,
             "caveats": ["Highly uncertain"],
         },

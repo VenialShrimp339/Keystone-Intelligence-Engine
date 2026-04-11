@@ -79,6 +79,21 @@ def _make_event_id() -> str:
     return f"evt_{uuid.uuid4().hex[:12]}"
 
 
+def _make_source_instance_id(engagement_id: str, agent_id: str, seq: int) -> str:
+    """Generate engagement-unique source-instance citation ID.
+
+    Format: CIT-{engagement_short}-{agent_uuid_prefix}-{seq:03d}
+    Satisfies the CIT- validator. Unique across parallel agents because a
+    per-agent uuid segment is embedded -- pure truncation collides for agents
+    with common prefixes (e.g., agent_alpha_1 vs agent_alpha_2).
+    """
+    eng_short = engagement_id.replace("-", "").replace("_", "")[:8].upper()
+    # First 4 chars of agent_id (stripped) + 4 uuid hex chars = collision-safe 8-char segment
+    agt_prefix = agent_id.replace("-", "").replace("_", "")[:4].upper()
+    agt_short = agt_prefix + uuid.uuid4().hex[:4].upper()
+    return f"CIT-{eng_short}-{agt_short}-{seq:03d}"
+
+
 class ResearchAgent:
     """Single research agent executor with iterative research loop.
 
@@ -225,6 +240,12 @@ class ResearchAgent:
             )
 
         # --- Convert claims + sources -> Citation objects + raw_claims ---
+        # Deep mode does NOT use the citation_refs pattern from shallow mode.
+        # The LLM already returns per-claim `sources` arrays (structurally scoped),
+        # so citations are built directly from each claim's sources and attached
+        # to that claim. The citation_refs -> SRC-NNN indirection only exists in
+        # shallow mode to fix round-broadcast (where all round citations were
+        # broadcast to every claim regardless of actual reference).
         for claim_dict in claims_data:
             sources = claim_dict.pop("sources", [])
             citations: list[Citation] = []
@@ -233,7 +254,7 @@ class ResearchAgent:
                 self._citation_counter += 1
                 url = src.get("url", "")
                 citation = Citation(
-                    citation_id=f"CIT-{self._citation_counter:03d}",
+                    citation_id=_make_source_instance_id(eid, agent.agent_id, self._citation_counter),
                     engagement_id=eid,
                     client_id=cid,
                     url=url,
@@ -389,7 +410,7 @@ class ResearchAgent:
                     for cit_dict in result.citations:
                         self._citation_counter += 1
                         citation = Citation(
-                            citation_id=f"CIT-{self._citation_counter:03d}",
+                            citation_id=_make_source_instance_id(eid, agent.agent_id, self._citation_counter),
                             engagement_id=eid,
                             client_id=cid,
                             url=cit_dict.get("url", f"tool://{tool_name}"),
@@ -421,9 +442,12 @@ class ResearchAgent:
 
             self._round_citations[round_num] = round_cits
 
+            # Build citation table: SRC-001 -> Citation (for explicit ref attachment)
+            round_citation_table = self._build_round_citation_table(round_cits)
+
             # --- LLM synthesis ---
             synthesis_prompt = self._build_synthesis_prompt(
-                task, spec, agent, round_num, wiki_context
+                task, spec, agent, round_num, wiki_context, round_citation_table
             )
             try:
                 raw_response = await retry_llm_call(
@@ -435,9 +459,10 @@ class ResearchAgent:
                 )
                 round_claims = self._parse_synthesis(raw_response)
 
-                # Attach round citations to each claim
-                for claim in round_claims:
-                    claim["citations"] = round_cits
+                # Attach only explicitly referenced citations -- no round-broadcast
+                round_claims = self._attach_citations_from_refs(
+                    round_claims, round_citation_table
+                )
 
                 self._all_claims.extend(round_claims)
                 self._tokens_consumed += len(synthesis_prompt) // 4
@@ -648,26 +673,78 @@ OUTPUT THE JSON AND NOTHING ELSE."""
         agent: AgentInstance,
         round_num: int,
         wiki_context: list[str],
+        round_citation_table: dict[str, Citation] | None = None,
     ) -> str:
         ctx_section = ""
         if wiki_context:
             ctx_section = "\n\nPrior context:\n" + "\n---\n".join(wiki_context)
 
-        sources_text = json.dumps(
-            [s for s in self._all_sources if s["round"] == round_num],
-            default=str,
-        )
+        # Enumerate citations as SRC-NNN refs for explicit per-claim attribution
+        if round_citation_table:
+            src_lines = "\n".join(
+                f"- {ref} | {cit.title} | {cit.url}"
+                + (f" | {cit.content_snippet[:120]}" if cit.content_snippet else "")
+                for ref, cit in round_citation_table.items()
+            )
+            sources_section = f"Sources this round (use refs in citation_refs):\n{src_lines}"
+        else:
+            sources_text = json.dumps(
+                [s for s in self._all_sources if s.get("round") == round_num],
+                default=str,
+            )
+            sources_section = f"Sources this round:\n{sources_text}"
 
         return (
             f"Task: {task.description}\n"
             f"Round: {round_num}\n"
             f"Anti-confirmatory framing: {task.anti_confirmatory_framing}\n"
-            f"Sources this round:\n{sources_text}"
+            f"{sources_section}"
             f"{ctx_section}\n\n"
-            "Synthesize findings as JSON array of claims. Each claim:\n"
-            '{"text": "...", "evidence": "...", "confidence": 0.0-1.0, '
-            '"caveats": ["..."]}\n'
+            "Synthesize findings as JSON array of claims. Each claim MUST include "
+            "citation_refs listing the SRC-NNN refs that support it:\n"
+            '{"text": "...", "evidence": "...", "citation_refs": ["SRC-001"], '
+            '"confidence": 0.0-1.0, "caveats": ["..."]}\n'
+            "Claims without citation_refs will be dropped.\n"
         )
+
+    def _build_round_citation_table(
+        self, round_cits: list[Citation]
+    ) -> dict[str, Citation]:
+        """Build SRC-NNN -> Citation table for explicit per-claim attribution."""
+        return {f"SRC-{i + 1:03d}": cit for i, cit in enumerate(round_cits)}
+
+    def _attach_citations_from_refs(
+        self,
+        raw_claims: list[dict],
+        round_citation_table: dict[str, Citation],
+    ) -> list[dict]:
+        """Attach only explicitly referenced citations to each claim.
+
+        Claims with no valid citation_refs are dropped. This replaces the
+        round-broadcast pattern (claim["citations"] = round_cits).
+        """
+        result: list[dict] = []
+        for claim in raw_claims:
+            refs = claim.get("citation_refs", [])
+            if not refs:
+                logger.debug(
+                    "Dropping claim (no citation_refs): %.80s", claim.get("text", "")
+                )
+                continue
+            resolved = [
+                round_citation_table[ref]
+                for ref in refs
+                if ref in round_citation_table
+            ]
+            if not resolved:
+                logger.debug(
+                    "Dropping claim (no valid citation_refs resolved): %.80s",
+                    claim.get("text", ""),
+                )
+                continue
+            claim["citations"] = resolved
+            result.append(claim)
+        return result
 
     async def _generate_absence_report(
         self,
