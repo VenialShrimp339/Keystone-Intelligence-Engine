@@ -212,7 +212,11 @@ class Pipeline:
         async for event in c.citation_processor.process(findings, eid, client_id):
             yield event
 
-        manifest = await c.citation_processor.get_manifest()
+        cit_result = await c.citation_processor.get_result()
+        manifest = cit_result.manifest
+        # Use canonicalized findings so downstream stages reference canonical
+        # citation IDs (not source-instance IDs that may have been dedup-merged).
+        findings = cit_result.canonicalized_findings
         logger.info("CitProc complete: %d citations", len(manifest.citations))
 
         # --- Stage 4: L1.5 Deliberation ---

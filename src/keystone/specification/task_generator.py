@@ -23,7 +23,7 @@ from keystone.models.tasks import (
     TaskDecomposition,
     TaskType,
 )
-from keystone.llm.parsing import safe_llm_json
+from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.specification._prompts import load_prompt
 from keystone.specification.decomposer import IssueTree
 from keystone.specification.priority_scorer import PriorityScore
@@ -75,13 +75,14 @@ class TaskGenerator:
 
         last_error: Exception | None = None
         for attempt in range(3):
-            raw = await retry_llm_call(
-                self._llm, prompt, description=f"task_generation_attempt_{attempt}"
-            )
-            data = safe_llm_json(raw)
-
             try:
+                raw = await retry_llm_call(
+                    self._llm, prompt, description=f"task_generation_attempt_{attempt}"
+                )
+                data = safe_llm_json(raw, required_keys=("tasks",))
                 tasks = self._parse_tasks(data, spec, engagement_type, priority_map)
+                if not tasks:
+                    raise ValueError("LLM returned empty tasks list")
                 decomposition = TaskDecomposition(
                     project=spec.title,
                     engagement_id=spec.engagement_id,
@@ -95,7 +96,7 @@ class TaskGenerator:
                     tasks=tasks,
                 )
                 return decomposition
-            except (ValidationError, ValueError, KeyError) as exc:
+            except (ParseError, ValidationError, ValueError, KeyError) as exc:
                 last_error = exc
                 logger.warning(
                     "Task generation attempt %d failed: %s", attempt + 1, exc

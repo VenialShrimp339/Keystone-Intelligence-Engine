@@ -73,6 +73,7 @@ from keystone.models.tasks import (
     TaskDecomposition,
     TaskType,
 )
+from keystone.citation.processor import CitationProcessorResult
 from keystone.pipeline.orchestrator import Pipeline, PipelineComponents, PipelineResult
 from keystone.research.research_agent import ResearchAgent
 from keystone.specification.decomposer import IssueTree, IssueTreeMetadata, IssueTreeNode
@@ -712,12 +713,24 @@ async def test_dependent_tasks_do_not_start_before_dependencies_complete() -> No
     c = pipeline._build_components()
     c.spec_engine.generate_spec = _empty_event_stream
     c.spec_engine.get_spec = AsyncMock(return_value=spec)
-    c.citation_processor.process = _empty_event_stream
-    c.citation_processor.get_manifest = AsyncMock(
-        return_value=CitationManifest(
-            manifest_id="MAN-EMPTY",
-            engagement_id=spec.research_spec.engagement_id,
-            client_id=spec.research_spec.client_id,
+    _captured_findings: list[StructuredFinding] = []
+
+    async def _capturing_citproc(findings, *args, **kwargs):
+        _captured_findings.clear()
+        _captured_findings.extend(findings)
+        return
+        yield  # async generator
+
+    _empty_manifest = CitationManifest(
+        manifest_id="MAN-EMPTY",
+        engagement_id=spec.research_spec.engagement_id,
+        client_id=spec.research_spec.client_id,
+    )
+    c.citation_processor.process = _capturing_citproc
+    c.citation_processor.get_result = AsyncMock(
+        side_effect=lambda: CitationProcessorResult(
+            manifest=_empty_manifest,
+            canonicalized_findings=list(_captured_findings),
         )
     )
     c.deliberation.deliberate = _empty_event_stream

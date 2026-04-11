@@ -46,6 +46,7 @@ from keystone.models.tasks import (
     TaskDecomposition,
     TaskType,
 )
+from keystone.citation.processor import CitationProcessorResult
 from keystone.pipeline.orchestrator import (
     Pipeline,
     PipelineComponents,
@@ -317,7 +318,7 @@ class TestPipelineStageOrder:
             yield
 
         c.citation_processor.process = mock_citproc_process
-        c.citation_processor.get_manifest = AsyncMock(return_value=manifest)
+        c.citation_processor.get_result = AsyncMock(return_value=CitationProcessorResult(manifest=manifest, canonicalized_findings=[finding]))
 
         # Patch L1.5
         async def mock_deliberate(*args, **kwargs):
@@ -374,7 +375,7 @@ class TestPipelineStageOrder:
         )
         c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
         c.citation_processor.process = noop_gen
-        c.citation_processor.get_manifest = AsyncMock(return_value=manifest)
+        c.citation_processor.get_result = AsyncMock(return_value=CitationProcessorResult(manifest=manifest, canonicalized_findings=[finding]))
         c.deliberation.deliberate = noop_gen
         c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
         pipeline._pending_components = c
@@ -457,7 +458,7 @@ class TestEventCollection:
         )
         c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
         c.citation_processor.process = citproc_gen
-        c.citation_processor.get_manifest = AsyncMock(return_value=manifest)
+        c.citation_processor.get_result = AsyncMock(return_value=CitationProcessorResult(manifest=manifest, canonicalized_findings=[finding]))
         c.deliberation.deliberate = noop_gen
         c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
         pipeline._pending_components = c
@@ -536,7 +537,7 @@ class TestPartialPipeline:
         )
         c.agent_pool.get_successful_findings = MagicMock(return_value=[])
         c.citation_processor.process = noop_gen
-        c.citation_processor.get_manifest = AsyncMock(return_value=empty_manifest)
+        c.citation_processor.get_result = AsyncMock(return_value=CitationProcessorResult(manifest=empty_manifest, canonicalized_findings=[]))
         c.deliberation.deliberate = noop_gen
         c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
         pipeline._pending_components = c
