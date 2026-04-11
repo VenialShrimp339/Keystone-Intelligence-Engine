@@ -48,6 +48,7 @@ from keystone.models.tasks import (
 )
 from keystone.pipeline.orchestrator import (
     Pipeline,
+    PipelineComponents,
     PipelineResult,
     _build_sprint_contract,
     _finding_to_text,
@@ -236,18 +237,19 @@ class TestPipelineInstantiation:
         factory = _mock_llm_factory()
         gw = _make_gateway()
         pipeline = Pipeline(llm_factory=factory, gateway=gw)
+        c = pipeline._build_components()
 
-        assert pipeline._spec_engine is not None
-        assert pipeline._agent_pool is not None
-        assert pipeline._citation_processor is not None
-        assert pipeline._deliberation is not None
-        assert pipeline._evaluator is not None
-        assert pipeline._renderer is not None
+        assert c.spec_engine is not None
+        assert c.agent_pool is not None
+        assert c.citation_processor is not None
+        assert c.deliberation is not None
+        assert c.renderer is not None
 
     def test_factory_called_for_each_tier(self) -> None:
         factory = _mock_llm_factory()
         gw = _make_gateway()
-        Pipeline(llm_factory=factory, gateway=gw)
+        pipeline = Pipeline(llm_factory=factory, gateway=gw)
+        pipeline._build_components()
 
         # Should be called at least for FLAGSHIP and STANDARD
         tier_calls = [call.args[0] for call in factory.call_args_list]
@@ -281,14 +283,17 @@ class TestPipelineStageOrder:
 
         call_order: list[str] = []
 
+        # Build components, patch them, inject back
+        c = pipeline._build_components()
+
         # Patch L0
         async def mock_generate_spec(*args, **kwargs):
             call_order.append("L0")
             return
             yield  # make it an async generator
 
-        pipeline._spec_engine.generate_spec = mock_generate_spec
-        pipeline._spec_engine.get_spec = AsyncMock(return_value=spec)
+        c.spec_engine.generate_spec = mock_generate_spec
+        c.spec_engine.get_spec = AsyncMock(return_value=spec)
 
         # Patch L1
         async def mock_execute_all(assignments):
@@ -302,8 +307,8 @@ class TestPipelineStageOrder:
                 )
             ]
 
-        pipeline._agent_pool.execute_all = mock_execute_all
-        pipeline._agent_pool.get_successful_findings = MagicMock(return_value=[finding])
+        c.agent_pool.execute_all = mock_execute_all
+        c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
 
         # Patch CitProc
         async def mock_citproc_process(*args, **kwargs):
@@ -311,8 +316,8 @@ class TestPipelineStageOrder:
             return
             yield
 
-        pipeline._citation_processor.process = mock_citproc_process
-        pipeline._citation_processor.get_manifest = AsyncMock(return_value=manifest)
+        c.citation_processor.process = mock_citproc_process
+        c.citation_processor.get_manifest = AsyncMock(return_value=manifest)
 
         # Patch L1.5
         async def mock_deliberate(*args, **kwargs):
@@ -320,8 +325,10 @@ class TestPipelineStageOrder:
             return
             yield
 
-        pipeline._deliberation.deliberate = mock_deliberate
-        pipeline._deliberation.get_confidence_map = AsyncMock(return_value=cm)
+        c.deliberation.deliberate = mock_deliberate
+        c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
+
+        pipeline._pending_components = c
 
         # Patch L4 -- evaluator is created per-task in the loop, so patch the class
         with patch(
@@ -359,16 +366,18 @@ class TestPipelineStageOrder:
             return
             yield
 
-        pipeline._spec_engine.generate_spec = noop_gen
-        pipeline._spec_engine.get_spec = AsyncMock(return_value=spec)
-        pipeline._agent_pool.execute_all = AsyncMock(
+        c = pipeline._build_components()
+        c.spec_engine.generate_spec = noop_gen
+        c.spec_engine.get_spec = AsyncMock(return_value=spec)
+        c.agent_pool.execute_all = AsyncMock(
             return_value=[AgentResult("a1", "task_001", finding=finding)]
         )
-        pipeline._agent_pool.get_successful_findings = MagicMock(return_value=[finding])
-        pipeline._citation_processor.process = noop_gen
-        pipeline._citation_processor.get_manifest = AsyncMock(return_value=manifest)
-        pipeline._deliberation.deliberate = noop_gen
-        pipeline._deliberation.get_confidence_map = AsyncMock(return_value=cm)
+        c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
+        c.citation_processor.process = noop_gen
+        c.citation_processor.get_manifest = AsyncMock(return_value=manifest)
+        c.deliberation.deliberate = noop_gen
+        c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
+        pipeline._pending_components = c
 
         with patch("keystone.pipeline.orchestrator.Evaluator") as MockEval:
             inst = MagicMock()
@@ -421,9 +430,6 @@ class TestEventCollection:
         async def l0_gen(*a, **kw):
             yield spec_event
 
-        pipeline._spec_engine.generate_spec = l0_gen
-        pipeline._spec_engine.get_spec = AsyncMock(return_value=spec)
-
         # L1 returns results with events
         manifest_event = ManifestProduced(
             event_id="e2",
@@ -436,23 +442,25 @@ class TestEventCollection:
             corroboration_pairs=0,
         )
 
-        pipeline._agent_pool.execute_all = AsyncMock(
-            return_value=[AgentResult("a1", "task_001", finding=finding)]
-        )
-        pipeline._agent_pool.get_successful_findings = MagicMock(return_value=[finding])
-
         async def citproc_gen(*a, **kw):
             yield manifest_event
-
-        pipeline._citation_processor.process = citproc_gen
-        pipeline._citation_processor.get_manifest = AsyncMock(return_value=manifest)
 
         async def noop_gen(*a, **kw):
             return
             yield
 
-        pipeline._deliberation.deliberate = noop_gen
-        pipeline._deliberation.get_confidence_map = AsyncMock(return_value=cm)
+        c = pipeline._build_components()
+        c.spec_engine.generate_spec = l0_gen
+        c.spec_engine.get_spec = AsyncMock(return_value=spec)
+        c.agent_pool.execute_all = AsyncMock(
+            return_value=[AgentResult("a1", "task_001", finding=finding)]
+        )
+        c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
+        c.citation_processor.process = citproc_gen
+        c.citation_processor.get_manifest = AsyncMock(return_value=manifest)
+        c.deliberation.deliberate = noop_gen
+        c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
+        pipeline._pending_components = c
 
         with patch("keystone.pipeline.orchestrator.Evaluator") as MockEval:
             inst = MagicMock()
@@ -478,19 +486,21 @@ class TestHITLGates:
         factory = _mock_llm_factory()
         gw = _make_gateway()
         pipeline = Pipeline(llm_factory=factory, gateway=gw, db_session_factory=None)
+        c = pipeline._build_components()
 
         # Both SpecEngine and Deliberation should have None for db_session_factory
-        assert pipeline._spec_engine._db_session_factory is None
-        assert pipeline._deliberation._db_session_factory is None
+        assert c.spec_engine._db_session_factory is None
+        assert c.deliberation._db_session_factory is None
 
     def test_hitl_wired_when_db_provided(self) -> None:
         factory = _mock_llm_factory()
         gw = _make_gateway()
         mock_db = MagicMock()
         pipeline = Pipeline(llm_factory=factory, gateway=gw, db_session_factory=mock_db)
+        c = pipeline._build_components()
 
-        assert pipeline._spec_engine._db_session_factory is mock_db
-        assert pipeline._deliberation._db_session_factory is mock_db
+        assert c.spec_engine._db_session_factory is mock_db
+        assert c.deliberation._db_session_factory is mock_db
 
 
 # ---------------------------------------------------------------------------
@@ -517,19 +527,19 @@ class TestPartialPipeline:
             return
             yield
 
-        pipeline._spec_engine.generate_spec = noop_gen
-        pipeline._spec_engine.get_spec = AsyncMock(return_value=spec)
-
+        c = pipeline._build_components()
+        c.spec_engine.generate_spec = noop_gen
+        c.spec_engine.get_spec = AsyncMock(return_value=spec)
         # All agents fail -> no findings
-        pipeline._agent_pool.execute_all = AsyncMock(
+        c.agent_pool.execute_all = AsyncMock(
             return_value=[AgentResult("a1", "task_001", error=RuntimeError("fail"))]
         )
-        pipeline._agent_pool.get_successful_findings = MagicMock(return_value=[])
-
-        pipeline._citation_processor.process = noop_gen
-        pipeline._citation_processor.get_manifest = AsyncMock(return_value=empty_manifest)
-        pipeline._deliberation.deliberate = noop_gen
-        pipeline._deliberation.get_confidence_map = AsyncMock(return_value=cm)
+        c.agent_pool.get_successful_findings = MagicMock(return_value=[])
+        c.citation_processor.process = noop_gen
+        c.citation_processor.get_manifest = AsyncMock(return_value=empty_manifest)
+        c.deliberation.deliberate = noop_gen
+        c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
+        pipeline._pending_components = c
 
         with patch("keystone.pipeline.orchestrator.Evaluator") as MockEval:
             inst = MagicMock()
@@ -578,7 +588,8 @@ class TestBuildAssignments:
         pipeline = Pipeline(llm_factory=factory, gateway=gw)
 
         spec = _make_spec()
-        assignments = pipeline._build_assignments(spec)
+        c = pipeline._build_components()
+        assignments = pipeline._build_assignments(spec, c.template_registry)
 
         assert len(assignments) == 1
         task, returned_spec, agent_instance = assignments[0]

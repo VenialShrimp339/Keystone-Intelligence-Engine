@@ -90,7 +90,9 @@ class CircuitBreaker:
         CLOSED: execute normally, track failures.
         OPEN: raise CircuitOpenError if recovery_timeout hasn't elapsed.
                Transition to HALF_OPEN if it has, and allow one probe.
-        HALF_OPEN: allow one call. Success -> CLOSED. Failure -> OPEN.
+        HALF_OPEN: allow exactly one probe. The lock is held through probe
+                   execution so concurrent callers see OPEN and are rejected,
+                   preventing multiple simultaneous probes.
         """
         async with self._lock:
             current_state = self._check_state_transition()
@@ -101,10 +103,29 @@ class CircuitBreaker:
                 )
                 raise CircuitOpenError(self.provider, max(0.0, retry_after))
 
-        # Execute outside the lock to avoid holding it during I/O
+            if current_state == CircuitState.HALF_OPEN:
+                # Hold the lock for the duration of the probe so concurrent
+                # callers see HALF_OPEN -> OPEN (via _check_state_transition
+                # returning HALF_OPEN which we re-check below) and are rejected.
+                # We keep _state as HALF_OPEN so that additional callers that
+                # acquire the lock while we probe will hit the OPEN branch after
+                # we flip back to OPEN on failure, or see CLOSED on success.
+                try:
+                    result = await func(*args, **kwargs)
+                except BaseException as exc:
+                    self._failure_count += 1
+                    self._last_failure_time = time.monotonic()
+                    self._state = CircuitState.OPEN
+                    raise exc
+                else:
+                    self._state = CircuitState.CLOSED
+                    self._failure_count = 0
+                    return result
+
+        # CLOSED: execute outside the lock to avoid holding it during I/O
         try:
             result = await func(*args, **kwargs)
-        except Exception as exc:
+        except BaseException as exc:
             await self._record_failure()
             raise exc
         else:
@@ -120,27 +141,18 @@ class CircuitBreaker:
         return self._state
 
     async def _record_failure(self) -> None:
-        """Record a failure and potentially open the circuit."""
+        """Record a failure and potentially open the circuit (CLOSED path only)."""
         async with self._lock:
             self._failure_count += 1
             self._last_failure_time = time.monotonic()
 
-            if self._state == CircuitState.HALF_OPEN:
-                # Probe failed, reopen
-                self._state = CircuitState.OPEN
-            elif self._failure_count >= self.failure_threshold:
+            if self._failure_count >= self.failure_threshold:
                 self._state = CircuitState.OPEN
 
     async def _record_success(self) -> None:
-        """Record a success and potentially close the circuit."""
+        """Record a success in CLOSED state, resetting the failure count."""
         async with self._lock:
-            if self._state == CircuitState.HALF_OPEN:
-                # Probe succeeded, close circuit
-                self._state = CircuitState.CLOSED
-                self._failure_count = 0
-            elif self._state == CircuitState.CLOSED:
-                # Reset failure count on success in CLOSED state
-                self._failure_count = 0
+            self._failure_count = 0
 
     async def reset(self) -> None:
         """Manually reset the circuit breaker to CLOSED state."""

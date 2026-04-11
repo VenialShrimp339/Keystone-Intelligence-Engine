@@ -160,6 +160,16 @@ class TestCreateOpenAIClient:
             client = create_openai_client(app_config)
             assert isinstance(client, AsyncOpenAI)
 
+    def test_llm_provider_codex_oauth_routes_to_oauth_client(self, app_config, auth_file):
+        env = {
+            "LLM_PROVIDER": "codex_oauth",
+            "CODEX_AUTH_FILE": str(auth_file),
+        }
+        with patch.dict(os.environ, env, clear=True):
+            client = create_openai_client(app_config)
+            assert isinstance(client, AsyncOpenAI)
+            assert str(client.base_url).rstrip("/") == CODEX_BASE_URL
+
 
 # ---- get_llm_for_tier ----
 
@@ -289,6 +299,21 @@ class TestGetLLMForTier:
             kw = mock_client.responses.stream.call_args.kwargs
             assert kw["store"] is False
             assert kw["model"] == "gpt-5.4-mini"
+
+    @patch.dict(
+        os.environ,
+        {"LLM_PROVIDER": "codex_oauth", "CODEX_AUTH_FILE": "/tmp/x.json"},
+        clear=True,
+    )
+    async def test_llm_provider_codex_oauth_uses_oauth_cache_key(self, app_config):
+        with patch("keystone.llm_client.create_openai_client") as mock_create:
+            mock_client = MagicMock()
+            mock_create.return_value = mock_client
+
+            get_llm_for_tier(ModelTier.FAST, app_config)
+
+            mock_create.assert_called_once_with(app_config)
+            assert "codex_oauth" in _client_cache
 
     @patch.dict(os.environ, {"OPENAI_AUTH_TYPE": "api_key"}, clear=False)
     async def test_fast_tier_uses_mini_model(self, app_config):

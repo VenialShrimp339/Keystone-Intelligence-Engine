@@ -9,8 +9,11 @@ Phase 2: Structured aggregation + WWHTB + gap detection + confidence map
 from __future__ import annotations
 
 import asyncio
+import logging
 import uuid
 from collections.abc import AsyncIterator, Callable
+
+logger = logging.getLogger(__name__)
 
 from keystone.deliberation.aggregator import Aggregator
 from keystone.deliberation.analyst import Analyst, AnalystOutput, extract_claims
@@ -94,10 +97,24 @@ class Deliberation:
                 model_tier=ModelTier.STANDARD.value,
             )
 
-        # Run all analysts in parallel (no inter-agent communication)
-        analyst_outputs: list[AnalystOutput] = await asyncio.gather(
-            *(a.analyze(claims) for a in analysts)
+        # Run all analysts in parallel (no inter-agent communication).
+        # return_exceptions=True prevents one analyst crash from killing the rest.
+        raw_results: list[AnalystOutput | BaseException] = await asyncio.gather(
+            *(a.analyze(claims) for a in analysts),
+            return_exceptions=True,
         )
+
+        analyst_outputs: list[AnalystOutput] = []
+        for analyst, result in zip(analysts, raw_results):
+            if isinstance(result, BaseException):
+                logger.warning(
+                    "Analyst %s (%s) failed and will be excluded: %s",
+                    analyst.analyst_id,
+                    analyst.analyst_type.value,
+                    result,
+                )
+            else:
+                analyst_outputs.append(result)
 
         for output in analyst_outputs:
             yield IndependentAnalysisComplete(
