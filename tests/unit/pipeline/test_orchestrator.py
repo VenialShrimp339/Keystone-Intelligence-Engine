@@ -988,6 +988,8 @@ class TestRendererGating:
 
         assert [result.task_id for result in rendered_evaluation_results] == ["task_001"]
         assert all("CAN-FAIL" not in result.feedback for result in rendered_evaluation_results)
+        assert [citation.citation_id for citation in rendered_manifest.citations] == ["CAN-001"]
+        assert rendered_manifest.citations[0].found_by_agents == ["agent_001"]
         assert [
             (alias.source_instance_id, alias.task_id, alias.canonical_citation_id)
             for alias in rendered_manifest.aliases

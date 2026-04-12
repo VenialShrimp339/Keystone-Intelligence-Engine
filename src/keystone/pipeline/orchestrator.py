@@ -480,10 +480,31 @@ def _filter_manifest_by_findings(
         if alias.canonical_citation_id in citation_ids
         and alias.task_id in surviving_task_ids
     ]
+    surviving_agents_by_citation: dict[str, list[str]] = {}
+    for alias in filtered_aliases:
+        if not alias.agent_id:
+            continue
+        agent_ids = surviving_agents_by_citation.setdefault(
+            alias.canonical_citation_id, []
+        )
+        if alias.agent_id not in agent_ids:
+            agent_ids.append(alias.agent_id)
+
+    pruned_citations = [
+        citation.model_copy(
+            update={
+                "found_by_agents": surviving_agents_by_citation.get(
+                    citation.citation_id,
+                    list(citation.found_by_agents),
+                )
+            }
+        )
+        for citation in filtered_citations
+    ]
 
     return full_manifest.model_copy(
         update={
-            "citations": filtered_citations,
+            "citations": pruned_citations,
             "corroboration_pairs": filtered_corroboration_pairs,
             "dead_urls": filtered_dead_urls,
             "fabrication_flags": filtered_fabrication_flags,
