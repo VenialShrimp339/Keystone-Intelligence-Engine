@@ -2,40 +2,37 @@ version: 1
 controller_epoch: 1
 lease_owner: bootstrap-adoption-pass
 lease_acquired_at: "2026-04-12T00:55:12-04:00"
-lease_heartbeat_at: "2026-04-12T00:55:12-04:00"
-lease_expires_at: "2026-04-12T01:25:12-04:00"
+lease_heartbeat_at: "2026-04-12T01:24:01-04:00"
+lease_expires_at: "2026-04-12T01:54:01-04:00"
 lease_takeover_rule: "If lease_heartbeat_at is older than 30 minutes, or the new controller cannot confirm repo state from disk, it must increment controller_epoch, rewrite lease fields, and append the takeover to ACTIVE-HANDOFF.md before mutating state."
 lease_stolen_by: null
 active_branch: codex/remediation-program
 controller_workspace_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine
-active_worktree_path: null
+active_worktree_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wave-2b
 review_worktrees: []
 active_wave: wave-2b
-active_state: blocked
+active_state: cleared
 execution_baseline_commit: 16e0bc7
-last_cleared_code_commit: 16e0bc7
-current_candidate_commit: 4ff7e90
-candidate_parent_commit: c6eecbf
+last_cleared_code_commit: 2cdbfec
+current_candidate_commit: 2cdbfec
+candidate_parent_commit: 4ff7e90
 last_docs_reconcile_commit: HEAD
-required_review_stage: blocked_remediation
+required_review_stage: wave3a_seam_freeze
 accepted_overlays:
   - round-3-content-audit-planning-overlay
-workspace_policy: "Main workspace is controller/docs only. The active code lane must run in a dedicated clean worktree rooted at 4ff7e90 until Wave 2B clears."
+workspace_policy: "Main workspace is controller/docs only. Any future code lane must run in a dedicated clean worktree rooted at the last cleared code commit."
 model_policy: "GPT-5.4 xhigh fast for every spawned agent unless an explicit deviation is recorded."
-blocked_on:
-  - W2B-B01
-  - W2B-B02
-  - W2B-B03
-  - W2B-B04
-next_action: "Stage 0A/0B: verify the recovery patch checksum, create a clean worktree at 4ff7e90, replay approved Wave 2B blocker-fix work there, and update the blocker ledger with fresh evidence before creating the next candidate commit."
+blocked_on: []
+next_action: "Create and commit WAVE-3A-SEAM-FREEZE.md before any Wave 3 code begins."
 latest_review_packets:
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-2B-ADVERSARIAL-REVIEW.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-2B-SECOND-OPINION.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-review-synthesis.md
-dirty_state_status: candidate_delta_captured
+  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md
+  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md
+  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-2cdbfec-review-synthesis.md
+  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md
+dirty_state_status: cleared_candidate_committed
 recovery_patch_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-recovery-dirty-wip.patch
 recovery_patch_sha256: f9cf1925c31d5836024bfdf32fd5a5ee8cbfe8d4b1e46dc0983630b128b36234
-recovery_branch: null
+recovery_branch: codex/remediation-wave-2b
 wip_parent_candidate_commit: 4ff7e90
 wip_scope:
   - src/keystone/governance/policy.py

@@ -1,30 +1,31 @@
 # Wave 2B Blocker Remediation
 
-*Created: 2026-04-12 | Status: authoritative blocker ledger for blocked candidate `4ff7e90`*
+*Created: 2026-04-12 | Updated: 2026-04-12 | Status: authoritative closure ledger for cleared candidate `2cdbfec`*
 
 ## Current Wave State
 
 - Baseline commit: `16e0bc7`
-- Blocked candidate commit: `4ff7e90`
-- Current state: `blocked`
-- Dirty Wave 2B recovery evidence exists at:
+- Previously blocked candidate commit: `4ff7e90`
+- Cleared candidate commit: `2cdbfec`
+- Current state: `cleared`
+- Dirty Wave 2B recovery evidence at:
   - [candidate-4ff7e90-recovery-dirty-wip.patch](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-recovery-dirty-wip.patch)
-- Rule: recovery evidence is **not** authoritative until replayed in a clean worktree, committed, and re-reviewed
+- Rule: the dirty recovery evidence is now superseded by the replayed clean candidate `2cdbfec`
 
-## Open Blockers
+## Closed Blockers
 
 ### W2B-B01
 
 - `blocker_id`: `W2B-B01`
 - `failure_family`: `coverage_fail_open`
-- `family_status`: `open`
+- `family_status`: `closed`
 - `source_review`: `WAVE-2B-ADVERSARIAL-REVIEW.md`
 - `blocked_candidate_commit`: `4ff7e90`
 - `first_seen_commit`: `4ff7e90`
 - `introduced_by`: `Wave 2B checkpoint candidate`
-- `last_verified_commit`: `4ff7e90`
-- `status`: `open`
-- `current_disposition`: `Dirty WIP claims a fix exists, but the blocker remains open until replayed in a clean worktree and re-reviewed.`
+- `last_verified_commit`: `2cdbfec`
+- `status`: `closed`
+- `current_disposition`: `Closed by clean replay candidate 2cdbfec and cleared by both independent reviews.`
 - `files_to_touch`:
   - `src/keystone/governance/policy.py`
   - `src/keystone/pipeline/orchestrator.py`
@@ -43,12 +44,13 @@
 - `required_regression_probe`: `Direct object-level or pipeline-level probe with evaluation_status=failed after evaluation.`
 - `acceptance_invariant`: `LIGHT coverage cannot fail open on failed evaluated tasks.`
 - `pre_fix_red_evidence`: `Adversarial review finding 1 plus direct probe on 4ff7e90 returning coverage None after a failed LIGHT evaluation.`
-- `post_fix_green_evidence`: `Pending replay and review.`
-- `verification_evidence`: `Pending replay and review.`
+- `post_fix_green_evidence`: candidate-2cdbfec-implementation.md records a green matrix plus targeted probe node tests for failed LIGHT coverage on both policy and orchestrator paths.
+- `verification_evidence`: candidate-2cdbfec-adversarial-review.md, candidate-2cdbfec-second-opinion.md, and candidate-2cdbfec-clearance.md all confirm closure.
 - `review_packet_refs`:
-  - `audit/remediation/WAVE-2B-ADVERSARIAL-REVIEW.md`
-  - `audit/remediation/runs/wave-2b/candidate-4ff7e90-review-synthesis.md`
-- `fix_commit`: `pending`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md`
+- `fix_commit`: `2cdbfec`
 - `reopen_criteria`: `Any future candidate where a failed evaluated LIGHT task becomes non-renderable before coverage is enforced.`
 - `owner_prompt_ref`: `audit/remediation/WAVE-2B-BLOCKER-FIX-PROMPT.md`
 - `supersedes`: `none`
@@ -57,14 +59,14 @@
 
 - `blocker_id`: `W2B-B02`
 - `failure_family`: `priority_misrouting`
-- `family_status`: `open`
+- `family_status`: `closed`
 - `source_review`: `WAVE-2B-ADVERSARIAL-REVIEW.md`
 - `blocked_candidate_commit`: `4ff7e90`
 - `first_seen_commit`: `4ff7e90`
 - `introduced_by`: `Wave 2B checkpoint candidate`
-- `last_verified_commit`: `4ff7e90`
-- `status`: `open`
-- `current_disposition`: `Dirty WIP claims a fix exists, but the blocker remains open until replayed in a clean worktree and re-reviewed.`
+- `last_verified_commit`: `2cdbfec`
+- `status`: `closed`
+- `current_disposition`: `Closed by clean replay candidate 2cdbfec and cleared by both independent reviews.`
 - `files_to_touch`:
   - `src/keystone/specification/task_generator.py`
   - `tests/unit/specification/test_task_generator.py`
@@ -78,12 +80,13 @@
 - `required_regression_probe`: `Construct a mismatched order case and inspect resulting priority and importance.`
 - `acceptance_invariant`: `Task priority and importance derive from Step-5 scores, not LLM list order.`
 - `pre_fix_red_evidence`: `Adversarial review finding 2 plus direct probe on 4ff7e90 where a lower-scored first-listed branch became PRIMARY.`
-- `post_fix_green_evidence`: `Pending replay and review.`
-- `verification_evidence`: `Pending replay and review.`
+- `post_fix_green_evidence`: candidate-2cdbfec-implementation.md records targeted probe coverage for a later-listed higher-scored branch winning PRIMARY priority.
+- `verification_evidence`: candidate-2cdbfec-adversarial-review.md, candidate-2cdbfec-second-opinion.md, and candidate-2cdbfec-clearance.md all confirm closure.
 - `review_packet_refs`:
-  - `audit/remediation/WAVE-2B-ADVERSARIAL-REVIEW.md`
-  - `audit/remediation/runs/wave-2b/candidate-4ff7e90-review-synthesis.md`
-- `fix_commit`: `pending`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md`
+- `fix_commit`: `2cdbfec`
 - `reopen_criteria`: `Any future candidate where task importance or priority is still tied to raw generation order.`
 - `owner_prompt_ref`: `audit/remediation/WAVE-2B-BLOCKER-FIX-PROMPT.md`
 - `supersedes`: `none`
@@ -92,14 +95,14 @@
 
 - `blocker_id`: `W2B-B03`
 - `failure_family`: `effective_profile_shadowing`
-- `family_status`: `open`
+- `family_status`: `closed`
 - `source_review`: `WAVE-2B-ADVERSARIAL-REVIEW.md + WAVE-2B-SECOND-OPINION.md`
 - `blocked_candidate_commit`: `4ff7e90`
 - `first_seen_commit`: `4ff7e90`
 - `introduced_by`: `Wave 2B checkpoint candidate`
-- `last_verified_commit`: `4ff7e90`
-- `status`: `open`
-- `current_disposition`: `Dirty WIP claims a fix exists, but the blocker remains open until replayed in a clean worktree and re-reviewed.`
+- `last_verified_commit`: `2cdbfec`
+- `status`: `closed`
+- `current_disposition`: `Closed by persisting the effective evaluation profile on ResearchSpec and routing Evaluator from that stored field in 2cdbfec.`
 - `files_to_touch`:
   - `src/keystone/models/research.py`
   - `src/keystone/specification/spec_engine.py`
@@ -128,13 +131,13 @@
 - `required_regression_probe`: `Inspect the evaluator construction path and the emitted profile in runtime data.`
 - `acceptance_invariant`: `Evaluator is built from the effective evaluation profile carried through ResearchSpec.`
 - `pre_fix_red_evidence`: `Adversarial review finding 3 plus second-opinion finding 2; direct probe on 4ff7e90 produced default profile with varying intensity only.`
-- `post_fix_green_evidence`: `Pending replay and review.`
-- `verification_evidence`: `Pending replay and review.`
+- `post_fix_green_evidence`: candidate-2cdbfec-implementation.md records targeted probe coverage for the persisted evaluation-profile path plus the full focused matrix.
+- `verification_evidence`: candidate-2cdbfec-adversarial-review.md, candidate-2cdbfec-second-opinion.md, and candidate-2cdbfec-clearance.md all confirm closure.
 - `review_packet_refs`:
-  - `audit/remediation/WAVE-2B-ADVERSARIAL-REVIEW.md`
-  - `audit/remediation/WAVE-2B-SECOND-OPINION.md`
-  - `audit/remediation/runs/wave-2b/candidate-4ff7e90-review-synthesis.md`
-- `fix_commit`: `pending`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md`
+- `fix_commit`: `2cdbfec`
 - `reopen_criteria`: `Any future candidate where evaluator profile is re-derived from engagement type or local mapping instead of ResearchSpec.`
 - `owner_prompt_ref`: `audit/remediation/WAVE-2B-BLOCKER-FIX-PROMPT.md`
 - `supersedes`: `none`
@@ -143,14 +146,14 @@
 
 - `blocker_id`: `W2B-B04`
 - `failure_family`: `policy_ownership_duplication`
-- `family_status`: `open`
+- `family_status`: `closed`
 - `source_review`: `WAVE-2B-SECOND-OPINION.md`
 - `blocked_candidate_commit`: `4ff7e90`
 - `first_seen_commit`: `4ff7e90`
 - `introduced_by`: `Wave 2B checkpoint candidate`
-- `last_verified_commit`: `4ff7e90`
-- `status`: `open`
-- `current_disposition`: `Dirty WIP claims a fix exists, but the blocker remains open until replayed in a clean worktree and re-reviewed.`
+- `last_verified_commit`: `2cdbfec`
+- `status`: `closed`
+- `current_disposition`: `Closed by routing Gate 1 and Gate 2 through ProfileExecutionPolicy.should_run_hitl_gate() in 2cdbfec.`
 - `files_to_touch`:
   - `src/keystone/governance/policy.py`
   - `src/keystone/specification/spec_engine.py`
@@ -173,17 +176,18 @@
 - `required_regression_probe`: `Inspect Gate 1 and Gate 2 behavior under policy changes without leaf-level special casing.`
 - `acceptance_invariant`: `HITL gate decisions are policy-owned through ProfileExecutionPolicy, not duplicated in leaf modules.`
 - `pre_fix_red_evidence`: `Second-opinion finding 1 showing Gate 1 and Gate 2 both inlined LIGHT short-circuits instead of consulting policy.`
-- `post_fix_green_evidence`: `Pending replay and review.`
-- `verification_evidence`: `Pending replay and review.`
+- `post_fix_green_evidence`: candidate-2cdbfec-implementation.md records targeted probe coverage for both Gate 1 and Gate 2 policy-owned paths.
+- `verification_evidence`: candidate-2cdbfec-adversarial-review.md, candidate-2cdbfec-second-opinion.md, and candidate-2cdbfec-clearance.md all confirm closure.
 - `review_packet_refs`:
-  - `audit/remediation/WAVE-2B-SECOND-OPINION.md`
-  - `audit/remediation/runs/wave-2b/candidate-4ff7e90-review-synthesis.md`
-- `fix_commit`: `pending`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md`
+- `fix_commit`: `2cdbfec`
 - `reopen_criteria`: `Any future candidate where gate ownership drifts back into spec_engine.py or deliberation.py.`
 - `owner_prompt_ref`: `audit/remediation/WAVE-2B-BLOCKER-FIX-PROMPT.md`
 - `supersedes`: `none`
 
-## Open Non-Blocker Risks
+## Residual Non-Blocking Risks
 
 ### W2B-R01
 
@@ -194,9 +198,9 @@
 - `blocked_candidate_commit`: `4ff7e90`
 - `first_seen_commit`: `4ff7e90`
 - `introduced_by`: `Wave 2B checkpoint candidate`
-- `last_verified_commit`: `4ff7e90`
+- `last_verified_commit`: `2cdbfec`
 - `status`: `open`
-- `current_disposition`: `Optional cleanup was claimed in dirty WIP, but treat as open until replayed and reviewed.`
+- `current_disposition`: `Narrowed but not fully closed. Parse-invalid JSON now fails explicitly in 2cdbfec, but both clearance reviews found that parseable under-specified JSON can still produce empty Wave 2B enforcement fields.`
 - `files_to_touch`:
   - `src/keystone/evaluator/sprint_contract.py`
   - `tests/unit/evaluator/test_sprint_contract.py`
@@ -210,13 +214,14 @@
 - `required_regression_probe`: `Direct malformed-response probe on the real generator path.`
 - `acceptance_invariant`: `Malformed sprint-contract output cannot silently erase Wave 2B enforcement fields.`
 - `pre_fix_red_evidence`: `Adversarial review design concern 4 and second-opinion design concern 3.`
-- `post_fix_green_evidence`: `Pending replay and review.`
-- `verification_evidence`: `Pending replay and review.`
+- `post_fix_green_evidence`: test_malformed_json_raises_explicit_error now passes on the committed candidate.
+- `verification_evidence`: candidate-2cdbfec-adversarial-review.md and candidate-2cdbfec-second-opinion.md both record the narrower parseable-under-specified residual risk.
 - `review_packet_refs`:
-  - `audit/remediation/WAVE-2B-ADVERSARIAL-REVIEW.md`
-  - `audit/remediation/WAVE-2B-SECOND-OPINION.md`
-- `fix_commit`: `pending`
-- `reopen_criteria`: `Any future candidate where malformed contract generation silently produces empty enforcement fields.`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md`
+- `fix_commit`: `2cdbfec`
+- `reopen_criteria`: `Any future candidate where malformed or under-specified contract generation silently produces empty enforcement fields.`
 - `owner_prompt_ref`: `audit/remediation/WAVE-2B-BLOCKER-FIX-PROMPT.md`
 - `supersedes`: `none`
 
@@ -224,14 +229,14 @@
 
 - `blocker_id`: `W2B-R02`
 - `failure_family`: `observability_drift`
-- `family_status`: `open`
+- `family_status`: `closed`
 - `source_review`: `WAVE-2B-ADVERSARIAL-REVIEW.md + WAVE-2B-SECOND-OPINION.md`
 - `blocked_candidate_commit`: `4ff7e90`
 - `first_seen_commit`: `4ff7e90`
 - `introduced_by`: `Wave 2B checkpoint candidate`
-- `last_verified_commit`: `4ff7e90`
-- `status`: `open`
-- `current_disposition`: `Optional cleanup was claimed in dirty WIP, but treat as open until replayed and reviewed.`
+- `last_verified_commit`: `2cdbfec`
+- `status`: `closed`
+- `current_disposition`: `Closed in 2cdbfec. Emitted rubric event weights now match the effective adjusted weights used in scoring.`
 - `files_to_touch`:
   - `src/keystone/evaluator/evaluator.py`
   - `tests/unit/evaluator/test_evaluator.py`
@@ -245,12 +250,13 @@
 - `required_regression_probe`: `Event-stream inspection under non-default dimension emphasis.`
 - `acceptance_invariant`: `Emitted rubric-weight observability must match actual runtime scoring weights.`
 - `pre_fix_red_evidence`: `Adversarial review warning 5 and second-opinion warning 5.`
-- `post_fix_green_evidence`: `Pending replay and review.`
-- `verification_evidence`: `Pending replay and review.`
+- `post_fix_green_evidence`: candidate-2cdbfec-implementation.md records targeted probe coverage for adjusted rubric-weight emission.
+- `verification_evidence`: candidate-2cdbfec-adversarial-review.md, candidate-2cdbfec-second-opinion.md, and candidate-2cdbfec-clearance.md all treat this risk as closed.
 - `review_packet_refs`:
-  - `audit/remediation/WAVE-2B-ADVERSARIAL-REVIEW.md`
-  - `audit/remediation/WAVE-2B-SECOND-OPINION.md`
-- `fix_commit`: `pending`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md`
+- `fix_commit`: `2cdbfec`
 - `reopen_criteria`: `Any future candidate where event weights drift from the weights actually used in scoring.`
 - `owner_prompt_ref`: `audit/remediation/WAVE-2B-BLOCKER-FIX-PROMPT.md`
 - `supersedes`: `none`
@@ -259,14 +265,14 @@
 
 - `blocker_id`: `W2B-R03`
 - `failure_family`: `mocked_path_gap`
-- `family_status`: `open`
+- `family_status`: `closed`
 - `source_review`: `WAVE-2B-SECOND-OPINION.md`
 - `blocked_candidate_commit`: `4ff7e90`
 - `first_seen_commit`: `4ff7e90`
 - `introduced_by`: `Wave 2B checkpoint candidate`
-- `last_verified_commit`: `4ff7e90`
-- `status`: `open`
-- `current_disposition`: `The runtime-path gap remains open until real-path tests are present in the replayed candidate.`
+- `last_verified_commit`: `2cdbfec`
+- `status`: `closed`
+- `current_disposition`: `Closed as a Wave 2B residual risk. The cleared candidate adds real runtime-path policy-gate coverage and the required matrix, including tests/unit/hitl/test_gate.py, passed without reviewer objections.`
 - `files_to_touch`:
   - `tests/unit/specification/test_spec_engine.py`
   - `tests/unit/deliberation/test_deliberation.py`
@@ -284,11 +290,13 @@
 - `required_regression_probe`: `Real helper and real gating path under modified gate and LIGHT profile.`
 - `acceptance_invariant`: `Wave 2B gate behavior must be proven on real runtime paths, not only mocked helper returns.`
 - `pre_fix_red_evidence`: `Second-opinion warning 4.`
-- `post_fix_green_evidence`: `Pending replay and review.`
-- `verification_evidence`: `Pending replay and review.`
+- `post_fix_green_evidence`: Focused matrix for 2cdbfec passed, including tests/unit/hitl/test_gate.py alongside the new Gate 1 / Gate 2 policy-path tests.
+- `verification_evidence`: Neither clearing review found a remaining blocker or warning in the real gate-helper coverage surface.
 - `review_packet_refs`:
-  - `audit/remediation/WAVE-2B-SECOND-OPINION.md`
-- `fix_commit`: `pending`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md`
+  - `audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md`
+- `fix_commit`: `2cdbfec`
 - `reopen_criteria`: `Any future candidate where the real gate helper semantics are no longer covered.`
 - `owner_prompt_ref`: `audit/remediation/WAVE-2B-BLOCKER-FIX-PROMPT.md`
 - `supersedes`: `none`
