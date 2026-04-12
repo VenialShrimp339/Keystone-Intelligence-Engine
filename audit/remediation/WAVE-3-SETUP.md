@@ -1,32 +1,33 @@
-# Wave 3 Setup
+# Wave 3: Cleared Historical Setup
 
-*Date: 2026-04-12 | Status: active Wave 3 setup checkpoint | Wave 3 code must run in a clean worktree*
+*Date: 2026-04-12 | Updated after cleared candidate `4819527` | Retained as historical Wave 3 execution context*
 
 ---
 
 ## What This File Is For
 
-This is the active setup doc for Wave 3.
+Wave 3 is no longer active remediation work.
 
-Use it only after reading:
+This file is retained to explain what Wave 3 covered and what was required to clear it, but the live authority for future sessions is now:
 
 1. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 2. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-3. `audit/remediation/WAVE-3A-SEAM-FREEZE.md`
-4. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
+3. `audit/remediation/runs/wave-3/candidate-4819527-clearance.md`
+4. `audit/remediation/runs/wave-3/candidate-4819527-review-synthesis.md`
+5. `audit/remediation/WAVE-3A-SEAM-FREEZE.md`
+6. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
 
-This file turns the seam freeze into an implementation runway.  
-It does not reopen Wave 2B, and it does not authorize any Wave 3B work.
+Do **not** use this file as permission to continue Wave 3 coding.
 
-## Wave Activation
+## Cleared State
 
 - Seam-freeze checkpoint: `65074ca`
-- Last cleared code commit: `2cdbfec`
 - Wave 3 implementation baseline: `2cdbfec`
-- Controller branch: `codex/remediation-program`
-- Required implementation branch: `codex/remediation-wave-3`
-- Required implementation worktree: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wave-3`
-- Main workspace policy: controller/docs only
+- Wave 3 cleared candidate: `4819527`
+- Wave 3 implementation branch: `codex/remediation-wave-3`
+- Wave 3 implementation worktree: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wave-3`
+- Main workspace policy remained controller/docs only throughout execution.
+- The next required step is a committed `WAVE-3B-SETUP.md` checkpoint before any Wave 3B code begins.
 
 ## Binding Scope In
 
@@ -157,9 +158,9 @@ The candidate artifact set must name probes for these invariants:
 5. The provenance sidecar distinguishes consulted, rendered, and rejected evidence.
 6. Domain-aware routing can choose provisional M&A / Restructuring profile paths without falling back to a generic default.
 
-## Worktree Bootstrap
+## Historical Worktree Bootstrap
 
-The next code lane must begin from the cleared baseline:
+The Wave 3 code lane began from the cleared Wave 2B baseline:
 
 ```bash
 cd /Users/jackriddle/Desktop/Keystone-Intelligence-Engine
@@ -184,7 +185,7 @@ If default `python3` cannot import `graphify`, use the recorded fallback interpr
 
 ## Candidate Artifact Requirements
 
-Wave 3 candidate artifacts must live under `audit/remediation/runs/wave-3/` and include:
+Wave 3 candidate artifacts lived under `audit/remediation/runs/wave-3/` and include:
 
 - `candidate-<commit>-implementation.md`
 - `candidate-<commit>-file-manifest.md`
@@ -197,11 +198,17 @@ Use `candidate-TEMPLATE-file-manifest.md` in the run folder as the starting scaf
 
 ## Carried Follow-Up
 
-- `W2B-R01` remains visible: parseable but under-specified sprint-contract JSON can still produce empty enforcement fields. Do not silently lose this follow-up while executing Wave 3.
+- `W2B-R01` remains visible: parseable but under-specified sprint-contract JSON can still produce empty enforcement fields. Wave 3 did not close it.
 
-## Reopen / Hard-Stop Triggers
+## What Happens Next
 
-Stop and return to the control plane if any of these happen:
+1. Commit the Wave 3 cleared-state reconcile checkpoint.
+2. Create and commit `WAVE-3B-SETUP.md`.
+3. Only then open a clean Wave 3B implementation lane rooted at `4819527`.
+
+## Historical Reopen / Hard-Stop Triggers
+
+During active Wave 3 execution, the controller was expected to stop and return to the control plane if any of these happened:
 
 1. A proposed Wave 3 change requires Wave 3B outer-loop authority or L2 outline/renderer work.
 2. The clean Wave 3 worktree cannot be opened from `2cdbfec` without colliding with unrelated state.

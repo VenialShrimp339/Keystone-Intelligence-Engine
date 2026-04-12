@@ -1,5 +1,5 @@
 # Current State
-*Last updated: 2026-04-12 | Updated by: Wave 3 setup checkpoint*
+*Last updated: 2026-04-12 | Updated by: Wave 3 clearance checkpoint*
 
 ---
 
@@ -9,7 +9,7 @@
 - **Wave 2A:** Cleared in commit `16e0bc7` (`Wave 2A: fix final hash and corroboration leakage`).
 - **Wave 2B:** Cleared in commit `2cdbfec` (`Wave 2B: remediate blocked candidate 4ff7e90`).
 - **Wave 3A:** Complete in commit `65074ca` (`docs: freeze Wave 3A seams`).
-- **Wave 3:** Active in setup state; implementation lane not opened yet.
+- **Wave 3:** Cleared in commit `4819527` (`feat: implement wave 3 provenance and routing`).
 - **Round-3 overlay:** Accepted for Wave 2B and later. It did **not** reopen Waves 1A through 2A.
 
 ## What just happened
@@ -19,18 +19,19 @@
 3. Independent adversarial review and second opinion both returned `CLEARED` for `16e0bc7..2cdbfec`.
 4. Wave 2B is now cleared, with one residual non-blocking follow-up around parseable but under-specified sprint-contract JSON.
 5. Wave 3A seam ownership was frozen in `65074ca`.
-6. `WAVE-3-SETUP.md` now defines the active Wave 3 implementation runway.
+6. Wave 3 implementation landed in clean worktree commit `4819527` and cleared review.
+7. The next gate is `WAVE-3B-SETUP.md`, not broad cleanup or direct Wave 3B code in the main workspace.
 
 ## What happens next
 
 1. Read the control-plane files first:
    - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
    - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-2. Treat `2cdbfec` as the last cleared code commit.
-3. Use `audit/remediation/WAVE-3A-SEAM-FREEZE.md` and `audit/remediation/WAVE-3-SETUP.md` as the binding Wave 3 scope boundary.
-4. Open a clean Wave 3 worktree from `2cdbfec`.
-5. Implement only the approved Wave 3 scope; do **not** silently start any Wave 3B loop or Pipeline-L2 work.
-6. Do **not** reopen Wave 2B unless a true regression is found against the cleared candidate.
+2. Treat `4819527` as the last cleared code commit.
+3. Use the Wave 3 review packet set under `audit/remediation/runs/wave-3/` as the immutable Wave 3 clearance evidence.
+4. Create `audit/remediation/WAVE-3B-SETUP.md` before any Wave 3B code begins.
+5. Root the next clean implementation lane from `4819527`.
+6. Do **not** reopen Wave 3 or Wave 2B unless a true regression is found against a cleared candidate.
 
 ## Reconciled wave plan
 
@@ -40,7 +41,7 @@
 | Wave 2A | **Cleared** (`16e0bc7`) | Citation identity completion and provenance gating |
 | Wave 2B | **Cleared** (`2cdbfec`) | Enforcement model plus `E-1`, `E-9`, `E-10`, `E-6`, `E-7` |
 | Wave 3A | **Complete** (`65074ca`) | Seam freeze for verifier, provenance sidecar, round-state, and loop ownership |
-| Wave 3 | **Active / setup** | Completeness work plus dual-axis taxonomy and related routing |
+| Wave 3 | **Cleared** (`4819527`) | Completeness work plus dual-axis taxonomy, auditable deep research, verifier, sidecar, and DAG batching |
 | Wave 3B | Planned | Thin Pipeline-L2 plus minimum viable live iterative loop |
 | Wave 4 | Planned | Research/design plus explicit polish lane |
 | Wave 4B | Planned | Content implementation from Wave 4 memos |
@@ -52,17 +53,18 @@
 - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 - `audit/remediation/WAVE-3A-SEAM-FREEZE.md`
 - `audit/remediation/WAVE-3-SETUP.md`
-- `audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md`
-- `audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md`
-- `audit/remediation/runs/wave-2b/candidate-2cdbfec-review-synthesis.md`
-- `audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md`
-- `audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md`
+- `audit/remediation/runs/wave-3/candidate-4819527-adversarial-review.md`
+- `audit/remediation/runs/wave-3/candidate-4819527-second-opinion.md`
+- `audit/remediation/runs/wave-3/candidate-4819527-review-synthesis.md`
+- `audit/remediation/runs/wave-3/candidate-4819527-clearance.md`
 - `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
 
 ## Non-authoritative but still useful
 
 - `audit/remediation/runs/wave-2b/candidate-2cdbfec-implementation.md`
 - `audit/remediation/runs/wave-2b/candidate-2cdbfec-file-manifest.md`
+- `audit/remediation/runs/wave-3/candidate-4819527-implementation.md`
+- `audit/remediation/runs/wave-3/candidate-4819527-file-manifest.md`
 - `SESSION-LOG.md` -- historical trail
 - `audit/remediation/WAVE-3-3B-PREWORK.md`
 - `audit/remediation/WAVE-4-4B-PREWORK.md`
