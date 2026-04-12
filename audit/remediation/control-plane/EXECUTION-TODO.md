@@ -10,6 +10,12 @@ Use this only after reading:
 The control plane remains authoritative.  
 This file is the operational checklist.
 
+## Execution Mode
+
+- [ ] Continue autonomously across docs-only checkpoints
+- [ ] After each checkpoint commit, re-read the control plane and keep draining this list
+- [ ] Stop only on a hard stop condition from `CONTROL-PLANE-STATE.yaml`
+
 ## Current State
 
 - Last cleared code commit: `2cdbfec`

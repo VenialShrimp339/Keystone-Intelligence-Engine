@@ -22,6 +22,14 @@ accepted_overlays:
   - round-3-content-audit-planning-overlay
 workspace_policy: "Main workspace is controller/docs only. Any future code lane must run in a dedicated clean worktree rooted at the last cleared code commit."
 model_policy: "GPT-5.4 xhigh fast for every spawned agent unless an explicit deviation is recorded."
+autonomy_mode: continuous_across_checkpoints
+checkpoint_behavior: "After any docs-only blocked-state, cleared-state, seam-freeze, or setup checkpoint, re-read the control plane and continue automatically unless a hard stop condition is hit."
+hard_stop_conditions:
+  - "A recovery patch or replay conflicts outside the controller-approved file manifest."
+  - "A required authority artifact is missing, contradictory, or uncommitted."
+  - "A review finds a blocker that cannot be resolved within the active wave's approved scope."
+  - "An external dependency requires Jack's judgment, scoring, or a new architecture decision not already settled in FINAL-DECISIONS-v2.1.md."
+  - "The controller cannot reconcile repo state to the control plane without risking unrelated user changes."
 blocked_on: []
 next_action: "Create and commit WAVE-3A-SEAM-FREEZE.md before any Wave 3 code begins."
 latest_review_packets:

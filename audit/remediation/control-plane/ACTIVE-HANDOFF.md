@@ -7,6 +7,7 @@
 - The blocked `4ff7e90` snapshot has been recovered in a clean worktree, replayed, committed, and independently re-reviewed.
 - The main workspace remains controller/docs only.
 - The next required step is **Wave 3A seam freeze**, not more Wave 2B remediation and not direct Wave 3 code.
+- The controller is expected to continue **autonomously across checkpoints**. Docs-only checkpoints are not pause points.
 - The authoritative bootstrap plan remains [AUTONOMOUS-REMEDIATION-PLAN-v4.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md).
 
 ## Authoritative Order
@@ -57,6 +58,27 @@
 3. Create and commit `WAVE-3A-SEAM-FREEZE.md` before any Wave 3 code begins.
 4. Only after the seam-freeze doc lands may a new clean Wave 3A / Wave 3 worktree be opened from `2cdbfec`.
 5. Use [EXECUTION-TODO.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/EXECUTION-TODO.md) as the operational checklist after reading this handoff.
+6. After each docs-only checkpoint, re-read the control plane and continue automatically unless a hard stop condition is met.
+
+## Autonomous Continuation Rule
+
+Continue across:
+
+- blocked-state checkpoint commits
+- cleared-state checkpoint commits
+- seam-freeze checkpoint commits
+- setup-doc checkpoint commits
+- review-synthesis checkpoint commits
+
+Do **not** stop for user confirmation at those boundaries.
+
+Stop only if:
+
+- a replay or merge conflict escapes the approved manifest
+- a required authoritative artifact is missing or contradictory
+- a blocker requires scope outside the active wave
+- Jack input is required for a new architecture decision or Wave 5 scoring/calibration
+- repo state cannot be reconciled without risking unrelated user changes
 
 ## Cleared Candidate Artifacts
 
