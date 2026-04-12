@@ -56,6 +56,7 @@
 2. Treat `2cdbfec` as the last cleared code commit for future implementation lanes.
 3. Create and commit `WAVE-3A-SEAM-FREEZE.md` before any Wave 3 code begins.
 4. Only after the seam-freeze doc lands may a new clean Wave 3A / Wave 3 worktree be opened from `2cdbfec`.
+5. Use [EXECUTION-TODO.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/EXECUTION-TODO.md) as the operational checklist after reading this handoff.
 
 ## Cleared Candidate Artifacts
 
