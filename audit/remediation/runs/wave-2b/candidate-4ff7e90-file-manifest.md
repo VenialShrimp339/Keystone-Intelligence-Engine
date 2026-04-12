@@ -1,8 +1,23 @@
 # Candidate 4ff7e90 File Manifest
 
 - Candidate commit: `4ff7e90`
+- Parent commit: `c6eecbf`
 - Baseline commit: `16e0bc7`
+- Wave: `wave-2b`
 - Purpose: close the known Wave 2B blockers without widening scope
+
+## Packet Inventory
+
+- [candidate-4ff7e90-adversarial-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-adversarial-review.md)
+- [candidate-4ff7e90-second-opinion.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-second-opinion.md)
+- [candidate-4ff7e90-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-review-synthesis.md)
+- [candidate-4ff7e90-blocked-checkpoint.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-blocked-checkpoint.md)
+- [candidate-4ff7e90-implementation.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-implementation.md)
+- [candidate-4ff7e90-recovery-dirty-wip.patch](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-recovery-dirty-wip.patch)
+
+## Packet Provenance Note
+
+The blocked `4ff7e90` review texts were originally authored as top-level Wave 2B review docs during the bootstrap adoption commit `35a8a29`. The in-folder review wrappers listed above were added later to make the `runs/wave-2b/` packet chain self-contained without pretending those review files originally lived under this run folder.
 
 ## Allowed Write Set
 

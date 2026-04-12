@@ -152,6 +152,8 @@ After bootstrap:
 - no uncommitted artifact may advance state
 - sidecar outputs are advisory until the controller triages and promotes them
 
+When a live control plane exists, `ACTIVE-HANDOFF.md` may narrow items 3-9 above to the exact current packet family, boundary docs, and summary docs for the active wave or hard-stop checkpoint. `CURRENT-STATE.md` and `WORKSTREAM-STATUS.md` must mirror that narrowed order rather than invent a competing shortcut, and `audit/remediation/workstream-retro/` plus `audit/remediation/workstream-retro/reviews/` remain retrospective sidecar roots unless a later controller reconcile promotes them.
+
 ### 5.3 Review precedence rule
 
 If review truth conflicts with status docs:

@@ -1,5 +1,5 @@
 # Current State
-*Last updated: 2026-04-12 | Updated by: Wave 4B cleared-state checkpoint*
+*Last updated: 2026-04-12 | Updated by: Batch 1 docs/package reconcile*
 
 ---
 
@@ -8,7 +8,7 @@
 - **Wave 1:** Complete.
 - **Wave 2A:** Cleared in commit `16e0bc7` (`Wave 2A: fix final hash and corroboration leakage`).
 - **Wave 2B:** Cleared in commit `2cdbfec` (`Wave 2B: remediate blocked candidate 4ff7e90`).
-- **Wave 3A:** Complete in commit `65074ca` (`docs: freeze Wave 3A seams`).
+- **Wave 3A:** Seam-freeze artifact landed in `65074ca` (`docs: freeze Wave 3A seams`); the first coherent live setup promotion is `198ab92`.
 - **Wave 3:** Cleared in commit `4819527` (`feat: implement wave 3 provenance and routing`).
 - **Wave 3B:** Cleared in commit `5cc9585` (`feat: implement wave 3b round control`).
 - **Wave 4:** Cleared in commit `6406e46` (`fix: implement wave 4 polish slice`).
@@ -41,7 +41,7 @@
 | Wave 1 (1A + 1B + 1C) | **Complete** | Lifecycle isolation, parsing standard, citation-identity foundation |
 | Wave 2A | **Cleared** (`16e0bc7`) | Citation identity completion and provenance gating |
 | Wave 2B | **Cleared** (`2cdbfec`) | Enforcement model plus `E-1`, `E-9`, `E-10`, `E-6`, `E-7` |
-| Wave 3A | **Complete** (`65074ca`) | Seam freeze for verifier, provenance sidecar, round-state, and loop ownership |
+| Wave 3A | **Complete** (`65074ca`; live setup promoted in `198ab92`) | Seam freeze for verifier, provenance sidecar, round-state, and loop ownership |
 | Wave 3 | **Cleared** (`4819527`) | Completeness work plus dual-axis taxonomy, auditable deep research, verifier, sidecar, and DAG batching |
 | Wave 3B | **Cleared** (`5cc9585`) | Thin Pipeline-L2 plus minimum viable live iterative loop |
 | Wave 4 | **Cleared** (`6406e46`) | Low-risk polish slice `E-2`, `E-4`, `E-5` |
@@ -50,20 +50,23 @@
 
 ## Authoritative docs for a fresh session
 
+- For exact precedence, use `audit/remediation/control-plane/ACTIVE-HANDOFF.md`. This file is a summary layer and does not override the handoff's authoritative order.
 - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- `audit/remediation/runs/wave-4b/candidate-65a612d-adversarial-review.md`
+- `audit/remediation/runs/wave-4b/candidate-65a612d-second-opinion.md`
+- `audit/remediation/runs/wave-4b/candidate-65a612d-file-manifest.md`
 - `audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md`
 - `audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md`
 - `audit/remediation/WAVE-4B-SETUP.md`
+- `audit/remediation/WORKSTREAM-STATUS.md`
 - `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
-- `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
 
 ## Non-authoritative but still useful
 
+- `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
 - `audit/remediation/runs/wave-4b/candidate-65a612d-implementation.md`
-- `audit/remediation/runs/wave-4b/candidate-65a612d-file-manifest.md`
 - `audit/remediation/runs/wave-4/candidate-6406e46-clearance.md`
-- `audit/remediation/WAVE-4B-SETUP.md`
 - `audit/remediation/WAVE-4-4B-PREWORK.md`
 - `audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md`
 - `audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`

@@ -18,11 +18,19 @@ Default launch mode is strict.
 
 - Pre-planning docs anchor commit: `2e6d780`
 - Last cleared-state docs checkpoint: `91f97c2`
+- Current planning-package docs commit at reconciliation start: `c5dbd05`
+- Current planning-package lineage after the pre-planning anchor:
+  `2e6d780 -> c5dbd05`
 - Last cleared code commit: `65a612d`
 - Code lineage:
   `4ff7e90 -> 2cdbfec -> 4819527 -> 5cc9585 -> 6406e46 -> 65a612d`
 - Controller/docs lineage:
   `35a8a29 -> 2c026cc -> f717507 -> a370963 -> 65074ca -> 198ab92 -> 6eafc82 -> cd8ad1f -> 5453fb9 -> 0df3596 -> b42d035 -> 456f29c -> 28ebe1a -> d16a40a -> d73c406 -> fabe847 -> 91f97c2 -> 2e6d780`
+
+Historical interpretation note:
+
+- `65074ca` lands `WAVE-3A-SEAM-FREEZE.md`, but that commit is internally stale because its live control-plane text still says to create that doc.
+- `198ab92` is the later controller reconcile that first promotes the seam freeze into active `wave-3 / setup`.
 
 ## Program Rules
 

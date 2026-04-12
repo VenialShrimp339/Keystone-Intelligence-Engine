@@ -4,6 +4,7 @@
 
 If `audit/remediation/control-plane/` exists, that control plane outranks this file.
 This file is an orientation layer, not the top authority.
+If any shortcut list here conflicts with `ACTIVE-HANDOFF.md`, the handoff wins.
 
 ---
 
@@ -25,27 +26,28 @@ This file is an orientation layer, not the top authority.
 Read in this order:
 1. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 2. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-3. latest immutable review and clearance packet(s) for the cleared candidate
-4. `audit/remediation/WAVE-4B-SETUP.md`
-5. `CURRENT-STATE.md`
-6. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
+3. the exact packet family, boundary docs, and summary docs named in `ACTIVE-HANDOFF.md`
+4. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
+5. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md` for controller-law background only
 
 ### For planning sessions
 Read in this order:
-1. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-2. `CURRENT-STATE.md`
-3. `audit/remediation/WAVE-4B-SETUP.md`
-4. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
-5. `audit/remediation/round-3/CONTENT-SYNTHESIS-v2.md`
-6. `audit/remediation/round-3/PLANNING-ADDENDUM.md`
-7. the relevant sidecar memo
+1. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+2. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+3. `CURRENT-STATE.md`
+4. `audit/remediation/WORKSTREAM-STATUS.md`
+5. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
+6. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
+7. the relevant planning or sidecar memo set
 
 ### For review sessions
 Read in this order:
 1. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 2. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-3. the relevant run-folder artifact(s)
-4. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
+3. the exact packet family and boundary docs named in `ACTIVE-HANDOFF.md`
+4. `CURRENT-STATE.md`
+5. `audit/remediation/WORKSTREAM-STATUS.md`
+6. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
 
 ## Stream 1: Main Remediation / Build
 
@@ -57,9 +59,11 @@ This remains the live execution stream.
 |------|----------|
 | `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml` | Machine-readable live state |
 | `audit/remediation/control-plane/ACTIVE-HANDOFF.md` | Human-readable live state |
-| `audit/remediation/runs/wave-4b/candidate-65a612d-*.md` | Immutable Wave 4B candidate, review, synthesis, and clearance artifacts |
+| `audit/remediation/runs/wave-4b/candidate-65a612d-{adversarial-review,second-opinion,review-synthesis,clearance}.md` | Immutable Wave 4B review and clearance packet set |
+| `audit/remediation/runs/wave-4b/candidate-65a612d-file-manifest.md` | Current candidate surface and scope boundary proof |
 | `audit/remediation/WAVE-4B-SETUP.md` | Historical boundary for what Wave 4B was allowed to clear |
 | `CURRENT-STATE.md` | Current build summary |
+| `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md` | Binding remediation design |
 
 ### Current build status
 
@@ -70,7 +74,7 @@ This remains the live execution stream.
 | Wave 1C | Complete |
 | Wave 2A | Cleared in `16e0bc7` |
 | Wave 2B | Cleared in `2cdbfec` |
-| Wave 3A | Complete in `65074ca` |
+| Wave 3A | Complete in `65074ca` (live setup promoted in `198ab92`) |
 | Wave 3 | Cleared in `4819527` |
 | Wave 3B | Cleared in `5cc9585` |
 | Wave 4 | Cleared in `6406e46` |
@@ -82,6 +86,7 @@ This remains the live execution stream.
 - The next gate is **not** “start Wave 5 or deferred capability work.”
 - Any future code lane, if later authorized, must root from the last cleared code commit `65a612d`, not from dirty `HEAD`.
 - Until a new authority artifact is committed, the main workspace stays controller/docs only and the controller is hard-stopped.
+- `audit/remediation/workstream-retro/` and `audit/remediation/workstream-retro/reviews/` are controller-authorized retrospective sidecar roots only, not live status authority by default.
 
 ## Stream 2: Round-3 Content Audit
 
@@ -121,9 +126,12 @@ This remains a parallel planning/research stream.
 | `audit/remediation/control-plane/ACTIVE-HANDOFF.md` | First-stop human-readable state |
 | `audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md` | Cleared-state proof for the current last-cleared code commit |
 | `audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md` | Wave 4B review consensus |
+| `audit/remediation/runs/wave-4b/candidate-65a612d-file-manifest.md` | Current candidate surface and scope boundary proof |
 | `audit/remediation/WAVE-4B-SETUP.md` | Historical boundary for what Wave 4B was allowed to contain |
 | `CURRENT-STATE.md` | Current build summary |
+| `audit/remediation/WORKSTREAM-STATUS.md` | Orientation summary that must mirror the active handoff |
 | `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md` | Binding remediation design |
+| `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md` | Controller-law and schema background, not live packet precedence |
 
 ### Historical or stale for current status
 
@@ -133,6 +141,7 @@ This remains a parallel planning/research stream.
 | `audit/remediation/WAVE-4-SETUP.md` | Historical Wave 4 runway context now that Wave 4B is cleared |
 | `audit/remediation/WAVE-2B-ADVERSARIAL-REVIEW.md` | Historical blocked review packet for `4ff7e90`, not the cleared candidate |
 | `audit/remediation/WAVE-2B-SECOND-OPINION.md` | Historical blocked second opinion for `4ff7e90`, not the cleared candidate |
+| `audit/remediation/workstream-retro/` and `audit/remediation/workstream-retro/reviews/` outputs | Retrospective planning and review sidecars unless a later controller reconcile promotes them |
 | `audit/remediation/decisions/FINAL-DECISIONS.md` | Superseded |
 | `audit/remediation/decisions/FINAL-DECISIONS-v2.md` | Superseded by `FINAL-DECISIONS-v2.1.md` |
 

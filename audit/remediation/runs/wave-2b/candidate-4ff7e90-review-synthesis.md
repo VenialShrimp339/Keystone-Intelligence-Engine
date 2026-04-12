@@ -1,13 +1,19 @@
 # Candidate 4ff7e90 Review Synthesis
 
 - Wave baseline: `16e0bc7`
+- Candidate parent: `c6eecbf`
 - Candidate commit: `4ff7e90`
+- Wave: `wave-2b`
 - Verdict: `BLOCKED`
 
 ## Reviewed Inputs
 
-- [WAVE-2B-ADVERSARIAL-REVIEW.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-2B-ADVERSARIAL-REVIEW.md)
-- [WAVE-2B-SECOND-OPINION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-2B-SECOND-OPINION.md)
+- [candidate-4ff7e90-adversarial-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-adversarial-review.md)
+- [candidate-4ff7e90-second-opinion.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-second-opinion.md)
+- [candidate-4ff7e90-implementation.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-implementation.md)
+- [candidate-4ff7e90-file-manifest.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-file-manifest.md)
+
+These in-folder wrappers preserve the legacy source locations for the original review texts and do not imply that candidate `4ff7e90` was originally packetized this way at the time the blocked candidate landed.
 
 ## Consensus
 

@@ -14,11 +14,18 @@ Pinned context for all three prompts:
 
 - pre-planning docs anchor commit: `2e6d780`
 - last cleared-state docs checkpoint: `91f97c2`
+- current planning-package docs commit observed at the start of this reconcile: `c5dbd05`
 - last cleared code commit: `65a612d`
 - code lineage:
   `4ff7e90 -> 2cdbfec -> 4819527 -> 5cc9585 -> 6406e46 -> 65a612d`
 - controller/docs lineage:
   `35a8a29 -> 2c026cc -> f717507 -> a370963 -> 65074ca -> 198ab92 -> 6eafc82 -> cd8ad1f -> 5453fb9 -> 0df3596 -> b42d035 -> 456f29c -> 28ebe1a -> d16a40a -> d73c406 -> fabe847 -> 91f97c2 -> 2e6d780`
+
+Interpretation note:
+
+- `2e6d780` is a pre-planning anchor, not the literal current docs `HEAD`.
+- `65074ca` lands `WAVE-3A-SEAM-FREEZE.md`, but that commit is internally stale because it still says to create that doc.
+- `198ab92` is the later controller reconcile that first promotes the seam freeze into active `wave-3 / setup`.
 
 ## CP-1 Prompt
 
@@ -125,6 +132,7 @@ Required checks:
 - wrong packet-to-next-action mapping
 - skipped or implicit state transitions
 - use of symbolic `HEAD` where an exact commit should have been pinned
+- explicit handling of the `65074ca` seam-freeze anomaly versus the later `198ab92` setup activation
 
 Output requirements:
 - Include a compact checkpoint table with columns:

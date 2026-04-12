@@ -1,9 +1,9 @@
 version: 1
-controller_epoch: 3
+controller_epoch: 4
 lease_owner: codex-gpt-5.4-xhigh-main-controller
-lease_acquired_at: "2026-04-12T03:22:30-04:00"
-lease_heartbeat_at: "2026-04-12T04:35:17-04:00"
-lease_expires_at: "2026-04-12T05:05:17-04:00"
+lease_acquired_at: "2026-04-12T13:33:33-04:00"
+lease_heartbeat_at: "2026-04-12T13:33:33-04:00"
+lease_expires_at: "2026-04-12T14:03:33-04:00"
 lease_takeover_rule: "If lease_heartbeat_at is older than 30 minutes, or the new controller cannot confirm repo state from disk, it must increment controller_epoch, rewrite lease fields, and append the takeover to ACTIVE-HANDOFF.md before mutating state."
 lease_stolen_by: codex-gpt-5.4-xhigh-main-controller
 active_branch: codex/remediation-program
@@ -16,7 +16,13 @@ execution_baseline_commit: 6406e46
 last_cleared_code_commit: 65a612d
 current_candidate_commit: 65a612d
 candidate_parent_commit: 6406e46
-last_docs_reconcile_commit: HEAD
+last_docs_reconcile_commit: c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468
+docs_reconcile_commit_policy: "Pinned to the exact docs snapshot this controller reconcile started from. Do not treat it as symbolic HEAD; later controller docs checkpoints must advance this pin explicitly."
+last_cleared_docs_commit: 91f97c2
+planning_anchor_commit: 2e6d780
+retrospective_sidecar_roots:
+  - audit/remediation/workstream-retro/
+  - audit/remediation/workstream-retro/reviews/
 required_review_stage: hard_stop_pending_next_authority_artifact
 accepted_overlays:
   - round-3-content-audit-planning-overlay
@@ -49,3 +55,5 @@ wip_scope:
   - audit/remediation/control-plane/EXECUTION-TODO.md
   - CURRENT-STATE.md
   - audit/remediation/WORKSTREAM-STATUS.md
+  - audit/remediation/workstream-retro/
+  - audit/remediation/workstream-retro/reviews/

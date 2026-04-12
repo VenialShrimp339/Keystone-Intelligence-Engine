@@ -21,7 +21,10 @@ This session should act as the **audit-program architect**, not as an implementa
 Treat the current repo state as frozen for the purpose of this planning session.
 
 - Current controller/docs branch: `codex/remediation-program`
-- Current `HEAD`: `91f97c2` (`docs: clear wave 4b candidate`)
+- Last cleared-state docs checkpoint: `91f97c2` (`docs: clear wave 4b candidate`)
+- Pre-planning retro handoff anchor: `2e6d780` (`Add handoff for retrospective audit-program planning`)
+- Current planning-package docs commit at the start of this reconcile: `c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468` (`c5dbd05`, `docs: finalize workstream retro audit launch package`)
+- Current planning-package lineage after Wave 4B clearance: `2e6d780 -> c5dbd05`
 - Current last cleared code commit: `65a612d`
 
 Do **not**:
@@ -36,13 +39,15 @@ This session may:
 - read any relevant docs and run-folder artifacts
 - use parallel read-only explorers or subagents
 - write planning docs under `audit/remediation/workstream-retro/`
+- write retrospective review sidecars under `audit/remediation/workstream-retro/reviews/`
+- treat both paths as retrospective sidecars unless a later controller reconcile promotes them
 
 ## Why this handoff exists
 
 The long-running autonomous session appears to have progressed through:
 
 - Wave 2B clearance at `2cdbfec`
-- Wave 3A seam freeze at `65074ca`
+- Wave 3A seam-freeze artifact landing at `65074ca`, later promoted into live Wave 3 setup at `198ab92`
 - Wave 3 clearance at `4819527`
 - Wave 3B clearance at `5cc9585`
 - Wave 4 clearance at `6406e46`
@@ -100,9 +105,21 @@ These cleared code snapshots live on clean worktree branches, not on `codex/reme
 
 ### 2. Controller/docs lineage
 
+Cleared-state lineage through Wave 4B:
+
 `35a8a29 -> 2c026cc -> f717507 -> a370963 -> 65074ca -> 198ab92 -> 6eafc82 -> cd8ad1f -> 5453fb9 -> 0df3596 -> b42d035 -> 456f29c -> 28ebe1a -> d16a40a -> d73c406 -> fabe847 -> 91f97c2`
 
+Later planning-package lineage:
+
+`2e6d780 -> c5dbd05`
+
 These checkpoints live on `codex/remediation-program`.
+
+Important historical note:
+
+- `65074ca` is the real seam-freeze artifact landing because it creates `WAVE-3A-SEAM-FREEZE.md`.
+- That same commit is internally stale because its live control-plane and handoff text still instruct the controller to create that doc.
+- `198ab92` is the later controller reconcile that first promotes the seam freeze into active `wave-3 / setup`.
 
 This means a monolithic audit of the current branch is **not sufficient**.
 

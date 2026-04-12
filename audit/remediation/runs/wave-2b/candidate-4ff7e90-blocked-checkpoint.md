@@ -1,7 +1,9 @@
 # Candidate 4ff7e90 Blocked Checkpoint
 
 - Candidate commit: `4ff7e90`
+- Candidate parent: `c6eecbf`
 - Baseline commit: `16e0bc7`
+- Wave: `wave-2b`
 - State: `BLOCKED`
 - Checkpoint created by: bootstrap adoption pass on `codex/remediation-program`
 
@@ -26,6 +28,16 @@ This file makes the blocked state explicit and versioned so a fresh session does
 ## Recovery Material
 
 - [candidate-4ff7e90-recovery-dirty-wip.patch](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-recovery-dirty-wip.patch)
+
+## Review Packet Basis
+
+- [candidate-4ff7e90-adversarial-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-adversarial-review.md)
+- [candidate-4ff7e90-second-opinion.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-second-opinion.md)
+- [candidate-4ff7e90-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-review-synthesis.md)
+- [candidate-4ff7e90-file-manifest.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-file-manifest.md)
+- [candidate-4ff7e90-implementation.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-implementation.md)
+
+These in-folder docs normalize the blocked packet chain for retrospective review. The top-level Wave 2B review docs remain the canonical historical source locations for the original review text.
 
 ## Next Action
 

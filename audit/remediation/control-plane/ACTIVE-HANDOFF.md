@@ -4,11 +4,14 @@
 
 - Wave 2A is cleared at `16e0bc7`.
 - Wave 2B is cleared at `2cdbfec`.
-- Wave 3A seam freeze is committed in `65074ca`.
+- Wave 3A seam-freeze artifact lands in `65074ca`, but the first coherent live promotion into `wave-3 / setup` is `198ab92`.
 - Wave 3 is cleared at `4819527`.
 - Wave 3B is cleared at `5cc9585`.
 - Wave 4 is cleared at `6406e46`.
 - Wave 4B is now cleared at `65a612d`.
+- `91f97c2` remains the last cleared-state docs checkpoint.
+- `2e6d780` is the pre-planning retro handoff anchor.
+- `c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468` (`c5dbd05`) is the exact planning-package docs snapshot this docs-only reconcile started from.
 - The main workspace remains controller/docs only.
 - `WAVE-4B-SETUP.md` remains the frozen boundary for what Wave 4B was allowed to change.
 - All required Wave 4B review packets now exist in the main workspace.
@@ -19,19 +22,26 @@
 
 ## Authoritative Order
 
+Any summary doc or retrospective planning doc that offers a shortcut list must defer to this order.
+
 1. [CONTROL-PLANE-STATE.yaml](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml)
 2. [ACTIVE-HANDOFF.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/ACTIVE-HANDOFF.md)
-3. [candidate-65a612d-clearance.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md)
-4. [candidate-65a612d-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md)
-5. [WAVE-4B-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4B-SETUP.md)
-6. [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md)
-7. [WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md)
-8. [WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md)
-9. [WAVE-4-TEMPLATE-ROUTING-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md)
-10. [WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md)
-11. [FINAL-DECISIONS-v2.1.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/decisions/FINAL-DECISIONS-v2.1.md)
-12. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md)
-13. [WORKSTREAM-STATUS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md)
+3. [candidate-65a612d-adversarial-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-adversarial-review.md)
+4. [candidate-65a612d-second-opinion.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-second-opinion.md)
+5. [candidate-65a612d-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md)
+6. [candidate-65a612d-clearance.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md)
+7. [candidate-65a612d-file-manifest.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-file-manifest.md)
+8. [WAVE-4B-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4B-SETUP.md)
+9. [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md)
+10. [WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md)
+11. [WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md)
+12. [WAVE-4-TEMPLATE-ROUTING-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md)
+13. [WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md)
+14. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md)
+15. [WORKSTREAM-STATUS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md)
+16. [FINAL-DECISIONS-v2.1.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/decisions/FINAL-DECISIONS-v2.1.md)
+17. [AUTONOMOUS-REMEDIATION-PLAN-v4.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md)
+18. `audit/remediation/workstream-retro/` and `audit/remediation/workstream-retro/reviews/` outputs as retrospective sidecars only unless a later controller reconcile promotes them.
 
 ## Active State Tuple
 
@@ -39,8 +49,10 @@
 - `active_state`: `cleared`
 - `execution_baseline_commit`: `6406e46`
 - `review_target_commit`: `65a612d`
-- `docs_reconcile_commit`: `HEAD`
+- `docs_reconcile_commit`: `c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468`
 - `next_recovery_checkout`: `65a612d`
+
+Interpret `docs_reconcile_commit` as the exact docs snapshot this controller reconcile started from. It is not symbolic `HEAD`; future controller docs checkpoints must repin it explicitly.
 
 ## Open Blockers
 
@@ -79,6 +91,13 @@ sed -n '1,220p' audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md
 - `audit/remediation/control-plane/EXECUTION-TODO.md`
 - `audit/remediation/WORKSTREAM-STATUS.md`
 - `CURRENT-STATE.md`
+
+### Controller-authorized retrospective sidecars
+
+- `audit/remediation/workstream-retro/`
+- `audit/remediation/workstream-retro/reviews/`
+
+Write here only for retrospective audit planning, docs/package reconciliation, or review-sidecar output. These paths do not outrank the live control plane unless a later controller reconcile promotes them.
 
 ### No active code lane
 
@@ -127,6 +146,14 @@ Wave 4B cleared only after artifacts named probes for:
 - [candidate-65a612d-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md) — consensus review packet clearing the Wave 4B lane
 - [candidate-65a612d-clearance.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md) — immutable cleared-state proof for the current last-cleared code commit
 
+## Retrospective Audit Anchors
+
+- Treat `91f97c2` as the last cleared-state docs checkpoint.
+- Treat `2e6d780` as the first retro-planning handoff anchor, not as literal current `HEAD`.
+- Treat `c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468` (`c5dbd05`) as the exact planning-package docs snapshot this docs-only reconcile started from.
+- Treat `65074ca` as the real seam-freeze artifact landing, but use `198ab92` as the first coherent live promotion of that artifact into active `wave-3 / setup`.
+- This reconcile pins the current live docs snapshot only. It does not retroactively repair the older symbolic-`HEAD` defect across historical checkpoints.
+
 ## Residual Follow-Ups
 
 - `W2B-R01`: parse-invalid sprint-contract JSON now fails explicitly, but parseable under-specified JSON can still return empty Wave 2B enforcement fields.
@@ -136,7 +163,9 @@ Wave 4B cleared only after artifacts named probes for:
 - `2026-04-12T02:01:57-04:00` — controller takeover by `codex-gpt-5.4-xhigh-main-controller`.
   Reason: `lease_heartbeat_at` from the predecessor was older than 30 minutes (`2026-04-12T01:24:01-04:00`), so the takeover rule in the control plane fired before any new state mutation.
   Repo-state verification completed before takeover: the main workspace was still on `codex/remediation-program`, `active_wave`/`active_state` still reconciled to `wave-2b` / `cleared`, `last_cleared_code_commit` was still `2cdbfec`, and `WAVE-3A-SEAM-FREEZE.md` was still absent.
-- `2026-04-12T02:05:36-04:00` — seam-freeze checkpoint `65074ca` was reconciled into active Wave 3 setup state.
+- `2026-04-12T02:05:36-04:00` — seam-freeze artifact commit `65074ca` landed.
+  Result: `WAVE-3A-SEAM-FREEZE.md` was committed, but the same commit still left the live control-plane text stale and still said to create that doc. Treat `65074ca` as the real seam-freeze artifact landing, not as a self-contained live-state transition.
+- `2026-04-12T02:10:00-04:00` — controller reconcile commit `198ab92` promoted the seam freeze into active Wave 3 setup.
   Result: `WAVE-3-SETUP.md` became the active wave setup doc, `active_wave` advanced to `wave-3`, and the next action became opening the clean Wave 3 implementation lane from `2cdbfec`.
 - `2026-04-12T02:31:29-04:00` — Wave 3 candidate `4819527` was reviewed and cleared.
   Result: Wave 3 advanced from `setup` to `cleared`, `4819527` became the last cleared code commit, and the next required gate became `WAVE-3B-SETUP.md`.
@@ -157,3 +186,6 @@ Wave 4B cleared only after artifacts named probes for:
   Result: `WAVE-4B-SETUP.md` became the active setup doc, `active_wave` advanced to `wave-4b`, and the next action became opening the clean Wave 4B implementation lane from `6406e46`.
 - `2026-04-12T04:35:17-04:00` — Wave 4B candidate `65a612d` was reviewed and cleared.
   Result: Wave 4B advanced from `setup` to `cleared`, `65a612d` became the last cleared code commit, and a hard stop activated because no next-wave authority artifact is yet committed.
+- `2026-04-12T13:33:33-04:00` — controller lease takeover by `codex-gpt-5.4-xhigh-main-controller` for Batch 1 docs/package reconciliation.
+  Reason: the previous lease heartbeat (`2026-04-12T04:35:17-04:00`) had aged out long before the next authority mutation, so `controller_epoch` was incremented before repinning docs-commit semantics and normalizing the retrospective packet sidecars.
+  Repo-state verification completed before takeover: the main workspace was still on `codex/remediation-program`, `active_wave`/`active_state` still reconciled to `wave-4b` / `cleared`, `last_cleared_code_commit` was still `65a612d`, the retro planning-package lineage already extended through `c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468` (`c5dbd05`), and the remaining work was docs-only reconciliation rather than runtime implementation.
