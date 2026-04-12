@@ -729,12 +729,14 @@ class TestRendererGating:
 
         rendered_findings = c.renderer.render.call_args.args[1]
         rendered_confidence_map = c.renderer.render.call_args.args[2]
+        rendered_evaluation_results = c.renderer.render.call_args.args[3]
         rendered_manifest = c.renderer.render.call_args.args[4]
 
         assert [f.task_id for f in rendered_findings] == ["task_001"]
         assert [c.claim for c in rendered_confidence_map.high_confidence_above_80pct] == [
             "Passed claim"
         ]
+        assert [result.task_id for result in rendered_evaluation_results] == ["task_001"]
         assert rendered_confidence_map.provenance_index == {"AGG-pass": ["task_001"]}
         assert [citation.citation_id for citation in rendered_manifest.citations] == ["CAN-001"]
         assert rendered_manifest.dead_urls == []
@@ -853,12 +855,14 @@ class TestRendererGating:
 
         rendered_findings = c.renderer.render.call_args.args[1]
         rendered_confidence_map = c.renderer.render.call_args.args[2]
+        rendered_evaluation_results = c.renderer.render.call_args.args[3]
         rendered_manifest = c.renderer.render.call_args.args[4]
 
         assert [f.task_id for f in rendered_findings] == ["task_001"]
         assert [c.claim for c in rendered_confidence_map.high_confidence_above_80pct] == [
             "Evaluated claim"
         ]
+        assert [result.task_id for result in rendered_evaluation_results] == ["task_001"]
         assert rendered_confidence_map.provenance_index == {"AGG-pass": ["task_001"]}
         assert [citation.citation_id for citation in rendered_manifest.citations] == ["CAN-001"]
         assert rendered_manifest.dead_urls == []
@@ -866,6 +870,128 @@ class TestRendererGating:
             "CAN-001"
         ]
         assert len(result.evaluation_results) == 1
+
+    @pytest.mark.asyncio
+    async def test_renderer_drops_failed_task_feedback_and_shared_alias_rows(self) -> None:
+        factory = _mock_llm_factory()
+        gw = _make_gateway()
+        pipeline = Pipeline(llm_factory=factory, gateway=gw)
+
+        spec = _make_two_task_spec()
+        finding_pass = _make_finding(task_id="task_001").model_copy(
+            update={
+                "claims": [
+                    FindingClaim(
+                        text="Passed shared-source claim should render",
+                        evidence="Primary branch evidence",
+                        citations=[_make_citation(cid="CAN-001")],
+                        citation_ids=["CAN-001"],
+                        confidence=0.85,
+                        confidence_tier=ConfidenceTier.HIGH,
+                    )
+                ]
+            }
+        )
+        finding_fail = _make_finding(task_id="task_002", agent_id="agent_002").model_copy(
+            update={
+                "claims": [
+                    FindingClaim(
+                        text="Failed shared-source claim should not render",
+                        evidence="Secondary branch evidence",
+                        citations=[_make_citation(cid="CAN-001")],
+                        citation_ids=["CAN-001"],
+                        confidence=0.7,
+                        confidence_tier=ConfidenceTier.MODERATE,
+                    )
+                ]
+            }
+        )
+        manifest = CitationManifest(
+            manifest_id="MAN-shared",
+            engagement_id="eng_test",
+            client_id="c1",
+            citations=[_make_citation(cid="CAN-001")],
+            aliases=[
+                CitationAlias(
+                    source_instance_id="CIT-pass-001",
+                    canonical_citation_id="CAN-001",
+                    engagement_id="eng_test",
+                    task_id="task_001",
+                    agent_id="agent_001",
+                ),
+                CitationAlias(
+                    source_instance_id="CIT-fail-001",
+                    canonical_citation_id="CAN-001",
+                    engagement_id="eng_test",
+                    task_id="task_002",
+                    agent_id="agent_002",
+                ),
+            ],
+        )
+        confidence_map = _make_task_scoped_confidence_map(
+            [
+                ("Passed claim", "AGG-pass", "task_001", ["task_001"]),
+                ("Failed claim", "AGG-fail", "task_002", ["task_002"]),
+            ]
+        )
+
+        async def noop_gen(*a, **kw):
+            return
+            yield
+
+        c = pipeline._build_components()
+        c.spec_engine.generate_spec = noop_gen
+        c.spec_engine.get_spec = AsyncMock(return_value=spec)
+        c.agent_pool.execute_all = AsyncMock(
+            return_value=[
+                AgentResult("a1", "task_001", finding=finding_pass),
+                AgentResult("a2", "task_002", finding=finding_fail),
+            ]
+        )
+        c.agent_pool.get_successful_findings = MagicMock(
+            return_value=[finding_pass, finding_fail]
+        )
+        c.citation_processor.process = noop_gen
+        c.citation_processor.get_result = AsyncMock(
+            return_value=CitationProcessorResult(
+                manifest=manifest,
+                canonicalized_findings=[finding_pass, finding_fail],
+            )
+        )
+        c.deliberation.deliberate = noop_gen
+        c.deliberation.get_confidence_map = AsyncMock(return_value=confidence_map)
+        c.renderer.render = MagicMock(return_value="filtered markdown")
+        pipeline._pending_components = c
+
+        pass_result = _make_eval_result(task_id="task_001")
+        fail_result = _make_eval_result(task_id="task_002").model_copy(
+            update={
+                "passed": False,
+                "overall_score": 41.0,
+                "feedback": "REJECTED: fabricated citation(s) detected (CAN-FAIL).",
+            }
+        )
+
+        with patch("keystone.pipeline.orchestrator.Evaluator") as MockEval:
+            eval_instances = []
+            for result in [pass_result, fail_result]:
+                inst = MagicMock()
+                inst.evaluate = noop_gen
+                inst.get_result = AsyncMock(return_value=result)
+                eval_instances.append(inst)
+            MockEval.side_effect = eval_instances
+
+            await pipeline.run("Test question", "c1")
+
+        rendered_evaluation_results = c.renderer.render.call_args.args[3]
+        rendered_manifest = c.renderer.render.call_args.args[4]
+
+        assert [result.task_id for result in rendered_evaluation_results] == ["task_001"]
+        assert all("CAN-FAIL" not in result.feedback for result in rendered_evaluation_results)
+        assert [
+            (alias.source_instance_id, alias.task_id, alias.canonical_citation_id)
+            for alias in rendered_manifest.aliases
+        ] == [("CIT-pass-001", "task_001", "CAN-001")]
 
 
 # ---------------------------------------------------------------------------

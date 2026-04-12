@@ -291,13 +291,16 @@ class Pipeline:
             confidence_map, passed_task_ids
         )
         render_manifest = _filter_manifest_by_findings(passed_findings, manifest)
+        render_evaluation_results = [
+            result for result in evaluation_results if result.task_id in passed_task_ids
+        ]
 
         # --- Stage 6: Render (only passed findings + filtered confidence map) ---
         markdown_output = c.renderer.render(
             spec,
             passed_findings,
             filtered_confidence_map,
-            evaluation_results,
+            render_evaluation_results,
             render_manifest,
         )
 
@@ -437,13 +440,14 @@ def _filter_manifest_by_findings(
     findings: list[StructuredFinding],
     full_manifest: CitationManifest,
 ) -> CitationManifest:
-    """Keep only citations referenced by the findings that remain renderable."""
+    """Keep only manifest data referenced by the findings that remain renderable."""
     source_to_canonical = {
         alias.source_instance_id: alias.canonical_citation_id
         for alias in full_manifest.aliases
     }
 
     citation_ids: set[str] = set()
+    surviving_task_ids = {finding.task_id for finding in findings}
     for finding in findings:
         for claim in finding.claims:
             claim_citation_ids = claim.citation_ids or [
@@ -474,6 +478,7 @@ def _filter_manifest_by_findings(
         alias
         for alias in full_manifest.aliases
         if alias.canonical_citation_id in citation_ids
+        and alias.task_id in surviving_task_ids
     ]
 
     return full_manifest.model_copy(
