@@ -18,18 +18,18 @@ This file is the operational checklist.
 
 ## Current State
 
-- Last cleared code commit: `5cc9585`
-- Latest prior docs checkpoint before this setup state: `5453fb9`
-- Active wave state: `wave-4 / setup`
-- Next mandatory gate: `Wave 4 docs lane, then narrow Wave 4 polish freeze`
+- Last cleared code commit: `6406e46`
+- Latest prior docs checkpoint before this cleared state: `d16a40a`
+- Active wave state: `wave-4 / cleared`
+- Next mandatory gate: `Wave 4B setup checkpoint`
 
 ## Now
 
 - [x] Confirm the control-plane tuple now says:
   - `active_wave = wave-4`
-  - `active_state = setup`
-  - `last_cleared_code_commit = 5cc9585`
-  - `next_action = continue Wave 4 docs work before any new code lane`
+  - `active_state = cleared`
+  - `last_cleared_code_commit = 6406e46`
+  - `next_action = create the Wave 4B setup checkpoint before any new code lane`
 - [x] Stay on `codex/remediation-program` in the main workspace
 - [x] Keep the main workspace controller/docs only
 - [x] Do **not** start Wave 4 polish code or Wave 4B content code in the main workspace
@@ -111,17 +111,17 @@ This file is the operational checklist.
 ## Phase 8: Wave 4 Polish Code Lane
 
 - [x] Do **not** open the Wave 4 polish code lane until the exact fix specs are committed
-- [ ] Open a clean Wave 4 polish worktree rooted at `5cc9585`
-- [ ] Implement only the low-risk Wave 4 polish slice frozen in `WAVE-4-SETUP.md`
-- [ ] Write the Wave 4 candidate implementation and file-manifest artifacts
-- [ ] Run focused Wave 4 polish tests and runtime probes
-- [ ] Create the candidate commit
-- [ ] Run adversarial review + second opinion on the committed snapshot
-- [ ] Write review synthesis and either blocked-checkpoint or clearance artifacts
+- [x] Open a clean Wave 4 polish worktree rooted at `5cc9585`
+- [x] Implement only the low-risk Wave 4 polish slice frozen in `WAVE-4-SETUP.md`
+- [x] Write the Wave 4 candidate implementation and file-manifest artifacts
+- [x] Run focused Wave 4 polish tests and runtime probes
+- [x] Create the candidate commit
+- [x] Run adversarial review + second opinion on the committed snapshot
+- [x] Write review synthesis and either blocked-checkpoint or clearance artifacts
 
 ## Phase 9: Wave 4B Content Gate
 
-- [ ] Do **not** start Wave 4B until the required Wave 4 memos exist and the targeted seams are stable
+- [x] Do **not** start Wave 4B until the required Wave 4 memos exist and the targeted seams are stable
 - [ ] Create `WAVE-4B-SETUP.md`
 - [ ] Update the control plane only after the Wave 4B setup checkpoint lands
 

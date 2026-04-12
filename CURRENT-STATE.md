@@ -1,5 +1,5 @@
 # Current State
-*Last updated: 2026-04-12 | Updated by: Wave 4 setup checkpoint*
+*Last updated: 2026-04-12 | Updated by: Wave 4 cleared-state checkpoint*
 
 ---
 
@@ -11,33 +11,29 @@
 - **Wave 3A:** Complete in commit `65074ca` (`docs: freeze Wave 3A seams`).
 - **Wave 3:** Cleared in commit `4819527` (`feat: implement wave 3 provenance and routing`).
 - **Wave 3B:** Cleared in commit `5cc9585` (`feat: implement wave 3b round control`).
-- **Wave 4:** Active in setup state from cleared Wave 3B baseline `5cc9585`.
+- **Wave 4:** Cleared in commit `6406e46` (`fix: implement wave 4 polish slice`).
 - **Round-3 overlay:** Accepted for Wave 2B and later. It did **not** reopen Waves 1A through 2A.
 
 ## What just happened
 
-1. Wave 3B implementation landed in the clean `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wave-3b` lane as `5cc9585`.
-2. Focused Wave 3B verification passed on the committed snapshot.
-3. Independent adversarial review and second opinion both returned `CLEARED` for `4819527..5cc9585`.
-4. Wave 3B is now cleared, and `5cc9585` becomes the last cleared code commit.
-5. `WAVE-3B-SETUP.md` is now historical context rather than the live runway.
-6. `WAVE-4-SETUP.md` now defines the active Wave 4 research-and-polish boundary.
-7. The latest Wave 4 docs checkpoint now includes the full required Wave 4 memo set: core prompt quality, polish specs, sprint-contract / rubric, template / routing, and evaluator verification.
-8. The evaluator-verification memo keeps `C-15` inside the current evaluator stack but explicitly pushes true claim-support verification out of Wave 4B as new capability work.
-9. The full docs lane is now complete.
-10. The next step is the narrow Wave 4 polish code lane from `5cc9585`, not broad cleanup, not Wave 4B implementation, and not Wave 5 calibration.
+1. The narrow Wave 4 polish lane landed in the clean `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wave-4` lane as `6406e46`.
+2. Focused Wave 4 verification passed on the committed snapshot.
+3. Independent adversarial review and second opinion both returned `CLEARED` for `5cc9585..6406e46`.
+4. Wave 4 is now cleared, and `6406e46` becomes the last cleared code commit.
+5. The frozen polish items `E-2`, `E-4`, and `E-5` are now closed on the committed runtime path.
+6. Wave 4B is still not active and still requires a docs-only setup checkpoint.
+7. The next step is `WAVE-4B-SETUP.md`, not Wave 4B implementation and not Wave 5 calibration.
 
 ## What happens next
 
 1. Read the control-plane files first:
    - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
    - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-2. Treat `5cc9585` as the last cleared code commit.
-3. Use `audit/remediation/WAVE-4-SETUP.md` as the binding Wave 4 scope boundary.
+2. Treat `6406e46` as the last cleared code commit.
+3. Use `audit/remediation/WAVE-4-SETUP.md` plus the `6406e46` clearance packet as the binding transition boundary.
 4. Keep the main workspace controller/docs only.
-5. Open a clean Wave 4 polish worktree rooted at `5cc9585`.
-6. Implement only `E-2`, `E-4`, and `E-5` there.
-7. Do **not** open Wave 4B or Wave 5 without the later setup gates.
+5. Create `audit/remediation/WAVE-4B-SETUP.md`.
+6. Do **not** open Wave 4B implementation or Wave 5 without the later setup gates.
 
 ## Reconciled wave plan
 
@@ -49,26 +45,26 @@
 | Wave 3A | **Complete** (`65074ca`) | Seam freeze for verifier, provenance sidecar, round-state, and loop ownership |
 | Wave 3 | **Cleared** (`4819527`) | Completeness work plus dual-axis taxonomy, auditable deep research, verifier, sidecar, and DAG batching |
 | Wave 3B | **Cleared** (`5cc9585`) | Thin Pipeline-L2 plus minimum viable live iterative loop |
-| Wave 4 | **Active / setup** | Research/design sidecars plus explicit low-risk polish freeze |
-| Wave 4B | Planned | Content implementation from Wave 4 memos |
+| Wave 4 | **Cleared** (`6406e46`) | Low-risk polish slice `E-2`, `E-4`, `E-5` |
+| Wave 4B | Planned / next gate | Content implementation from Wave 4 memos |
 | Wave 5 | Planned | Calibration against frozen benchmark outputs |
 
 ## Authoritative docs for a fresh session
 
 - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-- `audit/remediation/runs/wave-3b/candidate-5cc9585-clearance.md`
-- `audit/remediation/runs/wave-3b/candidate-5cc9585-review-synthesis.md`
-- `audit/remediation/WAVE-4-SETUP.md`
+- `audit/remediation/runs/wave-4/candidate-6406e46-clearance.md`
+- `audit/remediation/runs/wave-4/candidate-6406e46-review-synthesis.md`
+- `audit/remediation/WAVE-4-4B-PREWORK.md`
 - `audit/remediation/WAVE-3A-SEAM-FREEZE.md`
 - `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
 - `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
 
 ## Non-authoritative but still useful
 
-- `audit/remediation/runs/wave-3b/candidate-5cc9585-implementation.md`
-- `audit/remediation/runs/wave-3b/candidate-5cc9585-file-manifest.md`
-- `audit/remediation/WAVE-3B-SETUP.md`
+- `audit/remediation/runs/wave-4/candidate-6406e46-implementation.md`
+- `audit/remediation/runs/wave-4/candidate-6406e46-file-manifest.md`
+- `audit/remediation/WAVE-4-SETUP.md`
 - `SESSION-LOG.md` -- historical trail
 - `audit/remediation/WAVE-4-4B-PREWORK.md`
 - `audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md`
