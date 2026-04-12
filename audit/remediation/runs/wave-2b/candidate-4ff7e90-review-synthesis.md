@@ -15,6 +15,8 @@
 
 These in-folder wrappers preserve the legacy source locations for the original review texts and do not imply that candidate `4ff7e90` was originally packetized this way at the time the blocked candidate landed.
 
+File-owner references below are recovery owner files for later replay planning. They are not a claim that every listed file was part of the exact committed `4ff7e90` diff surface; that exact surface is recorded in the normalized manifest derived from `git show --name-only 4ff7e90`.
+
 ## Consensus
 
 The reviews agree that Wave 2B made real progress, but the runtime enforcement path is still not fully authoritative in `4ff7e90`.
@@ -24,20 +26,20 @@ The reviews agree that Wave 2B made real progress, but the runtime enforcement p
 ### W2B-B01: LIGHT coverage fail-open
 
 - Shared conclusion: a failed evaluated LIGHT task can disappear from coverage.
-- Owner files:
+- Recovery owner files:
   - `src/keystone/governance/policy.py`
   - `src/keystone/pipeline/orchestrator.py`
 
 ### W2B-B02: Task priority / importance misrouting
 
 - Shared conclusion: task importance is still tied to LLM list order instead of Step-5 scores.
-- Owner files:
+- Recovery owner files:
   - `src/keystone/specification/task_generator.py`
 
 ### W2B-B03: Effective evaluator profile is still shadowed
 
 - Shared conclusion: the effective evaluation profile is not carried through `ResearchSpec` into `Evaluator`.
-- Owner files:
+- Recovery owner files:
   - `src/keystone/models/research.py`
   - `src/keystone/specification/spec_engine.py`
   - `src/keystone/pipeline/orchestrator.py`
@@ -46,7 +48,7 @@ The reviews agree that Wave 2B made real progress, but the runtime enforcement p
 ### W2B-B04: HITL gating is not yet policy-owned
 
 - Shared conclusion: Gate 1 and Gate 2 still inline profile checks instead of consulting `ProfileExecutionPolicy`.
-- Owner files:
+- Recovery owner files:
   - `src/keystone/governance/policy.py`
   - `src/keystone/specification/spec_engine.py`
   - `src/keystone/deliberation/deliberation.py`

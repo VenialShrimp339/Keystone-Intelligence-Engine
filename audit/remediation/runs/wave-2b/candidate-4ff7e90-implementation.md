@@ -12,8 +12,10 @@ No standalone in-folder implementation packet was created for blocked candidate 
 For retrospective review, implementation truth for this blocked candidate is:
 
 - the committed code snapshot at `4ff7e90`
-- the scope boundary recorded in [candidate-4ff7e90-file-manifest.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-file-manifest.md)
+- the retrospectively normalized exact committed diff recorded in [candidate-4ff7e90-file-manifest.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-file-manifest.md), derived from `git show --name-only 4ff7e90`
 - the blocked findings preserved in the in-folder review wrappers and review synthesis
+
+That manifest is authoritative for the exact committed `4ff7e90` file surface only. Any later recovery or replay-planning notes inside the normalized packet are preserved as retrospective context, not as contemporaneous implementation truth.
 
 ## Recovery Evidence Boundary
 

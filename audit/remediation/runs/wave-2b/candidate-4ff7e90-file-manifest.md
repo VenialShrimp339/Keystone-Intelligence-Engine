@@ -4,7 +4,7 @@
 - Parent commit: `c6eecbf`
 - Baseline commit: `16e0bc7`
 - Wave: `wave-2b`
-- Purpose: close the known Wave 2B blockers without widening scope
+- Purpose: retrospectively normalize the blocked Wave 2B candidate by recording the exact committed diff surface of `4ff7e90` without treating later recovery planning as contemporaneous packet truth
 
 ## Packet Inventory
 
@@ -19,75 +19,99 @@
 
 The blocked `4ff7e90` review texts were originally authored as top-level Wave 2B review docs during the bootstrap adoption commit `35a8a29`. The in-folder review wrappers listed above were added later to make the `runs/wave-2b/` packet chain self-contained without pretending those review files originally lived under this run folder.
 
+This file is also a later normalization artifact. It was not the contemporaneous pre-commit allowlist for `4ff7e90`.
+
+Direct git evidence for the exact-surface sections below: `git show --name-only 4ff7e90`
+
 ## Allowed Write Set
+
+For this retrospective packet, the `Allowed Write Set` is the literal committed file surface of `4ff7e90`. It is not a contemporaneous pre-commit allowlist, and it does not include later replay-only owner files.
 
 ### Code
 
-- `src/keystone/governance/policy.py`
-- `src/keystone/specification/task_generator.py`
-- `src/keystone/models/research.py`
-- `src/keystone/specification/spec_engine.py`
+- `src/keystone/contracts.py`
 - `src/keystone/deliberation/deliberation.py`
+- `src/keystone/evaluator/layer3_rubric.py`
+- `src/keystone/governance/__init__.py`
+- `src/keystone/governance/models.py`
+- `src/keystone/governance/policy.py`
+- `src/keystone/hitl/gate.py`
+- `src/keystone/hitl/schemas.py`
+- `src/keystone/models/research.py`
+- `src/keystone/models/tasks.py`
 - `src/keystone/pipeline/orchestrator.py`
-- `src/keystone/evaluator/evaluator.py`
-- `src/keystone/evaluator/sprint_contract.py`
+- `src/keystone/specification/engagement_classifier.py`
+- `src/keystone/specification/spec_engine.py`
+- `src/keystone/specification/task_generator.py`
 
 ### Tests
 
-- `tests/unit/governance/test_policy.py`
-- `tests/unit/specification/test_task_generator.py`
-- `tests/unit/specification/test_spec_engine.py`
 - `tests/unit/deliberation/test_deliberation.py`
-- `tests/unit/pipeline/test_orchestrator.py`
-- `tests/unit/test_research_models.py`
-- `tests/unit/evaluator/test_evaluator.py`
-- `tests/unit/evaluator/test_sprint_contract.py`
+- `tests/unit/evaluator/test_layer3.py`
+- `tests/unit/governance/test_policy.py`
 - `tests/unit/hitl/test_gate.py`
+- `tests/unit/pipeline/test_orchestrator.py`
+- `tests/unit/specification/test_spec_engine.py`
+- `tests/unit/specification/test_task_generator.py`
+- `tests/unit/test_research_models.py`
 
-### Generated collateral allowed only if code changes land
+## Committed Diff Classification
 
-- `graphify-out/GRAPH_REPORT.md`
-- `graphify-out/graph.json`
+### Expected
 
-## Mixed-Hunk Risk Files
+- `src/keystone/contracts.py`
+- `src/keystone/deliberation/deliberation.py`
+- `src/keystone/evaluator/layer3_rubric.py`
+- `src/keystone/governance/__init__.py`
+- `src/keystone/governance/models.py`
+- `src/keystone/governance/policy.py`
+- `src/keystone/hitl/gate.py`
+- `src/keystone/hitl/schemas.py`
+- `src/keystone/models/research.py`
+- `src/keystone/models/tasks.py`
+- `src/keystone/pipeline/orchestrator.py`
+- `src/keystone/specification/engagement_classifier.py`
+- `src/keystone/specification/spec_engine.py`
+- `src/keystone/specification/task_generator.py`
+- `tests/unit/deliberation/test_deliberation.py`
+- `tests/unit/evaluator/test_layer3.py`
+- `tests/unit/governance/test_policy.py`
+- `tests/unit/hitl/test_gate.py`
+- `tests/unit/pipeline/test_orchestrator.py`
+- `tests/unit/specification/test_spec_engine.py`
+- `tests/unit/specification/test_task_generator.py`
+- `tests/unit/test_research_models.py`
 
-These files are allowed, but must be staged by hunk if unrelated dirty changes reappear:
+### Legitimate Collateral
+
+- None
+
+### Scope Creep
+
+- None
+
+### Quarantined Unrelated
+
+- None inside the exact committed diff surface of `4ff7e90`
+
+## Later Recovery / Replay Context
+
+The items below are preserved as later blocked-state recovery context only. They do not redefine the exact committed diff surface above.
+
+### Recovery Owner / Risk Files
+
+These files remained likely replay touchpoints or mixed-hunk risk during later recovery planning:
 
 - `src/keystone/specification/spec_engine.py`
 - `src/keystone/evaluator/evaluator.py`
 - `tests/unit/specification/test_spec_engine.py`
 - `tests/unit/evaluator/test_evaluator.py`
 
-## Explicit Denylist
+### Recovery Evidence Boundary
 
-Do not touch these during Wave 2B blocker remediation unless the controller explicitly amends this manifest:
-
-- `src/keystone/gateway/mcp_gateway.py`
-- `src/keystone/models/config.py`
-- `tests/integration/test_pipeline_real.py`
-- `schemas/citation.schema.json`
-- any Wave 3, 3B, 4, 4B, or 5 setup docs
-- `CURRENT-STATE.md`
-- `audit/remediation/WORKSTREAM-STATUS.md`
-- `SESSION-LOG.md`
-
-## Suspicious Dirty Files In Main Workspace
-
-These are quarantined and must not be swept into the Wave 2B candidate:
-
-- `src/keystone/gateway/mcp_gateway.py`
-- `src/keystone/models/config.py`
-- `tests/integration/test_pipeline_real.py`
-- `schemas/citation.schema.json`
-- broad archive / docs reorg churn outside the control-plane files
+- [candidate-4ff7e90-recovery-dirty-wip.patch](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-recovery-dirty-wip.patch) captures later uncommitted recovery WIP only.
+- That patch is not part of candidate `4ff7e90` and does not change the exact committed diff surface listed above.
 
 ## Classification Rule
 
-Every touched file in the next candidate must be classified as one of:
-
-- `expected`
-- `legitimate collateral`
-- `scope creep`
-- `quarantined unrelated`
-
-No candidate clears with unresolved `scope creep` files.
+Treat the `Committed Diff Classification` section above as the authoritative packet-truth layer for candidate `4ff7e90`. Later recovery / replay notes in this file are informational only.
