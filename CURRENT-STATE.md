@@ -22,9 +22,9 @@
 4. Wave 3B is now cleared, and `5cc9585` becomes the last cleared code commit.
 5. `WAVE-3B-SETUP.md` is now historical context rather than the live runway.
 6. `WAVE-4-SETUP.md` now defines the active Wave 4 research-and-polish boundary.
-7. The latest Wave 4 docs checkpoint now includes the core prompt-quality memo, the exact polish specs, and the sprint-contract / rubric research memo.
-8. The new sprint-contract memo explicitly keeps persisted contradiction-taxonomy expansion out of the in-bounds Wave 4B slice.
-9. The next step is the next missing Wave 4 memo, not broad cleanup, not Wave 4B implementation, and not Wave 5 calibration.
+7. The latest Wave 4 docs checkpoint now includes the core prompt-quality memo, the exact polish specs, the sprint-contract / rubric memo, and the template / routing memo.
+8. The new template / routing memo explicitly keeps dual-axis tiebreaking, dynamic lens selection, and low-fit custom-template expansion out of the in-bounds Wave 4B slice.
+9. The next step is the final missing Wave 4 memo, not broad cleanup, not Wave 4B implementation, and not Wave 5 calibration.
 
 ## What happens next
 
@@ -34,7 +34,7 @@
 2. Treat `5cc9585` as the last cleared code commit.
 3. Use `audit/remediation/WAVE-4-SETUP.md` as the binding Wave 4 scope boundary.
 4. Continue Wave 4 docs work in the main workspace:
-   - write `WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`
+   - write `WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`
    - then continue the remaining Wave 4 research memos
 5. Keep all code out of the main workspace; controller/docs only still applies.
 6. Do **not** open Wave 4B or Wave 5 without the later setup gates.
@@ -75,3 +75,4 @@
 - `audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
 - `audit/remediation/WAVE-4-POLISH-SPECS.md`
 - `audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
+- `audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`
