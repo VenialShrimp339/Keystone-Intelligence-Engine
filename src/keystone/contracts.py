@@ -29,6 +29,43 @@ if TYPE_CHECKING:
     from keystone.models.research import EngagementSpec, StructuredFinding
     from keystone.models.tasks import ResearchTask
 
+
+# ---------------------------------------------------------------------------
+# Post-synthesis verification (Wave 2A addition)
+# ---------------------------------------------------------------------------
+
+@runtime_checkable
+class PostSynthesisVerifierContract(Protocol):
+    """Contract for post-synthesis provenance verification.
+
+    Filters a ConfidenceMap to remove claims whose task_ids do not
+    intersect with the set of tasks that passed evaluation. This ensures
+    that claims from failed or unevaluated tasks cannot reach the renderer.
+
+    Implementation is deferred to Wave 3. This contract defines the
+    interface so the orchestrator can reference it without a concrete class.
+    """
+
+    def filter_by_passed_tasks(
+        self,
+        confidence_map: ConfidenceMap,
+        passed_task_ids: set[str],
+    ) -> ConfidenceMap:
+        """Return a new ConfidenceMap containing only claims from passed tasks.
+
+        Claims with empty task_ids (no provenance) are excluded by default
+        because their origin cannot be verified.
+
+        Args:
+            confidence_map: The full confidence map from deliberation.
+            passed_task_ids: Task IDs whose evaluation results passed.
+
+        Returns:
+            A new ConfidenceMap with filtered tier lists and rebuilt
+            provenance_index.
+        """
+        ...
+
 # ---------------------------------------------------------------------------
 # L0: Specification Engine -> Research Agents
 # ---------------------------------------------------------------------------

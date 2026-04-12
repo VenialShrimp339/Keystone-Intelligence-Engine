@@ -6,6 +6,8 @@ and identifies claims independently discovered by multiple agents.
 
 from __future__ import annotations
 
+import hashlib
+import uuid
 from collections import defaultdict
 from itertools import combinations
 
@@ -56,13 +58,26 @@ def _group_duplicates(citations: list[Citation]) -> list[list[Citation]]:
     return list(groups.values())
 
 
-def _merge_group(citations: list[Citation]) -> Citation:
+def _group_hash(citations: list[Citation]) -> str:
+    """Compute a stable 8-char hash identifying this group of citations."""
+    key = "|".join(sorted(c.url for c in citations))
+    return hashlib.sha256(key.encode("utf-8")).hexdigest()[:8]
+
+
+def _merge_group(
+    citations: list[Citation],
+    engagement_id: str = "",
+) -> Citation:
     """Merge a group of citations referring to the same source.
 
     Rules:
+    - Mint a fresh canonical citation_id (CAN-{engagement_id}-{group_hash})
+      so the canonical ID is never the same as any source-instance ID.
     - Combine found_by_agents lists (deduplicated)
     - Keep highest quality_score
     - Use the most complete record as the base (most non-None optional fields)
+    - Preserve any real content_hash already attached to one of the citations
+    - Migrate url:title hashes to metadata_hash (not content_hash)
     """
     # Score completeness: count non-None optional fields
     def completeness(c: Citation) -> int:
@@ -70,6 +85,8 @@ def _merge_group(citations: list[Citation]) -> Citation:
         if c.doi is not None:
             score += 1
         if c.content_hash is not None:
+            score += 1
+        if c.metadata_hash is not None:
             score += 1
         if c.url_live is not None:
             score += 1
@@ -87,6 +104,10 @@ def _merge_group(citations: list[Citation]) -> Citation:
     ranked = sorted(citations, key=lambda c: (c.quality_score, completeness(c)), reverse=True)
     best = ranked[0]
 
+    # Mint a fresh canonical ID — distinct from all source-instance IDs
+    eid = engagement_id or best.engagement_id
+    canonical_id = f"CAN-{eid}-{_group_hash(citations)}"
+
     # Combine all agents
     all_agents: list[str] = []
     seen_agents: set[str] = set()
@@ -102,6 +123,7 @@ def _merge_group(citations: list[Citation]) -> Citation:
     # Merge optional fields from other records if best is missing them
     doi = best.doi
     content_hash = best.content_hash
+    metadata_hash = best.metadata_hash
     url_live = best.url_live
     crossref_verified = best.crossref_verified
     date_published = best.date_published
@@ -113,6 +135,8 @@ def _merge_group(citations: list[Citation]) -> Citation:
             doi = c.doi
         if content_hash is None and c.content_hash is not None:
             content_hash = c.content_hash
+        if metadata_hash is None and c.metadata_hash is not None:
+            metadata_hash = c.metadata_hash
         if url_live is None and c.url_live is not None:
             url_live = c.url_live
         if crossref_verified is None and c.crossref_verified is not None:
@@ -124,12 +148,11 @@ def _merge_group(citations: list[Citation]) -> Citation:
         if not publication and c.publication:
             publication = c.publication
 
-    # Collect all source-instance IDs that were merged into this canonical record.
-    # The canonical citation keeps best.citation_id; all others are aliases.
-    merged_from_ids = sorted({c.citation_id for c in citations if c.citation_id != best.citation_id})
+    # All source-instance IDs (including the winner) become aliases
+    merged_from_ids = sorted({c.citation_id for c in citations})
 
     return Citation(
-        citation_id=best.citation_id,
+        citation_id=canonical_id,
         engagement_id=best.engagement_id,
         client_id=best.client_id,
         url=best.url,
@@ -145,20 +168,26 @@ def _merge_group(citations: list[Citation]) -> Citation:
         crossref_verified=crossref_verified,
         found_by_agents=all_agents,
         content_hash=content_hash,
+        metadata_hash=metadata_hash,
         merged_from_ids=merged_from_ids,
     )
 
 
-def deduplicate_citations(citations: list[Citation]) -> list[Citation]:
+def deduplicate_citations(
+    citations: list[Citation],
+    engagement_id: str = "",
+) -> list[Citation]:
     """Merge citations referring to the same source (same URL or DOI).
 
     When merging:
+    - Mint a fresh canonical citation_id
     - Combine found_by_agents lists
     - Keep highest quality_score
     - Preserve all metadata from the most complete record
 
     Args:
         citations: Raw citation list from all agents.
+        engagement_id: Used to mint stable canonical IDs.
 
     Returns:
         Deduplicated citation list.
@@ -166,7 +195,7 @@ def deduplicate_citations(citations: list[Citation]) -> list[Citation]:
     if not citations:
         return []
 
-    return [_merge_group(group) for group in _group_duplicates(citations)]
+    return [_merge_group(group, engagement_id) for group in _group_duplicates(citations)]
 
 
 def deduplicate_with_aliases(
@@ -198,9 +227,10 @@ def deduplicate_with_aliases(
     aliases: list[CitationAlias] = []
 
     for group in groups:
-        canonical = _merge_group(group)
+        canonical = _merge_group(group, engagement_id)
         deduped.append(canonical)
-        # Every member of the group aliases to the canonical ID
+        # Every source-instance ID (including the winner) aliases to the fresh
+        # canonical ID. The canonical ID is never a source-instance ID.
         for source_cit in group:
             aliases.append(
                 CitationAlias(

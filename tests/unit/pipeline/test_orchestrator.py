@@ -18,8 +18,10 @@ from keystone.gateway.mcp_gateway import MCPGateway, MockMCPClient
 from keystone.models.agents import AgentDefinition, AgentRole
 from keystone.models.citations import (
     Citation,
+    CitationAlias,
     CitationManifest,
     ConfidenceTier,
+    CorroborationPair,
     SourceType,
 )
 from keystone.models.confidence import ConfidenceMap, HighConfidenceClaim
@@ -52,6 +54,7 @@ from keystone.pipeline.orchestrator import (
     PipelineComponents,
     PipelineResult,
     _build_sprint_contract,
+    _filter_confidence_map_by_passed_tasks,
     _finding_to_text,
 )
 from keystone.research.agent_pool import AgentResult
@@ -181,6 +184,49 @@ def _make_confidence_map(eid: str = "eng_test", cid: str = "c1") -> ConfidenceMa
             ),
         ],
         gaps_identified=["Chinese OEM adoption data"],
+    )
+
+
+def _make_two_task_spec(eid: str = "eng_test", cid: str = "c1") -> EngagementSpec:
+    task_1 = _make_task(task_id="task_001", eid=eid, cid=cid)
+    task_2 = _make_task(task_id="task_002", eid=eid, cid=cid).model_copy(
+        update={
+            "description": "Map the competitive landscape of L4+ AV sensor vendors",
+            "deliverable_destination": "Section 2: Competitive Landscape",
+        }
+    )
+    spec = _make_spec(eid=eid, cid=cid)
+    return spec.model_copy(
+        update={
+            "task_decomposition": spec.task_decomposition.model_copy(
+                update={"tasks": [task_1, task_2]}
+            )
+        }
+    )
+
+
+def _make_task_scoped_confidence_map(
+    claims: list[tuple[str, str, str, list[str]]],
+    eid: str = "eng_test",
+    cid: str = "c1",
+) -> ConfidenceMap:
+    return ConfidenceMap(
+        engagement_id=eid,
+        client_id=cid,
+        high_confidence_above_80pct=[
+            HighConfidenceClaim(
+                claim=claim_text,
+                methodological_agreement="3/4 (ach, quantitative, adversarial)",
+                sources=3,
+                corroboration_count=2,
+                robustness="Stable across analyst methods",
+                curmudgeon_challenge="Needs more downside testing",
+                aggregated_claim_id=agg_id,
+                task_ids=task_ids,
+            )
+            for claim_text, agg_id, _, task_ids in claims
+        ],
+        provenance_index={agg_id: list(task_ids) for _, agg_id, _, task_ids in claims},
     )
 
 
@@ -553,6 +599,268 @@ class TestPartialPipeline:
         assert result.findings == []
         assert "No findings" in result.markdown_output or "No citations" in result.markdown_output
         assert result.manifest.manifest_id == "MAN-empty"
+
+
+class TestRendererGating:
+    @pytest.mark.asyncio
+    async def test_renderer_drops_claims_from_failed_tasks(self) -> None:
+        factory = _mock_llm_factory()
+        gw = _make_gateway()
+        pipeline = Pipeline(llm_factory=factory, gateway=gw)
+
+        spec = _make_two_task_spec()
+        finding_pass = _make_finding(task_id="task_001").model_copy(
+            update={
+                "claims": [
+                    FindingClaim(
+                        text="Passed task claim should render",
+                        evidence="Primary branch evidence",
+                        citations=[_make_citation(cid="CAN-001")],
+                        citation_ids=["CAN-001"],
+                        confidence=0.85,
+                        confidence_tier=ConfidenceTier.HIGH,
+                    )
+                ]
+            }
+        )
+        finding_fail = _make_finding(task_id="task_002", agent_id="agent_002").model_copy(
+            update={
+                "claims": [
+                    FindingClaim(
+                        text="Competitive landscape is consolidating rapidly",
+                        evidence="Vendor count and funding patterns",
+                        citations=[_make_citation(cid="CAN-002")],
+                        citation_ids=["CAN-002"],
+                        confidence=0.7,
+                        confidence_tier=ConfidenceTier.MODERATE,
+                    )
+                ]
+            }
+        )
+        manifest = CitationManifest(
+            manifest_id="MAN-002",
+            engagement_id="eng_test",
+            client_id="c1",
+            citations=[
+                _make_citation(cid="CAN-001"),
+                _make_citation(cid="CAN-002"),
+            ],
+            dead_urls=["CAN-002"],
+            fabrication_flags=["CAN-002"],
+            corroboration_pairs=[
+                CorroborationPair(
+                    citation_a="CAN-001",
+                    citation_b="CAN-002",
+                    overlap_score=1.0,
+                )
+            ],
+            aliases=[
+                CitationAlias(
+                    source_instance_id="CIT-pass-001",
+                    canonical_citation_id="CAN-001",
+                    engagement_id="eng_test",
+                    task_id="task_001",
+                    agent_id="agent_001",
+                ),
+                CitationAlias(
+                    source_instance_id="CIT-fail-001",
+                    canonical_citation_id="CAN-002",
+                    engagement_id="eng_test",
+                    task_id="task_002",
+                    agent_id="agent_002",
+                ),
+            ],
+        )
+        confidence_map = _make_task_scoped_confidence_map(
+            [
+                ("Passed claim", "AGG-pass", "task_001", ["task_001"]),
+                ("Failed claim", "AGG-fail", "task_002", ["task_002"]),
+            ]
+        )
+
+        async def noop_gen(*a, **kw):
+            return
+            yield
+
+        c = pipeline._build_components()
+        c.spec_engine.generate_spec = noop_gen
+        c.spec_engine.get_spec = AsyncMock(return_value=spec)
+        c.agent_pool.execute_all = AsyncMock(
+            return_value=[
+                AgentResult("a1", "task_001", finding=finding_pass),
+                AgentResult("a2", "task_002", finding=finding_fail),
+            ]
+        )
+        c.agent_pool.get_successful_findings = MagicMock(
+            return_value=[finding_pass, finding_fail]
+        )
+        c.citation_processor.process = noop_gen
+        c.citation_processor.get_result = AsyncMock(
+            return_value=CitationProcessorResult(
+                manifest=manifest,
+                canonicalized_findings=[finding_pass, finding_fail],
+            )
+        )
+        c.deliberation.deliberate = noop_gen
+        c.deliberation.get_confidence_map = AsyncMock(return_value=confidence_map)
+        c.renderer.render = MagicMock(return_value="filtered markdown")
+        pipeline._pending_components = c
+
+        pass_result = _make_eval_result(task_id="task_001")
+        fail_result = _make_eval_result(task_id="task_002").model_copy(
+            update={"passed": False, "overall_score": 41.0}
+        )
+
+        with patch("keystone.pipeline.orchestrator.Evaluator") as MockEval:
+            eval_instances = []
+            for result in [pass_result, fail_result]:
+                inst = MagicMock()
+                inst.evaluate = noop_gen
+                inst.get_result = AsyncMock(return_value=result)
+                eval_instances.append(inst)
+            MockEval.side_effect = eval_instances
+
+            result = await pipeline.run("Test question", "c1")
+
+        rendered_findings = c.renderer.render.call_args.args[1]
+        rendered_confidence_map = c.renderer.render.call_args.args[2]
+        rendered_manifest = c.renderer.render.call_args.args[4]
+
+        assert [f.task_id for f in rendered_findings] == ["task_001"]
+        assert [c.claim for c in rendered_confidence_map.high_confidence_above_80pct] == [
+            "Passed claim"
+        ]
+        assert rendered_confidence_map.provenance_index == {"AGG-pass": ["task_001"]}
+        assert [citation.citation_id for citation in rendered_manifest.citations] == ["CAN-001"]
+        assert rendered_manifest.dead_urls == []
+        assert rendered_manifest.fabrication_flags == []
+        assert rendered_manifest.corroboration_pairs == []
+        assert [alias.canonical_citation_id for alias in rendered_manifest.aliases] == [
+            "CAN-001"
+        ]
+        assert len(result.findings) == 2
+
+    @pytest.mark.asyncio
+    async def test_renderer_drops_claims_from_unevaluated_tasks(self) -> None:
+        factory = _mock_llm_factory()
+        gw = _make_gateway()
+        pipeline = Pipeline(llm_factory=factory, gateway=gw, max_eval_tasks=1)
+
+        spec = _make_two_task_spec()
+        finding_evald = _make_finding(task_id="task_001").model_copy(
+            update={
+                "claims": [
+                    FindingClaim(
+                        text="Evaluated task claim should render",
+                        evidence="Primary branch evidence",
+                        citations=[_make_citation(cid="CAN-001")],
+                        citation_ids=["CAN-001"],
+                        confidence=0.85,
+                        confidence_tier=ConfidenceTier.HIGH,
+                    )
+                ]
+            }
+        )
+        finding_unevald = _make_finding(task_id="task_002", agent_id="agent_002").model_copy(
+            update={
+                "claims": [
+                    FindingClaim(
+                        text="Unevaluated task claim should not render",
+                        evidence="Secondary branch evidence",
+                        citations=[_make_citation(cid="CAN-002")],
+                        citation_ids=["CAN-002"],
+                        confidence=0.72,
+                        confidence_tier=ConfidenceTier.MODERATE,
+                    )
+                ]
+            }
+        )
+        manifest = CitationManifest(
+            manifest_id="MAN-003",
+            engagement_id="eng_test",
+            client_id="c1",
+            citations=[
+                _make_citation(cid="CAN-001"),
+                _make_citation(cid="CAN-002"),
+            ],
+            dead_urls=["CAN-002"],
+            aliases=[
+                CitationAlias(
+                    source_instance_id="CIT-pass-001",
+                    canonical_citation_id="CAN-001",
+                    engagement_id="eng_test",
+                    task_id="task_001",
+                    agent_id="agent_001",
+                ),
+                CitationAlias(
+                    source_instance_id="CIT-skip-001",
+                    canonical_citation_id="CAN-002",
+                    engagement_id="eng_test",
+                    task_id="task_002",
+                    agent_id="agent_002",
+                ),
+            ],
+        )
+        confidence_map = _make_task_scoped_confidence_map(
+            [
+                ("Evaluated claim", "AGG-pass", "task_001", ["task_001"]),
+                ("Unevaluated claim", "AGG-skip", "task_002", ["task_002"]),
+            ]
+        )
+
+        async def noop_gen(*a, **kw):
+            return
+            yield
+
+        c = pipeline._build_components()
+        c.spec_engine.generate_spec = noop_gen
+        c.spec_engine.get_spec = AsyncMock(return_value=spec)
+        c.agent_pool.execute_all = AsyncMock(
+            return_value=[
+                AgentResult("a1", "task_001", finding=finding_evald),
+                AgentResult("a2", "task_002", finding=finding_unevald),
+            ]
+        )
+        c.agent_pool.get_successful_findings = MagicMock(
+            return_value=[finding_evald, finding_unevald]
+        )
+        c.citation_processor.process = noop_gen
+        c.citation_processor.get_result = AsyncMock(
+            return_value=CitationProcessorResult(
+                manifest=manifest,
+                canonicalized_findings=[finding_evald, finding_unevald],
+            )
+        )
+        c.deliberation.deliberate = noop_gen
+        c.deliberation.get_confidence_map = AsyncMock(return_value=confidence_map)
+        c.renderer.render = MagicMock(return_value="filtered markdown")
+        pipeline._pending_components = c
+
+        pass_result = _make_eval_result(task_id="task_001")
+
+        with patch("keystone.pipeline.orchestrator.Evaluator") as MockEval:
+            inst = MagicMock()
+            inst.evaluate = noop_gen
+            inst.get_result = AsyncMock(return_value=pass_result)
+            MockEval.return_value = inst
+
+            result = await pipeline.run("Test question", "c1")
+
+        rendered_findings = c.renderer.render.call_args.args[1]
+        rendered_confidence_map = c.renderer.render.call_args.args[2]
+        rendered_manifest = c.renderer.render.call_args.args[4]
+
+        assert [f.task_id for f in rendered_findings] == ["task_001"]
+        assert [c.claim for c in rendered_confidence_map.high_confidence_above_80pct] == [
+            "Evaluated claim"
+        ]
+        assert rendered_confidence_map.provenance_index == {"AGG-pass": ["task_001"]}
+        assert [citation.citation_id for citation in rendered_manifest.citations] == ["CAN-001"]
+        assert rendered_manifest.dead_urls == []
+        assert [alias.canonical_citation_id for alias in rendered_manifest.aliases] == [
+            "CAN-001"
+        ]
+        assert len(result.evaluation_results) == 1
 
 
 # ---------------------------------------------------------------------------

@@ -213,6 +213,7 @@ async def test_dedup_shared_url():
     shared = [c for c in deduped if c.url == SHARED_URL]
     assert len(shared) == 1, f"Expected 1 citation for shared URL, got {len(shared)}"
     shared_cit = shared[0]
+    assert shared_cit.citation_id.startswith("CAN-")
     assert "agent-quant-001" in shared_cit.found_by_agents
     assert "agent-qual-002" in shared_cit.found_by_agents
 
@@ -324,8 +325,8 @@ async def test_content_hash_deterministic():
     assert all(c in "0123456789abcdef" for c in h1)
 
 
-async def test_processor_assigns_content_hashes():
-    """After processing, every citation in the manifest has a content_hash."""
+async def test_processor_assigns_metadata_hashes():
+    """After processing, every canonical citation has a metadata_hash."""
     findings = build_3_agent_findings()
     processor = CitationProcessor()
 
@@ -335,12 +336,13 @@ async def test_processor_assigns_content_hashes():
 
     manifest = await processor.get_manifest()
     for cit in manifest.citations:
-        assert cit.content_hash is not None, f"{cit.citation_id} missing content_hash"
-        assert len(cit.content_hash) == 64
+        assert cit.citation_id.startswith("CAN-")
+        assert cit.metadata_hash is not None, f"{cit.citation_id} missing metadata_hash"
+        assert len(cit.metadata_hash) == 64
 
-    # Hashes should be unique per citation (different url:title combos)
-    hashes = [c.content_hash for c in manifest.citations]
-    assert len(set(hashes)) == len(hashes), "Content hashes should be unique"
+    # Metadata hashes should be unique per citation (different url:title combos)
+    hashes = [c.metadata_hash for c in manifest.citations]
+    assert len(set(hashes)) == len(hashes), "Metadata hashes should be unique"
 
 
 # ============================================================

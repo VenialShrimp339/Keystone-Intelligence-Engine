@@ -77,6 +77,12 @@ class HighConfidenceClaim(BaseModel):
     discouq_features: DiscoUQFeatures | None = Field(
         default=None, description="Computational confidence features"
     )
+    aggregated_claim_id: str | None = Field(
+        default=None, description="Links to provenance index"
+    )
+    task_ids: list[str] = Field(
+        default_factory=list, description="Source task IDs"
+    )
 
 
 class ModerateConfidenceClaim(BaseModel):
@@ -91,6 +97,12 @@ class ModerateConfidenceClaim(BaseModel):
     )
     ach_diagnosticity: ACHDiagnosticity | None = Field(
         default=None, description="How diagnostic the evidence is"
+    )
+    aggregated_claim_id: str | None = Field(
+        default=None, description="Links to provenance index"
+    )
+    task_ids: list[str] = Field(
+        default_factory=list, description="Source task IDs"
     )
 
 
@@ -110,6 +122,12 @@ class WeakConfidenceClaim(BaseModel):
     recommendation: str = Field(
         description="How to present this in the deliverable"
     )
+    aggregated_claim_id: str | None = Field(
+        default=None, description="Links to provenance index"
+    )
+    task_ids: list[str] = Field(
+        default_factory=list, description="Source task IDs"
+    )
 
 
 class ContestedClaim(BaseModel):
@@ -127,6 +145,12 @@ class ContestedClaim(BaseModel):
     ach_matrix: ACHMatrix | None = Field(
         default=None, description="ACH analysis of competing hypotheses"
     )
+    aggregated_claim_id: str | None = Field(
+        default=None, description="Links to provenance index"
+    )
+    task_ids: list[str] = Field(
+        default_factory=list, description="Source task IDs"
+    )
 
 
 class InsufficientEvidenceClaim(BaseModel):
@@ -136,6 +160,12 @@ class InsufficientEvidenceClaim(BaseModel):
     reason: str = Field(description="Why evidence is insufficient")
     priority: str = Field(
         description="How important it is to fill this gap (high/medium/low)"
+    )
+    aggregated_claim_id: str | None = Field(
+        default=None, description="Links to provenance index"
+    )
+    task_ids: list[str] = Field(
+        default_factory=list, description="Source task IDs"
     )
 
 
@@ -178,6 +208,10 @@ class ConfidenceMap(BaseModel):
     absence_report: list[str] = Field(
         default_factory=list,
         description="What was looked for but not found (analytically significant)",
+    )
+    provenance_index: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="aggregated_claim_id -> task_ids",
     )
 
     @property

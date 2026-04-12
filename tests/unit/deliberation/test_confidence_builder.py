@@ -257,3 +257,129 @@ class TestMapMetadata:
         json_str = cm.model_dump_json()
         restored = ConfidenceMap.model_validate_json(json_str)
         assert restored.total_claims == cm.total_claims
+
+
+# ---------------------------------------------------------------------------
+# Provenance propagation tests
+# ---------------------------------------------------------------------------
+
+
+class TestProvenancePropagation:
+    def _claim_with_provenance(
+        self,
+        idx: int,
+        text: str,
+        agreement: float,
+        aggregated_claim_id: str,
+        task_ids: list[str],
+        total: int = 4,
+    ) -> AggregatedClaim:
+        all_types = ["ach", "quantitative", "adversarial", "historical_analogy"][:total]
+        agreeing_count = max(0, min(total, round(agreement * total)))
+        agreeing = all_types[:agreeing_count]
+        dissenting = all_types[agreeing_count:]
+        return AggregatedClaim(
+            claim_text=text,
+            index=idx,
+            agreement_ratio=agreement,
+            agreeing_analysts=agreeing,
+            dissenting_analysts=dissenting,
+            total_analysts=total,
+            mean_confidence=agreement,
+            source_count=3,
+            corroboration_count=2,
+            citation_ids=["CIT-001"],
+            analyst_scores={"ach": 0.8, "adversarial": 0.3},
+            analyst_reasoning={
+                "ach": "Supported by evidence",
+                "adversarial": "Potential bias detected",
+            },
+            aggregated_claim_id=aggregated_claim_id,
+            task_ids=task_ids,
+        )
+
+    def test_confidence_map_claims_carry_task_provenance(self) -> None:
+        """Tier claims carry aggregated_claim_id and task_ids from AggregatedClaim.
+        ConfidenceMap.provenance_index maps each aggregated_claim_id to its task_ids.
+        """
+        high_claim = self._claim_with_provenance(
+            0, "High claim", 0.90, "AGG-aaa111", ["TASK-001", "TASK-002"]
+        )
+        moderate_claim = self._claim_with_provenance(
+            1, "Moderate claim", 0.70, "AGG-bbb222", ["TASK-003"]
+        )
+        weak_claim = self._claim_with_provenance(
+            2, "Weak claim", 0.55, "AGG-ccc333", ["TASK-001"]
+        )
+        contested_claim = self._claim_with_provenance(
+            3, "Contested claim", 0.30, "AGG-ddd444", ["TASK-004"]
+        )
+
+        cm = build_confidence_map(
+            [high_claim, moderate_claim, weak_claim, contested_claim],
+            [],
+            _gap_report(),
+            "ENG-001",
+            "CLT-001",
+        )
+
+        # Each tier claim carries the provenance fields
+        high = cm.high_confidence_above_80pct[0]
+        assert high.aggregated_claim_id == "AGG-aaa111"
+        assert high.task_ids == ["TASK-001", "TASK-002"]
+
+        mod = cm.moderate_confidence_60_80pct[0]
+        assert mod.aggregated_claim_id == "AGG-bbb222"
+        assert mod.task_ids == ["TASK-003"]
+
+        weak = cm.weak_confidence_50_60pct[0]
+        assert weak.aggregated_claim_id == "AGG-ccc333"
+        assert weak.task_ids == ["TASK-001"]
+
+        cont = cm.contested_below_50pct[0]
+        assert cont.aggregated_claim_id == "AGG-ddd444"
+        assert cont.task_ids == ["TASK-004"]
+
+        # provenance_index is built correctly on ConfidenceMap
+        assert cm.provenance_index["AGG-aaa111"] == ["TASK-001", "TASK-002"]
+        assert cm.provenance_index["AGG-bbb222"] == ["TASK-003"]
+        assert cm.provenance_index["AGG-ccc333"] == ["TASK-001"]
+        assert cm.provenance_index["AGG-ddd444"] == ["TASK-004"]
+
+    def test_insufficient_claim_carries_provenance(self) -> None:
+        """InsufficientEvidenceClaim also carries provenance fields."""
+        from keystone.deliberation.aggregator import AggregatedClaim as AC
+        insuf = AC(
+            claim_text="Unknown",
+            index=0,
+            agreement_ratio=0.0,
+            agreeing_analysts=[],
+            dissenting_analysts=[],
+            total_analysts=0,
+            mean_confidence=0.5,
+            source_count=0,
+            corroboration_count=0,
+            citation_ids=[],
+            analyst_scores={},
+            analyst_reasoning={},
+            aggregated_claim_id="AGG-eee555",
+            task_ids=["TASK-005"],
+        )
+        cm = build_confidence_map([insuf], [], _gap_report(), "ENG-001", "CLT-001")
+
+        ie = cm.insufficient_evidence[0]
+        assert ie.aggregated_claim_id == "AGG-eee555"
+        assert ie.task_ids == ["TASK-005"]
+        assert cm.provenance_index["AGG-eee555"] == ["TASK-005"]
+
+    def test_claims_without_complete_provenance_not_in_provenance_index(self) -> None:
+        """Claims missing aggregated IDs or task_ids are omitted from provenance_index."""
+        no_id = _claim(0, "No ID claim", 0.90)
+        no_tasks = _claim(1, "No task IDs claim", 0.90).model_copy(
+            update={"aggregated_claim_id": "AGG-missing-tasks", "task_ids": []}
+        )
+        claims = [no_id, no_tasks]
+        cm = build_confidence_map(claims, [], _gap_report(), "ENG-001", "CLT-001")
+
+        assert len(cm.provenance_index) == 0
+        assert "AGG-missing-tasks" not in cm.provenance_index

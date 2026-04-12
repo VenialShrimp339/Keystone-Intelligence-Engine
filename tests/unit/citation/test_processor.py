@@ -41,6 +41,7 @@ def _cit(
     quality: float = 0.8,
     agents: list[str] | None = None,
     content_hash: str | None = None,
+    metadata_hash: str | None = None,
 ) -> Citation:
     return Citation(
         citation_id=cid,
@@ -54,6 +55,7 @@ def _cit(
         found_by_agents=agents or [],
         doi=doi,
         content_hash=content_hash,
+        metadata_hash=metadata_hash,
     )
 
 
@@ -173,7 +175,18 @@ class TestCorroboration:
         assert corr_events[0].overlap_score > 0
 
         manifest = await processor.get_manifest()
+        manifest_ids = {citation.citation_id for citation in manifest.citations}
         assert len(manifest.corroboration_pairs) >= 1
+        for event in corr_events:
+            assert event.citation_a.startswith("CAN-")
+            assert event.citation_b.startswith("CAN-")
+            assert event.citation_a in manifest_ids
+            assert event.citation_b in manifest_ids
+        for pair in manifest.corroboration_pairs:
+            assert pair.citation_a.startswith("CAN-")
+            assert pair.citation_b.startswith("CAN-")
+            assert pair.citation_a in manifest_ids
+            assert pair.citation_b in manifest_ids
 
 
 # ---------------------------------------------------------------------------
@@ -208,19 +221,23 @@ class TestURLCheck:
         assert dead_ev.is_live is False
 
         manifest = await processor.get_manifest()
-        assert "CIT-002" in manifest.dead_urls
-        assert "CIT-001" not in manifest.dead_urls
+        alias_by_src = {
+            alias.source_instance_id: alias.canonical_citation_id
+            for alias in manifest.aliases
+        }
+        assert alias_by_src["CIT-002"] in manifest.dead_urls
+        assert alias_by_src["CIT-001"] not in manifest.dead_urls
 
 
 # ---------------------------------------------------------------------------
-# Content hash tests
+# Metadata/content hash tests
 # ---------------------------------------------------------------------------
 
 
-class TestContentHash:
+class TestCitationHashes:
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
-    async def test_all_citations_have_content_hash(self, _mock):
-        """Every citation in the manifest must have a content_hash."""
+    async def test_all_citations_have_metadata_hash(self, _mock):
+        """Every canonical citation gets a metadata_hash derived from url:title."""
         f1 = _finding("agent-1", [
             _claim("Claim A", [_cit("CIT-001", "https://a.com", content_hash=None)]),
             _claim("Claim B", [_cit("CIT-002", "https://b.com", content_hash="ab" * 32)]),
@@ -231,12 +248,15 @@ class TestContentHash:
         manifest = await processor.get_manifest()
 
         for cit in manifest.citations:
-            assert cit.content_hash is not None
-            assert len(cit.content_hash) == 64
+            assert cit.metadata_hash is not None
+            assert len(cit.metadata_hash) == 64
+
+        by_url = {citation.url: citation for citation in manifest.citations}
+        assert by_url["https://b.com"].content_hash == "ab" * 32
 
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
     async def test_existing_content_hash_preserved(self, _mock):
-        """Citations that already have a content_hash keep it unchanged."""
+        """Existing real content_hash values survive canonicalization."""
         existing_hash = "ab" * 32
         f1 = _finding("agent-1", [
             _claim("Claim", [_cit("CIT-001", "https://a.com", content_hash=existing_hash)]),
@@ -247,6 +267,7 @@ class TestContentHash:
         manifest = await processor.get_manifest()
 
         assert manifest.citations[0].content_hash == existing_hash
+        assert manifest.citations[0].metadata_hash is not None
 
 
 # ---------------------------------------------------------------------------
@@ -410,7 +431,7 @@ class TestManifestSchema:
 class TestAliasMapAndCanonicalRewriting:
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
     async def test_citation_processor_builds_alias_map(self, _mock):
-        """Alias map in manifest covers all source-instance IDs including canonical."""
+        """Alias map in manifest covers all source-instance IDs, including the winner."""
         shared_url = "https://sec.gov/filing.pdf"
         f1 = _finding("agent-1", [_claim("Revenue grew 15%", [
             _cit("CIT-SRC-001", shared_url, agents=["agent-1"]),
@@ -469,8 +490,7 @@ class TestAliasMapAndCanonicalRewriting:
         assert len(canonical_ids_f2) == 1
         # Both point to the same canonical ID
         assert canonical_ids_f1[0] == canonical_ids_f2[0]
-        # The canonical ID is the winner from dedup (one of the two source IDs)
-        assert canonical_ids_f1[0] in {"CIT-SRC-001", "CIT-SRC-002"}
+        assert canonical_ids_f1[0].startswith("CAN-")
 
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
     async def test_task_manifest_contains_exact_canonical_citations(self, _mock):

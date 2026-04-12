@@ -50,3 +50,20 @@ def verify_content_hash(content: str, expected_hash: str) -> bool:
         True if the content matches the expected hash.
     """
     return compute_content_hash(content) == expected_hash
+
+
+def compute_metadata_hash(url: str, title: str) -> str:
+    """SHA-256 hash of citation metadata (url:title) for dedup identity.
+
+    Distinct from compute_content_hash, which hashes actual source content.
+    This hashes only the url:title pair used to identify a citation before
+    its full content is available.
+
+    Args:
+        url: Citation URL.
+        title: Citation title.
+
+    Returns:
+        64-character lowercase hex string (SHA-256 digest).
+    """
+    return hashlib.sha256(f"{url}:{title}".encode("utf-8")).hexdigest()

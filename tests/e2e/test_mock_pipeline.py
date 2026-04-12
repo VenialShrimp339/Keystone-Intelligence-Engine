@@ -269,12 +269,14 @@ async def _mock_llm(prompt: str) -> str:
             {
                 "text": "The global L4+ AV sensor TAM is projected to reach $12-18B by 2030",
                 "evidence": "Convergent estimates from McKinsey, BCG, and Yole Development",
+                "citation_refs": ["SRC-001"],
                 "confidence": 0.82,
                 "caveats": ["Assumes no major regulatory setbacks"],
             },
             {
                 "text": "LiDAR component costs declining at approximately 20% CAGR",
                 "evidence": "Historical pricing data from Velodyne, Luminar SEC filings",
+                "citation_refs": ["SRC-001"],
                 "confidence": 0.78,
                 "caveats": ["Solid-state transition may disrupt cost curves"],
             },

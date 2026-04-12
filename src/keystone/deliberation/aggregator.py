@@ -11,12 +11,14 @@ from __future__ import annotations
 
 import logging
 import statistics
+import uuid
 
 from pydantic import BaseModel, Field
 
 from keystone.deliberation.analyst import AnalystOutput, InputClaim
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
 from keystone.llm.parsing import ParseError, safe_llm_json
+from keystone.models.citations import CitationManifest
 
 logger = logging.getLogger(__name__)
 
@@ -43,6 +45,12 @@ class AggregatedClaim(BaseModel):
     selected_from: str | None = None
     selection_reasoning: str | None = None
     consistency_passed: bool = True
+    aggregated_claim_id: str | None = Field(
+        default=None, description="Unique ID for this aggregated claim"
+    )
+    task_ids: list[str] = Field(
+        default_factory=list, description="Source task IDs for this claim"
+    )
 
 
 class Aggregator:
@@ -60,16 +68,34 @@ class Aggregator:
         self,
         analyst_outputs: list[AnalystOutput],
         claims: list[InputClaim],
+        manifest: CitationManifest | None = None,
     ) -> list[AggregatedClaim]:
         """Aggregate analyst assessments into final claims."""
         if not claims:
             return []
+
+        (
+            source_to_canonical,
+            task_ids_by_canonical,
+            agent_ids_by_canonical,
+        ) = self._build_manifest_provenance(manifest)
 
         aggregated: list[AggregatedClaim] = []
         for claim in claims:
             scores: dict[str, float] = {}
             reasoning: dict[str, str] = {}
             source_counts: dict[str, int] = {}
+
+            (
+                citation_ids,
+                task_ids,
+                corroboration_count,
+            ) = self._derive_claim_provenance(
+                claim,
+                source_to_canonical,
+                task_ids_by_canonical,
+                agent_ids_by_canonical,
+            )
 
             for output in analyst_outputs:
                 for sc in output.scored_claims:
@@ -79,7 +105,14 @@ class Aggregator:
                         source_counts[output.analyst_type] = sc.source_count
 
             if not scores:
-                aggregated.append(self._build_unscored(claim))
+                aggregated.append(
+                    self._build_unscored(
+                        claim,
+                        citation_ids,
+                        task_ids,
+                        corroboration_count,
+                    )
+                )
                 continue
 
             confidences = list(scores.values())
@@ -109,19 +142,104 @@ class Aggregator:
                     dissenting_analysts=dissenting,
                     total_analysts=len(scores),
                     mean_confidence=mean_conf,
-                    source_count=max(source_counts.values()) if source_counts else len(claim.citation_ids),
-                    corroboration_count=len(claim.citation_ids),
-                    citation_ids=claim.citation_ids,
+                    source_count=max(source_counts.values()) if source_counts else len(citation_ids),
+                    corroboration_count=corroboration_count,
+                    citation_ids=citation_ids,
                     analyst_scores=scores,
                     analyst_reasoning=reasoning,
                     selected_from=selected_type,
                     selection_reasoning=sel_reasoning,
+                    aggregated_claim_id=f"AGG-{uuid.uuid4().hex[:12]}",
+                    task_ids=task_ids,
                 )
             )
 
         # Post-selection consistency check
         await self._consistency_check(aggregated)
         return aggregated
+
+    @staticmethod
+    def _build_manifest_provenance(
+        manifest: CitationManifest | None,
+    ) -> tuple[dict[str, str], dict[str, list[str]], dict[str, list[str]]]:
+        """Index canonical citation provenance from the manifest.
+
+        Returns:
+            source_instance_id -> canonical_citation_id
+            canonical_citation_id -> task_ids[]
+            canonical_citation_id -> agent_ids[]
+        """
+        if manifest is None:
+            return {}, {}, {}
+
+        source_to_canonical: dict[str, str] = {}
+        task_ids_by_canonical: dict[str, list[str]] = {}
+        agent_ids_by_canonical: dict[str, list[str]] = {}
+
+        for alias in manifest.aliases:
+            source_to_canonical[alias.source_instance_id] = alias.canonical_citation_id
+
+            if alias.task_id:
+                task_ids = task_ids_by_canonical.setdefault(
+                    alias.canonical_citation_id, []
+                )
+                if alias.task_id not in task_ids:
+                    task_ids.append(alias.task_id)
+
+            if alias.agent_id:
+                agent_ids = agent_ids_by_canonical.setdefault(
+                    alias.canonical_citation_id, []
+                )
+                if alias.agent_id not in agent_ids:
+                    agent_ids.append(alias.agent_id)
+
+        for citation in manifest.citations:
+            agent_ids = agent_ids_by_canonical.setdefault(citation.citation_id, [])
+            for agent_id in citation.found_by_agents:
+                if agent_id and agent_id not in agent_ids:
+                    agent_ids.append(agent_id)
+
+        return source_to_canonical, task_ids_by_canonical, agent_ids_by_canonical
+
+    @staticmethod
+    def _derive_claim_provenance(
+        claim: InputClaim,
+        source_to_canonical: dict[str, str],
+        task_ids_by_canonical: dict[str, list[str]],
+        agent_ids_by_canonical: dict[str, list[str]],
+    ) -> tuple[list[str], list[str], int]:
+        """Resolve canonical citations plus manifest-backed task/agent provenance."""
+        citation_ids: list[str] = []
+        seen_citations: set[str] = set()
+        for citation_id in claim.citation_ids:
+            canonical_id = source_to_canonical.get(citation_id, citation_id)
+            if canonical_id not in seen_citations:
+                seen_citations.add(canonical_id)
+                citation_ids.append(canonical_id)
+
+        task_ids: list[str] = []
+        seen_tasks: set[str] = set()
+        agent_ids: list[str] = []
+        seen_agents: set[str] = set()
+
+        for citation_id in citation_ids:
+            for task_id in task_ids_by_canonical.get(citation_id, []):
+                if task_id and task_id not in seen_tasks:
+                    seen_tasks.add(task_id)
+                    task_ids.append(task_id)
+
+            for agent_id in agent_ids_by_canonical.get(citation_id, []):
+                if agent_id and agent_id not in seen_agents:
+                    seen_agents.add(agent_id)
+                    agent_ids.append(agent_id)
+
+        if not task_ids and claim.task_id:
+            task_ids = [claim.task_id]
+
+        if not agent_ids and claim.agent_id:
+            agent_ids = [claim.agent_id]
+
+        return citation_ids, task_ids, len(agent_ids)
 
     async def _judge_select(
         self,
@@ -199,7 +317,12 @@ class Aggregator:
             )
 
     @staticmethod
-    def _build_unscored(claim: InputClaim) -> AggregatedClaim:
+    def _build_unscored(
+        claim: InputClaim,
+        citation_ids: list[str] | None = None,
+        task_ids: list[str] | None = None,
+        corroboration_count: int = 0,
+    ) -> AggregatedClaim:
         return AggregatedClaim(
             claim_text=claim.text,
             index=claim.index,
@@ -208,9 +331,11 @@ class Aggregator:
             dissenting_analysts=[],
             total_analysts=0,
             mean_confidence=claim.original_confidence,
-            source_count=len(claim.citation_ids),
-            corroboration_count=0,
-            citation_ids=claim.citation_ids,
+            source_count=len(citation_ids if citation_ids is not None else claim.citation_ids),
+            corroboration_count=corroboration_count,
+            citation_ids=citation_ids if citation_ids is not None else claim.citation_ids,
             analyst_scores={},
             analyst_reasoning={},
+            aggregated_claim_id=f"AGG-{uuid.uuid4().hex[:12]}",
+            task_ids=task_ids if task_ids is not None else [claim.task_id],
         )

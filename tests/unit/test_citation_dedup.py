@@ -25,6 +25,7 @@ def _cit(
     quality: float = 0.8,
     agents: list[str] | None = None,
     content_hash: str | None = None,
+    metadata_hash: str | None = None,
 ) -> Citation:
     return Citation(
         citation_id=cid,
@@ -38,6 +39,7 @@ def _cit(
         found_by_agents=agents or [],
         doi=doi,
         content_hash=content_hash,
+        metadata_hash=metadata_hash,
     )
 
 
@@ -135,31 +137,55 @@ class TestDeduplicateCitations:
         assert result == []
 
     def test_single_citation(self):
+        """Single citation gets a fresh CAN- canonical ID; source ID goes in merged_from_ids."""
         c = _cit(cid="CIT-001")
         result = deduplicate_citations([c])
         assert len(result) == 1
-        assert result[0].citation_id == "CIT-001"
+        assert result[0].citation_id.startswith("CAN-")
+        assert "CIT-001" in result[0].merged_from_ids
 
     def test_preserves_most_complete_metadata(self):
         """When merging, the record with more metadata fields wins."""
+        existing_hash = "ab" * 32
         c1 = _cit(cid="CIT-001", url="https://same.com", quality=0.5)
         c2 = _cit(
             cid="CIT-002",
             url="https://same.com",
             quality=0.9,
             doi="10.1234/test",
-            content_hash="ab" * 32,
+            content_hash=existing_hash,
         )
         result = deduplicate_citations([c1, c2])
         assert len(result) == 1
         assert result[0].doi == "10.1234/test"
-        assert result[0].content_hash == "ab" * 32
+        assert result[0].citation_id.startswith("CAN-")
+        assert result[0].content_hash == existing_hash
 
-    def test_content_hash_preserved_from_best_record(self):
-        c1 = _cit(cid="CIT-001", url="https://same.com", content_hash="ff" * 32, quality=0.9)
-        c2 = _cit(cid="CIT-002", url="https://same.com", content_hash=None, quality=0.5)
+    def test_metadata_hash_preserved_from_best_record(self):
+        """metadata_hash (url:title identity) is preserved through merge."""
+        existing_hash = "ff" * 32
+        c1 = _cit(
+            cid="CIT-001",
+            url="https://same.com",
+            quality=0.9,
+            metadata_hash=existing_hash,
+        )
+        c2 = _cit(cid="CIT-002", url="https://same.com", quality=0.5)
         result = deduplicate_citations([c1, c2])
-        assert result[0].content_hash == "ff" * 32
+        assert result[0].metadata_hash == existing_hash
+
+    def test_real_content_hash_preserved_from_any_group_member(self):
+        """Canonical citation keeps a real content_hash even if only one member had it."""
+        existing_hash = "ab" * 32
+        c1 = _cit(cid="CIT-001", url="https://same.com", quality=0.9)
+        c2 = _cit(
+            cid="CIT-002",
+            url="https://same.com",
+            quality=0.4,
+            content_hash=existing_hash,
+        )
+        result = deduplicate_citations([c1, c2])
+        assert result[0].content_hash == existing_hash
 
 
 # ---------------------------------------------------------------------------

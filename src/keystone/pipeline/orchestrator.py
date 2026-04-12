@@ -266,25 +266,39 @@ class Pipeline:
         failed_count = len(evaluation_results) - passed_count
         logger.info("L4 complete: %d/%d passed", passed_count, len(evaluation_results))
 
-        # Gate rendering on evaluation results: only render findings that passed
-        if failed_count > 0:
-            failed_task_ids = {
-                r.task_id for r in evaluation_results if not r.passed
-            }
-            logger.warning(
-                "L4: %d tasks failed evaluation, excluding from deliverable: %s",
-                failed_count,
-                failed_task_ids,
-            )
-            passed_findings = [
-                f for f in findings if f.task_id not in failed_task_ids
-            ]
-        else:
-            passed_findings = findings
+        # Gate rendering on evaluation results: only render findings that passed.
+        # This must key off passed_task_ids directly so unevaluated tasks do not
+        # leak through when only a subset of tasks reached L4.
+        passed_task_ids = {r.task_id for r in evaluation_results if r.passed}
+        evaluated_task_ids = {r.task_id for r in evaluation_results}
+        failed_task_ids = {r.task_id for r in evaluation_results if not r.passed}
+        finding_task_ids = {f.task_id for f in findings}
+        unevaluated_task_ids = finding_task_ids - evaluated_task_ids
+        dropped_task_ids = finding_task_ids - passed_task_ids
 
-        # --- Stage 6: Render (only passed findings) ---
+        if dropped_task_ids:
+            logger.warning(
+                "L4: excluding %d task(s) from deliverable (failed=%s, unevaluated=%s)",
+                len(dropped_task_ids),
+                failed_task_ids,
+                unevaluated_task_ids,
+            )
+        passed_findings = [f for f in findings if f.task_id in passed_task_ids]
+
+        # Filter confidence_map to only include claims from passed tasks.
+        # Claims from failed or unevaluated tasks must not reach the renderer.
+        filtered_confidence_map = _filter_confidence_map_by_passed_tasks(
+            confidence_map, passed_task_ids
+        )
+        render_manifest = _filter_manifest_by_findings(passed_findings, manifest)
+
+        # --- Stage 6: Render (only passed findings + filtered confidence map) ---
         markdown_output = c.renderer.render(
-            spec, passed_findings, confidence_map, evaluation_results, manifest
+            spec,
+            passed_findings,
+            filtered_confidence_map,
+            evaluation_results,
+            render_manifest,
         )
 
         self._result = PipelineResult(
@@ -377,11 +391,18 @@ def _build_task_manifest(
             citations=[],
         )
 
-    # Collect all citation IDs referenced by this finding's claims
+    # Collect all citation IDs referenced by this finding's claims.
+    # Prefer claim.citation_ids (canonical CAN-* IDs rewritten by CitationProcessor)
+    # over claim.citations[].citation_id (original CIT-* source-instance IDs).
+    # After dedup, the manifest only contains CAN-* IDs, so using source-instance
+    # IDs here would produce an empty sub-manifest and silently skip fabrication checks.
     task_citation_ids: set[str] = set()
     for claim in finding.claims:
-        for cit in claim.citations:
-            task_citation_ids.add(cit.citation_id)
+        if claim.citation_ids:
+            task_citation_ids.update(claim.citation_ids)
+        else:
+            for cit in claim.citations:
+                task_citation_ids.add(cit.citation_id)
 
     # Filter manifest to only this task's citations
     task_citations = [
@@ -407,4 +428,111 @@ def _build_sprint_contract(
         task_id=task.id,
         section_title=task.deliverable_destination,
         acceptance_criteria=task.acceptance_criteria,
+    )
+
+
+def _filter_manifest_by_findings(
+    findings: list[StructuredFinding],
+    full_manifest: CitationManifest,
+) -> CitationManifest:
+    """Keep only citations referenced by the findings that remain renderable."""
+    source_to_canonical = {
+        alias.source_instance_id: alias.canonical_citation_id
+        for alias in full_manifest.aliases
+    }
+
+    citation_ids: set[str] = set()
+    for finding in findings:
+        for claim in finding.claims:
+            claim_citation_ids = claim.citation_ids or [
+                citation.citation_id for citation in claim.citations
+            ]
+            for citation_id in claim_citation_ids:
+                citation_ids.add(source_to_canonical.get(citation_id, citation_id))
+
+    filtered_citations = [
+        citation
+        for citation in full_manifest.citations
+        if citation.citation_id in citation_ids
+    ]
+    filtered_corroboration_pairs = [
+        pair
+        for pair in full_manifest.corroboration_pairs
+        if pair.citation_a in citation_ids and pair.citation_b in citation_ids
+    ]
+    filtered_dead_urls = [
+        citation_id for citation_id in full_manifest.dead_urls if citation_id in citation_ids
+    ]
+    filtered_fabrication_flags = [
+        citation_id
+        for citation_id in full_manifest.fabrication_flags
+        if citation_id in citation_ids
+    ]
+    filtered_aliases = [
+        alias
+        for alias in full_manifest.aliases
+        if alias.canonical_citation_id in citation_ids
+    ]
+
+    return full_manifest.model_copy(
+        update={
+            "citations": filtered_citations,
+            "corroboration_pairs": filtered_corroboration_pairs,
+            "dead_urls": filtered_dead_urls,
+            "fabrication_flags": filtered_fabrication_flags,
+            "aliases": filtered_aliases,
+        }
+    )
+
+
+def _filter_confidence_map_by_passed_tasks(
+    confidence_map: ConfidenceMap,
+    passed_task_ids: set[str],
+) -> ConfidenceMap:
+    """Remove claims from failed or unevaluated tasks.
+
+    Keeps a claim only if its task_ids intersects passed_task_ids. Claims
+    with empty task_ids have no provenance and are excluded by default.
+    Rebuilds provenance_index to match the filtered tier lists.
+
+    This is the concrete implementation of PostSynthesisVerifierContract.
+    The Protocol in contracts.py defines the interface for Wave 3.
+    """
+
+    def _keep(task_ids: list[str]) -> bool:
+        return bool(task_ids) and bool(set(task_ids) & passed_task_ids)
+
+    filtered_high = [c for c in confidence_map.high_confidence_above_80pct if _keep(list(c.task_ids))]
+    filtered_moderate = [c for c in confidence_map.moderate_confidence_60_80pct if _keep(list(c.task_ids))]
+    filtered_weak = [c for c in confidence_map.weak_confidence_50_60pct if _keep(list(c.task_ids))]
+    filtered_contested = [c for c in confidence_map.contested_below_50pct if _keep(list(c.task_ids))]
+    filtered_insufficient = [c for c in confidence_map.insufficient_evidence if _keep(list(c.task_ids))]
+
+    # Rebuild provenance_index for surviving claims only
+    all_surviving = (
+        filtered_high + filtered_moderate + filtered_weak
+        + filtered_contested + filtered_insufficient
+    )
+    surviving_agg_ids: set[str] = {
+        c.aggregated_claim_id
+        for c in all_surviving
+        if c.aggregated_claim_id is not None
+    }
+    filtered_provenance = {
+        agg_id: task_ids
+        for agg_id, task_ids in confidence_map.provenance_index.items()
+        if agg_id in surviving_agg_ids
+    }
+
+    return ConfidenceMap(
+        engagement_id=confidence_map.engagement_id,
+        client_id=confidence_map.client_id,
+        high_confidence_above_80pct=filtered_high,
+        moderate_confidence_60_80pct=filtered_moderate,
+        weak_confidence_50_60pct=filtered_weak,
+        contested_below_50pct=filtered_contested,
+        insufficient_evidence=filtered_insufficient,
+        gaps_identified=confidence_map.gaps_identified,
+        absence_report=confidence_map.absence_report,
+        provenance_index=filtered_provenance,
     )

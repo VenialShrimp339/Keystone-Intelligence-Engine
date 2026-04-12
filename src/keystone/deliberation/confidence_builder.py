@@ -42,21 +42,31 @@ def build_confidence_map(
     weak: list[WeakConfidenceClaim] = []
     contested: list[ContestedClaim] = []
     insufficient: list[InsufficientEvidenceClaim] = []
+    # aggregated_claim_id -> task_ids for all claims that have an ID
+    provenance_index: dict[str, list[str]] = {}
 
     for claim in aggregated_claims:
         if claim.total_analysts == 0:
-            insufficient.append(_build_insufficient(claim))
-            continue
-
-        ratio = claim.agreement_ratio
-        if ratio > 0.8:
-            high.append(_build_high(claim))
-        elif ratio > 0.6:
-            moderate.append(_build_moderate(claim, wwhtb_by_idx))
-        elif ratio >= 0.5:
-            weak.append(_build_weak(claim, wwhtb_by_idx))
+            tier_claim = _build_insufficient(claim)
+            insufficient.append(tier_claim)
         else:
-            contested.append(_build_contested(claim))
+            ratio = claim.agreement_ratio
+            if ratio > 0.8:
+                tier_claim = _build_high(claim)
+                high.append(tier_claim)
+            elif ratio > 0.6:
+                tier_claim = _build_moderate(claim, wwhtb_by_idx)
+                moderate.append(tier_claim)
+            elif ratio >= 0.5:
+                tier_claim = _build_weak(claim, wwhtb_by_idx)
+                weak.append(tier_claim)
+            else:
+                tier_claim = _build_contested(claim)
+                contested.append(tier_claim)
+
+        # Build provenance index entry for any claim that has an aggregated_claim_id
+        if claim.aggregated_claim_id and claim.task_ids:
+            provenance_index[claim.aggregated_claim_id] = claim.task_ids
 
     return ConfidenceMap(
         engagement_id=engagement_id,
@@ -68,6 +78,7 @@ def build_confidence_map(
         insufficient_evidence=insufficient,
         gaps_identified=gap_report.gaps,
         absence_report=gap_report.absence_items,
+        provenance_index=provenance_index,
     )
 
 
@@ -102,6 +113,8 @@ def _build_high(claim: AggregatedClaim) -> HighConfidenceClaim:
             f"{claim.total_analysts} methodologies"
         ),
         curmudgeon_challenge=curmudgeon,
+        aggregated_claim_id=claim.aggregated_claim_id,
+        task_ids=list(claim.task_ids),
     )
 
 
@@ -127,6 +140,8 @@ def _build_moderate(
         dissent=dissent,
         sources=claim.source_count,
         sensitivity=sensitivity,
+        aggregated_claim_id=claim.aggregated_claim_id,
+        task_ids=list(claim.task_ids),
     )
 
 
@@ -156,6 +171,8 @@ def _build_weak(
         key_issue=key_issue,
         sources=claim.source_count,
         recommendation=recommendation,
+        aggregated_claim_id=claim.aggregated_claim_id,
+        task_ids=list(claim.task_ids),
     )
 
 
@@ -186,6 +203,8 @@ def _build_contested(claim: AggregatedClaim) -> ContestedClaim:
         key_disagreement=key_disagreement,
         sources=claim.source_count,
         steelmanned_opposing_view=steelmanned,
+        aggregated_claim_id=claim.aggregated_claim_id,
+        task_ids=list(claim.task_ids),
     )
 
 
@@ -194,4 +213,6 @@ def _build_insufficient(claim: AggregatedClaim) -> InsufficientEvidenceClaim:
         claim=claim.claim_text,
         reason="No analyst methodology was able to evaluate this claim",
         priority="high" if claim.source_count == 0 else "medium",
+        aggregated_claim_id=claim.aggregated_claim_id,
+        task_ids=list(claim.task_ids),
     )

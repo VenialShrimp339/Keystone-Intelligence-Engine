@@ -11,6 +11,7 @@ and L1.5 (Deliberation). Handles:
 from keystone.citation.dedup import deduplicate_citations, find_corroboration_pairs
 from keystone.citation.hash import (
     compute_content_hash,
+    compute_metadata_hash,
     compute_proposition_hash,
     verify_content_hash,
 )
@@ -22,6 +23,7 @@ __all__ = [
     "batch_check_urls",
     "check_url_liveness",
     "compute_content_hash",
+    "compute_metadata_hash",
     "compute_proposition_hash",
     "deduplicate_citations",
     "find_corroboration_pairs",

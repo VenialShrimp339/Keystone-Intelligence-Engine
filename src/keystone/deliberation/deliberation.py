@@ -128,7 +128,7 @@ class Deliberation:
 
         # --- Phase 2: Aggregation ---
         aggregator = Aggregator(judge_llm=self._judge_llm)
-        aggregated = await aggregator.aggregate(analyst_outputs, claims)
+        aggregated = await aggregator.aggregate(analyst_outputs, claims, manifest)
 
         wwhtb_results = await run_wwhtb(self._wwhtb_llm, aggregated)
 

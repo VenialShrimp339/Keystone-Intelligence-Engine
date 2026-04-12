@@ -104,6 +104,16 @@ class TestExtractClaims:
         f1 = _finding("agent-1", [])
         assert extract_claims([f1]) == []
 
+    def test_prefers_claim_citation_ids_when_present(self) -> None:
+        claim = _fc("Canonicalized claim").model_copy(
+            update={"citation_ids": ["CAN-ENG-001-abcd1234"]}
+        )
+        finding = _finding("agent-1", [claim])
+
+        claims = extract_claims([finding])
+
+        assert claims[0].citation_ids == ["CAN-ENG-001-abcd1234"]
+
 
 # ---------------------------------------------------------------------------
 # Analyst tests

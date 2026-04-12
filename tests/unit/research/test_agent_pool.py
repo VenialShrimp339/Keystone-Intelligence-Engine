@@ -35,6 +35,7 @@ _CLAIMS = json.dumps([
     {
         "text": "Market growing at 25% CAGR",
         "evidence": "Industry reports confirm growth trajectory",
+        "citation_refs": ["SRC-001"],
         "confidence": 0.82,
         "caveats": [],
     },

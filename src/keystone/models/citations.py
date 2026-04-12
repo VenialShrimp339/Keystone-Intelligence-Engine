@@ -99,7 +99,7 @@ class Citation(BaseModel):
         default=None,
         description="Hash of url:title metadata (Wave 1C addition). "
         "Separates metadata identity from content identity. "
-        "Wave 2A will migrate existing url:title hashes from content_hash to this field.",
+        "Wave 2A migrated existing url:title hashes from content_hash to this field.",
     )
     merged_from_ids: list[str] = Field(
         default_factory=list,
@@ -109,8 +109,8 @@ class Citation(BaseModel):
     @field_validator("citation_id")
     @classmethod
     def validate_citation_id(cls, v: str) -> str:
-        if not v.startswith("CIT-"):
-            raise ValueError("citation_id must start with 'CIT-'")
+        if not (v.startswith("CIT-") or v.startswith("CAN-")):
+            raise ValueError("citation_id must start with 'CIT-' (source instance) or 'CAN-' (canonical)")
         return v
 
     @field_validator("content_hash")

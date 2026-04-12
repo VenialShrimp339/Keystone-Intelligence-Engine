@@ -93,6 +93,9 @@ def extract_claims(findings: list[StructuredFinding]) -> list[InputClaim]:
     idx = 0
     for finding in findings:
         for fc in finding.claims:
+            citation_ids = list(fc.citation_ids) if fc.citation_ids else [
+                c.citation_id for c in fc.citations
+            ]
             claims.append(
                 InputClaim(
                     index=idx,
@@ -100,7 +103,7 @@ def extract_claims(findings: list[StructuredFinding]) -> list[InputClaim]:
                     agent_id=finding.agent_id,
                     text=fc.text,
                     evidence=fc.evidence,
-                    citation_ids=[c.citation_id for c in fc.citations],
+                    citation_ids=citation_ids,
                     original_confidence=fc.confidence,
                     caveats=fc.caveats,
                 )

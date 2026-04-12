@@ -12,7 +12,7 @@ from collections import defaultdict
 from collections.abc import AsyncIterator
 
 from keystone.citation.dedup import deduplicate_with_aliases, find_corroboration_pairs
-from keystone.citation.hash import compute_content_hash
+from keystone.citation.hash import compute_metadata_hash
 from keystone.citation.url_check import batch_check_urls
 from keystone.events import (
     AnyPipelineEvent,
@@ -21,7 +21,12 @@ from keystone.events import (
     ManifestProduced,
     URLVerified,
 )
-from keystone.models.citations import Citation, CitationAlias, CitationManifest
+from keystone.models.citations import (
+    Citation,
+    CitationAlias,
+    CitationManifest,
+    CorroborationPair,
+)
 from keystone.models.research import FindingClaim, StructuredFinding
 from pydantic import BaseModel
 
@@ -120,7 +125,7 @@ class CitationProcessor:
 
         # Emit CitationDeduped events for merged groups
         for citation in deduped:
-            if citation.merged_from_ids:
+            if len(citation.merged_from_ids) > 1:
                 yield CitationDeduped(
                     event_id=_uid(),
                     engagement_id=engagement_id,
@@ -131,7 +136,10 @@ class CitationProcessor:
                 )
 
         # 3. Corroboration pairs
-        pairs = find_corroboration_pairs(findings)
+        pairs = self._rewrite_corroboration_pairs_to_canonical(
+            find_corroboration_pairs(findings),
+            aliases,
+        )
         for pair in pairs:
             yield CorroborationScored(
                 event_id=_uid(),
@@ -163,13 +171,12 @@ class CitationProcessor:
                 citation.model_copy(update={"url_live": is_live})
             )
 
-        # 5. Ensure content hashes on all citations
+        # 5. Ensure metadata hashes on all citations (url:title identity hash)
         final_citations: list[Citation] = []
         for citation in updated_citations:
-            if citation.content_hash is None:
-                hash_input = f"{citation.url}:{citation.title}"
+            if citation.metadata_hash is None:
                 citation = citation.model_copy(
-                    update={"content_hash": compute_content_hash(hash_input)}
+                    update={"metadata_hash": compute_metadata_hash(citation.url, citation.title)}
                 )
             final_citations.append(citation)
 
@@ -238,8 +245,16 @@ class CitationProcessor:
         for finding in findings:
             new_claims: list[FindingClaim] = []
             for claim in finding.claims:
+                # Seed citation_ids from Citation objects when not already set.
+                # Findings produced before the CitationProcessor stage (e.g. from
+                # research agents or test helpers) populate claim.citations but
+                # leave claim.citation_ids empty. We must derive the source-instance
+                # IDs from the Citation objects before applying the alias map.
+                source_ids = claim.citation_ids or [
+                    cit.citation_id for cit in claim.citations
+                ]
                 canonical_ids = [
-                    alias_map.get(cid, cid) for cid in claim.citation_ids
+                    alias_map.get(cid, cid) for cid in source_ids
                 ]
                 # Deduplicate while preserving order
                 seen: set[str] = set()
@@ -250,6 +265,35 @@ class CitationProcessor:
                         deduped_ids.append(cid)
                 new_claims.append(claim.model_copy(update={"citation_ids": deduped_ids}))
             rewritten.append(finding.model_copy(update={"claims": new_claims}))
+        return rewritten
+
+    def _rewrite_corroboration_pairs_to_canonical(
+        self,
+        pairs: list[CorroborationPair],
+        aliases: list[CitationAlias],
+    ) -> list[CorroborationPair]:
+        """Rewrite corroboration pair IDs through the alias map to CAN-* IDs."""
+        alias_map = {
+            alias.source_instance_id: alias.canonical_citation_id for alias in aliases
+        }
+
+        rewritten: list[CorroborationPair] = []
+        seen: set[tuple[str, str]] = set()
+        for pair in pairs:
+            canonical_a = alias_map.get(pair.citation_a, pair.citation_a)
+            canonical_b = alias_map.get(pair.citation_b, pair.citation_b)
+            pair_key = tuple(sorted((canonical_a, canonical_b)))
+            if pair_key in seen:
+                continue
+            seen.add(pair_key)
+            rewritten.append(
+                CorroborationPair(
+                    citation_a=pair_key[0],
+                    citation_b=pair_key[1],
+                    overlap_score=pair.overlap_score,
+                )
+            )
+
         return rewritten
 
 
