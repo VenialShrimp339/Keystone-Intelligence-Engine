@@ -1,19 +1,20 @@
-# Wave 2B: Enforcement Model + Execution-Path Fixes
+# Wave 2B: Blocked-Snapshot Remediation
 
-*Date: 2026-04-11 | Use this file only with `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`*
+*Date: 2026-04-12 | Use this file only with the control plane and `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`*
 
 ---
 
 ## What this file is for
 
-This is the authoritative execution doc for the **next build session only**.
+This is the execution doc for **remediating the blocked Wave 2B candidate**.  
+It is no longer a “start Wave 2B from scratch” launcher.
 
 Use it together with:
-1. `audit/remediation/WORKSTREAM-STATUS.md`
-2. `CURRENT-STATE.md`
-3. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
-4. `audit/remediation/BUILD-PROCESS.md`
-5. `audit/remediation/WAVE-2B-SETUP.md`
+1. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+2. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+3. `audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md`
+4. `audit/remediation/runs/wave-2b/candidate-4ff7e90-file-manifest.md`
+5. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
 
 Do **not** use older `FINAL-DECISIONS.md`, `FINAL-DECISIONS-v2.md`, or `WAVE-2A-SETUP.md` to scope Wave 2B.
 
@@ -23,8 +24,9 @@ Do **not** use older `FINAL-DECISIONS.md`, `FINAL-DECISIONS-v2.md`, or `WAVE-2A-
 
 - Wave 1 is complete.
 - Wave 2A is complete and cleared in commit `16e0bc7`.
-- The governing-doc reconciliation pass is complete before Wave 2B starts.
-- Wave 2B is now the **expanded** Wave 2B from `FINAL-DECISIONS-v2.1.md`, not the earlier narrower governance-only version.
+- Wave 2B checkpoint candidate `4ff7e90` exists and is **blocked**.
+- Two committed review packets and one synthesis packet define the active Wave 2B blockers.
+- Dirty Wave 2B blocker-fix work exists in the main workspace, but it is recovery evidence only until replayed in a clean `4ff7e90` worktree.
 
 ---
 
@@ -39,7 +41,7 @@ Wave 2B may assume the following are already in place from commit `16e0bc7`:
 5. `metadata_hash` vs `content_hash` semantic split.
 6. Post-synthesis verifier contract seam defined, but implementation still deferred.
 
-Wave 2B must build on those prerequisites. It must **not** re-open Wave 2A scope except for true blockers found while implementing 2B.
+Wave 2B remediation must build on those prerequisites. It must **not** re-open Wave 2A scope except for true regressions found while clearing 2B.
 
 Residual Wave 2A follow-ups that are **not** blockers for 2B:
 
@@ -48,9 +50,16 @@ Residual Wave 2A follow-ups that are **not** blockers for 2B:
 
 ---
 
-## Wave 2B scope only
+## Wave 2B remediation scope only
 
-Wave 2B includes the full enforcement-model work from Decision B **plus** the accepted execution-path additions `E-1`, `E-9`, `E-10`, `E-6`, and `E-7`.
+The Wave 2B target remains the same: the full enforcement-model work from Decision B **plus** `E-1`, `E-9`, `E-10`, `E-6`, and `E-7`.
+
+The active remediation loop is narrower:
+
+1. close the blocked runtime invariants in `4ff7e90`
+2. keep fixes inside the approved file manifest
+3. prove closure on the real runtime path
+4. create a new candidate commit and review that committed snapshot only
 
 ### Core enforcement deliverables
 
@@ -70,15 +79,13 @@ Wave 2B includes the full enforcement-model work from Decision B **plus** the ac
 4. **`E-6`**: apply `dimension_emphasis` multipliers during rubric scoring.
 5. **`E-7`**: inject `mandatory_elements` and `anti_patterns` into rubric prompts.
 
-### Internal sequencing for Wave 2B
+### Active blocked-remediation targets
 
-1. Land the governance core and profile-routing path.
-2. Land `E-9` sprint-contract wiring.
-3. Land `E-6` and `E-7` on top of the generated sprint contract path.
-4. Land `E-1` if not already folded into the evaluator work earlier.
-5. Run focused verification after each cluster, not just at the end.
-
-`E-9` is a prerequisite for `E-6` and `E-7`.
+1. LIGHT coverage cannot fail open on failed evaluated tasks.
+2. Task `priority` / `importance` must derive from Step-5 priority scores, not generation order.
+3. The effective evaluator profile must be carried through `ResearchSpec` and used by `Evaluator`.
+4. Gate 1 and Gate 2 must consult `ProfileExecutionPolicy`.
+5. If possible while in scope, keep sprint-contract parse failure and rubric observability from silently degrading the new enforcement path.
 
 ---
 
@@ -99,25 +106,20 @@ Do **not** pull any of the following into this wave:
 
 ## Suggested execution checklist
 
-1. Read `FINAL-DECISIONS-v2.1.md` and `BUILD-PROCESS.md` first.
-2. Confirm the working baseline is the cleared Wave 2A checkpoint (`16e0bc7`) plus this doc-alignment pass.
-3. Implement only the Wave 2B items listed above.
-4. Keep edits tightly scoped to the enforcement and evaluator-routing surface.
-5. Run tests after each logical cluster:
-   - governance / policy wiring
-   - evaluator profile routing + sprint-contract generation
-   - rubric field consumption + epsilon fix
+1. Read the control-plane files first.
+2. Create a clean implementation worktree rooted at `4ff7e90`.
+3. Replay or re-implement only the files listed in the candidate file manifest.
+4. Keep edits tightly scoped to the blocked runtime invariants.
+5. Run the focused Wave 2B proof matrix.
 6. If a change seems to require Wave 3 or 3B work, stop and push it out instead of widening Wave 2B.
 
 ---
 
-## After Wave 2B completes
+## After Wave 2B clears
 
-1. Run adversarial review on the Wave 2B diff **before** starting the next wave.
-2. Scope that review to the Wave 2B code diff, not the whole working tree.
-3. Fix any review blockers.
-4. Create a clean checkpoint commit for Wave 2B.
-5. Update `CURRENT-STATE.md` and `SESSION-LOG.md`.
-6. Only then start Wave 3 from the reconciled plan in `FINAL-DECISIONS-v2.1.md`.
+1. Commit a docs-only cleared-state reconcile checkpoint.
+2. Update the control plane to mark Wave 2B cleared.
+3. Create the Wave 3A seam-freeze setup doc.
+4. Only then begin Wave 3A / Wave 3.
 
-Wave 3 does **not** start until Wave 2B implementation, Wave 2B adversarial review, and Wave 2B blocker cleanup are all complete.
+Wave 3 does **not** start until a new Wave 2B candidate is reviewed and cleared against the full `16e0bc7..candidate` scope.

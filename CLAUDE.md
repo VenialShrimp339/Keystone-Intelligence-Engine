@@ -1,5 +1,7 @@
 # Keystone Intelligence Engine
 
+> Remediation sessions: if `audit/remediation/control-plane/` exists, do **not** start from `CURRENT-STATE.md` alone. Read `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml` and `audit/remediation/control-plane/ACTIVE-HANDOFF.md` first. The orientation below is historical/background for remediation unless it agrees with the control plane.
+
 Multi-agent AI system for automated consulting research. Capstone project (IU Kelley, Prof. Youle). Real product for Keystone Group, not an academic exercise.
 
 ## Project Structure
@@ -12,13 +14,13 @@ CAPSTONE-PLAN-v2.md          <- Source of truth. 6-layer architecture (1294 line
 src/keystone/                <- Production code: models, events, contracts, and 7 built components.
 src/keystone/tool_names.py   <- Single source of truth for MCP tool name constants. Import from here.
 docs/ARCHITECTURE.md         <- Code architecture, module map, dependency rules. Regenerated Session 15.
-audit/                       <- Implementation spec, gap triage, plan audit, Batch 2 analysis.
-audit/batch-2-analysis/      <- Per-report analyses + master synthesis from Batch 2 deep research.
-audit/track-1-session/       <- Track 1 architecture finalization: change specs, verification, audit.
-reference/analysis/          <- Repo analysis (00-09), Batch 1 deep research (01-10), LEAK-SYNTHESIS.md.
-synthesis/                   <- UNIFIED-SYNTHESIS.md, PLAN-CHANGELOG.md, thread analyses/summaries.
-research-reports/            <- 16 original deep research reports (Batch 1).
-research-reports/batch-2/    <- 10 new deep research reports addressing open architectural questions.
+research/                    <- All research artifacts consolidated under one parent.
+research/reports/            <- 30 deep research reports (batch-1, batch-2, openai-switchover).
+research/synthesis/          <- Per-report analyses, batch-2 synthesis, UNIFIED-SYNTHESIS, PLAN-CHANGELOG.
+research/codebase-analysis/  <- nano-claude-code analysis (00-09), leak research (01-10), LEAK-SYNTHESIS.
+audit/                       <- Active remediation work + implementation spec.
+audit/remediation/           <- Current remediation process (EXECUTION-GUIDE.md is the entry point).
+audit/archive/               <- Completed audit phases (pre-build, track-1, comprehensive, fork-evals).
 reference/nano-claude-code/  <- Python reimplementation of Claude Code (11.8K lines, 56 files).
 ```
 
@@ -56,8 +58,10 @@ L4    -> Evaluator (10-dimension rubric, 5-layer eval stack, Observation Library
 
 New session? Read these files first:
 1. This file (auto-loaded in Claude Code)
-2. `CURRENT-STATE.md` -- Living snapshot of where we are, what's next, what's blocked
-3. `JACK-ARCHITECTURAL-DIRECTIVES.md` -- Jack's authoritative design decisions (issue trees, dynamic agents, iterative research, engagement scope, build philosophy). Required reading for any architecture work.
+2. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml` if it exists
+3. `audit/remediation/control-plane/ACTIVE-HANDOFF.md` if it exists
+4. `CURRENT-STATE.md` -- Living snapshot, but subordinate to the control plane for remediation
+5. `JACK-ARCHITECTURAL-DIRECTIVES.md` -- Jack's authoritative design decisions (issue trees, dynamic agents, iterative research, engagement scope, build philosophy). Required reading for any architecture work.
 
 For full project history: `SESSION-LOG.md`.
 
@@ -75,6 +79,16 @@ For full project history: `SESSION-LOG.md`.
 - **Make verdicts, not inventories.** Every tool/framework/pattern -> ADOPT (use directly) / ADAPT (modify for our context, specify how) / SKIP (not applicable, say why) / INVESTIGATE (promising, needs more research) + one-sentence justification.
 - **Flag contradictions between reports.** They were produced independently. Contradictions are signal.
 - **Distinguish evidence quality:** Verified (empirical, reproduced) / Credible (active project, reputable source) / Claimed (blog/tweet, no evidence) / Stale (6+ months old, superseded)
+
+## Verification Rules
+
+These exist because plans that "look right" fail at implementation when they conflict with code reality. Every rule below addresses a specific failure mode observed in this project.
+
+- **Before proposing changes to any Pydantic model, read the file.** Check: is it frozen? What fields exist? What validators run? Do not propose mutations to frozen models.
+- **Before listing files to modify, grep for every symbol being changed.** Renames, removals, and type changes cascade. The file list must be exhaustive, not estimated from memory.
+- **After drafting any plan, verify each proposal against the actual code.** If you proposed a change without reading the target file, read it now and confirm it's possible.
+- **One major change at a time.** Do not draft implementation plans covering multiple architectural changes without verifying each against the codebase first. Batch planning produces batch errors.
+- **When evaluating external model outputs, verify code-level claims.** Other models may not have full repo access. Check their claims against the actual files before adopting recommendations.
 
 ## Communication & Output Rules
 
@@ -108,3 +122,12 @@ Use precisely when relevant:
 | 29-30% false claims | Claude agentic | Evaluator catches ~1/3 of output |
 | 78% vs 42% | Same model, Nate Mar 6 | Structure > capability |
 | 68.8% leakage | AgentLeak benchmark | Isolation must be structural, not framework-level |
+
+## graphify
+
+This project has a graphify knowledge graph at graphify-out/.
+
+Rules:
+- Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
+- If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
+- After modifying code files in this session, run `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` to keep the graph current

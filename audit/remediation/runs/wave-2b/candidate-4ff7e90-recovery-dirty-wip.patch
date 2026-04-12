@@ -1,0 +1,1051 @@
+diff --git a/src/keystone/deliberation/deliberation.py b/src/keystone/deliberation/deliberation.py
+index 5a4c825..82428c6 100644
+--- a/src/keystone/deliberation/deliberation.py
++++ b/src/keystone/deliberation/deliberation.py
+@@ -28,6 +28,7 @@ from keystone.events import (
+     ConfidenceMapProduced,
+     IndependentAnalysisComplete,
+ )
++from keystone.governance.policy import ProfileExecutionPolicy
+ from keystone.models.agents import DeliberationAnalystType
+ from keystone.models.citations import CitationManifest
+ from keystone.models.confidence import ConfidenceMap
+@@ -187,7 +188,9 @@ class Deliberation:
+         client_id: str,
+     ) -> None:
+         """Trigger HITL Gate 2 (post-deliberation review)."""
+-        if self._effective_pipeline_profile == PipelineProfile.LIGHT:
++        if not ProfileExecutionPolicy(
++            self._effective_pipeline_profile
++        ).should_run_hitl_gate():
+             logger.info("Skipping HITL Gate 2 for LIGHT profile")
+             return
+ 
+diff --git a/src/keystone/evaluator/evaluator.py b/src/keystone/evaluator/evaluator.py
+index db2a5f0..1befff8 100644
+--- a/src/keystone/evaluator/evaluator.py
++++ b/src/keystone/evaluator/evaluator.py
+@@ -14,6 +14,7 @@ import uuid
+ from collections.abc import AsyncIterator
+ from datetime import UTC, datetime
+ 
++from keystone.evaluator.layer3_rubric import _apply_dimension_emphasis
+ from keystone.evaluator.layer1_deterministic import Layer1Evaluator
+ from keystone.evaluator.layer2_citation_gate import DOIVerifier, Layer2CitationGate
+ from keystone.evaluator.retry import LLMCallable
+@@ -103,8 +104,8 @@ class Evaluator:
+                 task.id, exc,
+             )
+             layer1_result = Layer1Result(
+-                facts_verified=0, facts_failed=0, facts_total=0,
+-                fact_details=[], numerical_inconsistencies=[], dead_urls=[],
++                facts_verified=0, facts_failed=0,
++                numerical_inconsistencies=[], dead_urls=[],
+             )
+         yield DeterministicCheckPassed(
+             event_id=_uid(),
+@@ -172,9 +173,13 @@ class Evaluator:
+                 task.id, exc,
+             )
+             layer3_result = Layer3Result(
+-                dimension_scores=[], raw_weighted_score=0.0,
++                dimension_scores=[], weighted_total=0.0,
+                 gestalt_adjustment=0.0, final_score=0.0,
+             )
++        event_weights = _apply_dimension_emphasis(
++            self._weights,
++            contract.dimension_emphasis,
++        )
+         for score in layer3_result.dimension_scores:
+             yield RubricDimensionScored(
+                 event_id=_uid(),
+@@ -183,7 +188,7 @@ class Evaluator:
+                 layer="L4",
+                 dimension=score.dimension.value,
+                 score=score.score,
+-                weight=self._weights.get(score.dimension, 0.0),
++                weight=event_weights.get(score.dimension, 0.0),
+             )
+ 
+         # --- Determine pass/fail ---
+diff --git a/src/keystone/evaluator/sprint_contract.py b/src/keystone/evaluator/sprint_contract.py
+index 79eed79..c38906b 100644
+--- a/src/keystone/evaluator/sprint_contract.py
++++ b/src/keystone/evaluator/sprint_contract.py
+@@ -52,9 +52,13 @@ class SprintContractGenerator:
+         )
+         try:
+             parsed = safe_llm_json(raw)
+-        except ParseError:
+-            logger.warning("Failed to parse sprint contract JSON, using task defaults")
+-            parsed = {}
++        except ParseError as exc:
++            msg = (
++                f"Failed to parse sprint contract JSON for task {task.id}; "
++                "cannot continue with a bare contract."
++            )
++            logger.warning(msg)
++            raise RuntimeError(msg) from exc
+ 
+         dimension_emphasis: dict[RubricDimension, float] = {}
+         for dim_str, weight in parsed.get("dimension_emphasis", {}).items():
+diff --git a/src/keystone/governance/policy.py b/src/keystone/governance/policy.py
+index 24bd8a9..fda51b1 100644
+--- a/src/keystone/governance/policy.py
++++ b/src/keystone/governance/policy.py
+@@ -114,7 +114,7 @@ class ProfileExecutionPolicy:
+             uncovered = [
+                 outcome.task_id
+                 for outcome in outcomes
+-                if outcome.renderable and outcome.evaluation_status != "passed"
++                if self._requires_light_pass(outcome)
+             ]
+             if uncovered:
+                 return QualityFlag(
+@@ -124,7 +124,8 @@ class ProfileExecutionPolicy:
+                     severity="critical",
+                     message=(
+                         "LIGHT profile requires every renderable task to be evaluated "
+-                        f"and passed. Missing or failed tasks: {sorted(uncovered)}"
++                        "and passed, including tasks that produced output and later "
++                        f"failed evaluation. Missing or failed tasks: {sorted(uncovered)}"
+                     ),
+                 )
+             return None
+@@ -257,3 +258,11 @@ class ProfileExecutionPolicy:
+         if self.profile != PipelineProfile.DEEP:
+             return True
+         return importance in {TaskImportance.SUPPORTING, TaskImportance.OPTIONAL}
++
++    def _requires_light_pass(self, outcome: TaskOutcome) -> bool:
++        if outcome.evaluation_status == "failed":
++            return outcome.research_status in {
++                ResearchStatus.SUCCESS,
++                ResearchStatus.PARTIAL,
++            }
++        return outcome.renderable and outcome.evaluation_status != "passed"
+diff --git a/src/keystone/models/research.py b/src/keystone/models/research.py
+index 2117d0e..9c3053d 100644
+--- a/src/keystone/models/research.py
++++ b/src/keystone/models/research.py
+@@ -43,6 +43,15 @@ class PipelineProfile(StrEnum):
+     DEEP = "deep"
+ 
+ 
++class EvaluationProfileName(StrEnum):
++    """Persisted evaluator rubric profile for a run."""
++
++    DEFAULT = "default"
++    ESTIMATIVE = "estimative"
++    CURRENT = "current"
++    STRATEGIC = "strategic"
++
++
+ class ResearchQuestion(BaseModel):
+     """A research question within the engagement specification."""
+ 
+@@ -162,6 +171,10 @@ class ResearchSpec(BaseModel):
+         default=PipelineProfile.STANDARD,
+         description="Execution profile used for this run.",
+     )
++    effective_evaluation_profile: EvaluationProfileName = Field(
++        default=EvaluationProfileName.DEFAULT,
++        description="Resolved evaluator rubric profile used for this run.",
++    )
+     profile_source: str = Field(
+         default="classifier",
+         description="How the effective pipeline profile was chosen.",
+diff --git a/src/keystone/pipeline/orchestrator.py b/src/keystone/pipeline/orchestrator.py
+index 4c57fa3..ec54bee 100644
+--- a/src/keystone/pipeline/orchestrator.py
++++ b/src/keystone/pipeline/orchestrator.py
+@@ -21,7 +21,7 @@ from pydantic import BaseModel, Field
+ from keystone.citation.processor import CitationProcessor
+ from keystone.deliberation.deliberation import Deliberation
+ from keystone.evaluator.evaluator import Evaluator
+-from keystone.evaluator.rubric_config import ENGAGEMENT_PROFILE_MAP, EvaluationProfile
++from keystone.evaluator.rubric_config import EvaluationProfile
+ from keystone.evaluator.retry import LLMCallable
+ from keystone.evaluator.sprint_contract import SprintContractGenerator
+ from keystone.events import AnyPipelineEvent
+@@ -617,10 +617,10 @@ def _filter_confidence_map_by_passed_tasks(
+ 
+ 
+ def _resolve_evaluation_profile(spec: EngagementSpec) -> EvaluationProfile:
+-    """Route the evaluation profile from the classified engagement."""
+-    return ENGAGEMENT_PROFILE_MAP.get(
+-        spec.research_spec.engagement_type,
+-        EvaluationProfile.DEFAULT,
++    """Route the persisted evaluation profile from ResearchSpec."""
++    stored_profile = spec.research_spec.effective_evaluation_profile
++    return EvaluationProfile(
++        stored_profile.value if hasattr(stored_profile, "value") else stored_profile
+     )
+ 
+ 
+diff --git a/src/keystone/specification/spec_engine.py b/src/keystone/specification/spec_engine.py
+index ad9c8ec..7279d86 100644
+--- a/src/keystone/specification/spec_engine.py
++++ b/src/keystone/specification/spec_engine.py
+@@ -17,6 +17,7 @@ from collections.abc import AsyncIterator, Callable
+ from datetime import UTC, datetime
+ from typing import TYPE_CHECKING
+ 
++from keystone.evaluator.rubric_config import ENGAGEMENT_PROFILE_MAP
+ from keystone.evaluator.retry import LLMCallable
+ from keystone.events import (
+     AgentDispatched,
+@@ -24,9 +25,11 @@ from keystone.events import (
+     SpecificationGenerated,
+     TasksDecomposed,
+ )
++from keystone.governance.policy import ProfileExecutionPolicy
+ from keystone.models.research import (
+     EngagementSpec,
+     EngagementType,
++    EvaluationProfileName,
+     MethodologyRequirement,
+     PipelineProfile,
+     ResearchQuestion,
+@@ -162,16 +165,17 @@ class SpecificationEngine:
+         logger.info("Step 2 complete: intent_clear=%s", intent.intent_clear)
+ 
+         # Steps 3-4: Decompose with MECE validation (retry loop)
+-        tree = await self._decompose_with_validation(
++        tree, mece_passed = await self._decompose_with_validation(
+             question,
+             classification.engagement_type,
+             intent.day_1_hypothesis,
+             client_context,
+         )
+         logger.info(
+-            "Steps 3-4 complete: %d leaves, depth %d",
++            "Steps 3-4 complete: %d leaves, depth %d, mece_passed=%s",
+             tree.metadata.leaf_count,
+             tree.metadata.depth,
++            mece_passed,
+         )
+ 
+         # Step 5: Priority scoring
+@@ -201,14 +205,15 @@ class SpecificationEngine:
+                 "tools": task.assigned_tools,
+             })
+ 
+-        # Yield SpecificationGenerated
++        # Yield SpecificationGenerated (truthful validation state)
++        all_validation_passed = intent.intent_clear and mece_passed
+         yield SpecificationGenerated(
+             event_id=f"evt_{uuid.uuid4().hex[:12]}",
+             engagement_id=engagement_id,
+             client_id=client_id,
+             spec_version=research_spec.specification_version,
+             question_count=len(research_spec.questions),
+-            validation_passed=True,
++            validation_passed=all_validation_passed,
+         )
+ 
+         # Yield TasksDecomposed
+@@ -222,12 +227,12 @@ class SpecificationEngine:
+             rationale=task_decomposition.decomposition_rationale,
+         )
+ 
+-        # Build EngagementSpec
++        # Build EngagementSpec (truthful validation state)
+         validation_report = ValidationReport(
+             intent_clear=intent.intent_clear,
+-            scope_valid=True,
++            scope_valid=mece_passed,
+             within_frontier=True,
+-            quality_threshold_met=intent.intent_clear,
++            quality_threshold_met=intent.intent_clear and mece_passed,
+         )
+         self._spec = EngagementSpec(
+             research_spec=research_spec,
+@@ -269,8 +274,12 @@ class SpecificationEngine:
+         engagement_type: EngagementType,
+         day_1_hypothesis: str,
+         client_context: str | None,
+-    ) -> IssueTree:
+-        """Run decomposition with MECE validation retry loop."""
++    ) -> tuple[IssueTree, bool]:
++        """Run decomposition with MECE validation retry loop.
++
++        Returns (tree, validation_passed) tuple. If validation fails after
++        all retries, returns the last tree with validation_passed=False.
++        """
+         for attempt in range(_MAX_DECOMPOSE_RETRIES + 1):
+             tree = await self._decomposer.decompose(
+                 question, engagement_type, day_1_hypothesis, client_context
+@@ -281,7 +290,7 @@ class SpecificationEngine:
+             )
+ 
+             if validation.all_passed:
+-                return tree
++                return tree, True
+ 
+             logger.warning(
+                 "MECE validation failed (attempt %d/%d): %s",
+@@ -292,7 +301,7 @@ class SpecificationEngine:
+ 
+         # Return last tree even if validation didn't fully pass
+         logger.warning("Returning tree after %d attempts despite validation issues", _MAX_DECOMPOSE_RETRIES + 1)
+-        return tree
++        return tree, False
+ 
+     def _build_research_spec(
+         self,
+@@ -343,6 +352,9 @@ class SpecificationEngine:
+             day_1_hypothesis=intent.day_1_hypothesis,
+             recommended_pipeline_profile=classification.pipeline_profile,
+             effective_pipeline_profile=classification.pipeline_profile,
++            effective_evaluation_profile=_resolve_effective_evaluation_profile(
++                classification.engagement_type
++            ),
+             profile_source="classifier",
+         )
+ 
+@@ -361,7 +373,7 @@ class SpecificationEngine:
+         )
+ 
+         profile = self._spec.research_spec.effective_pipeline_profile
+-        if profile == PipelineProfile.LIGHT:
++        if not ProfileExecutionPolicy(profile).should_run_hitl_gate():
+             return
+ 
+         async with self._db_session_factory() as session:
+@@ -372,3 +384,13 @@ class SpecificationEngine:
+                 gate_type=GateType.POST_SPECIFICATION,
+                 items=items,
+             )
++
++
++def _resolve_effective_evaluation_profile(
++    engagement_type: EngagementType,
++) -> EvaluationProfileName:
++    """Resolve the evaluator rubric profile once at spec construction time."""
++    profile = ENGAGEMENT_PROFILE_MAP.get(engagement_type)
++    if profile is None:
++        return EvaluationProfileName.DEFAULT
++    return EvaluationProfileName(profile.value)
+diff --git a/src/keystone/specification/task_generator.py b/src/keystone/specification/task_generator.py
+index a4c940c..3a8f5e4 100644
+--- a/src/keystone/specification/task_generator.py
++++ b/src/keystone/specification/task_generator.py
+@@ -62,7 +62,7 @@ class TaskGenerator:
+         If the LLM produces cyclic dependencies, catches ValidationError
+         and retries (max 2 retries).
+         """
+-        priority_map = {p.branch_id: p for p in priorities}
++        priority_ranks = self._build_priority_ranks(priorities)
+ 
+         prompt = load_prompt(
+             "task_generation",
+@@ -82,7 +82,12 @@ class TaskGenerator:
+                     self._llm, prompt, description=f"task_generation_attempt_{attempt}"
+                 )
+                 data = safe_llm_json(raw, required_keys=("tasks",))
+-                tasks = self._parse_tasks(data, spec, engagement_type, priority_map)
++                tasks = self._parse_tasks(
++                    data,
++                    spec,
++                    engagement_type,
++                    priority_ranks,
++                )
+                 if not tasks:
+                     raise ValueError("LLM returned empty tasks list")
+                 decomposition = TaskDecomposition(
+@@ -112,7 +117,7 @@ class TaskGenerator:
+         data: dict,
+         spec: ResearchSpec,
+         engagement_type: EngagementType,
+-        priority_map: dict[str, PriorityScore],
++        priority_ranks: dict[str, int],
+     ) -> list[ResearchTask]:
+         """Parse LLM output into validated ResearchTask objects."""
+         tasks_raw = data.get("tasks", [])
+@@ -121,8 +126,9 @@ class TaskGenerator:
+         for i, t in enumerate(tasks_raw):
+             task_id = t.get("id", f"task_{i + 1:03d}")
+             branch_id = t.get("issue_tree_branch_id")
+-            priority_entry = priority_map.get(branch_id or "") if branch_id else None
+-            priority_rank = i + 1
++            priority_rank = priority_ranks.get(branch_id or "")
++            if priority_rank is None:
++                priority_rank = self._coerce_priority(t.get("priority")) or (i + 1)
+ 
+             # Match template for tool assignment
+             category = self._resolve_category(t.get("category", "strategic_positioning"))
+@@ -141,7 +147,7 @@ class TaskGenerator:
+                 importance=self._resolve_importance(
+                     priority_rank=priority_rank,
+                     spec=spec,
+-                    task_data=t,
++                    target_decision_usefulness=t.get("target_decision_usefulness", 3),
+                 ),
+                 anti_confirmatory_framing=t.get("anti_confirmatory_framing", "Evaluate evidence both for and against"),
+                 assigned_tools=self._resolve_tools(t, category, engagement_type),
+@@ -153,7 +159,7 @@ class TaskGenerator:
+             )
+             tasks.append(temp_task)
+ 
+-        return tasks
++        return sorted(tasks, key=lambda task: task.priority)
+ 
+     def _resolve_category(self, raw: str) -> TaskCategory:
+         """Map raw category string to TaskCategory, defaulting gracefully."""
+@@ -206,16 +212,9 @@ class TaskGenerator:
+         *,
+         priority_rank: int,
+         spec: ResearchSpec,
+-        task_data: dict,
++        target_decision_usefulness: int,
+     ) -> TaskImportance:
+-        """Assign task importance for Wave 2B coverage policy."""
+-        raw = task_data.get("importance")
+-        if isinstance(raw, str):
+-            try:
+-                return TaskImportance(raw)
+-            except ValueError:
+-                logger.warning("Ignoring unknown task importance '%s'", raw)
+-
++        """Assign task importance from scored task priority for Wave 2B policy."""
+         if priority_rank == 1:
+             return TaskImportance.PRIMARY
+ 
+@@ -225,7 +224,30 @@ class TaskGenerator:
+         ):
+             return TaskImportance.CRITICAL
+ 
+-        if task_data.get("target_decision_usefulness", 3) <= 2 and priority_rank > 5:
++        if target_decision_usefulness <= 2 and priority_rank > 5:
+             return TaskImportance.OPTIONAL
+ 
+         return TaskImportance.SUPPORTING
++
++    def _build_priority_ranks(
++        self,
++        priorities: list[PriorityScore],
++    ) -> dict[str, int]:
++        ordered = sorted(
++            priorities,
++            key=lambda score: (
++                -score.priority_score,
++                -score.decision_relevance,
++                -score.uncertainty_reduction,
++                score.branch_id,
++            ),
++        )
++        return {
++            priority.branch_id: index
++            for index, priority in enumerate(ordered, start=1)
++        }
++
++    def _coerce_priority(self, raw: object) -> int | None:
++        if not isinstance(raw, int):
++            return None
++        return raw if raw >= 1 else None
+diff --git a/tests/unit/deliberation/test_deliberation.py b/tests/unit/deliberation/test_deliberation.py
+index 4a35503..eb9b052 100644
+--- a/tests/unit/deliberation/test_deliberation.py
++++ b/tests/unit/deliberation/test_deliberation.py
+@@ -22,6 +22,7 @@ from keystone.events import (
+     ConfidenceMapProduced,
+     IndependentAnalysisComplete,
+ )
++from keystone.governance.policy import ProfileExecutionPolicy
+ from keystone.hitl.models import Base
+ from keystone.hitl.schemas import GateResponse, GateResolution, GateStatus, GateType
+ from keystone.models.agents import DeliberationAnalystType
+@@ -321,6 +322,7 @@ class TestHITLGate:
+         session_factory = async_sessionmaker(engine, expire_on_commit=False)
+ 
+         mock_create_gate = AsyncMock()
++        original = ProfileExecutionPolicy.should_run_hitl_gate
+ 
+         findings = [_finding("agent-1", [_fc("Claim", 0.8)])]
+         delib = Deliberation(
+@@ -329,14 +331,71 @@ class TestHITLGate:
+             effective_pipeline_profile=PipelineProfile.LIGHT,
+         )
+ 
+-        with patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate):
++        with (
++            patch.object(
++                ProfileExecutionPolicy,
++                "should_run_hitl_gate",
++                autospec=True,
++                side_effect=original,
++            ) as should_run_gate,
++            patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate),
++        ):
+             events = await _collect_events(delib, _manifest(), findings)
+ 
++        should_run_gate.assert_called_once()
+         mock_create_gate.assert_not_awaited()
+         assert any(isinstance(e, ConfidenceMapProduced) for e in events)
+ 
+         await engine.dispose()
+ 
++    @pytest.mark.asyncio
++    async def test_non_light_gate_two_uses_shared_policy_path(self) -> None:
++        engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
++        async with engine.begin() as conn:
++            await conn.run_sync(Base.metadata.create_all)
++        session_factory = async_sessionmaker(engine, expire_on_commit=False)
++
++        mock_gate_response = GateResponse(
++            id="gate-003",
++            engagement_id="ENG-001",
++            client_id="CLT-001",
++            gate_type=GateType.POST_DELIBERATION,
++            status=GateStatus.APPROVED,
++            created_at=datetime.now(UTC),
++        )
++        mock_gate_resolution = GateResolution(
++            status=GateStatus.APPROVED,
++            gate_response=mock_gate_response,
++            patch_applied=True,
++        )
++        mock_create_gate = AsyncMock(return_value=mock_gate_resolution)
++        original = ProfileExecutionPolicy.should_run_hitl_gate
++        findings = [_finding("agent-1", [_fc("Claim", 0.8)])]
++        delib = Deliberation(
++            analyst_llm=_mock_llm(),
++            db_session_factory=session_factory,
++            effective_pipeline_profile=PipelineProfile.DEEP,
++        )
++
++        with (
++            patch.object(
++                ProfileExecutionPolicy,
++                "should_run_hitl_gate",
++                autospec=True,
++                side_effect=original,
++            ) as should_run_gate,
++            patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate),
++        ):
++            events = await _collect_events(delib, _manifest(), findings)
++
++        should_run_gate.assert_called_once()
++        mock_create_gate.assert_awaited_once()
++        assert any(isinstance(e, ConfidenceMapProduced) for e in events)
++
++        await engine.dispose()
++
++        await engine.dispose()
++
+ 
+ # ---------------------------------------------------------------------------
+ # Contract compliance tests
+diff --git a/tests/unit/evaluator/test_evaluator.py b/tests/unit/evaluator/test_evaluator.py
+index ec04f5e..37966e1 100644
+--- a/tests/unit/evaluator/test_evaluator.py
++++ b/tests/unit/evaluator/test_evaluator.py
+@@ -427,3 +427,45 @@ class TestProfileVariance:
+             if abs(default_w[dim] - est_w[dim]) > 0.001
+         ]
+         assert len(diffs) >= 1
++
++    @pytest.mark.asyncio
++    async def test_rubric_events_emit_adjusted_weights(self) -> None:
++        from keystone.evaluator.rubric_config import get_profile_weights
++
++        llm = _make_mock_llm()
++        verifier = MockDOIVerifier({})
++        evaluator = Evaluator(llm=llm, doi_verifier=verifier)
++        manifest = _manifest(_cit("CIT-001"))
++        contract = _contract().model_copy(
++            update={
++                "dimension_emphasis": {
++                    RubricDimension.ANALYTICAL_DEPTH: 1.5,
++                }
++            }
++        )
++
++        with patch(
++            "keystone.evaluator.layer1_deterministic.batch_check_urls",
++            new_callable=AsyncMock,
++            return_value={"CIT-001": True},
++        ):
++            events = []
++            async for event in evaluator.evaluate(
++                "Test text.", contract, _task(), manifest, _spec()
++            ):
++                events.append(event)
++
++        rubric_events = [e for e in events if isinstance(e, RubricDimensionScored)]
++        weights_by_dimension = {
++            RubricDimension(event.dimension): event.weight for event in rubric_events
++        }
++        base_weights = get_profile_weights(EvaluationProfile.DEFAULT)
++
++        assert (
++            weights_by_dimension[RubricDimension.ANALYTICAL_DEPTH]
++            > base_weights[RubricDimension.ANALYTICAL_DEPTH]
++        )
++        assert (
++            weights_by_dimension[RubricDimension.SOURCE_QUALITY]
++            < base_weights[RubricDimension.SOURCE_QUALITY]
++        )
+diff --git a/tests/unit/evaluator/test_sprint_contract.py b/tests/unit/evaluator/test_sprint_contract.py
+index 95dfdb1..a0b95b1 100644
+--- a/tests/unit/evaluator/test_sprint_contract.py
++++ b/tests/unit/evaluator/test_sprint_contract.py
+@@ -154,3 +154,16 @@ class TestSprintContractGeneration:
+         assert contract.task_id == "task_001"
+         assert contract.engagement_id == "ENG-001"
+         assert contract.client_id == "CLT-001"
++
++    @pytest.mark.asyncio
++    async def test_malformed_json_raises_explicit_error(self) -> None:
++        async def mock_llm(prompt: str) -> str:
++            return "{not valid json"
++
++        gen = SprintContractGenerator(llm=mock_llm)
++
++        with pytest.raises(
++            RuntimeError,
++            match="Failed to parse sprint contract JSON for task task_001",
++        ):
++            await gen.generate(_make_task(), _make_spec())
+diff --git a/tests/unit/governance/test_policy.py b/tests/unit/governance/test_policy.py
+index 2855b04..7c3fc45 100644
+--- a/tests/unit/governance/test_policy.py
++++ b/tests/unit/governance/test_policy.py
+@@ -2,8 +2,16 @@
+ 
+ from __future__ import annotations
+ 
++from datetime import UTC, datetime
++
+ from keystone.governance import EnforcementAction, ProfileExecutionPolicy, ResearchStatus
+ from keystone.models.citations import ConfidenceTier
++from keystone.models.evaluation import (
++    EvaluationIntensity,
++    EvaluationResult,
++    Layer1Result,
++    Layer2Result,
++)
+ from keystone.models.research import (
+     FindingClaim,
+     FindingStatus,
+@@ -63,6 +71,26 @@ def _partial_finding(task_id: str) -> StructuredFinding:
+     )
+ 
+ 
++def _failed_evaluation(task_id: str) -> EvaluationResult:
++    return EvaluationResult(
++        evaluation_id=f"eval-{task_id}",
++        engagement_id="eng-001",
++        client_id="client-001",
++        task_id=task_id,
++        evaluated_at=datetime.now(UTC),
++        intensity=EvaluationIntensity.LIGHT_TOUCH,
++        passed=False,
++        overall_score=48.0,
++        layer1_results=Layer1Result(facts_verified=5, facts_failed=0),
++        layer2_results=Layer2Result(
++            citations_checked=3,
++            citations_verified=3,
++            gate_passed=True,
++        ),
++        feedback="Needs revision.",
++    )
++
++
+ class TestProfileExecutionPolicy:
+     def test_failed_no_output_task_non_renderable(self) -> None:
+         task = _task("task_001")
+@@ -109,3 +137,30 @@ class TestProfileExecutionPolicy:
+ 
+         assert flag is not None
+         assert flag.action == EnforcementAction.HALT
++
++    def test_light_coverage_halts_on_failed_evaluated_output(self) -> None:
++        task = _task("task_001")
++        policy = ProfileExecutionPolicy(PipelineProfile.LIGHT)
++        state = policy.new_state([task])
++
++        research_outcome = policy.record_research_outcome(
++            state,
++            task,
++            _partial_finding(task.id),
++        )
++        assert research_outcome.renderable is True
++
++        evaluation_outcome = policy.record_evaluation_outcome(
++            state,
++            task,
++            _failed_evaluation(task.id),
++        )
++
++        assert evaluation_outcome.evaluation_status == "failed"
++        assert evaluation_outcome.renderable is False
++
++        flag = policy.evaluate_coverage(state)
++
++        assert flag is not None
++        assert flag.action == EnforcementAction.HALT
++        assert "task_001" in flag.message
+diff --git a/tests/unit/pipeline/test_orchestrator.py b/tests/unit/pipeline/test_orchestrator.py
+index 30a35ea..7cc18f2 100644
+--- a/tests/unit/pipeline/test_orchestrator.py
++++ b/tests/unit/pipeline/test_orchestrator.py
+@@ -40,6 +40,7 @@ from keystone.models.evaluation import (
+ from keystone.models.research import (
+     EngagementSpec,
+     EngagementType,
++    EvaluationProfileName,
+     FindingClaim,
+     PipelineProfile,
+     ResearchQuestion,
+@@ -120,6 +121,7 @@ def _make_spec(eid: str = "eng_test", cid: str = "c1") -> EngagementSpec:
+             output_format="markdown",
+             engagement_type=EngagementType.SIZING,
+             day_1_hypothesis="L4+ AV sensor TAM exceeds $10B by 2030",
++            effective_evaluation_profile=EvaluationProfileName.ESTIMATIVE,
+         ),
+         task_decomposition=TaskDecomposition(
+             project="AV Sensors",
+@@ -1481,7 +1483,7 @@ class TestWave2BWiring:
+         assert inst.evaluate.call_args.args[1] is generated_contract
+ 
+     @pytest.mark.asyncio
+-    async def test_orchestrator_passes_profile_to_evaluator(self) -> None:
++    async def test_orchestrator_uses_persisted_evaluation_profile(self) -> None:
+         factory = _mock_llm_factory()
+         gw = _make_gateway()
+         pipeline = Pipeline(llm_factory=factory, gateway=gw)
+@@ -1491,9 +1493,10 @@ class TestWave2BWiring:
+             update={
+                 "research_spec": base_spec.research_spec.model_copy(
+                     update={
+-                        "engagement_type": EngagementType.STRATEGIC,
++                        "engagement_type": EngagementType.EVALUATIVE,
+                         "recommended_pipeline_profile": PipelineProfile.DEEP,
+                         "effective_pipeline_profile": PipelineProfile.DEEP,
++                        "effective_evaluation_profile": EvaluationProfileName.STRATEGIC,
+                     }
+                 )
+             }
+@@ -1583,3 +1586,75 @@ class TestWave2BWiring:
+ 
+         with pytest.raises(RuntimeError, match="LIGHT profile requires every renderable task"):
+             await pipeline.run("Test question", "c1")
++
++    @pytest.mark.asyncio
++    async def test_light_coverage_halts_on_failed_evaluated_output(self) -> None:
++        factory = _mock_llm_factory()
++        gw = _make_gateway()
++        pipeline = Pipeline(llm_factory=factory, gateway=gw)
++
++        base_spec = _make_spec()
++        spec = base_spec.model_copy(
++            update={
++                "research_spec": base_spec.research_spec.model_copy(
++                    update={
++                        "recommended_pipeline_profile": PipelineProfile.LIGHT,
++                        "effective_pipeline_profile": PipelineProfile.LIGHT,
++                    }
++                )
++            }
++        )
++        finding = _make_finding()
++        manifest = _make_manifest()
++        cm = _make_confidence_map()
++        failed_eval = _make_eval_result().model_copy(
++            update={
++                "passed": False,
++                "overall_score": 48.0,
++                "intensity": EvaluationIntensity.LIGHT_TOUCH,
++            }
++        )
++
++        async def noop_gen(*a, **kw):
++            return
++            yield
++
++        c = pipeline._build_components()
++        c.spec_engine.generate_spec = noop_gen
++        c.spec_engine.get_spec = AsyncMock(return_value=spec)
++        c.agent_pool.execute_all = AsyncMock(
++            return_value=[AgentResult("a1", "task_001", finding=finding)]
++        )
++        c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
++        c.citation_processor.process = noop_gen
++        c.citation_processor.get_result = AsyncMock(
++            return_value=CitationProcessorResult(
++                manifest=manifest,
++                canonicalized_findings=[finding],
++            )
++        )
++        c.deliberation.deliberate = noop_gen
++        c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
++        c.sprint_contract_generator.generate = AsyncMock(
++            return_value=SprintContract(
++                section_id="generated_task_001",
++                engagement_id="eng_test",
++                client_id="c1",
++                task_id="task_001",
++                section_title="Generated Section",
++                acceptance_criteria=["Generated criterion"],
++            )
++        )
++        pipeline._pending_components = c
++
++        with patch("keystone.pipeline.orchestrator.Evaluator") as MockEval:
++            inst = MagicMock()
++            inst.evaluate = noop_gen
++            inst.get_result = AsyncMock(return_value=failed_eval)
++            MockEval.return_value = inst
++
++            with pytest.raises(
++                RuntimeError,
++                match="LIGHT profile requires every renderable task",
++            ):
++                await pipeline.run("Test question", "c1")
+diff --git a/tests/unit/specification/test_spec_engine.py b/tests/unit/specification/test_spec_engine.py
+index 6c01a41..54986f2 100644
+--- a/tests/unit/specification/test_spec_engine.py
++++ b/tests/unit/specification/test_spec_engine.py
+@@ -3,12 +3,19 @@
+ from __future__ import annotations
+ 
+ import json
++from unittest.mock import AsyncMock, patch
+ 
+ import pytest
+ 
+ from keystone.contracts import SpecificationEngineContract
+ from keystone.events import AgentDispatched, SpecificationGenerated, TasksDecomposed
+-from keystone.models.research import EngagementSpec, EngagementType, PipelineProfile
++from keystone.governance.policy import ProfileExecutionPolicy
++from keystone.models.research import (
++    EngagementSpec,
++    EngagementType,
++    EvaluationProfileName,
++    PipelineProfile,
++)
+ from keystone.specification.spec_engine import SpecificationEngine
+ from keystone.specification.template_registry import TemplateRegistry
+ 
+@@ -122,7 +129,11 @@ def _make_tasks() -> dict:
+     }
+ 
+ 
+-def _make_full_mock_llm():
++def _make_full_mock_llm(
++    *,
++    engagement_type: str = "strategic",
++    pipeline_profile: str = "deep",
++):
+     """Create a mock LLM that handles all pipeline steps in sequence."""
+     call_count = 0
+ 
+@@ -133,8 +144,8 @@ def _make_full_mock_llm():
+         # Step 1: Classification
+         if call_count == 1:
+             return json.dumps({
+-                "engagement_type": "strategic",
+-                "pipeline_profile": "deep",
++                "engagement_type": engagement_type,
++                "pipeline_profile": pipeline_profile,
+                 "confidence": 0.92,
+                 "reasoning": "Complex multi-variable strategic question about competitive positioning.",
+             })
+@@ -177,6 +188,18 @@ def _make_full_mock_llm():
+     return llm
+ 
+ 
++class _NullAsyncSession:
++    async def __aenter__(self) -> object:
++        return object()
++
++    async def __aexit__(self, exc_type, exc, tb) -> bool:
++        return False
++
++
++def _session_factory() -> _NullAsyncSession:
++    return _NullAsyncSession()
++
++
+ class TestSpecificationEngine:
+ 
+     async def test_full_pipeline_luminar(self):
+@@ -257,8 +280,60 @@ class TestSpecificationEngine:
+         assert any(q.is_primary for q in rs.questions)
+         assert rs.recommended_pipeline_profile == PipelineProfile.DEEP
+         assert rs.effective_pipeline_profile == PipelineProfile.DEEP
++        assert rs.effective_evaluation_profile == EvaluationProfileName.STRATEGIC
+         assert rs.profile_source == "classifier"
+ 
++    async def test_light_profile_skips_hitl_gate_via_shared_policy(self):
++        llm = _make_full_mock_llm(
++            engagement_type="exploratory",
++            pipeline_profile="light",
++        )
++        engine = SpecificationEngine(llm, db_session_factory=_session_factory)
++        mock_create_gate = AsyncMock()
++        original = ProfileExecutionPolicy.should_run_hitl_gate
++
++        with (
++            patch.object(
++                ProfileExecutionPolicy,
++                "should_run_hitl_gate",
++                autospec=True,
++                side_effect=original,
++            ) as should_run_gate,
++            patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate),
++        ):
++            async for _ in engine.generate_spec(
++                question="Test question",
++                client_id="client_test",
++            ):
++                pass
++
++        should_run_gate.assert_called_once()
++        mock_create_gate.assert_not_awaited()
++
++    async def test_non_light_hitl_gate_uses_shared_policy_decision(self):
++        llm = _make_full_mock_llm()
++        engine = SpecificationEngine(llm, db_session_factory=_session_factory)
++        mock_create_gate = AsyncMock()
++        original = ProfileExecutionPolicy.should_run_hitl_gate
++
++        with (
++            patch.object(
++                ProfileExecutionPolicy,
++                "should_run_hitl_gate",
++                autospec=True,
++                side_effect=original,
++            ) as should_run_gate,
++            patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate),
++        ):
++            async for _ in engine.generate_spec(
++                question="Test question",
++                client_id="client_test",
++            ):
++                pass
++
++        should_run_gate.assert_called_once()
++        mock_create_gate.assert_awaited_once()
++
+     async def test_get_spec_raises_before_generate(self):
+         """get_spec() raises RuntimeError before generate_spec() is called."""
+         llm = _make_full_mock_llm()
+diff --git a/tests/unit/specification/test_task_generator.py b/tests/unit/specification/test_task_generator.py
+index 79d85a5..c3c4c9d 100644
+--- a/tests/unit/specification/test_task_generator.py
++++ b/tests/unit/specification/test_task_generator.py
+@@ -7,6 +7,7 @@ from datetime import UTC, datetime
+ 
+ from keystone.models.research import (
+     EngagementType,
++    PipelineProfile,
+     ResearchQuestion,
+     ResearchSpec,
+ )
+@@ -201,3 +202,85 @@ class TestTaskGenerator:
+             _make_tree(), _make_priorities(), EngagementType.EVALUATIVE, _make_spec()
+         )
+         assert result.tasks[0].importance == TaskImportance.PRIMARY
++
++    async def test_uses_priority_scores_when_highest_scored_branch_is_listed_second(self):
++        async def llm(prompt: str) -> str:
++            return json.dumps(
++                {
++                    "decomposition_rationale": "Order is intentionally inverted.",
++                    "tasks": [
++                        {
++                            "id": "task_low",
++                            "category": "market_sizing",
++                            "type": "current",
++                            "target_decision_usefulness": 4,
++                            "description": "Lower-scored branch listed first",
++                            "required_sources": ["industry_reports"],
++                            "acceptance_criteria": ["Criterion low"],
++                            "deliverable_destination": "Section Low",
++                            "priority": 1,
++                            "anti_confirmatory_framing": "Evaluate whether the low branch holds, including evidence both for and against",
++                            "assigned_tools": ["exa_search", "brave_search", "edgar_filings"],
++                            "assigned_model": "standard",
++                            "end_product": "Low branch analysis",
++                            "dependencies": [],
++                            "issue_tree_branch_id": "branch_1.1",
++                            "custom_category": None,
++                        },
++                        {
++                            "id": "task_high",
++                            "category": "competitive_landscape",
++                            "type": "estimative",
++                            "target_decision_usefulness": 5,
++                            "description": "Higher-scored branch listed second",
++                            "required_sources": ["industry_reports"],
++                            "acceptance_criteria": ["Criterion high"],
++                            "deliverable_destination": "Section High",
++                            "priority": 2,
++                            "anti_confirmatory_framing": "Evaluate whether the high branch holds, including evidence both for and against",
++                            "assigned_tools": ["exa_search", "brave_search", "edgar_filings"],
++                            "assigned_model": "standard",
++                            "end_product": "High branch analysis",
++                            "dependencies": [],
++                            "issue_tree_branch_id": "branch_2.1",
++                            "custom_category": None,
++                        },
++                    ],
++                }
++            )
++
++        priorities = [
++            PriorityScore(
++                branch_id="branch_1.1",
++                decision_relevance=0.6,
++                uncertainty_reduction=0.5,
++                priority_score=0.3,
++                reasoning="Lower score.",
++            ),
++            PriorityScore(
++                branch_id="branch_2.1",
++                decision_relevance=0.9,
++                uncertainty_reduction=0.9,
++                priority_score=0.81,
++                reasoning="Higher score.",
++            ),
++        ]
++        spec = _make_spec().model_copy(
++            update={"effective_pipeline_profile": PipelineProfile.DEEP}
++        )
++        registry = TemplateRegistry()
++        generator = TaskGenerator(llm, registry)
++
++        result = await generator.generate(
++            _make_tree(),
++            priorities,
++            EngagementType.EVALUATIVE,
++            spec,
++        )
++        tasks_by_id = {task.id: task for task in result.tasks}
++
++        assert result.tasks[0].id == "task_high"
++        assert tasks_by_id["task_high"].priority == 1
++        assert tasks_by_id["task_high"].importance == TaskImportance.PRIMARY
++        assert tasks_by_id["task_low"].priority == 2
++        assert tasks_by_id["task_low"].importance == TaskImportance.CRITICAL
+diff --git a/tests/unit/test_research_models.py b/tests/unit/test_research_models.py
+index 109a77f..c1095a8 100644
+--- a/tests/unit/test_research_models.py
++++ b/tests/unit/test_research_models.py
+@@ -371,11 +371,12 @@ class TestResearchSpecBatch2:
+         assert "Luminar" in spec.day_1_hypothesis
+ 
+     def test_pipeline_profile_defaults(self):
+-        from keystone.models.research import PipelineProfile
++        from keystone.models.research import EvaluationProfileName, PipelineProfile
+ 
+         spec = self._make_spec()
+         assert spec.recommended_pipeline_profile is None
+         assert spec.effective_pipeline_profile == PipelineProfile.STANDARD
++        assert spec.effective_evaluation_profile == EvaluationProfileName.DEFAULT
+         assert spec.profile_source == "classifier"
+ 
+     def test_invalid_engagement_type_rejected(self):

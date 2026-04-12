@@ -1597,3 +1597,47 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 1. Reconcile `CURRENT-STATE.md`, `WORKSTREAM-STATUS.md`, `WAVE-2B-SETUP.md`, and this log to point at `16e0bc7` as the real cleared Wave 2A baseline.
 2. Start Wave 2B from `audit/remediation/WAVE-2B-SETUP.md` plus `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`.
 3. Keep Wave 2B on a single code lane, with sidecar review/planning streams in parallel.
+
+---
+
+## Session 23: Wave 2B Blocked-State Reconciliation + Bootstrap Adoption
+- **Date:** 2026-04-12
+- **Agent:** Codex controller with repeated adversarial review of the autonomy plan
+- **Task:** Reconcile the repo to the true blocked Wave 2B state, install a durable control plane, and prepare a fresh-session recovery path that does not depend on chat history.
+
+### Key results
+- Confirmed the real live state:
+  - Wave 2A is cleared at `16e0bc7`
+  - Wave 2B checkpoint candidate `4ff7e90` exists
+  - `4ff7e90` is blocked by two committed review packets
+- Hardened the autonomous execution plan through repeated review into:
+  - `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v2.md`
+  - `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v3.md`
+  - `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
+- Captured the current dirty Wave 2B blocker-fix WIP as recovery evidence:
+  - `audit/remediation/runs/wave-2b/candidate-4ff7e90-recovery-dirty-wip.patch`
+  - SHA-256: `f9cf1925c31d5836024bfdf32fd5a5ee8cbfe8d4b1e46dc0983630b128b36234`
+- Created the bootstrap control plane:
+  - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+  - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+  - `audit/remediation/control-plane/RECOVERY-RULES.md`
+- Created the blocked-candidate Wave 2B run artifacts:
+  - `audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md`
+  - `audit/remediation/runs/wave-2b/candidate-4ff7e90-review-synthesis.md`
+  - `audit/remediation/runs/wave-2b/candidate-4ff7e90-blocked-checkpoint.md`
+  - `audit/remediation/runs/wave-2b/candidate-4ff7e90-file-manifest.md`
+- Reconciled stale live docs so they no longer claim Wave 2B is merely “next”:
+  - `CURRENT-STATE.md`
+  - `audit/remediation/WORKSTREAM-STATUS.md`
+  - `audit/remediation/WAVE-2B-SETUP.md`
+- Added tombstone/redirect warnings to stale launcher docs:
+  - `CLAUDE.md`
+  - `audit/remediation/EXECUTION-GUIDE.md`
+  - `audit/remediation/BUILD-PROCESS.md`
+
+### What comes next
+1. Start a fresh Codex session from the repo, not from chat history.
+2. Read the control-plane files first.
+3. Create the clean `4ff7e90` Wave 2B worktree.
+4. Replay only the approved recovery patch into that worktree.
+5. Create the next Wave 2B candidate commit and review the committed snapshot against `16e0bc7`.

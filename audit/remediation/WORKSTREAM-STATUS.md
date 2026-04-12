@@ -1,17 +1,18 @@
 # Workstream Status
 
-*Created: 2026-04-11 | Purpose: canonical handoff/orientation doc for future sessions*
+*Created: 2026-04-11 | Purpose: stream separation and orientation*
 
-This file is the entry point for remediation work. Use it first to determine which stream you are in, which docs are authoritative, and which older docs are history only.
+If `audit/remediation/control-plane/` exists, that control plane outranks this file.  
+This file is now an orientation layer, not the top authority.
 
 ---
 
 ## Current Snapshot
 
 ### Main remediation/build stream
-- **Status:** Live implementation stream
-- **Build status:** **Wave 1 complete**; **Wave 2A cleared**; **Wave 2B next**
-- **Current focus:** Start Wave 2B from the cleared Wave 2A baseline and reconciled governing docs
+- **Status:** Live blocked-remediation stream
+- **Build status:** **Wave 1 complete**; **Wave 2A cleared**; **Wave 2B candidate `4ff7e90` blocked**
+- **Current focus:** Reconcile and clear Wave 2B from a clean `4ff7e90` worktree, not from the dirty main workspace
 
 ### Round-3 content-audit stream
 - **Status:** Parallel planning/research stream
@@ -24,30 +25,31 @@ This file is the entry point for remediation work. Use it first to determine whi
 
 ### For implementation sessions
 Read in this order:
-1. `audit/remediation/WORKSTREAM-STATUS.md`
-2. `CURRENT-STATE.md`
-3. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
-4. `audit/remediation/BUILD-PROCESS.md`
-5. `audit/remediation/WAVE-2B-SETUP.md` if you are starting Wave 2B
-6. `SESSION-LOG.md` Sessions 19-22 only if you need rationale or exact prior decisions
+1. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+2. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+3. latest immutable review packet(s) for the active candidate
+4. `audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md`
+5. `audit/remediation/runs/wave-2b/candidate-4ff7e90-file-manifest.md`
+6. `audit/remediation/WAVE-2B-SETUP.md`
+7. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
+8. `CURRENT-STATE.md`
 
 ### For planning sessions
 Read in this order:
-1. `audit/remediation/WORKSTREAM-STATUS.md`
+1. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 2. `CURRENT-STATE.md`
 3. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
 4. `audit/remediation/round-3/CONTENT-SYNTHESIS-v2.md`
 5. `audit/remediation/round-3/PLANNING-ADDENDUM.md`
-6. `SESSION-LOG.md` Sessions 19-20 if you need design/build history
+6. the relevant sidecar memo
 
 ### For review sessions
 Read in this order:
-1. `audit/remediation/WORKSTREAM-STATUS.md`
-2. `CURRENT-STATE.md`
-3. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
-4. `audit/remediation/BUILD-PROCESS.md`
-5. The relevant wave setup doc
-6. The relevant implementation session log entry or diff
+1. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+2. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+3. the relevant run-folder artifact(s)
+4. the relevant wave setup doc
+5. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
 
 ---
 
@@ -59,11 +61,12 @@ This is the **live execution stream**. It owns the actual implementation waves.
 
 | File | Role now |
 |------|----------|
-| `audit/remediation/WORKSTREAM-STATUS.md` | Canonical orientation and stream separation |
-| `CURRENT-STATE.md` | Canonical live build status and next-wave summary |
-| `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md` | Binding implementation design and wave order |
-| `audit/remediation/BUILD-PROCESS.md` | Build discipline and checkpoint process |
-| `audit/remediation/WAVE-2B-SETUP.md` | Current Wave 2B execution checklist and scope notes |
+| `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml` | Machine-readable live state |
+| `audit/remediation/control-plane/ACTIVE-HANDOFF.md` | Human-readable recovery and next action |
+| latest immutable review packet(s) | Binding review truth for the active candidate |
+| `audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md` | Authoritative Wave 2B blocker ledger |
+| `audit/remediation/runs/wave-2b/candidate-4ff7e90-file-manifest.md` | Allowed write set for the active remediation loop |
+| `CURRENT-STATE.md` | Live build summary |
 
 ### Current build status
 
@@ -73,14 +76,14 @@ This is the **live execution stream**. It owns the actual implementation waves.
 | Wave 1B | Complete |
 | Wave 1C | Complete |
 | Wave 2A | Cleared in `16e0bc7` |
-| Wave 2B | Next |
+| Wave 2B | Blocked candidate `4ff7e90` |
 
 ### What this means in practice
 
-- Wave 2A is closed. The authoritative implementation target is now Wave 2B.
-- Wave 2B scope comes from `FINAL-DECISIONS-v2.1.md`, `CURRENT-STATE.md`, and `WAVE-2B-SETUP.md`.
-- Wave 2A review artifacts remain important background if Wave 2B touches adjacent provenance/rendering seams.
-- Do not reopen Wave 2A unless Wave 2B implementation or review surfaces a true regression.
+- Wave 2A is closed.
+- Wave 2B is not “next”; it is a blocked checkpoint candidate that must be remediated.
+- The authoritative implementation target is the blocked Wave 2B candidate plus the active blocker ledger.
+- Do not reopen Wave 2A unless Wave 2B remediation surfaces a true regression.
 
 ---
 
@@ -133,11 +136,13 @@ Round-3 matters, but it matters **after** the current Wave 2A finish line.
 
 | File | Use it for |
 |------|------------|
-| `audit/remediation/WORKSTREAM-STATUS.md` | First-stop orientation |
-| `CURRENT-STATE.md` | Current build status |
+| `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml` | First-stop machine-readable state |
+| `audit/remediation/control-plane/ACTIVE-HANDOFF.md` | First-stop human-readable state |
+| latest immutable review packet(s) | Binding blocked/cleared truth |
+| `audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md` | Active blocker ledger |
+| `CURRENT-STATE.md` | Current build summary |
 | `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md` | Binding remediation design |
-| `audit/remediation/BUILD-PROCESS.md` | Build/checkpoint discipline |
-| `audit/remediation/WAVE-2B-SETUP.md` | Current Wave 2B execution setup |
+| `audit/remediation/WAVE-2B-SETUP.md` | Current Wave 2B blocked-remediation setup |
 | `audit/remediation/round-3/CONTENT-SYNTHESIS-v2.md` | Content-audit synthesis |
 | `audit/remediation/round-3/PLANNING-ADDENDUM.md` | Later-planning direction calls |
 
@@ -154,27 +159,27 @@ Round-3 matters, but it matters **after** the current Wave 2A finish line.
 
 | File | Caveat |
 |------|--------|
-| `audit/remediation/BUILD-PROCESS.md` | Treat it as authoritative for process discipline, but not for older `v2.md` references or any pre-Session-20 assumptions that conflict with the now-proven Wave 2A setup |
-| `audit/remediation/WAVE-2A-SETUP.md` | Historical Wave 2A setup doc. Use only if you need to reconstruct the Wave 2A implementation/review arc. |
-| `audit/remediation/WAVE-2B-SETUP.md` | Authoritative for the current implementation wave |
-| `CURRENT-STATE.md` | Treat it as authoritative for live build status, but remember it has not yet been updated to absorb the round-3 planning changes for later waves |
+| `audit/remediation/BUILD-PROCESS.md` | Historical process discipline only; do not use as a launcher |
+| `audit/remediation/WAVE-2A-SETUP.md` | Historical Wave 2A setup doc |
+| `audit/remediation/WAVE-2B-SETUP.md` | Use only together with the control plane and blocker ledger |
+| `CURRENT-STATE.md` | Summary only; review truth outranks it |
 
 ---
 
 ## Practical Rule Set for Future Sessions
 
-1. If you are **implementing**, stay in the main remediation/build stream.
-2. If you are **replanning later waves**, read the round-3 docs alongside the live build docs.
-3. Do **not** use historical docs to infer current status when a newer authoritative file exists.
-4. Do **not** let round-3 planning findings silently expand Wave 2A scope.
-5. Before Wave 2B starts, reconcile the live governing docs with the round-3 planning decisions so there is one clear plan again.
+1. If `audit/remediation/control-plane/` exists, read it before anything else.
+2. If you are **implementing**, do it only from the clean implementation worktree, never the main workspace.
+3. Do **not** use historical docs to infer current state when a newer review packet exists.
+4. Do **not** let planning sidecars silently widen the active wave.
+5. Do **not** advance Wave 2B until a committed candidate is reviewed and cleared.
 
 ---
 
 ## Next 5 Steps
 
-1. Use this file as the first read in future remediation sessions.
-2. Start Wave 2B against `FINAL-DECISIONS-v2.1.md`, `CURRENT-STATE.md`, and `WAVE-2B-SETUP.md`.
-3. Run the Wave 2B adversarial review and close any blockers before opening Wave 3.
-4. Keep the round-3 planning overlay aligned with the main build docs as later waves land.
-5. Preserve the one-code-lane + sidecars pattern: one active implementation wave, multiple review/planning lanes.
+1. Use the control-plane files as the first read in future remediation sessions.
+2. Recover Wave 2B from the blocked `4ff7e90` snapshot, not from stale “Wave 2B next” assumptions.
+3. Clear Wave 2B before opening Wave 3A or Wave 3.
+4. Keep the round-3 planning overlay advisory until promoted by the controller.
+5. Preserve the one-code-lane + sidecars pattern.
