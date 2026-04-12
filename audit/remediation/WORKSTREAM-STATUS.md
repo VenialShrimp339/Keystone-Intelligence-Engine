@@ -12,7 +12,7 @@ This file is an orientation layer, not the top authority.
 ### Main remediation/build stream
 - **Status:** Wave 4 setup active from cleared Wave 3B baseline `5cc9585`
 - **Build status:** **Wave 1 complete**; **Wave 2A cleared**; **Wave 2B cleared in `2cdbfec`**; **Wave 3 cleared in `4819527`**; **Wave 3B cleared in `5cc9585`**
-- **Current focus:** Continue the remaining Wave 4 research memos in the main workspace, with `WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md` now the next required memo; the narrow Wave 4 polish slice remains frozen on paper but unopened in code
+- **Current focus:** The required Wave 4 memo set is complete; the next action is opening the narrow Wave 4 polish lane from `5cc9585` in a clean worktree while the main workspace stays docs-only
 
 ### Round-3 content-audit stream
 - **Status:** Parallel planning/research stream feeding Wave 4 and later
@@ -96,6 +96,7 @@ This remains a parallel planning/research stream.
 | `audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md` | Accepted D-2 actionability sidecar |
 | `audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md` | Accepted sprint-contract / contradiction-boundary sidecar for future Wave 4B work |
 | `audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md` | Accepted routing / template-enrichment sidecar that keeps dual-axis and dynamic-lens work gated off |
+| `audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md` | Accepted evaluator-verification sidecar that keeps true claim-support verification gated off |
 
 ### What this stream is for
 
@@ -147,5 +148,5 @@ This remains a parallel planning/research stream.
 1. Use the control-plane files as the first read in future sessions.
 2. Treat `5cc9585` as the last cleared code commit.
 3. Use `WAVE-4-SETUP.md` plus the Wave 3B review packet set as the current boundary evidence.
-4. Finish the remaining Wave 4 docs lane before opening the next clean implementation lane.
+4. Open the Wave 4 polish implementation lane only in a clean worktree rooted at `5cc9585`.
 5. Preserve the one-code-lane + sidecars pattern.

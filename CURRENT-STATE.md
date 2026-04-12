@@ -22,9 +22,10 @@
 4. Wave 3B is now cleared, and `5cc9585` becomes the last cleared code commit.
 5. `WAVE-3B-SETUP.md` is now historical context rather than the live runway.
 6. `WAVE-4-SETUP.md` now defines the active Wave 4 research-and-polish boundary.
-7. The latest Wave 4 docs checkpoint now includes the core prompt-quality memo, the exact polish specs, the sprint-contract / rubric memo, and the template / routing memo.
-8. The new template / routing memo explicitly keeps dual-axis tiebreaking, dynamic lens selection, and low-fit custom-template expansion out of the in-bounds Wave 4B slice.
-9. The next step is the final missing Wave 4 memo, not broad cleanup, not Wave 4B implementation, and not Wave 5 calibration.
+7. The latest Wave 4 docs checkpoint now includes the full required Wave 4 memo set: core prompt quality, polish specs, sprint-contract / rubric, template / routing, and evaluator verification.
+8. The evaluator-verification memo keeps `C-15` inside the current evaluator stack but explicitly pushes true claim-support verification out of Wave 4B as new capability work.
+9. The full docs lane is now complete.
+10. The next step is the narrow Wave 4 polish code lane from `5cc9585`, not broad cleanup, not Wave 4B implementation, and not Wave 5 calibration.
 
 ## What happens next
 
@@ -33,11 +34,10 @@
    - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 2. Treat `5cc9585` as the last cleared code commit.
 3. Use `audit/remediation/WAVE-4-SETUP.md` as the binding Wave 4 scope boundary.
-4. Continue Wave 4 docs work in the main workspace:
-   - write `WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`
-   - then continue the remaining Wave 4 research memos
-5. Keep all code out of the main workspace; controller/docs only still applies.
-6. Do **not** open Wave 4B or Wave 5 without the later setup gates.
+4. Keep the main workspace controller/docs only.
+5. Open a clean Wave 4 polish worktree rooted at `5cc9585`.
+6. Implement only `E-2`, `E-4`, and `E-5` there.
+7. Do **not** open Wave 4B or Wave 5 without the later setup gates.
 
 ## Reconciled wave plan
 
@@ -76,3 +76,4 @@
 - `audit/remediation/WAVE-4-POLISH-SPECS.md`
 - `audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
 - `audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`
+- `audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`

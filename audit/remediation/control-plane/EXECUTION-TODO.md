@@ -104,13 +104,13 @@ This file is the operational checklist.
 - [x] Create `WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
 - [x] Create `WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
 - [x] Create `WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`
-- [ ] Create `WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`
-- [ ] Mark each new memo as `content-only`, `existing-seam code`, or `new capability`
-- [ ] If a memo implies `new capability`, explicitly re-scope it out of Wave 4B
+- [x] Create `WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`
+- [x] Mark each new memo as `content-only`, `existing-seam code`, or `new capability`
+- [x] If a memo implies `new capability`, explicitly re-scope it out of Wave 4B
 
 ## Phase 8: Wave 4 Polish Code Lane
 
-- [ ] Do **not** open the Wave 4 polish code lane until the exact fix specs are committed
+- [x] Do **not** open the Wave 4 polish code lane until the exact fix specs are committed
 - [ ] Open a clean Wave 4 polish worktree rooted at `5cc9585`
 - [ ] Implement only the low-risk Wave 4 polish slice frozen in `WAVE-4-SETUP.md`
 - [ ] Write the Wave 4 candidate implementation and file-manifest artifacts
