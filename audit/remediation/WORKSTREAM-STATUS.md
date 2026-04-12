@@ -10,9 +10,9 @@ This file is an orientation layer, not the top authority.
 ## Current Snapshot
 
 ### Main remediation/build stream
-- **Status:** Wave 3 cleared at `4819527`
+- **Status:** Wave 3B setup active from cleared Wave 3 baseline `4819527`
 - **Build status:** **Wave 1 complete**; **Wave 2A cleared**; **Wave 2B cleared in `2cdbfec`**; **Wave 3 cleared in `4819527`**
-- **Current focus:** Create `WAVE-3B-SETUP.md` from cleared Wave 3 baseline `4819527`
+- **Current focus:** Open the clean Wave 3B implementation lane from `4819527` and execute only `WAVE-3B-SETUP.md` scope
 
 ### Round-3 content-audit stream
 - **Status:** Parallel planning/research stream
@@ -28,7 +28,7 @@ Read in this order:
 3. latest immutable review and clearance packet(s) for the cleared candidate
 4. `audit/remediation/WAVE-3A-SEAM-FREEZE.md`
 5. `CURRENT-STATE.md`
-6. `audit/remediation/WAVE-3-SETUP.md`
+6. `audit/remediation/WAVE-3B-SETUP.md`
 7. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
 
 ### For planning sessions
@@ -72,12 +72,13 @@ This remains the live execution stream.
 | Wave 2B | Cleared in `2cdbfec` |
 | Wave 3A | Complete in `65074ca` |
 | Wave 3 | Cleared in `4819527` |
+| Wave 3B | Active in setup state |
 
 ### What this means in practice
 
 - Wave 2B is no longer blocked.
-- The next gate is **not** “start Wave 3B code directly or broad cleanup.”
-- The active clearance artifacts are the Wave 3 run packet set under `audit/remediation/runs/wave-3/`.
+- The next gate is **not** “start Wave 4 / 4B work or broad cleanup.”
+- The active setup artifact is `WAVE-3B-SETUP.md`, backed by the cleared Wave 3 run packet set under `audit/remediation/runs/wave-3/`.
 - The next code lane must root from the last cleared code commit `4819527`, not from dirty `HEAD`.
 
 ## Stream 2: Round-3 Content Audit
@@ -114,7 +115,7 @@ This is still a parallel planning/research stream.
 | `audit/remediation/runs/wave-3/candidate-4819527-clearance.md` | Cleared-state proof for the current last-cleared code commit |
 | `audit/remediation/runs/wave-3/candidate-4819527-review-synthesis.md` | Wave 3 review consensus |
 | `audit/remediation/WAVE-3A-SEAM-FREEZE.md` | Frozen Wave 3 / 3B seam ownership |
-| `audit/remediation/WAVE-3-SETUP.md` | Historical Wave 3 setup runway |
+| `audit/remediation/WAVE-3B-SETUP.md` | Active Wave 3B execution runway |
 | `CURRENT-STATE.md` | Current build summary |
 | `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md` | Binding remediation design |
 
@@ -132,7 +133,7 @@ This is still a parallel planning/research stream.
 
 1. If `audit/remediation/control-plane/` exists, read it before anything else.
 2. Keep the main workspace controller/docs only.
-3. Do not let Wave 3 work silently widen into Wave 3B scope.
+3. Do not let Wave 3B work silently widen into Wave 4 / 4B content scope.
 4. Root the next code work from `4819527`.
 5. Do not let planning sidecars silently widen the active scope.
 
@@ -140,6 +141,6 @@ This is still a parallel planning/research stream.
 
 1. Use the control-plane files as the first read in future sessions.
 2. Treat `4819527` as the last cleared code commit.
-3. Use the Wave 3 review packet set plus `WAVE-3A-SEAM-FREEZE.md` as the current boundary evidence.
-4. Create `WAVE-3B-SETUP.md` before opening the next clean implementation lane.
+3. Use `WAVE-3B-SETUP.md` plus the Wave 3 review packet set as the current boundary evidence.
+4. Open the next clean implementation lane from `4819527`.
 5. Preserve the one-code-lane + sidecars pattern.

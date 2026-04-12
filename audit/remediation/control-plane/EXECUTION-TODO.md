@@ -19,19 +19,19 @@ This file is the operational checklist.
 ## Current State
 
 - Last cleared code commit: `4819527`
-- Last docs reconcile commit: `198ab92` (pending next docs checkpoint)
-- Active wave state: `wave-3 / cleared`
-- Next mandatory gate: `Wave 3B setup`
+- Latest committed docs checkpoint before this setup state: `6eafc82`
+- Active wave state: `wave-3b / setup`
+- Next mandatory gate: `Wave 3B implementation lane`
 
 ## Now
 
 - [x] Confirm the control-plane tuple now says:
-  - `active_wave = wave-3`
-  - `active_state = cleared`
+  - `active_wave = wave-3b`
+  - `active_state = setup`
   - `last_cleared_code_commit = 4819527`
-  - `next_action = use cleared Wave 3 candidate 4819527 as baseline and create WAVE-3B-SETUP.md`
+  - `next_action = open a clean Wave 3B implementation worktree from 4819527`
 - [x] Stay on `codex/remediation-program` in the main workspace
-- [x] Do **not** start Wave 3B code until the setup checkpoint is committed
+- [x] Do **not** start Wave 3B code in the main workspace
 
 ## Phase 1: Wave 3A Seam Freeze
 
@@ -70,10 +70,10 @@ This file is the operational checklist.
 ## Phase 4: Wave 3B Gate
 
 - [x] Do **not** start Wave 3B until Wave 3 is cleared
-- [ ] Commit the Wave 3 cleared-state reconcile packet in the main workspace
-- [ ] Create `WAVE-3B-SETUP.md`
-- [ ] Update the control plane so Wave 3B setup becomes the active runway
-- [ ] Re-read the control plane after the Wave 3B setup checkpoint
+- [x] Commit the Wave 3 cleared-state reconcile packet in the main workspace
+- [x] Create `WAVE-3B-SETUP.md`
+- [x] Update the control plane so Wave 3B setup becomes the active runway
+- [x] Re-read the control plane after the Wave 3B setup checkpoint
 - [ ] Preserve the single authoritative round-controller rule
 
 ## Phase 5: Wave 3B Implementation
