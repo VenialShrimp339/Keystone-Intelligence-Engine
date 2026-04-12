@@ -18,10 +18,10 @@ This file is the operational checklist.
 
 ## Current State
 
-- Last cleared code commit: `6406e46`
-- Latest prior docs checkpoint before this cleared state: `d16a40a`
-- Active wave state: `wave-4b / setup`
-- Next mandatory gate: `Wave 4B implementation lane`
+- Last cleared code commit: `65a612d`
+- Latest prior docs checkpoint before this cleared state: `fabe847`
+- Active wave state: `wave-4b / cleared`
+- Next mandatory gate: `Hard stop until a post-Wave-4B authority artifact is committed`
 
 ## Now
 
@@ -127,14 +127,14 @@ This file is the operational checklist.
 
 ## Phase 10: Wave 4B Implementation
 
-- [ ] Open a clean Wave 4B implementation worktree rooted at `6406e46`
-- [ ] Keep the main workspace controller/docs only
-- [ ] Implement only the Wave 4B scope approved by `WAVE-4B-SETUP.md`
-- [ ] Write the Wave 4B candidate implementation and file-manifest artifacts
-- [ ] Run focused Wave 4B tests and runtime probes
-- [ ] Create the candidate commit
-- [ ] Run adversarial review + second opinion on the committed snapshot
-- [ ] Write review synthesis and either blocked-checkpoint or clearance artifacts
+- [x] Open a clean Wave 4B implementation worktree rooted at `6406e46`
+- [x] Keep the main workspace controller/docs only
+- [x] Implement only the Wave 4B scope approved by `WAVE-4B-SETUP.md`
+- [x] Write the Wave 4B candidate implementation and file-manifest artifacts
+- [x] Run focused Wave 4B tests and runtime probes
+- [x] Create the candidate commit
+- [x] Run adversarial review + second opinion on the committed snapshot
+- [x] Write review synthesis and either blocked-checkpoint or clearance artifacts
 
 ## Carried Follow-Ups
 
