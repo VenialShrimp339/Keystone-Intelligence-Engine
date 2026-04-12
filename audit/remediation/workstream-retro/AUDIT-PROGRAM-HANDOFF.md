@@ -68,30 +68,31 @@ Read these first, in order:
 1. `graphify-out/GRAPH_REPORT.md`
 2. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 3. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-4. `CURRENT-STATE.md`
-5. `audit/remediation/WORKSTREAM-STATUS.md`
-6. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
+4. `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
+5. `CURRENT-STATE.md`
+6. `audit/remediation/WORKSTREAM-STATUS.md`
+7. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
 
 Then read these workstream artifacts:
 
-7. `audit/remediation/runs/wave-2b/`
-8. `audit/remediation/runs/wave-3/`
-9. `audit/remediation/runs/wave-3b/`
-10. `audit/remediation/runs/wave-4/`
-11. `audit/remediation/runs/wave-4b/`
+8. `audit/remediation/runs/wave-2b/`
+9. `audit/remediation/runs/wave-3/`
+10. `audit/remediation/runs/wave-3b/`
+11. `audit/remediation/runs/wave-4/`
+12. `audit/remediation/runs/wave-4b/`
 
 Then read the setup/seam/research docs relevant to boundary review:
 
-12. `audit/remediation/WAVE-3A-SEAM-FREEZE.md`
-13. `audit/remediation/WAVE-3-SETUP.md`
-14. `audit/remediation/WAVE-3B-SETUP.md`
-15. `audit/remediation/WAVE-4-SETUP.md`
-16. `audit/remediation/WAVE-4B-SETUP.md`
-17. `audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md`
-18. `audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
-19. `audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
-20. `audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`
-21. `audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`
+13. `audit/remediation/WAVE-3A-SEAM-FREEZE.md`
+14. `audit/remediation/WAVE-3-SETUP.md`
+15. `audit/remediation/WAVE-3B-SETUP.md`
+16. `audit/remediation/WAVE-4-SETUP.md`
+17. `audit/remediation/WAVE-4B-SETUP.md`
+18. `audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md`
+19. `audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
+20. `audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
+21. `audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`
+22. `audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`
 
 ## Important structural fact
 
@@ -120,6 +121,7 @@ Important historical note:
 - `65074ca` is the real seam-freeze artifact landing because it creates `WAVE-3A-SEAM-FREEZE.md`.
 - That same commit is internally stale because its live control-plane and handoff text still instruct the controller to create that doc.
 - `198ab92` is the later controller reconcile that first promotes the seam freeze into active `wave-3 / setup`.
+- `RETROSPECTIVE-LINEAGE-MANIFEST.yaml` is now the controller-promoted lineage layer that pins this chain exactly for retrospective audit use without rewriting those historical commits.
 
 This means a monolithic audit of the current branch is **not sufficient**.
 

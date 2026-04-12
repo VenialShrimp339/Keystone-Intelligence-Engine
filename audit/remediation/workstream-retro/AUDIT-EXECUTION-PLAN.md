@@ -19,6 +19,7 @@ Default launch mode is strict.
 - Pre-planning docs anchor commit: `2e6d780`
 - Last cleared-state docs checkpoint: `91f97c2`
 - Current planning-package docs commit at reconciliation start: `c5dbd05`
+- Controller-promoted retrospective lineage manifest: `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
 - Current planning-package lineage after the pre-planning anchor:
   `2e6d780 -> c5dbd05`
 - Last cleared code commit: `65a612d`
@@ -31,6 +32,7 @@ Historical interpretation note:
 
 - `65074ca` lands `WAVE-3A-SEAM-FREEZE.md`, but that commit is internally stale because its live control-plane text still says to create that doc.
 - `198ab92` is the later controller reconcile that first promotes the seam freeze into active `wave-3 / setup`.
+- Historical symbolic `HEAD` references across `35a8a29 -> 2e6d780` are replaced for retrospective audit use by the exact git-derived pins recorded in `RETROSPECTIVE-LINEAGE-MANIFEST.yaml`.
 
 ## Program Rules
 
@@ -216,15 +218,16 @@ This is the final program-level review.
 Every eventual review session must:
 
 1. read `graphify-out/GRAPH_REPORT.md` first
-2. pin the exact baseline, parent, and target commits in the report header
-3. state whether code truth came from a clean worktree or detached review checkout
-4. state that the dirty main workspace was not trusted as code truth
-5. list the exact authority docs read
-6. distinguish:
+2. read `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml` before deriving any historical docs/code join from raw checkpoint text
+3. pin the exact baseline, parent, and target commits in the report header
+4. state whether code truth came from a clean worktree or detached review checkout
+5. state that the dirty main workspace was not trusted as code truth
+6. list the exact authority docs read
+7. distinguish:
    - packet integrity
    - scope or boundary conformity
    - runtime correctness
-7. end with an explicit top-line verdict plus residual risks
+8. end with an explicit top-line verdict plus residual risks
 
 ## No-Go Conditions For The Program
 

@@ -20,6 +20,8 @@ last_docs_reconcile_commit: c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468
 docs_reconcile_commit_policy: "Pinned to the exact docs snapshot this controller reconcile started from. Do not treat it as symbolic HEAD; later controller docs checkpoints must advance this pin explicitly."
 last_cleared_docs_commit: 91f97c2
 planning_anchor_commit: 2e6d780
+retrospective_lineage_manifest: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
+retrospective_lineage_manifest_policy: "For retrospective audits of docs checkpoints 35a8a29 through 2e6d780, this controller-promoted manifest is the authoritative lineage layer. It replaces the historical symbolic HEAD pins with exact git-derived checkpoint pins, preserves the 65074ca -> 198ab92 seam-freeze promotion split, and does not by itself advance Batch 2 or rewrite earlier review sidecars."
 retrospective_sidecar_roots:
   - audit/remediation/workstream-retro/
   - audit/remediation/workstream-retro/reviews/
@@ -52,6 +54,7 @@ wip_parent_candidate_commit: 65a612d
 wip_scope:
   - audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
   - audit/remediation/control-plane/ACTIVE-HANDOFF.md
+  - audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
   - audit/remediation/control-plane/EXECUTION-TODO.md
   - CURRENT-STATE.md
   - audit/remediation/WORKSTREAM-STATUS.md

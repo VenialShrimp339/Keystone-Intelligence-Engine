@@ -1,5 +1,5 @@
 # Current State
-*Last updated: 2026-04-12 | Updated by: Batch 1 docs/package reconcile*
+*Last updated: 2026-04-12 | Updated by: Batch 1 docs/package reconcile + retrospective lineage normalization*
 
 ---
 
@@ -23,6 +23,7 @@
 4. Wave 4B is now cleared, and `65a612d` becomes the last cleared code commit.
 5. The approved `D-2`, `C-1` / `C-2` / `C-3` / `C-4` / `C-5` / `C-7` / `C-8` / `C-9` / `C-12` / `C-13` / `C-14` / `C-15` slices are now load-bearing on the committed runtime path.
 6. A hard stop now applies because no post-Wave-4B authority artifact is yet committed.
+7. `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml` is now promoted as the authoritative retrospective lineage layer for docs checkpoints `35a8a29` through `2e6d780`.
 
 ## What happens next
 
@@ -31,8 +32,9 @@
    - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 2. Treat `65a612d` as the last cleared code commit.
 3. Use the Wave 4B clearance packet set plus `audit/remediation/WAVE-4B-SETUP.md` as the binding proof of what cleared.
-4. Keep the main workspace controller/docs only.
-5. Do **not** open Wave 5, calibration, or any deferred-capability lane until a later controller-approved setup artifact exists.
+4. For retrospective audits, use `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml` instead of reconstructing the historical symbolic-`HEAD` chain by hand.
+5. Keep the main workspace controller/docs only.
+6. Do **not** open Wave 5, calibration, or any deferred-capability lane until a later controller-approved setup artifact exists.
 
 ## Reconciled wave plan
 
@@ -53,6 +55,7 @@
 - For exact precedence, use `audit/remediation/control-plane/ACTIVE-HANDOFF.md`. This file is a summary layer and does not override the handoff's authoritative order.
 - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
 - `audit/remediation/runs/wave-4b/candidate-65a612d-adversarial-review.md`
 - `audit/remediation/runs/wave-4b/candidate-65a612d-second-opinion.md`
 - `audit/remediation/runs/wave-4b/candidate-65a612d-file-manifest.md`

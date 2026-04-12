@@ -1,0 +1,479 @@
+version: 1
+status: controller_promoted
+manifest_role: authoritative_retrospective_lineage_layer
+scope:
+  docs_checkpoint_start_commit: 35a8a29023a46a5a50cfffe729e9066f8df16555
+  docs_checkpoint_end_commit: 2e6d7807dbe7a9eace9649a39fc455e739ac4da2
+  last_cleared_state_docs_commit: 91f97c21519e0c974ff39c65f393866af1391144
+  planning_anchor_commit: 2e6d7807dbe7a9eace9649a39fc455e739ac4da2
+  code_lineage:
+    - 4ff7e90f15d3ca821ba4dc9bfd3120b6350255ee
+    - 2cdbfec84022f52e9dca6acec8f919e8e6de5c2c
+    - 4819527ed12810e0a1c2996308525ec23a906cb3
+    - 5cc95858213e7ed817339fa910aaeaa85730c5a7
+    - 6406e4639a26b2cb732c78690ae61deb6abfab6b
+    - 65a612dc1400abbedcfbdda1f173cd72a3a90c06
+authority_policy:
+  retrospective_use: "For retrospective audits of docs checkpoints 35a8a29 through 2e6d780, use this manifest as the authoritative lineage layer. It replaces the historical symbolic HEAD docs pin with exact git-derived checkpoint pins and preserves anomalies as annotations instead of rewriting historical checkpoint text."
+  live_scope_limit: "This manifest augments retrospective lineage only. It does not replace the live Wave 4B hard-stop authority, does not rewrite historical commits, and does not by itself change the recorded verdict of previously written Batch 1 review sidecars."
+historical_normalizations:
+  symbolic_head_defect:
+    original_historical_value: HEAD
+    retrospective_replacement: exact git-derived docs checkpoint and code lineage pins
+    applies_to_docs_checkpoints:
+      - 35a8a29023a46a5a50cfffe729e9066f8df16555
+      - 2c026cc98b44e4856bc4434fd77fe253c370f7b6
+      - f717507d19313955d1c2f41509e55d40cd1ce2d0
+      - a370963c15760d40a324dab1ece0a2e32b38739f
+      - 65074ca1cb7cf20fd0b8d733c8ab1505d4a7327c
+      - 198ab92b299f63afb0532ff503241f8b28e14935
+      - 6eafc8256980d2483979e3517fa4955b7bb9efac
+      - cd8ad1f7ffbbcc0e7f08553ed3839722c995c15e
+      - 5453fb9d0b22570b50cf8c2b70c86a8d3a1bca9f
+      - 0df3596361d43882ce0e642f0d85e891a3131696
+      - b42d0357b0d5ff62dcd6d607289fddee69669253
+      - 456f29c089b2e7bb9a668056f202b8f1b2aa968f
+      - 28ebe1a2fde41673c67b934e0943b76dbfee1733
+      - d16a40a2916f845f3c97279e5c8a29a8112c0e0a
+      - d73c40665b393e1f29478f50f521b021f29aac20
+      - fabe8471e212599246ad3997d8e8d7ae5eac7f76
+      - 91f97c21519e0c974ff39c65f393866af1391144
+      - 2e6d7807dbe7a9eace9649a39fc455e739ac4da2
+  seam_freeze_transition:
+    artifact_landing_docs_commit: 65074ca1cb7cf20fd0b8d733c8ab1505d4a7327c
+    coherent_live_promotion_docs_commit: 198ab92b299f63afb0532ff503241f8b28e14935
+    interpretation: "65074ca lands WAVE-3A-SEAM-FREEZE.md, but 198ab92 is the first coherent live promotion into active wave-3 / setup."
+provenance_method_definitions:
+  checkpoint_text_plus_git_pin: "git show of CONTROL-PLANE-STATE.yaml and ACTIVE-HANDOFF.md at the docs checkpoint, plus git rev-list ancestry confirmation and packet/header inspection to replace the historical symbolic HEAD pin."
+  checkpoint_text_plus_artifact_presence: "checkpoint_text_plus_git_pin plus explicit git object/file-presence confirmation for a landed artifact that was not yet coherently promoted."
+  checkpoint_text_plus_forward_promotion_overlay: "checkpoint_text_plus_git_pin plus forward confirmation of the later reconcile commit that first made the earlier landed artifact coherent as live state."
+checkpoints:
+  - docs_commit: 35a8a29023a46a5a50cfffe729e9066f8df16555
+    docs_short: 35a8a29
+    docs_subject: "Bootstrap control plane for blocked Wave 2B remediation"
+    claimed_state: "wave-2b / blocked bootstrap"
+    code_commit: 4ff7e90f15d3ca821ba4dc9bfd3120b6350255ee
+    code_short: 4ff7e90
+    packet_family:
+      family_id: wave-2b-blocked-4ff7e90
+      review_packets:
+        - audit/remediation/WAVE-2B-ADVERSARIAL-REVIEW.md
+        - audit/remediation/WAVE-2B-SECOND-OPINION.md
+        - audit/remediation/runs/wave-2b/candidate-4ff7e90-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-2b/candidate-4ff7e90-blocked-checkpoint.md
+      scope_manifest_packet: audit/remediation/runs/wave-2b/candidate-4ff7e90-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md
+      - audit/remediation/WAVE-2B-SETUP.md
+    next_action: "Stage 0A/0B: verify the recovery patch checksum, create a clean worktree at 4ff7e90, replay approved Wave 2B blocker-fix work there, and update the blocker ledger with fresh evidence before creating the next candidate commit."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+      - blocked_packet_family_not_fully_elevated_in_historical_latest_review_packets
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: 2c026cc98b44e4856bc4434fd77fe253c370f7b6
+    docs_short: 2c026cc
+    docs_subject: "Docs: clear Wave 2B at 2cdbfec"
+    claimed_state: "wave-2b / cleared"
+    code_commit: 2cdbfec84022f52e9dca6acec8f919e8e6de5c2c
+    code_short: 2cdbfec
+    packet_family:
+      family_id: wave-2b-cleared-2cdbfec
+      review_packets:
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-2b/candidate-2cdbfec-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md
+      - audit/remediation/WAVE-2B-SETUP.md
+    next_action: "Create and commit WAVE-3A-SEAM-FREEZE.md before any Wave 3 code begins."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: f717507d19313955d1c2f41509e55d40cd1ce2d0
+    docs_short: f717507
+    docs_subject: "Add execution checklist for post-Wave-2B flow"
+    claimed_state: "wave-2b / cleared with execution checklist"
+    code_commit: 2cdbfec84022f52e9dca6acec8f919e8e6de5c2c
+    code_short: 2cdbfec
+    packet_family:
+      family_id: wave-2b-cleared-2cdbfec
+      review_packets:
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-2b/candidate-2cdbfec-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md
+      - audit/remediation/WAVE-2B-SETUP.md
+    next_action: "Create and commit WAVE-3A-SEAM-FREEZE.md before any Wave 3 code begins."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: a370963c15760d40a324dab1ece0a2e32b38739f
+    docs_short: a370963
+    docs_subject: "Enable continuous execution across control-plane checkpoints"
+    claimed_state: "wave-2b / cleared with continuous-checkpoint law"
+    code_commit: 2cdbfec84022f52e9dca6acec8f919e8e6de5c2c
+    code_short: 2cdbfec
+    packet_family:
+      family_id: wave-2b-cleared-2cdbfec
+      review_packets:
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-2b/candidate-2cdbfec-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md
+      - audit/remediation/WAVE-2B-SETUP.md
+    next_action: "Create and commit WAVE-3A-SEAM-FREEZE.md before any Wave 3 code begins."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: 65074ca1cb7cf20fd0b8d733c8ab1505d4a7327c
+    docs_short: 65074ca
+    docs_subject: "docs: freeze Wave 3A seams"
+    claimed_state: "seam-freeze artifact landed, but live state still claims wave-2b / cleared pending seam freeze"
+    code_commit: 2cdbfec84022f52e9dca6acec8f919e8e6de5c2c
+    code_short: 2cdbfec
+    packet_family:
+      family_id: wave-2b-cleared-2cdbfec
+      review_packets:
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-2b/candidate-2cdbfec-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md
+      - audit/remediation/WAVE-2B-SETUP.md
+    landed_but_not_yet_active_artifacts:
+      - audit/remediation/WAVE-3A-SEAM-FREEZE.md
+    next_action: "Create and commit WAVE-3A-SEAM-FREEZE.md before any Wave 3 code begins."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+      - artifact_landed_but_not_coherently_promoted
+    provenance_method: checkpoint_text_plus_artifact_presence
+  - docs_commit: 198ab92b299f63afb0532ff503241f8b28e14935
+    docs_short: 198ab92
+    docs_subject: "docs: activate Wave 3 setup"
+    claimed_state: "wave-3 / setup"
+    code_commit: 2cdbfec84022f52e9dca6acec8f919e8e6de5c2c
+    code_short: 2cdbfec
+    packet_family:
+      family_id: wave-2b-cleared-2cdbfec
+      review_packets:
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md
+        - audit/remediation/runs/wave-2b/candidate-2cdbfec-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-2b/candidate-2cdbfec-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-3A-SEAM-FREEZE.md
+      - audit/remediation/WAVE-3-SETUP.md
+    next_action: "Open a clean Wave 3 implementation worktree from 2cdbfec, implement only the scope frozen in WAVE-3A-SEAM-FREEZE.md and WAVE-3-SETUP.md, then create the next candidate commit."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+      - first_coherent_live_promotion_of_65074ca_artifact
+    provenance_method: checkpoint_text_plus_forward_promotion_overlay
+  - docs_commit: 6eafc8256980d2483979e3517fa4955b7bb9efac
+    docs_short: 6eafc82
+    docs_subject: "docs: clear wave 3 candidate 4819527"
+    claimed_state: "wave-3 / cleared"
+    code_commit: 4819527ed12810e0a1c2996308525ec23a906cb3
+    code_short: 4819527
+    packet_family:
+      family_id: wave-3-cleared-4819527
+      review_packets:
+        - audit/remediation/runs/wave-3/candidate-4819527-adversarial-review.md
+        - audit/remediation/runs/wave-3/candidate-4819527-second-opinion.md
+        - audit/remediation/runs/wave-3/candidate-4819527-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-3/candidate-4819527-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-3/candidate-4819527-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-3A-SEAM-FREEZE.md
+      - audit/remediation/WAVE-3-SETUP.md
+    next_action: "Use the cleared Wave 3 candidate 4819527 as the new baseline and create WAVE-3B-SETUP.md before any Wave 3B code begins."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: cd8ad1f7ffbbcc0e7f08553ed3839722c995c15e
+    docs_short: cd8ad1f
+    docs_subject: "docs: activate Wave 3B setup"
+    claimed_state: "wave-3b / setup"
+    code_commit: 4819527ed12810e0a1c2996308525ec23a906cb3
+    code_short: 4819527
+    packet_family:
+      family_id: wave-3-cleared-4819527
+      review_packets:
+        - audit/remediation/runs/wave-3/candidate-4819527-adversarial-review.md
+        - audit/remediation/runs/wave-3/candidate-4819527-second-opinion.md
+        - audit/remediation/runs/wave-3/candidate-4819527-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-3/candidate-4819527-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-3/candidate-4819527-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-3B-SETUP.md
+    supporting_boundary_docs:
+      - audit/remediation/WAVE-3A-SEAM-FREEZE.md
+      - audit/remediation/WAVE-3-SETUP.md
+    next_action: "Open a clean Wave 3B implementation worktree from 4819527, implement only the scope frozen in WAVE-3B-SETUP.md, then create the next candidate commit."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: 5453fb9d0b22570b50cf8c2b70c86a8d3a1bca9f
+    docs_short: 5453fb9
+    docs_subject: "docs: synthesize wave 3b review"
+    claimed_state: "wave-3b / setup; 5cc9585 review packet family staged but not yet promoted"
+    code_commit: 4819527ed12810e0a1c2996308525ec23a906cb3
+    code_short: 4819527
+    packet_family:
+      family_id: wave-3-cleared-4819527
+      review_packets:
+        - audit/remediation/runs/wave-3/candidate-4819527-adversarial-review.md
+        - audit/remediation/runs/wave-3/candidate-4819527-second-opinion.md
+        - audit/remediation/runs/wave-3/candidate-4819527-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-3/candidate-4819527-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-3/candidate-4819527-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-3B-SETUP.md
+    supporting_boundary_docs:
+      - audit/remediation/WAVE-3A-SEAM-FREEZE.md
+      - audit/remediation/WAVE-3-SETUP.md
+    next_action: "Open a clean Wave 3B implementation worktree from 4819527, implement only the scope frozen in WAVE-3B-SETUP.md, then create the next candidate commit."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+      - staged_next_packet_family_not_yet_promoted
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: 0df3596361d43882ce0e642f0d85e891a3131696
+    docs_short: 0df3596
+    docs_subject: "docs: clear wave 3b and activate wave 4"
+    claimed_state: "wave-4 / setup after Wave 3B clear"
+    code_commit: 5cc95858213e7ed817339fa910aaeaa85730c5a7
+    code_short: 5cc9585
+    packet_family:
+      family_id: wave-3b-cleared-5cc9585
+      review_packets:
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-adversarial-review.md
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-second-opinion.md
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-3b/candidate-5cc9585-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-3b/candidate-5cc9585-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-4-SETUP.md
+    supporting_boundary_docs:
+      - audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md
+    next_action: "Use WAVE-4-SETUP.md as the active boundary, keep the main workspace docs-only, and author the next missing Wave 4 research memo plus the exact E-2/E-4/E-5 polish specs before opening any new code lane."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: b42d0357b0d5ff62dcd6d607289fddee69669253
+    docs_short: b42d035
+    docs_subject: "docs: define wave 4 prompt and polish specs"
+    claimed_state: "wave-4 / setup memo lane 1"
+    code_commit: 5cc95858213e7ed817339fa910aaeaa85730c5a7
+    code_short: 5cc9585
+    packet_family:
+      family_id: wave-3b-cleared-5cc9585
+      review_packets:
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-adversarial-review.md
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-second-opinion.md
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-3b/candidate-5cc9585-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-3b/candidate-5cc9585-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-4-SETUP.md
+    supporting_boundary_docs:
+      - audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md
+      - audit/remediation/WAVE-4-POLISH-SPECS.md
+      - audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md
+    next_action: "Keep the main workspace docs-only and author WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md next. Wave 4 polish code stays unopened until the remaining Wave 4 memos are in place."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: 456f29c089b2e7bb9a668056f202b8f1b2aa968f
+    docs_short: 456f29c
+    docs_subject: "docs: add wave 4 sprint contract research"
+    claimed_state: "wave-4 / setup memo lane 2"
+    code_commit: 5cc95858213e7ed817339fa910aaeaa85730c5a7
+    code_short: 5cc9585
+    packet_family:
+      family_id: wave-3b-cleared-5cc9585
+      review_packets:
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-adversarial-review.md
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-second-opinion.md
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-3b/candidate-5cc9585-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-3b/candidate-5cc9585-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-4-SETUP.md
+    supporting_boundary_docs:
+      - audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md
+      - audit/remediation/WAVE-4-POLISH-SPECS.md
+      - audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md
+      - audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md
+    next_action: "Keep the main workspace docs-only and author WAVE-4-TEMPLATE-ROUTING-RESEARCH.md next. Wave 4 polish code stays unopened until the remaining Wave 4 memos are in place."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: 28ebe1a2fde41673c67b934e0943b76dbfee1733
+    docs_short: 28ebe1a
+    docs_subject: "docs: add wave 4 template routing research"
+    claimed_state: "wave-4 / setup memo lane 3"
+    code_commit: 5cc95858213e7ed817339fa910aaeaa85730c5a7
+    code_short: 5cc9585
+    packet_family:
+      family_id: wave-3b-cleared-5cc9585
+      review_packets:
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-adversarial-review.md
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-second-opinion.md
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-3b/candidate-5cc9585-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-3b/candidate-5cc9585-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-4-SETUP.md
+    supporting_boundary_docs:
+      - audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md
+      - audit/remediation/WAVE-4-POLISH-SPECS.md
+      - audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md
+      - audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md
+      - audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md
+    next_action: "Keep the main workspace docs-only and author WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md next. Wave 4 polish code stays unopened until the remaining Wave 4 memos are in place."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: d16a40a2916f845f3c97279e5c8a29a8112c0e0a
+    docs_short: d16a40a
+    docs_subject: "docs: complete wave 4 research lane"
+    claimed_state: "wave-4 / setup memo lane complete"
+    code_commit: 5cc95858213e7ed817339fa910aaeaa85730c5a7
+    code_short: 5cc9585
+    packet_family:
+      family_id: wave-3b-cleared-5cc9585
+      review_packets:
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-adversarial-review.md
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-second-opinion.md
+        - audit/remediation/runs/wave-3b/candidate-5cc9585-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-3b/candidate-5cc9585-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-3b/candidate-5cc9585-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-4-SETUP.md
+    supporting_boundary_docs:
+      - audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md
+      - audit/remediation/WAVE-4-POLISH-SPECS.md
+      - audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md
+      - audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md
+      - audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md
+      - audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md
+    next_action: "Keep the main workspace docs-only, then open a clean Wave 4 polish worktree from 5cc9585 and implement only E-2 / E-4 / E-5 there. Do not start Wave 4B content work."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: d73c40665b393e1f29478f50f521b021f29aac20
+    docs_short: d73c406
+    docs_subject: "docs: clear wave 4 candidate"
+    claimed_state: "wave-4 / cleared"
+    code_commit: 6406e4639a26b2cb732c78690ae61deb6abfab6b
+    code_short: 6406e46
+    packet_family:
+      family_id: wave-4-cleared-6406e46
+      review_packets:
+        - audit/remediation/runs/wave-4/candidate-6406e46-adversarial-review.md
+        - audit/remediation/runs/wave-4/candidate-6406e46-second-opinion.md
+        - audit/remediation/runs/wave-4/candidate-6406e46-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-4/candidate-6406e46-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-4/candidate-6406e46-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-4-SETUP.md
+    supporting_boundary_docs:
+      - audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md
+      - audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md
+      - audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md
+      - audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md
+      - audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md
+    next_action: "Keep the main workspace docs-only, then create and commit WAVE-4B-SETUP.md from cleared Wave 4 candidate 6406e46. Do not start Wave 4B implementation before that setup checkpoint lands."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: fabe8471e212599246ad3997d8e8d7ae5eac7f76
+    docs_short: fabe847
+    docs_subject: "docs: define wave 4b setup"
+    claimed_state: "wave-4b / setup"
+    code_commit: 6406e4639a26b2cb732c78690ae61deb6abfab6b
+    code_short: 6406e46
+    packet_family:
+      family_id: wave-4-cleared-6406e46
+      review_packets:
+        - audit/remediation/runs/wave-4/candidate-6406e46-adversarial-review.md
+        - audit/remediation/runs/wave-4/candidate-6406e46-second-opinion.md
+        - audit/remediation/runs/wave-4/candidate-6406e46-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-4/candidate-6406e46-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-4/candidate-6406e46-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-4B-SETUP.md
+    supporting_boundary_docs:
+      - audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md
+      - audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md
+      - audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md
+      - audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md
+      - audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md
+    next_action: "Keep the main workspace docs-only, then open a clean Wave 4B implementation worktree from 6406e46 and implement only the slices approved by WAVE-4B-SETUP.md. Do not start Wave 5 or any deferred capability work."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: 91f97c21519e0c974ff39c65f393866af1391144
+    docs_short: 91f97c2
+    docs_subject: "docs: clear wave 4b candidate"
+    claimed_state: "wave-4b / cleared hard stop"
+    code_commit: 65a612dc1400abbedcfbdda1f173cd72a3a90c06
+    code_short: 65a612d
+    packet_family:
+      family_id: wave-4b-cleared-65a612d
+      review_packets:
+        - audit/remediation/runs/wave-4b/candidate-65a612d-adversarial-review.md
+        - audit/remediation/runs/wave-4b/candidate-65a612d-second-opinion.md
+        - audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-4b/candidate-65a612d-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-4B-SETUP.md
+    supporting_boundary_docs:
+      - audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md
+      - audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md
+      - audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md
+      - audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md
+      - audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md
+    next_action: "HARD STOP: Wave 4B cleared at 65a612d. Keep the main workspace docs-only and do not start Wave 5, calibration, or any new capability lane until a controller-approved next-wave setup artifact is committed."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+      - historical_handoff_under_elevated_the_full_wave4b_packet_family
+    provenance_method: checkpoint_text_plus_git_pin
+  - docs_commit: 2e6d7807dbe7a9eace9649a39fc455e739ac4da2
+    docs_short: 2e6d780
+    docs_subject: "Add handoff for retrospective audit-program planning"
+    claimed_state: "wave-4b / cleared hard stop plus retro-planning anchor"
+    code_commit: 65a612dc1400abbedcfbdda1f173cd72a3a90c06
+    code_short: 65a612d
+    packet_family:
+      family_id: wave-4b-cleared-65a612d
+      review_packets:
+        - audit/remediation/runs/wave-4b/candidate-65a612d-adversarial-review.md
+        - audit/remediation/runs/wave-4b/candidate-65a612d-second-opinion.md
+        - audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md
+      state_proof_packet: audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md
+      scope_manifest_packet: audit/remediation/runs/wave-4b/candidate-65a612d-file-manifest.md
+    active_boundary_setup_docs:
+      - audit/remediation/WAVE-4B-SETUP.md
+    supporting_boundary_docs:
+      - audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md
+      - audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md
+      - audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md
+      - audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md
+      - audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md
+    next_action: "HARD STOP: Wave 4B cleared at 65a612d. Keep the main workspace docs-only and do not start Wave 5, calibration, or any new capability lane until a controller-approved next-wave setup artifact is committed."
+    anomaly_classification:
+      - historical_symbolic_head_replaced_by_git_pin
+      - historical_handoff_under_elevated_the_full_wave4b_packet_family
+    provenance_method: checkpoint_text_plus_git_pin

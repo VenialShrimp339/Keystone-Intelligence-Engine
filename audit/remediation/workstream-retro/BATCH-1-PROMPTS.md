@@ -15,6 +15,7 @@ Pinned context for all three prompts:
 - pre-planning docs anchor commit: `2e6d780`
 - last cleared-state docs checkpoint: `91f97c2`
 - current planning-package docs commit observed at the start of this reconcile: `c5dbd05`
+- controller-promoted retrospective lineage manifest: `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
 - last cleared code commit: `65a612d`
 - code lineage:
   `4ff7e90 -> 2cdbfec -> 4819527 -> 5cc9585 -> 6406e46 -> 65a612d`
@@ -26,6 +27,7 @@ Interpretation note:
 - `2e6d780` is a pre-planning anchor, not the literal current docs `HEAD`.
 - `65074ca` lands `WAVE-3A-SEAM-FREEZE.md`, but that commit is internally stale because it still says to create that doc.
 - `198ab92` is the later controller reconcile that first promotes the seam freeze into active `wave-3 / setup`.
+- Historical symbolic `HEAD` references across `35a8a29 -> 2e6d780` are replaced for retrospective audit use by the exact git-derived pins in `RETROSPECTIVE-LINEAGE-MANIFEST.yaml`.
 
 ## CP-1 Prompt
 
@@ -50,10 +52,11 @@ Read first, in order:
 1. `graphify-out/GRAPH_REPORT.md`
 2. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 3. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-4. `CURRENT-STATE.md`
-5. `audit/remediation/WORKSTREAM-STATUS.md`
-6. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
-7. `audit/remediation/workstream-retro/AUDIT-PROGRAM-HANDOFF.md`
+4. `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
+5. `CURRENT-STATE.md`
+6. `audit/remediation/WORKSTREAM-STATUS.md`
+7. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
+8. `audit/remediation/workstream-retro/AUDIT-PROGRAM-HANDOFF.md`
 
 Your job is to audit the control-plane authority model itself.
 
@@ -108,11 +111,12 @@ Read first, in order:
 1. `graphify-out/GRAPH_REPORT.md`
 2. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 3. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-4. `CURRENT-STATE.md`
-5. `audit/remediation/WORKSTREAM-STATUS.md`
-6. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
-7. `audit/remediation/workstream-retro/AUDIT-PROGRAM-HANDOFF.md`
-8. the relevant Wave 2B, 3, 3B, 4, and 4B clearance and review-synthesis artifacts
+4. `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
+5. `CURRENT-STATE.md`
+6. `audit/remediation/WORKSTREAM-STATUS.md`
+7. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
+8. `audit/remediation/workstream-retro/AUDIT-PROGRAM-HANDOFF.md`
+9. the relevant Wave 2B, 3, 3B, 4, and 4B clearance and review-synthesis artifacts
 
 Also inspect git history directly.
 
@@ -133,6 +137,7 @@ Required checks:
 - skipped or implicit state transitions
 - use of symbolic `HEAD` where an exact commit should have been pinned
 - explicit handling of the `65074ca` seam-freeze anomaly versus the later `198ab92` setup activation
+- verify that `RETROSPECTIVE-LINEAGE-MANIFEST.yaml` is sufficient as the authoritative retrospective lineage layer without weakening the git-verification standard
 
 Output requirements:
 - Include a compact checkpoint table with columns:
@@ -162,9 +167,10 @@ Read first:
 1. `graphify-out/GRAPH_REPORT.md`
 2. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 3. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-4. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
-5. `audit/remediation/workstream-retro/AUDIT-PROGRAM-HANDOFF.md`
-6. every file under:
+4. `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
+5. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
+6. `audit/remediation/workstream-retro/AUDIT-PROGRAM-HANDOFF.md`
+7. every file under:
    - `audit/remediation/runs/wave-2b/`
    - `audit/remediation/runs/wave-3/`
    - `audit/remediation/runs/wave-3b/`

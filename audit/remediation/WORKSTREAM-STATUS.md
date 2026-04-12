@@ -13,7 +13,7 @@ If any shortcut list here conflicts with `ACTIVE-HANDOFF.md`, the handoff wins.
 ### Main remediation/build stream
 - **Status:** Wave 4B cleared at `65a612d`
 - **Build status:** **Wave 1 complete**; **Wave 2A cleared**; **Wave 2B cleared in `2cdbfec`**; **Wave 3 cleared in `4819527`**; **Wave 3B cleared in `5cc9585`**; **Wave 4 cleared in `6406e46`**; **Wave 4B cleared in `65a612d`**
-- **Current focus:** Hard stop until a controller-approved post-Wave-4B setup artifact exists; the main workspace stays controller/docs only
+- **Current focus:** Hard stop until a controller-approved post-Wave-4B setup artifact exists; the main workspace stays controller/docs only, and retrospective audits should use the promoted lineage manifest instead of re-deriving the historical symbolic-`HEAD` chain
 
 ### Round-3 content-audit stream
 - **Status:** Parallel planning/research stream feeding Wave 4 and later
@@ -34,20 +34,22 @@ Read in this order:
 Read in this order:
 1. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 2. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-3. `CURRENT-STATE.md`
-4. `audit/remediation/WORKSTREAM-STATUS.md`
-5. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
-6. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
-7. the relevant planning or sidecar memo set
+3. `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml` for retrospective lineage questions
+4. `CURRENT-STATE.md`
+5. `audit/remediation/WORKSTREAM-STATUS.md`
+6. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
+7. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
+8. the relevant planning or sidecar memo set
 
 ### For review sessions
 Read in this order:
 1. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 2. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-3. the exact packet family and boundary docs named in `ACTIVE-HANDOFF.md`
-4. `CURRENT-STATE.md`
-5. `audit/remediation/WORKSTREAM-STATUS.md`
-6. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
+3. `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml` for retrospective checkpoint-chain and docs/code join work
+4. the exact packet family and boundary docs named in `ACTIVE-HANDOFF.md`
+5. `CURRENT-STATE.md`
+6. `audit/remediation/WORKSTREAM-STATUS.md`
+7. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
 
 ## Stream 1: Main Remediation / Build
 
@@ -59,6 +61,7 @@ This remains the live execution stream.
 |------|----------|
 | `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml` | Machine-readable live state |
 | `audit/remediation/control-plane/ACTIVE-HANDOFF.md` | Human-readable live state |
+| `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml` | Controller-promoted retrospective lineage layer for docs checkpoints `35a8a29` through `2e6d780` |
 | `audit/remediation/runs/wave-4b/candidate-65a612d-{adversarial-review,second-opinion,review-synthesis,clearance}.md` | Immutable Wave 4B review and clearance packet set |
 | `audit/remediation/runs/wave-4b/candidate-65a612d-file-manifest.md` | Current candidate surface and scope boundary proof |
 | `audit/remediation/WAVE-4B-SETUP.md` | Historical boundary for what Wave 4B was allowed to clear |
@@ -124,6 +127,7 @@ This remains a parallel planning/research stream.
 |------|------------|
 | `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml` | First-stop machine-readable state |
 | `audit/remediation/control-plane/ACTIVE-HANDOFF.md` | First-stop human-readable state |
+| `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml` | Exact retrospective docs/code/packet/boundary lineage pins replacing the historical symbolic-`HEAD` defect for audit use |
 | `audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md` | Cleared-state proof for the current last-cleared code commit |
 | `audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md` | Wave 4B review consensus |
 | `audit/remediation/runs/wave-4b/candidate-65a612d-file-manifest.md` | Current candidate surface and scope boundary proof |
@@ -151,7 +155,8 @@ This remains a parallel planning/research stream.
 2. Keep the main workspace controller/docs only.
 3. Do not let any post-Wave-4B work silently widen into Wave 5 or deferred capability implementation.
 4. Treat `65a612d` as the current last cleared code commit.
-5. Do not move again until a new committed authority artifact exists.
+5. Use `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml` for retrospective lineage questions instead of raw historical symbolic `HEAD` references.
+6. Do not move again until a new committed authority artifact exists.
 
 ## Next 5 Steps
 
