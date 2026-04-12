@@ -102,7 +102,7 @@ This file is the operational checklist.
 - [x] Carry forward the accepted D-2 actionability memo as a Wave 4 sidecar
 - [x] Create `WAVE-4-POLISH-SPECS.md` with exact fix specs for `E-2`, `E-4`, and `E-5`
 - [x] Create `WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
-- [ ] Create `WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
+- [x] Create `WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
 - [ ] Create `WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`
 - [ ] Create `WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`
 - [ ] Mark each new memo as `content-only`, `existing-seam code`, or `new capability`

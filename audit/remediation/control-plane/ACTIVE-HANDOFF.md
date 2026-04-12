@@ -11,6 +11,7 @@
 - The main workspace remains controller/docs only.
 - `WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md` now records the C-1 / C-2 / C-3 / C-4 / C-9 / C-12 / C-13 design contracts.
 - `WAVE-4-POLISH-SPECS.md` now freezes the exact `E-2` / `E-4` / `E-5` polish slice.
+- `WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md` now records the `C-5` / `C-7` design contracts and explicitly re-scopes persisted contradiction-taxonomy capability out of Wave 4B.
 - The next required step is the next missing Wave 4 research memo, not a code lane.
 - Wave 4B content implementation is not active, and Wave 5 calibration remains gated off.
 - The controller is expected to continue **autonomously across checkpoints**. Docs-only checkpoints are not pause points.
@@ -24,12 +25,13 @@
 5. [WAVE-4-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SETUP.md)
 6. [WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md)
 7. [WAVE-4-POLISH-SPECS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-POLISH-SPECS.md)
-8. [WAVE-4-4B-PREWORK.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-4B-PREWORK.md)
-9. [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md)
-10. [WAVE-3A-SEAM-FREEZE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-3A-SEAM-FREEZE.md)
-11. [FINAL-DECISIONS-v2.1.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/decisions/FINAL-DECISIONS-v2.1.md)
-12. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md)
-13. [WORKSTREAM-STATUS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md)
+8. [WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md)
+9. [WAVE-4-4B-PREWORK.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-4B-PREWORK.md)
+10. [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md)
+11. [WAVE-3A-SEAM-FREEZE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-3A-SEAM-FREEZE.md)
+12. [FINAL-DECISIONS-v2.1.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/decisions/FINAL-DECISIONS-v2.1.md)
+13. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md)
+14. [WORKSTREAM-STATUS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md)
 
 ## Active State Tuple
 
@@ -56,7 +58,7 @@
 1. Stay on `codex/remediation-program` in the main workspace.
 2. Treat `5cc9585` as the last cleared code commit for every future implementation lane.
 3. Use [WAVE-4-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SETUP.md) as the binding Wave 4 scope boundary.
-4. Author [WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md) next in the main workspace.
+4. Author [WAVE-4-TEMPLATE-ROUTING-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md) next in the main workspace.
 5. Keep the Wave 4 polish code lane unopened until the remaining Wave 4 memos exist and the file manifest stays narrow.
 6. Do **not** start Wave 4B implementation until the required Wave 4 memos exist and the targeted seams are stable.
 7. Use [EXECUTION-TODO.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/EXECUTION-TODO.md) as the operational checklist after reading this handoff.
@@ -135,6 +137,7 @@ Before any Wave 4 polish candidate clears, the artifact set must name probes for
 - [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md) — accepted D-2 scoring contract for later Wave 4B actionability work
 - [WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md) — implementation-ready prompt-quality contract for C-1 / C-2 / C-3 / C-4 / C-9 / C-12 / C-13
 - [WAVE-4-POLISH-SPECS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-POLISH-SPECS.md) — exact Wave 4 polish contract for `E-2`, `E-4`, and `E-5`
+- [WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md) — implementation-ready sprint-contract contract for `C-5` plus an in-bounds contradiction taxonomy for `C-7`
 - [CONTENT-SYNTHESIS-v2.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/round-3/CONTENT-SYNTHESIS-v2.md) — source of the Wave 4 low-risk polish items `E-2`, `E-4`, and `E-5`
 - [PLANNING-ADDENDUM.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/round-3/PLANNING-ADDENDUM.md) — planning overlay that keeps Bucket C work in Wave 4 research rather than sneaking it into code early
 
@@ -156,3 +159,5 @@ Before any Wave 4 polish candidate clears, the artifact set must name probes for
 - `2026-04-12T03:22:30-04:00` — controller lease takeover by `codex-gpt-5.4-xhigh-main-controller`.
   Reason: the previous lease heartbeat (`2026-04-12T02:50:02-04:00`) aged past the 30-minute limit before the next state mutation, so `controller_epoch` was incremented before reconciling Wave 3B clearance into Wave 4 setup.
   Repo-state verification completed before takeover: the main workspace was still on `codex/remediation-program`, the clean Wave 3B code lane had already produced cleared candidate `5cc9585`, the Wave 3B review packet set existed on disk, and the dirty main workspace still required controller/docs-only quarantine.
+- `2026-04-12T03:43:19-04:00` — Wave 4 docs checkpoint added sprint-contract / rubric research.
+  Result: `WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md` now records the `C-5` and `C-7` contracts, keeps persisted contradiction-taxonomy expansion out of Wave 4B, and advances the next required memo to `WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`.
