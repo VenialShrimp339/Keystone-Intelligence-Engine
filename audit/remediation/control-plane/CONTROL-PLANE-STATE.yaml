@@ -1,11 +1,11 @@
 version: 1
-controller_epoch: 1
-lease_owner: bootstrap-adoption-pass
-lease_acquired_at: "2026-04-12T00:55:12-04:00"
-lease_heartbeat_at: "2026-04-12T01:24:01-04:00"
-lease_expires_at: "2026-04-12T01:54:01-04:00"
+controller_epoch: 2
+lease_owner: codex-gpt-5.4-xhigh-main-controller
+lease_acquired_at: "2026-04-12T02:01:57-04:00"
+lease_heartbeat_at: "2026-04-12T02:01:57-04:00"
+lease_expires_at: "2026-04-12T02:31:57-04:00"
 lease_takeover_rule: "If lease_heartbeat_at is older than 30 minutes, or the new controller cannot confirm repo state from disk, it must increment controller_epoch, rewrite lease fields, and append the takeover to ACTIVE-HANDOFF.md before mutating state."
-lease_stolen_by: null
+lease_stolen_by: codex-gpt-5.4-xhigh-main-controller
 active_branch: codex/remediation-program
 controller_workspace_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine
 active_worktree_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wave-2b

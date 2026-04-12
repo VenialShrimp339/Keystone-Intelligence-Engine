@@ -100,3 +100,9 @@ Stop only if:
 - [WAVE-3-3B-PREWORK.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-3-3B-PREWORK.md) — advisory only until Wave 3A seam freeze lands
 - [WAVE-4-4B-PREWORK.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-4B-PREWORK.md) — advisory only
 - [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md) — advisory only
+
+## Controller Lease Events
+
+- `2026-04-12T02:01:57-04:00` — controller takeover by `codex-gpt-5.4-xhigh-main-controller`.
+  Reason: `lease_heartbeat_at` from the predecessor was older than 30 minutes (`2026-04-12T01:24:01-04:00`), so the takeover rule in the control plane fired before any new state mutation.
+  Repo-state verification completed before takeover: the main workspace is still on `codex/remediation-program`, `active_wave`/`active_state` still reconcile to `wave-2b` / `cleared`, `last_cleared_code_commit` is still `2cdbfec`, and `WAVE-3A-SEAM-FREEZE.md` was still absent.
