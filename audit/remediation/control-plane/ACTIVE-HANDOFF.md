@@ -8,7 +8,10 @@
 - Wave 3 is cleared at `4819527`.
 - Wave 3B is now cleared at `5cc9585`.
 - Wave 4 is now cleared at `6406e46`.
+- Wave 4B is now the active wave in `setup` state.
 - The main workspace remains controller/docs only.
+- `WAVE-4B-SETUP.md` now freezes the in-bounds Wave 4B content slices and the explicit deferred-capability denylist.
+- `audit/remediation/runs/wave-4b/candidate-TEMPLATE-file-manifest.md` now exists for future Wave 4B candidates.
 - `WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md` now records the C-1 / C-2 / C-3 / C-4 / C-9 / C-12 / C-13 design contracts.
 - `WAVE-4-POLISH-SPECS.md` now freezes the exact `E-2` / `E-4` / `E-5` polish slice.
 - `WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md` now records the `C-5` / `C-7` design contracts and explicitly re-scopes persisted contradiction-taxonomy capability out of Wave 4B.
@@ -17,7 +20,7 @@
 - All required Wave 4 research memos now exist in the main workspace.
 - The committed Wave 4 polish candidate `6406e46` is reviewed and cleared.
 - All required Wave 4 review packets now exist in the main workspace.
-- The next required step is the docs-only `WAVE-4B-SETUP.md` checkpoint, not a Wave 4B content code lane.
+- The next required step is the clean Wave 4B implementation lane rooted at `6406e46`, not broad cleanup and not Wave 5.
 - Wave 4B content implementation is not active, and Wave 5 calibration remains gated off.
 - The controller is expected to continue **autonomously across checkpoints**. Docs-only checkpoints are not pause points.
 
@@ -27,24 +30,23 @@
 2. [ACTIVE-HANDOFF.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/ACTIVE-HANDOFF.md)
 3. [candidate-6406e46-clearance.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4/candidate-6406e46-clearance.md)
 4. [candidate-6406e46-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4/candidate-6406e46-review-synthesis.md)
-5. [WAVE-4-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SETUP.md)
+5. [WAVE-4B-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4B-SETUP.md)
 6. [WAVE-4-4B-PREWORK.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-4B-PREWORK.md)
 7. [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md)
 8. [WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md)
-9. [WAVE-4-POLISH-SPECS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-POLISH-SPECS.md)
-10. [WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md)
-11. [WAVE-4-TEMPLATE-ROUTING-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md)
-12. [WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md)
-13. [FINAL-DECISIONS-v2.1.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/decisions/FINAL-DECISIONS-v2.1.md)
-14. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md)
-15. [WORKSTREAM-STATUS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md)
+9. [WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md)
+10. [WAVE-4-TEMPLATE-ROUTING-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md)
+11. [WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md)
+12. [FINAL-DECISIONS-v2.1.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/decisions/FINAL-DECISIONS-v2.1.md)
+13. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md)
+14. [WORKSTREAM-STATUS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md)
 
 ## Active State Tuple
 
-- `active_wave`: `wave-4`
-- `active_state`: `cleared`
-- `execution_baseline_commit`: `5cc9585`
-- `review_target_commit`: `6406e46`
+- `active_wave`: `wave-4b`
+- `active_state`: `setup`
+- `execution_baseline_commit`: `6406e46`
+- `review_target_commit`: `not yet created; any future Wave 4B candidate roots from 6406e46`
 - `docs_reconcile_commit`: `HEAD`
 - `next_recovery_checkout`: `6406e46`
 
@@ -62,12 +64,12 @@
 ## Exact Next Action
 
 1. Stay on `codex/remediation-program` in the main workspace.
-2. Treat `6406e46` as the last cleared code commit for the next implementation lane.
-3. Use [WAVE-4-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SETUP.md) plus the `6406e46` clearance packet as the binding transition boundary.
+2. Treat `6406e46` as the last cleared code commit for the Wave 4B implementation lane.
+3. Use [WAVE-4B-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4B-SETUP.md) as the binding Wave 4B scope boundary.
 4. Confirm the main workspace remains docs-only and treat `6406e46` as the next code baseline.
-5. Create [WAVE-4B-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4B-SETUP.md).
-6. Update the control plane so Wave 4B setup becomes the active runway only after that checkpoint lands.
-7. Do **not** start Wave 4B implementation before the setup checkpoint is committed.
+5. Open a clean Wave 4B implementation worktree rooted at `6406e46`.
+6. Implement only the approved `D-2`, `C-1` / `C-2` / `C-3` / `C-4` / `C-5` / `C-7` / `C-8` / `C-9` / `C-12` / `C-13` / `C-14` / `C-15` slices enumerated in `WAVE-4B-SETUP.md`.
+7. Do **not** start Wave 5 or any deferred capability slice while on the Wave 4B lane.
 8. Use [EXECUTION-TODO.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/EXECUTION-TODO.md) as the operational checklist after reading this handoff.
 9. After each checkpoint, re-read the control plane and continue automatically unless a hard stop condition is met.
 
@@ -77,54 +79,83 @@
 cd /Users/jackriddle/Desktop/Keystone-Intelligence-Engine
 sed -n '1,240p' audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
 sed -n '1,260p' audit/remediation/control-plane/ACTIVE-HANDOFF.md
-sed -n '1,260p' audit/remediation/runs/wave-4/candidate-6406e46-clearance.md
+sed -n '1,260p' audit/remediation/WAVE-4B-SETUP.md
 ```
 
 ## Allowed Write Set
 
-### Active docs-only cleared-state scope
+### Active docs-only setup scope
 
 - `audit/remediation/WAVE-4B-SETUP.md`
+- `audit/remediation/runs/wave-4b/candidate-TEMPLATE-file-manifest.md`
 - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 - `audit/remediation/control-plane/EXECUTION-TODO.md`
 - `audit/remediation/WORKSTREAM-STATUS.md`
 - `CURRENT-STATE.md`
-- `audit/remediation/runs/wave-4/candidate-6406e46-implementation.md`
-- `audit/remediation/runs/wave-4/candidate-6406e46-file-manifest.md`
-- `audit/remediation/runs/wave-4/candidate-6406e46-adversarial-review.md`
-- `audit/remediation/runs/wave-4/candidate-6406e46-second-opinion.md`
-- `audit/remediation/runs/wave-4/candidate-6406e46-review-synthesis.md`
-- `audit/remediation/runs/wave-4/candidate-6406e46-clearance.md`
 
-### Future Wave 4 polish code lane
+### Future Wave 4B implementation lane
 
+- `src/keystone/evaluator/prompts/actionability.md`
+- `src/keystone/evaluator/prompts/sprint_contract_generation.md`
+- `src/keystone/evaluator/prompts/fact_decomposition.md`
+- `src/keystone/evaluator/layer1_deterministic.py`
+- `src/keystone/evaluator/layer3_rubric.py`
+- `src/keystone/evaluator/sprint_contract.py`
+- `src/keystone/evaluator/evaluator.py`
 - `src/keystone/models/evaluation.py`
-- `src/keystone/pipeline/markdown_renderer.py`
-- `samples/auto_body_chain/RESEARCH.md.json`
-- `samples/auto_body_chain/research-tasks.json`
-- `samples/luminar_lidar/RESEARCH.md.json`
-- `samples/luminar_lidar/research-tasks.json`
-- `samples/specialty_chemicals_ma/RESEARCH.md.json`
-- `samples/specialty_chemicals_ma/research-tasks.json`
-- `tests/unit/pipeline/test_markdown_renderer.py`
-- `tests/unit/test_schemas.py`
+- `src/keystone/deliberation/analyst.py`
+- `src/keystone/deliberation/aggregator.py`
+- `src/keystone/research/research_agent.py`
+- `src/keystone/specification/prompts/intent_clarification.md`
+- `src/keystone/specification/prompts/decompose_financial_lens.md`
+- `src/keystone/specification/prompts/decompose_market_lens.md`
+- `src/keystone/specification/prompts/decompose_operational_lens.md`
+- `src/keystone/specification/prompts/task_generation.md`
+- `src/keystone/specification/intent_clarifier.py`
+- `src/keystone/specification/template_registry.py`
+- `tests/unit/deliberation/test_analyst.py`
+- `tests/unit/deliberation/test_aggregator.py`
+- `tests/unit/research/test_research_agent.py`
+- `tests/unit/specification/test_intent_clarifier.py`
+- `tests/unit/specification/test_task_generator.py`
+- `tests/unit/specification/test_template_registry.py`
+- `tests/unit/evaluator/test_layer1.py`
+- `tests/unit/evaluator/test_layer3.py`
+- `tests/unit/evaluator/test_sprint_contract.py`
+- `tests/unit/evaluator/test_evaluator.py`
 - `tests/e2e/test_mock_pipeline.py`
+- `tests/fixtures/evaluator/**`
 - `graphify-out/GRAPH_REPORT.md`
 - `graphify-out/graph.json`
 
 ## Required Test Matrix
 
-For the current docs-only cleared state: none.
+For the current docs-only setup state: none.
+
+Before any Wave 4B candidate clears, run at minimum:
+
+1. `tests/unit/deliberation/test_analyst.py`
+2. `tests/unit/deliberation/test_aggregator.py`
+3. `tests/unit/research/test_research_agent.py`
+4. `tests/unit/specification/test_intent_clarifier.py`
+5. `tests/unit/specification/test_task_generator.py`
+6. `tests/unit/specification/test_template_registry.py`
+7. `tests/unit/evaluator/test_layer1.py`
+8. `tests/unit/evaluator/test_layer3.py`
+9. `tests/unit/evaluator/test_sprint_contract.py`
+10. `tests/unit/evaluator/test_evaluator.py`
+11. `tests/e2e/test_mock_pipeline.py`
 
 ## Required Runtime Probes
 
-Wave 4 cleared `6406e46` with named probes for:
+Before any Wave 4B candidate clears, the artifact set must name probes for:
 
-1. Completeness is classified as `EXPERT_CHECKABLE`, not `MACHINE_CHECKABLE`.
-2. Client markdown no longer emits the internal Section 7 metrics block.
-3. Client-facing references are rendered without raw `CIT-xxx` engineering IDs.
-4. Sample engagements validate against the live production schema with legacy fields removed.
+1. Actionability rewards decision-informing specificity and penalizes recommendation creep.
+2. Differentiated analyst prompts still emit the shared `ScoredClaim` envelope.
+3. Sprint-contract generation exposes all 10 dimensions and contradiction handling still fits the current boolean seam without a 10-claim cap.
+4. Task-generation tool guidance stays inside the registered tool set and template enrichment stays inside the current envelope.
+5. Thin or absent verification snippets are surfaced as `UNVERIFIABLE`-style evidence gaps rather than false `NOT_SUPPORTED`.
 
 ## Docs Explicitly Ignored As Stale
 
@@ -134,6 +165,7 @@ Wave 4 cleared `6406e46` with named probes for:
 
 ## Active Sidecars
 
+- [WAVE-4B-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4B-SETUP.md) — active Wave 4B setup boundary and denylist
 - [WAVE-4-4B-PREWORK.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-4B-PREWORK.md) — accepted Wave 4 / 4B planning decomposition
 - [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md) — accepted D-2 scoring contract for later Wave 4B actionability work
 - [WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md) — implementation-ready prompt-quality contract for C-1 / C-2 / C-3 / C-4 / C-9 / C-12 / C-13
@@ -172,3 +204,5 @@ Wave 4 cleared `6406e46` with named probes for:
   Result: `WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md` now records the `C-11` and `C-15` boundary, the required Wave 4 memo set is complete, and the next required action becomes opening the clean Wave 4 polish lane from `5cc9585`.
 - `2026-04-12T04:07:21-04:00` — Wave 4 candidate `6406e46` was reviewed and cleared.
   Result: Wave 4 advanced from `setup` to `cleared`, `6406e46` became the last cleared code commit, and the next required gate became `WAVE-4B-SETUP.md`.
+- `2026-04-12T04:14:49-04:00` — Wave 4B setup checkpoint was committed.
+  Result: `WAVE-4B-SETUP.md` became the active setup doc, `active_wave` advanced to `wave-4b`, and the next action became opening the clean Wave 4B implementation lane from `6406e46`.

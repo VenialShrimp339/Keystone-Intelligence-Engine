@@ -20,19 +20,19 @@ This file is the operational checklist.
 
 - Last cleared code commit: `6406e46`
 - Latest prior docs checkpoint before this cleared state: `d16a40a`
-- Active wave state: `wave-4 / cleared`
-- Next mandatory gate: `Wave 4B setup checkpoint`
+- Active wave state: `wave-4b / setup`
+- Next mandatory gate: `Wave 4B implementation lane`
 
 ## Now
 
 - [x] Confirm the control-plane tuple now says:
-  - `active_wave = wave-4`
-  - `active_state = cleared`
+  - `active_wave = wave-4b`
+  - `active_state = setup`
   - `last_cleared_code_commit = 6406e46`
-  - `next_action = create the Wave 4B setup checkpoint before any new code lane`
+  - `next_action = open a clean Wave 4B implementation worktree from 6406e46 and implement only WAVE-4B-SETUP.md scope`
 - [x] Stay on `codex/remediation-program` in the main workspace
 - [x] Keep the main workspace controller/docs only
-- [x] Do **not** start Wave 4 polish code or Wave 4B content code in the main workspace
+- [x] Do **not** start Wave 4B content code in the main workspace; use a clean worktree from `6406e46`
 
 ## Phase 1: Wave 3A Seam Freeze
 
@@ -122,8 +122,19 @@ This file is the operational checklist.
 ## Phase 9: Wave 4B Content Gate
 
 - [x] Do **not** start Wave 4B until the required Wave 4 memos exist and the targeted seams are stable
-- [ ] Create `WAVE-4B-SETUP.md`
-- [ ] Update the control plane only after the Wave 4B setup checkpoint lands
+- [x] Create `WAVE-4B-SETUP.md`
+- [x] Update the control plane only after the Wave 4B setup checkpoint lands
+
+## Phase 10: Wave 4B Implementation
+
+- [ ] Open a clean Wave 4B implementation worktree rooted at `6406e46`
+- [ ] Keep the main workspace controller/docs only
+- [ ] Implement only the Wave 4B scope approved by `WAVE-4B-SETUP.md`
+- [ ] Write the Wave 4B candidate implementation and file-manifest artifacts
+- [ ] Run focused Wave 4B tests and runtime probes
+- [ ] Create the candidate commit
+- [ ] Run adversarial review + second opinion on the committed snapshot
+- [ ] Write review synthesis and either blocked-checkpoint or clearance artifacts
 
 ## Carried Follow-Ups
 

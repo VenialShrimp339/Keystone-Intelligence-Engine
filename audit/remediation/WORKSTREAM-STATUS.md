@@ -10,9 +10,9 @@ This file is an orientation layer, not the top authority.
 ## Current Snapshot
 
 ### Main remediation/build stream
-- **Status:** Wave 4 cleared at `6406e46`
+- **Status:** Wave 4B setup active from cleared Wave 4 baseline `6406e46`
 - **Build status:** **Wave 1 complete**; **Wave 2A cleared**; **Wave 2B cleared in `2cdbfec`**; **Wave 3 cleared in `4819527`**; **Wave 3B cleared in `5cc9585`**; **Wave 4 cleared in `6406e46`**
-- **Current focus:** The next action is the docs-only `WAVE-4B-SETUP.md` checkpoint while the main workspace stays controller/docs only
+- **Current focus:** Open the clean Wave 4B implementation lane from `6406e46` while the main workspace stays controller/docs only
 
 ### Round-3 content-audit stream
 - **Status:** Parallel planning/research stream feeding Wave 4 and later
@@ -58,7 +58,7 @@ This remains the live execution stream.
 | `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml` | Machine-readable live state |
 | `audit/remediation/control-plane/ACTIVE-HANDOFF.md` | Human-readable live state |
 | `audit/remediation/runs/wave-4/candidate-6406e46-*.md` | Immutable Wave 4 candidate, review, synthesis, and clearance artifacts |
-| `audit/remediation/WAVE-4-4B-PREWORK.md` | Active pre-setup decomposition for the next gate |
+| `audit/remediation/WAVE-4B-SETUP.md` | Active Wave 4B execution runway |
 | `CURRENT-STATE.md` | Current build summary |
 
 ### Current build status
@@ -74,12 +74,12 @@ This remains the live execution stream.
 | Wave 3 | Cleared in `4819527` |
 | Wave 3B | Cleared in `5cc9585` |
 | Wave 4 | Cleared in `6406e46` |
-| Wave 4B | Planned / next gate |
+| Wave 4B | Active in setup state |
 
 ### What this means in practice
 
-- The active cleared-state proof is the Wave 4 `6406e46` packet set.
-- The next gate is **not** “start Wave 4B content implementation or broad cleanup.”
+- The active setup artifact is `WAVE-4B-SETUP.md`.
+- The next gate is **not** “start Wave 5 or deferred capability work.”
 - The next code lane, when allowed, must root from the last cleared code commit `6406e46`, not from dirty `HEAD`.
 - Until that code lane is explicitly opened, the main workspace stays controller/docs only.
 
@@ -121,7 +121,7 @@ This remains a parallel planning/research stream.
 | `audit/remediation/control-plane/ACTIVE-HANDOFF.md` | First-stop human-readable state |
 | `audit/remediation/runs/wave-4/candidate-6406e46-clearance.md` | Cleared-state proof for the current last-cleared code commit |
 | `audit/remediation/runs/wave-4/candidate-6406e46-review-synthesis.md` | Wave 4 review consensus |
-| `audit/remediation/WAVE-4-4B-PREWORK.md` | Planning decomposition feeding the next setup gate |
+| `audit/remediation/WAVE-4B-SETUP.md` | Active Wave 4B execution runway |
 | `CURRENT-STATE.md` | Current build summary |
 | `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md` | Binding remediation design |
 
@@ -130,7 +130,7 @@ This remains a parallel planning/research stream.
 | File | Why it should not be treated as current status |
 |------|-----------------------------------------------|
 | `SESSION-LOG.md` | Historical record; use for rationale/history, not as the live status source |
-| `audit/remediation/WAVE-4-SETUP.md` | Historical Wave 4 runway context now that Wave 4 is cleared |
+| `audit/remediation/WAVE-4-SETUP.md` | Historical Wave 4 runway context now that Wave 4B setup is active |
 | `audit/remediation/WAVE-2B-ADVERSARIAL-REVIEW.md` | Historical blocked review packet for `4ff7e90`, not the cleared candidate |
 | `audit/remediation/WAVE-2B-SECOND-OPINION.md` | Historical blocked second opinion for `4ff7e90`, not the cleared candidate |
 | `audit/remediation/decisions/FINAL-DECISIONS.md` | Superseded |
@@ -140,7 +140,7 @@ This remains a parallel planning/research stream.
 
 1. If `audit/remediation/control-plane/` exists, read it before anything else.
 2. Keep the main workspace controller/docs only.
-3. Do not let the Wave 4B setup gate silently widen into Wave 4B content implementation.
+3. Do not let the Wave 4B implementation lane silently widen into deferred capability work.
 4. Root the next code work from `6406e46`.
 5. Do not let planning sidecars silently widen the active scope.
 
@@ -148,6 +148,6 @@ This remains a parallel planning/research stream.
 
 1. Use the control-plane files as the first read in future sessions.
 2. Treat `6406e46` as the last cleared code commit.
-3. Use the Wave 4 clearance packet set plus `WAVE-4-4B-PREWORK.md` as the current boundary evidence.
-4. Create the Wave 4B setup checkpoint before any Wave 4B implementation lane opens.
+3. Use `WAVE-4B-SETUP.md` plus the Wave 4 clearance packet set as the current boundary evidence.
+4. Open the Wave 4B implementation lane only in a clean worktree rooted at `6406e46`.
 5. Preserve the one-code-lane + sidecars pattern.

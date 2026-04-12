@@ -12,17 +12,16 @@
 - **Wave 3:** Cleared in commit `4819527` (`feat: implement wave 3 provenance and routing`).
 - **Wave 3B:** Cleared in commit `5cc9585` (`feat: implement wave 3b round control`).
 - **Wave 4:** Cleared in commit `6406e46` (`fix: implement wave 4 polish slice`).
+- **Wave 4B:** Active in setup state from cleared Wave 4 baseline `6406e46`.
 - **Round-3 overlay:** Accepted for Wave 2B and later. It did **not** reopen Waves 1A through 2A.
 
 ## What just happened
 
 1. The narrow Wave 4 polish lane landed in the clean `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wave-4` lane as `6406e46`.
-2. Focused Wave 4 verification passed on the committed snapshot.
-3. Independent adversarial review and second opinion both returned `CLEARED` for `5cc9585..6406e46`.
-4. Wave 4 is now cleared, and `6406e46` becomes the last cleared code commit.
-5. The frozen polish items `E-2`, `E-4`, and `E-5` are now closed on the committed runtime path.
-6. Wave 4B is still not active and still requires a docs-only setup checkpoint.
-7. The next step is `WAVE-4B-SETUP.md`, not Wave 4B implementation and not Wave 5 calibration.
+2. Focused Wave 4 verification passed on the committed snapshot and Wave 4 is now cleared.
+3. `WAVE-4B-SETUP.md` now defines the active in-bounds content slices and explicit deferred-capability denylist for the next lane.
+4. `audit/remediation/runs/wave-4b/candidate-TEMPLATE-file-manifest.md` now exists for future Wave 4B review packets.
+5. The next step is the clean Wave 4B implementation lane from `6406e46`, not Wave 5 calibration.
 
 ## What happens next
 
@@ -30,10 +29,10 @@
    - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
    - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 2. Treat `6406e46` as the last cleared code commit.
-3. Use `audit/remediation/WAVE-4-SETUP.md` plus the `6406e46` clearance packet as the binding transition boundary.
+3. Use `audit/remediation/WAVE-4B-SETUP.md` as the binding Wave 4B boundary.
 4. Keep the main workspace controller/docs only.
-5. Create `audit/remediation/WAVE-4B-SETUP.md`.
-6. Do **not** open Wave 4B implementation or Wave 5 without the later setup gates.
+5. Open the Wave 4B implementation lane only in a clean worktree rooted at `6406e46`.
+6. Do **not** open Wave 5 or any deferred capability lane without a later checkpoint.
 
 ## Reconciled wave plan
 
@@ -46,7 +45,7 @@
 | Wave 3 | **Cleared** (`4819527`) | Completeness work plus dual-axis taxonomy, auditable deep research, verifier, sidecar, and DAG batching |
 | Wave 3B | **Cleared** (`5cc9585`) | Thin Pipeline-L2 plus minimum viable live iterative loop |
 | Wave 4 | **Cleared** (`6406e46`) | Low-risk polish slice `E-2`, `E-4`, `E-5` |
-| Wave 4B | Planned / next gate | Content implementation from Wave 4 memos |
+| Wave 4B | **Active / setup** | In-bounds content implementation from the Wave 4 memo set |
 | Wave 5 | Planned | Calibration against frozen benchmark outputs |
 
 ## Authoritative docs for a fresh session
@@ -55,6 +54,7 @@
 - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 - `audit/remediation/runs/wave-4/candidate-6406e46-clearance.md`
 - `audit/remediation/runs/wave-4/candidate-6406e46-review-synthesis.md`
+- `audit/remediation/WAVE-4B-SETUP.md`
 - `audit/remediation/WAVE-4-4B-PREWORK.md`
 - `audit/remediation/WAVE-3A-SEAM-FREEZE.md`
 - `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
@@ -65,6 +65,7 @@
 - `audit/remediation/runs/wave-4/candidate-6406e46-implementation.md`
 - `audit/remediation/runs/wave-4/candidate-6406e46-file-manifest.md`
 - `audit/remediation/WAVE-4-SETUP.md`
+- `audit/remediation/runs/wave-4b/candidate-TEMPLATE-file-manifest.md`
 - `SESSION-LOG.md` -- historical trail
 - `audit/remediation/WAVE-4-4B-PREWORK.md`
 - `audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md`
