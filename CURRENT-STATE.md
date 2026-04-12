@@ -1,5 +1,5 @@
 # Current State
-*Last updated: 2026-04-12 | Updated by: Wave 2B cleared-state reconcile checkpoint*
+*Last updated: 2026-04-12 | Updated by: Wave 3 setup checkpoint*
 
 ---
 
@@ -8,6 +8,8 @@
 - **Wave 1:** Complete.
 - **Wave 2A:** Cleared in commit `16e0bc7` (`Wave 2A: fix final hash and corroboration leakage`).
 - **Wave 2B:** Cleared in commit `2cdbfec` (`Wave 2B: remediate blocked candidate 4ff7e90`).
+- **Wave 3A:** Complete in commit `65074ca` (`docs: freeze Wave 3A seams`).
+- **Wave 3:** Active in setup state; implementation lane not opened yet.
 - **Round-3 overlay:** Accepted for Wave 2B and later. It did **not** reopen Waves 1A through 2A.
 
 ## What just happened
@@ -16,7 +18,8 @@
 2. The replayed result was committed as `2cdbfec`.
 3. Independent adversarial review and second opinion both returned `CLEARED` for `16e0bc7..2cdbfec`.
 4. Wave 2B is now cleared, with one residual non-blocking follow-up around parseable but under-specified sprint-contract JSON.
-5. The repo now needs a committed Wave 3A seam-freeze doc before any Wave 3 code begins.
+5. Wave 3A seam ownership was frozen in `65074ca`.
+6. `WAVE-3-SETUP.md` now defines the active Wave 3 implementation runway.
 
 ## What happens next
 
@@ -24,9 +27,10 @@
    - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
    - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 2. Treat `2cdbfec` as the last cleared code commit.
-3. Create and commit `WAVE-3A-SEAM-FREEZE.md`.
-4. Only after the seam-freeze doc lands may a clean Wave 3A / Wave 3 implementation worktree be opened from `2cdbfec`.
-5. Do **not** reopen Wave 2B unless a true regression is found against the cleared candidate.
+3. Use `audit/remediation/WAVE-3A-SEAM-FREEZE.md` and `audit/remediation/WAVE-3-SETUP.md` as the binding Wave 3 scope boundary.
+4. Open a clean Wave 3 worktree from `2cdbfec`.
+5. Implement only the approved Wave 3 scope; do **not** silently start any Wave 3B loop or Pipeline-L2 work.
+6. Do **not** reopen Wave 2B unless a true regression is found against the cleared candidate.
 
 ## Reconciled wave plan
 
@@ -35,8 +39,8 @@
 | Wave 1 (1A + 1B + 1C) | **Complete** | Lifecycle isolation, parsing standard, citation-identity foundation |
 | Wave 2A | **Cleared** (`16e0bc7`) | Citation identity completion and provenance gating |
 | Wave 2B | **Cleared** (`2cdbfec`) | Enforcement model plus `E-1`, `E-9`, `E-10`, `E-6`, `E-7` |
-| Wave 3A | Next required doc checkpoint | Seam freeze for verifier, provenance sidecar, round-state, and loop ownership |
-| Wave 3 | Planned | Completeness work plus dual-axis taxonomy and related routing |
+| Wave 3A | **Complete** (`65074ca`) | Seam freeze for verifier, provenance sidecar, round-state, and loop ownership |
+| Wave 3 | **Active / setup** | Completeness work plus dual-axis taxonomy and related routing |
 | Wave 3B | Planned | Thin Pipeline-L2 plus minimum viable live iterative loop |
 | Wave 4 | Planned | Research/design plus explicit polish lane |
 | Wave 4B | Planned | Content implementation from Wave 4 memos |
@@ -46,6 +50,8 @@
 
 - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- `audit/remediation/WAVE-3A-SEAM-FREEZE.md`
+- `audit/remediation/WAVE-3-SETUP.md`
 - `audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md`
 - `audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md`
 - `audit/remediation/runs/wave-2b/candidate-2cdbfec-review-synthesis.md`

@@ -10,9 +10,9 @@ This file is an orientation layer, not the top authority.
 ## Current Snapshot
 
 ### Main remediation/build stream
-- **Status:** Cleared-state transition after Wave 2B
+- **Status:** Wave 3 setup active after the Wave 3A seam-freeze checkpoint
 - **Build status:** **Wave 1 complete**; **Wave 2A cleared**; **Wave 2B cleared in `2cdbfec`**
-- **Current focus:** Commit the Wave 3A seam-freeze doc before any Wave 3 code starts
+- **Current focus:** Open the clean Wave 3 implementation lane from `2cdbfec` and execute only `WAVE-3-SETUP.md` scope
 
 ### Round-3 content-audit stream
 - **Status:** Parallel planning/research stream
@@ -26,9 +26,9 @@ Read in this order:
 1. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 2. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 3. latest immutable review and clearance packet(s) for the cleared candidate
-4. `audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md`
+4. `audit/remediation/WAVE-3A-SEAM-FREEZE.md`
 5. `CURRENT-STATE.md`
-6. the Wave 3A seam-freeze doc once it exists
+6. `audit/remediation/WAVE-3-SETUP.md`
 7. `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
 
 ### For planning sessions
@@ -70,14 +70,15 @@ This remains the live execution stream.
 | Wave 1C | Complete |
 | Wave 2A | Cleared in `16e0bc7` |
 | Wave 2B | Cleared in `2cdbfec` |
-| Wave 3A | Not started; seam freeze doc required next |
+| Wave 3A | Complete in `65074ca` |
+| Wave 3 | Active in setup state |
 
 ### What this means in practice
 
 - Wave 2B is no longer blocked.
-- The next gate is **not** “start Wave 3 code immediately.”
-- The next required artifact is `WAVE-3A-SEAM-FREEZE.md`.
-- Future code lanes must root from the last cleared code commit `2cdbfec`, not from dirty `HEAD`.
+- The next gate is **not** “start Wave 3B or broad cleanup.”
+- The active setup artifacts are `WAVE-3A-SEAM-FREEZE.md` and `WAVE-3-SETUP.md`.
+- The next code lane must root from the last cleared code commit `2cdbfec`, not from dirty `HEAD`.
 
 ## Stream 2: Round-3 Content Audit
 
@@ -112,6 +113,8 @@ This is still a parallel planning/research stream.
 | `audit/remediation/control-plane/ACTIVE-HANDOFF.md` | First-stop human-readable state |
 | `audit/remediation/runs/wave-2b/candidate-2cdbfec-clearance.md` | Cleared-state proof |
 | `audit/remediation/WAVE-2B-BLOCKER-REMEDIATION.md` | Blocker closure / residual follow-up ledger |
+| `audit/remediation/WAVE-3A-SEAM-FREEZE.md` | Frozen Wave 3 / 3B seam ownership |
+| `audit/remediation/WAVE-3-SETUP.md` | Active Wave 3 execution runway |
 | `CURRENT-STATE.md` | Current build summary |
 | `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md` | Binding remediation design |
 
@@ -129,14 +132,14 @@ This is still a parallel planning/research stream.
 
 1. If `audit/remediation/control-plane/` exists, read it before anything else.
 2. Keep the main workspace controller/docs only.
-3. Do not open any new Wave 3 code lane until the Wave 3A seam-freeze doc is committed.
-4. Root future code work from `2cdbfec`.
+3. Do not let Wave 3 work silently widen into Wave 3B scope.
+4. Root Wave 3 code work from `2cdbfec`.
 5. Do not let planning sidecars silently widen the active scope.
 
 ## Next 5 Steps
 
 1. Use the control-plane files as the first read in future sessions.
 2. Treat `2cdbfec` as the last cleared code commit.
-3. Create and commit `WAVE-3A-SEAM-FREEZE.md`.
-4. Open the next clean implementation lane from `2cdbfec` only after the seam-freeze doc lands.
+3. Use `WAVE-3A-SEAM-FREEZE.md` and `WAVE-3-SETUP.md` as the Wave 3 boundary.
+4. Open the next clean implementation lane from `2cdbfec`.
 5. Preserve the one-code-lane + sidecars pattern.
