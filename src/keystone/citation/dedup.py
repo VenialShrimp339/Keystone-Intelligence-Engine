@@ -11,6 +11,7 @@ import uuid
 from collections import defaultdict
 from itertools import combinations
 
+from keystone.citation.hash import compute_metadata_hash
 from keystone.models.citations import Citation, CitationAlias, CorroborationPair
 from keystone.models.research import StructuredFinding
 
@@ -123,7 +124,6 @@ def _merge_group(
     # Merge optional fields from other records if best is missing them
     doi = best.doi
     content_hash = best.content_hash
-    metadata_hash = best.metadata_hash
     url_live = best.url_live
     crossref_verified = best.crossref_verified
     date_published = best.date_published
@@ -135,8 +135,6 @@ def _merge_group(
             doi = c.doi
         if content_hash is None and c.content_hash is not None:
             content_hash = c.content_hash
-        if metadata_hash is None and c.metadata_hash is not None:
-            metadata_hash = c.metadata_hash
         if url_live is None and c.url_live is not None:
             url_live = c.url_live
         if crossref_verified is None and c.crossref_verified is not None:
@@ -168,7 +166,9 @@ def _merge_group(
         crossref_verified=crossref_verified,
         found_by_agents=all_agents,
         content_hash=content_hash,
-        metadata_hash=metadata_hash,
+        # Canonical citation identity must match the canonical record's
+        # final url:title, never a merged loser's precomputed hash.
+        metadata_hash=compute_metadata_hash(best.url, best.title),
         merged_from_ids=merged_from_ids,
     )
 

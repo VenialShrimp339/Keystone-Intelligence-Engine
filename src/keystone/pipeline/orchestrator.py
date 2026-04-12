@@ -527,36 +527,53 @@ def _filter_confidence_map_by_passed_tasks(
     The Protocol in contracts.py defines the interface for Wave 3.
     """
 
-    def _keep(task_ids: list[str]) -> bool:
-        return bool(task_ids) and bool(set(task_ids) & passed_task_ids)
+    def _surviving_task_ids(task_ids: list[str]) -> list[str]:
+        surviving: list[str] = []
+        seen: set[str] = set()
+        for task_id in task_ids:
+            if task_id in passed_task_ids and task_id not in seen:
+                surviving.append(task_id)
+                seen.add(task_id)
+        return surviving
 
-    filtered_high = [c for c in confidence_map.high_confidence_above_80pct if _keep(list(c.task_ids))]
-    filtered_moderate = [c for c in confidence_map.moderate_confidence_60_80pct if _keep(list(c.task_ids))]
-    filtered_weak = [c for c in confidence_map.weak_confidence_50_60pct if _keep(list(c.task_ids))]
-    filtered_contested = [c for c in confidence_map.contested_below_50pct if _keep(list(c.task_ids))]
-    filtered_insufficient = [c for c in confidence_map.insufficient_evidence if _keep(list(c.task_ids))]
+    def _filter_claims(claims):
+        filtered = []
+        for claim in claims:
+            surviving_task_ids = _surviving_task_ids(list(claim.task_ids))
+            if not surviving_task_ids:
+                continue
+
+            update = {"task_ids": surviving_task_ids}
+            if hasattr(claim, "corroboration_count"):
+                # Recompute from surviving task provenance so failed or
+                # unevaluated support cannot leak into render surfaces.
+                update["corroboration_count"] = len(surviving_task_ids)
+
+            filtered.append(claim.model_copy(update=update))
+        return filtered
+
+    filtered_high = _filter_claims(confidence_map.high_confidence_above_80pct)
+    filtered_moderate = _filter_claims(confidence_map.moderate_confidence_60_80pct)
+    filtered_weak = _filter_claims(confidence_map.weak_confidence_50_60pct)
+    filtered_contested = _filter_claims(confidence_map.contested_below_50pct)
+    filtered_insufficient = _filter_claims(confidence_map.insufficient_evidence)
 
     # Rebuild provenance_index for surviving claims only
     all_surviving = (
         filtered_high + filtered_moderate + filtered_weak
         + filtered_contested + filtered_insufficient
     )
-    surviving_agg_ids: set[str] = {
-        c.aggregated_claim_id
+    filtered_provenance = {
+        c.aggregated_claim_id: list(c.task_ids)
         for c in all_surviving
         if c.aggregated_claim_id is not None
-    }
-    filtered_provenance = {
-        agg_id: list(task_ids)
-        for agg_id, task_ids in confidence_map.provenance_index.items()
-        if agg_id in surviving_agg_ids
     }
 
     filtered_gaps: list[str] = []
     filtered_gap_provenance: dict[str, list[str]] = {}
     for gap in confidence_map.gaps_identified:
-        task_ids = list(confidence_map.gap_provenance.get(gap, []))
-        if _keep(task_ids):
+        task_ids = _surviving_task_ids(list(confidence_map.gap_provenance.get(gap, [])))
+        if task_ids:
             filtered_gaps.append(gap)
             filtered_gap_provenance[gap] = task_ids
 

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from datetime import datetime
 
+from keystone.citation.hash import compute_metadata_hash
 from keystone.citation.dedup import deduplicate_citations, find_corroboration_pairs
 from keystone.models.citations import (
     Citation,
@@ -21,6 +22,7 @@ from keystone.models.research import FindingClaim, StructuredFinding
 def _cit(
     cid: str = "CIT-001",
     url: str = "https://example.com/a.pdf",
+    title: str = "Test",
     doi: str | None = None,
     quality: float = 0.8,
     agents: list[str] | None = None,
@@ -32,7 +34,7 @@ def _cit(
         engagement_id="ENG-001",
         client_id="CLIENT-001",
         url=url,
-        title="Test",
+        title=title,
         source_type=SourceType.REPORT,
         quality_score=quality,
         access_date=datetime(2026, 4, 1),
@@ -162,8 +164,8 @@ class TestDeduplicateCitations:
         assert result[0].content_hash == existing_hash
 
     def test_metadata_hash_preserved_from_best_record(self):
-        """metadata_hash (url:title identity) is preserved through merge."""
-        existing_hash = "ff" * 32
+        """A correct winner hash still matches the canonical url:title after merge."""
+        existing_hash = compute_metadata_hash("https://same.com", "Test")
         c1 = _cit(
             cid="CIT-001",
             url="https://same.com",
@@ -173,6 +175,39 @@ class TestDeduplicateCitations:
         c2 = _cit(cid="CIT-002", url="https://same.com", quality=0.5)
         result = deduplicate_citations([c1, c2])
         assert result[0].metadata_hash == existing_hash
+
+    def test_doi_merge_recomputes_metadata_hash_from_canonical_url_and_title(self):
+        """DOI merges must not keep a loser's stale metadata_hash."""
+        stale_hash = compute_metadata_hash(
+            "https://loser.example.com/paper",
+            "Loser Title",
+        )
+        c1 = _cit(
+            cid="CIT-001",
+            url="https://winner.example.com/paper",
+            title="Winner Title",
+            doi="10.1234/test",
+            quality=0.9,
+        )
+        c2 = _cit(
+            cid="CIT-002",
+            url="https://loser.example.com/paper",
+            title="Loser Title",
+            doi="10.1234/test",
+            quality=0.4,
+            metadata_hash=stale_hash,
+        )
+
+        result = deduplicate_citations([c1, c2])
+
+        assert len(result) == 1
+        assert result[0].url == "https://winner.example.com/paper"
+        assert result[0].title == "Winner Title"
+        assert result[0].metadata_hash == compute_metadata_hash(
+            result[0].url,
+            result[0].title,
+        )
+        assert result[0].metadata_hash != stale_hash
 
     def test_real_content_hash_preserved_from_any_group_member(self):
         """Canonical citation keeps a real content_hash even if only one member had it."""

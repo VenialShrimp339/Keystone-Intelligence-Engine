@@ -12,6 +12,7 @@ from unittest.mock import patch
 import pytest
 from pytest_httpx import HTTPXMock
 
+from keystone.citation.hash import compute_metadata_hash
 from keystone.citation.processor import CitationProcessor, CitationProcessorResult
 from keystone.contracts import CitationProcessorContract
 from keystone.events import (
@@ -39,6 +40,7 @@ from keystone.models.research import FindingClaim, StructuredFinding
 def _cit(
     cid: str = "CIT-001",
     url: str = "https://example.com/doc",
+    title: str = "Test Document",
     doi: str | None = None,
     quality: float = 0.8,
     agents: list[str] | None = None,
@@ -50,7 +52,7 @@ def _cit(
         engagement_id="ENG-001",
         client_id="CLIENT-001",
         url=url,
-        title="Test Document",
+        title=title,
         source_type=SourceType.REPORT,
         quality_score=quality,
         access_date=datetime(2026, 4, 1),
@@ -270,9 +272,53 @@ class TestCitationHashes:
         for cit in manifest.citations:
             assert cit.metadata_hash is not None
             assert len(cit.metadata_hash) == 64
+            assert cit.metadata_hash == compute_metadata_hash(cit.url, cit.title)
 
         by_url = {citation.url: citation for citation in manifest.citations}
         assert by_url["https://b.com"].content_hash == "ab" * 32
+
+    @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
+    async def test_doi_dedup_recomputes_stale_loser_metadata_hash(self, _mock):
+        """Final canonical citations must hash their own url:title after DOI merges."""
+        stale_hash = compute_metadata_hash(
+            "https://loser.example.com/paper",
+            "Loser Title",
+        )
+        f1 = _finding("agent-1", [_claim("Winner claim", [
+            _cit(
+                "CIT-001",
+                "https://winner.example.com/paper",
+                title="Winner Title",
+                doi="10.1234/test",
+                quality=0.9,
+                agents=["agent-1"],
+            ),
+        ])])
+        f2 = _finding("agent-2", [_claim("Loser claim", [
+            _cit(
+                "CIT-002",
+                "https://loser.example.com/paper",
+                title="Loser Title",
+                doi="10.1234/test",
+                quality=0.4,
+                agents=["agent-2"],
+                metadata_hash=stale_hash,
+            ),
+        ])])
+
+        processor = CitationProcessor()
+        await _collect(processor, [f1, f2])
+        manifest = await processor.get_manifest()
+
+        assert len(manifest.citations) == 1
+        canonical = manifest.citations[0]
+        assert canonical.url == "https://winner.example.com/paper"
+        assert canonical.title == "Winner Title"
+        assert canonical.metadata_hash == compute_metadata_hash(
+            canonical.url,
+            canonical.title,
+        )
+        assert canonical.metadata_hash != stale_hash
 
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
     async def test_existing_content_hash_preserved(self, _mock):

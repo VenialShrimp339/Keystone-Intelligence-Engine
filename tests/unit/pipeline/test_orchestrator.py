@@ -1148,9 +1148,20 @@ class TestConfidenceMapFiltering:
             claim.claim != "Failed claim"
             for claim in filtered.high_confidence_above_80pct
         )
+        assert filtered.high_confidence_above_80pct[0].corroboration_count == 1
         assert filtered.provenance_index == {
             filtered.high_confidence_above_80pct[0].aggregated_claim_id: ["task_pass"]
         }
+
+        output = MarkdownRenderer().render(
+            _make_spec(),
+            [_make_finding(task_id="task_pass", agent_id="agent_pass")],
+            filtered,
+            [_make_eval_result(task_id="task_pass")],
+            manifest,
+        )
+        assert "Corroboration: 1" in output
+        assert "Corroboration: 2" not in output
 
     def test_failed_task_gap_text_does_not_render(self) -> None:
         confidence_map = ConfidenceMap(

@@ -13,7 +13,7 @@ from datetime import UTC, datetime
 import pytest
 
 from keystone.citation.dedup import deduplicate_citations, find_corroboration_pairs
-from keystone.citation.hash import compute_content_hash
+from keystone.citation.hash import compute_content_hash, compute_metadata_hash
 from keystone.citation.processor import CitationProcessor
 from keystone.citation.url_check import batch_check_urls, check_url_liveness
 from keystone.events import (
@@ -339,6 +339,7 @@ async def test_processor_assigns_metadata_hashes():
         assert cit.citation_id.startswith("CAN-")
         assert cit.metadata_hash is not None, f"{cit.citation_id} missing metadata_hash"
         assert len(cit.metadata_hash) == 64
+        assert cit.metadata_hash == compute_metadata_hash(cit.url, cit.title)
 
     # Metadata hashes should be unique per citation (different url:title combos)
     hashes = [c.metadata_hash for c in manifest.citations]

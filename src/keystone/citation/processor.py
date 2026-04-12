@@ -171,13 +171,14 @@ class CitationProcessor:
                 citation.model_copy(update={"url_live": is_live})
             )
 
-        # 5. Ensure metadata hashes on all citations (url:title identity hash)
+        # 5. Recompute metadata hashes from each final canonical url:title.
+        # This keeps metadata_hash aligned with the emitted canonical citation
+        # even when DOI-based merges pulled in stale precomputed hashes.
         final_citations: list[Citation] = []
         for citation in updated_citations:
-            if citation.metadata_hash is None:
-                citation = citation.model_copy(
-                    update={"metadata_hash": compute_metadata_hash(citation.url, citation.title)}
-                )
+            citation = citation.model_copy(
+                update={"metadata_hash": compute_metadata_hash(citation.url, citation.title)}
+            )
             final_citations.append(citation)
 
         # 6. Build manifest with alias map
