@@ -72,7 +72,7 @@ class TestWeightedGeometricMean:
         assert abs(result - 100.0) < 0.01
 
     def test_floor_score_handling(self) -> None:
-        """Score of 0 is floored at 1.0 in log computation."""
+        """Score of 0 is floored at 0.01 in log computation."""
         scores = [
             DimensionScore(dimension=RubricDimension.ANALYTICAL_DEPTH, score=0, feedback="ok"),
             DimensionScore(dimension=RubricDimension.SOURCE_QUALITY, score=100, feedback="ok"),
@@ -82,8 +82,8 @@ class TestWeightedGeometricMean:
             RubricDimension.SOURCE_QUALITY: 0.5,
         }
         result = weighted_geometric_mean(scores, weights)
-        assert result > 0.0  # not zero because floored at 1
-        assert result < 20.0  # heavily penalized
+        assert result == pytest.approx(1.0, abs=0.01)
+        assert result < 2.0  # heavily penalized
 
     def test_empty_scores_returns_zero(self) -> None:
         assert weighted_geometric_mean([], {}) == 0.0
@@ -210,6 +210,73 @@ class TestProfileScoring:
         result = await scorer.score_all_dimensions("Test output.", _make_contract())
         assert result.final_score > 0
 
+    @pytest.mark.asyncio
+    async def test_dimension_emphasis_changes_weighted_total(self) -> None:
+        tier2_scores = {
+            RubricDimension.ANALYTICAL_DEPTH: 20.0,
+            RubricDimension.SOURCE_QUALITY: 80.0,
+            RubricDimension.QUANTITATIVE_RIGOR: 80.0,
+            RubricDimension.ACTIONABILITY: 80.0,
+            RubricDimension.EVALUATIVE_SURPRISE: 80.0,
+            RubricDimension.CALIBRATED_CONFIDENCE: 80.0,
+        }
+        llm = _mock_dimension_scores(tier2_scores=tier2_scores)
+        scorer = Layer3RubricScorer(llm=llm, profile=EvaluationProfile.DEFAULT)
+
+        baseline = await scorer.score_all_dimensions("Test output.", _make_contract())
+        emphasized_contract = SprintContract(
+            section_id="section_task_001",
+            engagement_id="ENG-001",
+            client_id="CLT-001",
+            task_id="task_001",
+            section_title="Competitive Landscape",
+            acceptance_criteria=["Identify 5+ competitors", "Compare pricing"],
+            dimension_emphasis={RubricDimension.ANALYTICAL_DEPTH: 2.0},
+        )
+        emphasized = await scorer.score_all_dimensions("Test output.", emphasized_contract)
+
+        assert emphasized.weighted_total < baseline.weighted_total
+
+    @pytest.mark.asyncio
+    async def test_dimension_emphasis_clamped_to_documented_range(self) -> None:
+        tier2_scores = {
+            RubricDimension.ANALYTICAL_DEPTH: 20.0,
+            RubricDimension.SOURCE_QUALITY: 80.0,
+            RubricDimension.QUANTITATIVE_RIGOR: 80.0,
+            RubricDimension.ACTIONABILITY: 80.0,
+            RubricDimension.EVALUATIVE_SURPRISE: 80.0,
+            RubricDimension.CALIBRATED_CONFIDENCE: 80.0,
+        }
+        llm = _mock_dimension_scores(tier2_scores=tier2_scores)
+        scorer = Layer3RubricScorer(llm=llm, profile=EvaluationProfile.DEFAULT)
+
+        over_emphasized = SprintContract(
+            section_id="section_task_001",
+            engagement_id="ENG-001",
+            client_id="CLT-001",
+            task_id="task_001",
+            section_title="Competitive Landscape",
+            acceptance_criteria=["Identify 5+ competitors", "Compare pricing"],
+            dimension_emphasis={RubricDimension.ANALYTICAL_DEPTH: 5.0},
+        )
+        capped = SprintContract(
+            section_id="section_task_001",
+            engagement_id="ENG-001",
+            client_id="CLT-001",
+            task_id="task_001",
+            section_title="Competitive Landscape",
+            acceptance_criteria=["Identify 5+ competitors", "Compare pricing"],
+            dimension_emphasis={RubricDimension.ANALYTICAL_DEPTH: 1.5},
+        )
+
+        over_emphasized_result = await scorer.score_all_dimensions("Test output.", over_emphasized)
+        capped_result = await scorer.score_all_dimensions("Test output.", capped)
+
+        assert over_emphasized_result.weighted_total == pytest.approx(
+            capped_result.weighted_total,
+            abs=0.01,
+        )
+
 
 # ---------------------------------------------------------------------------
 # Gestalt overlay tests
@@ -244,6 +311,26 @@ class TestGestaltOverlay:
         result = await scorer.score_all_dimensions("Test output.", _make_contract())
         assert result.final_score <= 100.0
 
+    @pytest.mark.asyncio
+    async def test_geometric_mean_uses_epsilon_floor_in_live_scoring_path(self) -> None:
+        llm = _mock_dimension_scores(
+            tier1_scores={d: 100.0 for d in TIER_1_DIMENSIONS},
+            tier2_scores={
+                RubricDimension.ANALYTICAL_DEPTH: 0.0,
+                RubricDimension.SOURCE_QUALITY: 100.0,
+                RubricDimension.QUANTITATIVE_RIGOR: 100.0,
+                RubricDimension.ACTIONABILITY: 100.0,
+                RubricDimension.EVALUATIVE_SURPRISE: 100.0,
+                RubricDimension.CALIBRATED_CONFIDENCE: 100.0,
+            },
+        )
+        scorer = Layer3RubricScorer(llm=llm, profile=EvaluationProfile.DEFAULT)
+
+        result = await scorer.score_all_dimensions("Test output.", _make_contract())
+
+        assert result.weighted_total == pytest.approx(33.11, abs=0.1)
+        assert result.weighted_total < 40.0
+
 
 # ---------------------------------------------------------------------------
 # Prompt template loading tests
@@ -270,3 +357,31 @@ class TestPromptTemplates:
             assert "{{sprint_contract_criteria}}" in content, (
                 f"{fname} missing {{{{sprint_contract_criteria}}}}"
             )
+
+    @pytest.mark.asyncio
+    async def test_prompt_context_includes_sprint_contract_fields(self) -> None:
+        prompts: list[str] = []
+        base_llm = _mock_dimension_scores()
+
+        async def capturing_llm(prompt: str) -> str:
+            prompts.append(prompt)
+            return await base_llm(prompt)
+
+        contract = SprintContract(
+            section_id="section_task_001",
+            engagement_id="ENG-001",
+            client_id="CLT-001",
+            task_id="task_001",
+            section_title="Competitive Landscape",
+            acceptance_criteria=["Identify 5+ competitors", "Compare pricing"],
+            mandatory_elements=["competitive comparison table"],
+            anti_patterns=["generic SWOT without company-specific data"],
+        )
+        scorer = Layer3RubricScorer(llm=capturing_llm, profile=EvaluationProfile.DEFAULT)
+        await scorer.score_all_dimensions("Test output.", contract)
+
+        prompt_text = "\n".join(prompts)
+        assert "Mandatory elements:" in prompt_text
+        assert "competitive comparison table" in prompt_text
+        assert "Anti-patterns:" in prompt_text
+        assert "generic SWOT without company-specific data" in prompt_text

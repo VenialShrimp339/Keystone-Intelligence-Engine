@@ -20,7 +20,7 @@ if TYPE_CHECKING:
         AnyPipelineEvent,
     )
     from keystone.citation.processor import CitationProcessorResult
-    from keystone.hitl.schemas import GateResponse
+    from keystone.hitl.schemas import GateResolution
     from keystone.models.agents import AgentInstance
     from keystone.models.citations import CitationManifest
     from keystone.models.confidence import ConfidenceMap
@@ -331,7 +331,7 @@ class HITLGateContract(Protocol):
     """Contract for the Human-in-the-Loop review gate.
 
     Input:  Review artifacts (issue tree, agent configs, confidence map, etc.)
-    Output: GateResponse with human decision (approve/modify/reject)
+    Output: GateResolution with human decision (approve/modify/reject)
     Gate:   Pipeline blocks until human decides.
 
     Phase 1: Database state machine with polling.
@@ -352,6 +352,6 @@ class HITLGateContract(Protocol):
         """
         ...
 
-    async def get_decision(self) -> GateResponse:
+    async def get_decision(self) -> GateResolution:
         """Return the human's decision on this gate."""
         ...

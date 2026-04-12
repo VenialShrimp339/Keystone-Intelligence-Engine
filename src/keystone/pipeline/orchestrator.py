@@ -21,15 +21,18 @@ from pydantic import BaseModel, Field
 from keystone.citation.processor import CitationProcessor
 from keystone.deliberation.deliberation import Deliberation
 from keystone.evaluator.evaluator import Evaluator
+from keystone.evaluator.rubric_config import ENGAGEMENT_PROFILE_MAP, EvaluationProfile
 from keystone.evaluator.retry import LLMCallable
+from keystone.evaluator.sprint_contract import SprintContractGenerator
 from keystone.events import AnyPipelineEvent
 from keystone.gateway.mcp_gateway import MCPGateway
+from keystone.governance.policy import ProfileExecutionPolicy
 from keystone.llm_client import get_deep_research_callable
 from keystone.models.agents import AgentDefinition, AgentInstance, AgentRole
 from keystone.models.citations import CitationManifest
 from keystone.models.confidence import ConfidenceMap
-from keystone.models.evaluation import EvaluationResult, SprintContract
-from keystone.models.research import EngagementSpec, StructuredFinding
+from keystone.models.evaluation import EvaluationIntensity, EvaluationResult
+from keystone.models.research import EngagementSpec, PipelineProfile, StructuredFinding
 from keystone.models.tasks import ModelTier, ResearchTask
 from keystone.pipeline.markdown_renderer import MarkdownRenderer
 from keystone.research.agent_pool import AgentPool
@@ -54,6 +57,7 @@ class PipelineComponents:
     citation_processor: CitationProcessor
     deliberation: Deliberation
     renderer: MarkdownRenderer
+    sprint_contract_generator: SprintContractGenerator
     template_registry: TemplateRegistry
 
 
@@ -134,6 +138,9 @@ class Pipeline:
                 db_session_factory=self._db_session_factory,
             ),
             renderer=MarkdownRenderer(),
+            sprint_contract_generator=SprintContractGenerator(
+                llm=self._llm_factory(ModelTier.FLAGSHIP),
+            ),
             template_registry=TemplateRegistry(),
         )
 
@@ -186,6 +193,13 @@ class Pipeline:
 
         spec = await c.spec_engine.get_spec()
         eid = spec.research_spec.engagement_id
+        # Deliberation is built before L0 runs, so propagate the classified
+        # pipeline profile once the finalized spec is available.
+        c.deliberation._effective_pipeline_profile = (
+            spec.research_spec.effective_pipeline_profile
+        )
+        policy = ProfileExecutionPolicy(spec.research_spec.effective_pipeline_profile)
+        governance = policy.new_state(spec.task_decomposition.tasks)
         logger.info("L0 complete: %d tasks", len(spec.task_decomposition.tasks))
 
         # --- Stage 2: L1 Research Agents ---
@@ -201,6 +215,14 @@ class Pipeline:
         findings = c.agent_pool.get_successful_findings(agent_results)
         for f in findings:
             total_tokens += f.tokens_consumed
+        finding_by_task = {finding.task_id: finding for finding in findings}
+        for task in spec.task_decomposition.tasks:
+            policy.record_research_outcome(
+                governance,
+                task,
+                finding_by_task.get(task.id),
+            )
+        _raise_if_halted(governance)
         logger.info(
             "L1 complete: %d/%d agents succeeded",
             len(findings),
@@ -234,10 +256,14 @@ class Pipeline:
         )
 
         # --- Stage 5: L4 Evaluation ---
-        eval_tasks = spec.task_decomposition.tasks
+        eval_tasks = [
+            task
+            for task in spec.task_decomposition.tasks
+            if governance.task_outcomes[task.id].renderable
+        ]
         if self._max_eval_tasks is not None:
             eval_tasks = eval_tasks[: self._max_eval_tasks]
-        logger.info("L4: Evaluating %d/%d tasks", len(eval_tasks), len(spec.task_decomposition.tasks))
+        logger.info("L4: Evaluating %d/%d renderable tasks", len(eval_tasks), len(spec.task_decomposition.tasks))
         evaluation_results: list[EvaluationResult] = []
         for task in eval_tasks:
             # Find the finding for this task (if any)
@@ -246,14 +272,18 @@ class Pipeline:
             )
             output_text = _finding_to_text(task_finding) if task_finding else ""
 
-            contract = _build_sprint_contract(task, eid, client_id)
+            contract = await c.sprint_contract_generator.generate(task, spec)
 
             # Build task-scoped sub-manifest so citation gating only checks
             # citations this task actually used (not the full engagement)
             task_manifest = _build_task_manifest(task_finding, manifest)
 
             # Fresh evaluator per task (each stores one result)
-            evaluator = Evaluator(llm=self._llm_factory(ModelTier.FLAGSHIP))
+            evaluator = Evaluator(
+                llm=self._llm_factory(ModelTier.FLAGSHIP),
+                profile=_resolve_evaluation_profile(spec),
+                intensity=_resolve_evaluation_intensity(spec),
+            )
             async for event in evaluator.evaluate(
                 output_text, contract, task, task_manifest, spec
             ):
@@ -261,15 +291,25 @@ class Pipeline:
 
             result = await evaluator.get_result()
             evaluation_results.append(result)
+            policy.record_evaluation_outcome(governance, task, result)
 
         passed_count = sum(1 for r in evaluation_results if r.passed)
         failed_count = len(evaluation_results) - passed_count
         logger.info("L4 complete: %d/%d passed", passed_count, len(evaluation_results))
 
+        coverage_flag = policy.evaluate_coverage(governance)
+        if coverage_flag is not None:
+            policy.apply_flag(governance, coverage_flag)
+        _raise_if_halted(governance)
+
         # Gate rendering on evaluation results: only render findings that passed.
         # This must key off passed_task_ids directly so unevaluated tasks do not
         # leak through when only a subset of tasks reached L4.
-        passed_task_ids = {r.task_id for r in evaluation_results if r.passed}
+        passed_task_ids = {
+            task_id
+            for task_id, outcome in governance.task_outcomes.items()
+            if outcome.renderable and outcome.evaluation_status == "passed"
+        }
         evaluated_task_ids = {r.task_id for r in evaluation_results}
         failed_task_ids = {r.task_id for r in evaluation_results if not r.passed}
         finding_task_ids = {f.task_id for f in findings}
@@ -291,9 +331,7 @@ class Pipeline:
             confidence_map, passed_task_ids
         )
         render_manifest = _filter_manifest_by_findings(passed_findings, manifest)
-        render_evaluation_results = [
-            result for result in evaluation_results if result.task_id in passed_task_ids
-        ]
+        render_evaluation_results = [result for result in evaluation_results if result.task_id in passed_task_ids]
 
         # --- Stage 6: Render (only passed findings + filtered confidence map) ---
         markdown_output = c.renderer.render(
@@ -419,20 +457,6 @@ def _build_task_manifest(
         engagement_id=full_manifest.engagement_id,
         client_id=full_manifest.client_id,
         citations=task_citations,
-    )
-
-
-def _build_sprint_contract(
-    task: ResearchTask, engagement_id: str, client_id: str
-) -> SprintContract:
-    """Build a SprintContract from a ResearchTask's acceptance criteria."""
-    return SprintContract(
-        section_id=f"sec_{task.id}",
-        engagement_id=engagement_id,
-        client_id=client_id,
-        task_id=task.id,
-        section_title=task.deliverable_destination,
-        acceptance_criteria=task.acceptance_criteria,
     )
 
 
@@ -590,3 +614,33 @@ def _filter_confidence_map_by_passed_tasks(
         gap_provenance=filtered_gap_provenance,
         provenance_index=filtered_provenance,
     )
+
+
+def _resolve_evaluation_profile(spec: EngagementSpec) -> EvaluationProfile:
+    """Route the evaluation profile from the classified engagement."""
+    return ENGAGEMENT_PROFILE_MAP.get(
+        spec.research_spec.engagement_type,
+        EvaluationProfile.DEFAULT,
+    )
+
+
+def _resolve_evaluation_intensity(spec: EngagementSpec) -> EvaluationIntensity:
+    """Make pipeline profile load-bearing for evaluator depth."""
+    profile = spec.research_spec.effective_pipeline_profile
+    if profile == PipelineProfile.LIGHT:
+        return EvaluationIntensity.LIGHT_TOUCH
+    if profile == PipelineProfile.DEEP:
+        return EvaluationIntensity.DEEP
+    return EvaluationIntensity.STANDARD
+
+
+def _raise_if_halted(governance) -> None:
+    if not governance.halted:
+        return
+
+    critical_flags = [
+        flag for flag in governance.flags if flag.action in {"halt", "escalate"}
+    ]
+    if critical_flags:
+        raise RuntimeError(critical_flags[-1].message)
+    raise RuntimeError("Pipeline halted by governance policy.")

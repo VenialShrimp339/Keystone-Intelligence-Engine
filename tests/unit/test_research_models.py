@@ -16,6 +16,7 @@ from keystone.models.tasks import (
     ResearchTask,
     TaskCategory,
     TaskDecomposition,
+    TaskImportance,
     TaskStatus,
     TaskType,
 )
@@ -97,6 +98,7 @@ class TestResearchTaskBasic:
         assert task.id == "task_001"
         assert task.passes is False
         assert task.status == TaskStatus.PENDING
+        assert task.importance == TaskImportance.SUPPORTING
 
     def test_required_fields(self):
         with pytest.raises(ValidationError):
@@ -367,6 +369,14 @@ class TestResearchSpecBatch2:
             day_1_hypothesis="Luminar's technology lead is sustainable through 2028"
         )
         assert "Luminar" in spec.day_1_hypothesis
+
+    def test_pipeline_profile_defaults(self):
+        from keystone.models.research import PipelineProfile
+
+        spec = self._make_spec()
+        assert spec.recommended_pipeline_profile is None
+        assert spec.effective_pipeline_profile == PipelineProfile.STANDARD
+        assert spec.profile_source == "classifier"
 
     def test_invalid_engagement_type_rejected(self):
         with pytest.raises(ValidationError):

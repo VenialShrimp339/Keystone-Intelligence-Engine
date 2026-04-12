@@ -27,7 +27,7 @@ from keystone.events import (
 )
 from keystone.hitl.schemas import (
     CreateGateRequest,
-    GateResponse,
+    GateResolution,
     GateStatus,
     GateType,
     ReviewItemCreate,
@@ -62,6 +62,17 @@ class GateTimeoutError(Exception):
         super().__init__(f"No decision on gate {gate_id} after {timeout}s")
 
 
+class GateModificationRequiredError(Exception):
+    """Raised when a reviewer requests changes that are not auto-applied."""
+
+    def __init__(self, resolution: GateResolution) -> None:
+        self.resolution = resolution
+        super().__init__(
+            f"Review gate {resolution.id} returned modified, but modifications "
+            "are not yet supported in this phase."
+        )
+
+
 async def create_and_wait_for_gate(
     session: AsyncSession,
     engagement_id: str,
@@ -71,7 +82,7 @@ async def create_and_wait_for_gate(
     poll_interval: float = 1.0,
     timeout: float = 3600.0,
     event_collector: list | None = None,
-) -> GateResponse:
+) -> GateResolution:
     """Create a review gate and block until the human decides.
 
     This is the primary interface for pipeline stages. It:
@@ -92,10 +103,12 @@ async def create_and_wait_for_gate(
         timeout: Maximum wait time.
 
     Returns:
-        The resolved GateResponse (status will be approved or modified).
+        The resolved GateResolution (status plus wrapped GateResponse).
 
     Raises:
         GateRejectedError: Human rejected. Pipeline must halt.
+        GateModificationRequiredError: Human requested modifications that have
+            not been applied in this phase.
         GateTimeoutError: No decision within timeout.
     """
     service = HITLService()
@@ -159,6 +172,12 @@ async def create_and_wait_for_gate(
         engagement_id=engagement_id,
     )
 
+    resolution = GateResolution(
+        status=resolved.status,
+        gate_response=resolved,
+        patch_applied=resolved.status != GateStatus.MODIFIED,
+    )
+
     if event_collector is not None:
         if resolved.status == GateStatus.MODIFIED:
             modification_keys = list(resolved.decision.modifications.keys()) if (
@@ -185,7 +204,10 @@ async def create_and_wait_for_gate(
                 )
             )
 
-    return resolved
+    if resolution.status == GateStatus.MODIFIED and not resolution.patch_applied:
+        raise GateModificationRequiredError(resolution)
+
+    return resolution
 
 
 def build_spec_gate_items(

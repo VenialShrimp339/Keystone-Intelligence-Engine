@@ -32,6 +32,7 @@ from keystone.models.agents import DeliberationAnalystType
 from keystone.models.citations import CitationManifest
 from keystone.models.confidence import ConfidenceMap
 from keystone.models.research import StructuredFinding
+from keystone.models.research import PipelineProfile
 from keystone.models.tasks import ModelTier
 
 DEFAULT_ANALYST_TYPES = [
@@ -61,12 +62,14 @@ class Deliberation:
         wwhtb_llm: LLMCallable | None = None,
         analyst_types: list[DeliberationAnalystType] | None = None,
         db_session_factory: Callable | None = None,
+        effective_pipeline_profile: PipelineProfile = PipelineProfile.STANDARD,
     ) -> None:
         self._analyst_llm = analyst_llm
         self._judge_llm = judge_llm or analyst_llm
         self._wwhtb_llm = wwhtb_llm or analyst_llm
         self._analyst_types = analyst_types or list(DEFAULT_ANALYST_TYPES)
         self._db_session_factory = db_session_factory
+        self._effective_pipeline_profile = effective_pipeline_profile
         self._confidence_map: ConfidenceMap | None = None
 
     async def deliberate(
@@ -184,20 +187,30 @@ class Deliberation:
         client_id: str,
     ) -> None:
         """Trigger HITL Gate 2 (post-deliberation review)."""
-        from keystone.hitl.gate import build_deliberation_gate_items, create_and_wait_for_gate
-        from keystone.hitl.schemas import GateType
+        if self._effective_pipeline_profile == PipelineProfile.LIGHT:
+            logger.info("Skipping HITL Gate 2 for LIGHT profile")
+            return
+
+        from keystone.hitl.gate import (
+            build_deliberation_gate_items,
+            create_and_wait_for_gate,
+        )
+        from keystone.hitl.schemas import GateStatus, GateType
 
         items = build_deliberation_gate_items(
             confidence_map=confidence_map.model_dump(),
         )
         async with self._db_session_factory() as session:
-            await create_and_wait_for_gate(
+            resolution = await create_and_wait_for_gate(
                 session=session,
                 engagement_id=engagement_id,
                 client_id=client_id,
                 gate_type=GateType.POST_DELIBERATION,
                 items=items,
             )
+        if resolution.status == GateStatus.MODIFIED and not resolution.patch_applied:
+            msg = "Modifications are not yet supported in this phase."
+            raise RuntimeError(msg)
 
 
 def _uid() -> str:

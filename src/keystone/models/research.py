@@ -35,6 +35,14 @@ class EngagementType(StrEnum):
     STRATEGIC = "strategic"
 
 
+class PipelineProfile(StrEnum):
+    """Pipeline depth profiles (Directive 11)."""
+
+    LIGHT = "light"
+    STANDARD = "standard"
+    DEEP = "deep"
+
+
 class ResearchQuestion(BaseModel):
     """A research question within the engagement specification."""
 
@@ -145,6 +153,18 @@ class ResearchSpec(BaseModel):
         default=None,
         description="Initial testable hypothesis that anchors the research. "
         "Prevents open-ended exploration (AutoGPT failure mode).",
+    )
+    recommended_pipeline_profile: PipelineProfile | None = Field(
+        default=None,
+        description="Classifier-recommended execution profile.",
+    )
+    effective_pipeline_profile: PipelineProfile = Field(
+        default=PipelineProfile.STANDARD,
+        description="Execution profile used for this run.",
+    )
+    profile_source: str = Field(
+        default="classifier",
+        description="How the effective pipeline profile was chosen.",
     )
 
 

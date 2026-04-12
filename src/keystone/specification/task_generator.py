@@ -21,8 +21,10 @@ from keystone.models.tasks import (
     ResearchTask,
     TaskCategory,
     TaskDecomposition,
+    TaskImportance,
     TaskType,
 )
+from keystone.models.research import PipelineProfile
 from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.specification._prompts import load_prompt
 from keystone.specification.decomposer import IssueTree
@@ -136,6 +138,11 @@ class TaskGenerator:
                 acceptance_criteria=t.get("acceptance_criteria", ["Meets quality bar"]),
                 deliverable_destination=t.get("deliverable_destination", "Section TBD"),
                 priority=priority_rank,
+                importance=self._resolve_importance(
+                    priority_rank=priority_rank,
+                    spec=spec,
+                    task_data=t,
+                ),
                 anti_confirmatory_framing=t.get("anti_confirmatory_framing", "Evaluate evidence both for and against"),
                 assigned_tools=self._resolve_tools(t, category, engagement_type),
                 assigned_model=ModelTier(t.get("assigned_model", "standard")),
@@ -193,3 +200,32 @@ class TaskGenerator:
         if len(template_tools) < 3:
             template_tools = list(DEFAULT_TOOLS) + [DEFAULT_TOOLS[0]]
         return template_tools[:5] if len(template_tools) >= 3 else template_tools + [DEFAULT_TOOLS[0]] * (3 - len(template_tools))
+
+    def _resolve_importance(
+        self,
+        *,
+        priority_rank: int,
+        spec: ResearchSpec,
+        task_data: dict,
+    ) -> TaskImportance:
+        """Assign task importance for Wave 2B coverage policy."""
+        raw = task_data.get("importance")
+        if isinstance(raw, str):
+            try:
+                return TaskImportance(raw)
+            except ValueError:
+                logger.warning("Ignoring unknown task importance '%s'", raw)
+
+        if priority_rank == 1:
+            return TaskImportance.PRIMARY
+
+        if (
+            spec.effective_pipeline_profile == PipelineProfile.DEEP
+            and priority_rank <= 3
+        ):
+            return TaskImportance.CRITICAL
+
+        if task_data.get("target_decision_usefulness", 3) <= 2 and priority_rank > 5:
+            return TaskImportance.OPTIONAL
+
+        return TaskImportance.SUPPORTING

@@ -8,7 +8,7 @@ import pytest
 
 from keystone.contracts import SpecificationEngineContract
 from keystone.events import AgentDispatched, SpecificationGenerated, TasksDecomposed
-from keystone.models.research import EngagementSpec, EngagementType
+from keystone.models.research import EngagementSpec, EngagementType, PipelineProfile
 from keystone.specification.spec_engine import SpecificationEngine
 from keystone.specification.template_registry import TemplateRegistry
 
@@ -255,6 +255,9 @@ class TestSpecificationEngine:
         assert len(rs.surprising_finding) > 0
         assert len(rs.questions) >= 1
         assert any(q.is_primary for q in rs.questions)
+        assert rs.recommended_pipeline_profile == PipelineProfile.DEEP
+        assert rs.effective_pipeline_profile == PipelineProfile.DEEP
+        assert rs.profile_source == "classifier"
 
     async def test_get_spec_raises_before_generate(self):
         """get_spec() raises RuntimeError before generate_spec() is called."""

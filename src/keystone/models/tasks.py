@@ -60,6 +60,15 @@ class TaskStatus(StrEnum):
     PASSED = "passed"
 
 
+class TaskImportance(StrEnum):
+    """How essential a task is to pipeline publishability."""
+
+    PRIMARY = "primary"
+    CRITICAL = "critical"
+    SUPPORTING = "supporting"
+    OPTIONAL = "optional"
+
+
 class ResearchTask(BaseModel):
     """A discrete research task assigned to a single L1 agent.
 
@@ -103,6 +112,10 @@ class ResearchTask(BaseModel):
     )
     priority: int = Field(
         ge=1, description="Execution priority (1 = highest)"
+    )
+    importance: TaskImportance = Field(
+        default=TaskImportance.SUPPORTING,
+        description="Task importance for governance and coverage policy.",
     )
     anti_confirmatory_framing: str = Field(
         description="Evaluative framing requiring evidence both for and against. "

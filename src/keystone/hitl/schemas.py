@@ -12,7 +12,7 @@ from __future__ import annotations
 from datetime import datetime
 from enum import StrEnum
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 # ---------------------------------------------------------------------------
@@ -131,6 +131,62 @@ class GateResponse(BaseModel):
     resolved_by: str | None = None
     items: list[ReviewItemResponse] = Field(default_factory=list)
     decision: DecisionResponse | None = None
+
+
+class GateResolution(BaseModel):
+    """Resolved gate state plus patch application semantics."""
+
+    status: GateStatus = Field(description="Resolved gate status")
+    gate_response: GateResponse = Field(
+        description="Underlying gate response returned from the service"
+    )
+    patch_applied: bool = Field(
+        default=False,
+        description="Whether requested modifications were applied downstream",
+    )
+
+    @model_validator(mode="after")
+    def _validate_status_matches_response(self) -> GateResolution:
+        if self.status != self.gate_response.status:
+            msg = "GateResolution.status must match gate_response.status"
+            raise ValueError(msg)
+        return self
+
+    @property
+    def id(self) -> str:
+        return self.gate_response.id
+
+    @property
+    def engagement_id(self) -> str:
+        return self.gate_response.engagement_id
+
+    @property
+    def client_id(self) -> str:
+        return self.gate_response.client_id
+
+    @property
+    def gate_type(self) -> GateType:
+        return self.gate_response.gate_type
+
+    @property
+    def created_at(self) -> datetime:
+        return self.gate_response.created_at
+
+    @property
+    def resolved_at(self) -> datetime | None:
+        return self.gate_response.resolved_at
+
+    @property
+    def resolved_by(self) -> str | None:
+        return self.gate_response.resolved_by
+
+    @property
+    def items(self) -> list[ReviewItemResponse]:
+        return self.gate_response.items
+
+    @property
+    def decision(self) -> DecisionResponse | None:
+        return self.gate_response.decision
 
 
 class GateSummaryResponse(BaseModel):

@@ -23,7 +23,7 @@ from keystone.events import (
     IndependentAnalysisComplete,
 )
 from keystone.hitl.models import Base
-from keystone.hitl.schemas import GateResponse, GateStatus, GateType
+from keystone.hitl.schemas import GateResponse, GateResolution, GateStatus, GateType
 from keystone.models.agents import DeliberationAnalystType
 from keystone.models.citations import (
     Citation,
@@ -32,7 +32,7 @@ from keystone.models.citations import (
     SourceType,
 )
 from keystone.models.confidence import ConfidenceMap
-from keystone.models.research import FindingClaim, StructuredFinding
+from keystone.models.research import FindingClaim, PipelineProfile, StructuredFinding
 
 
 # ---------------------------------------------------------------------------
@@ -241,7 +241,12 @@ class TestHITLGate:
             status=GateStatus.APPROVED,
             created_at=datetime.now(UTC),
         )
-        mock_create_gate = AsyncMock(return_value=mock_gate_response)
+        mock_gate_resolution = GateResolution(
+            status=GateStatus.APPROVED,
+            gate_response=mock_gate_response,
+            patch_applied=True,
+        )
+        mock_create_gate = AsyncMock(return_value=mock_gate_resolution)
 
         findings = [_finding("agent-1", [_fc("Claim", 0.8)])]
         delib = Deliberation(
@@ -262,6 +267,73 @@ class TestHITLGate:
         assert any(isinstance(e, ConfidenceMapProduced) for e in events)
         cm = await delib.get_confidence_map()
         assert isinstance(cm, ConfidenceMap)
+
+        await engine.dispose()
+
+    @pytest.mark.asyncio
+    async def test_gate_modified_without_applied_patch_halts(self) -> None:
+        """Modified gate must stop if the patch was not applied."""
+        engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        session_factory = async_sessionmaker(engine, expire_on_commit=False)
+
+        mock_gate_response = GateResponse(
+            id="gate-002",
+            engagement_id="ENG-001",
+            client_id="CLT-001",
+            gate_type=GateType.POST_DELIBERATION,
+            status=GateStatus.MODIFIED,
+            created_at=datetime.now(UTC),
+            resolved_at=datetime.now(UTC),
+            resolved_by="reviewer",
+        )
+        mock_gate_resolution = GateResolution(
+            status=GateStatus.MODIFIED,
+            gate_response=mock_gate_response,
+            patch_applied=False,
+        )
+        mock_create_gate = AsyncMock(return_value=mock_gate_resolution)
+
+        findings = [_finding("agent-1", [_fc("Claim", 0.8)])]
+        delib = Deliberation(
+            analyst_llm=_mock_llm(),
+            db_session_factory=session_factory,
+        )
+
+        with patch(
+            "keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate
+        ):
+            with pytest.raises(
+                RuntimeError,
+                match="Modifications are not yet supported in this phase.",
+            ):
+                await _collect_events(delib, _manifest(), findings)
+
+        await engine.dispose()
+
+    @pytest.mark.asyncio
+    async def test_light_profile_skips_gate_two(self) -> None:
+        """LIGHT profile skips HITL Gate 2 even with a DB session factory."""
+        engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        session_factory = async_sessionmaker(engine, expire_on_commit=False)
+
+        mock_create_gate = AsyncMock()
+
+        findings = [_finding("agent-1", [_fc("Claim", 0.8)])]
+        delib = Deliberation(
+            analyst_llm=_mock_llm(),
+            db_session_factory=session_factory,
+            effective_pipeline_profile=PipelineProfile.LIGHT,
+        )
+
+        with patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate):
+            events = await _collect_events(delib, _manifest(), findings)
+
+        mock_create_gate.assert_not_awaited()
+        assert any(isinstance(e, ConfidenceMapProduced) for e in events)
 
         await engine.dispose()
 

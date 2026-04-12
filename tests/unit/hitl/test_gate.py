@@ -18,6 +18,7 @@ from keystone.events import (
     ReviewGateRejected,
 )
 from keystone.hitl.gate import (
+    GateModificationRequiredError,
     GateRejectedError,
     GateTimeoutError,
     build_deliberation_gate_items,
@@ -28,6 +29,7 @@ from keystone.hitl.models import Base
 from keystone.hitl.schemas import (
     DecisionType,
     GateStatus,
+    GateResolution,
     GateType,
     ReviewItemType,
     SubmitDecisionRequest,
@@ -147,6 +149,7 @@ class TestCreateAndWaitForGate:
             )
 
             await task
+            assert isinstance(result, GateResolution)
             assert result.status == GateStatus.APPROVED
 
     async def test_raises_on_reject(self, session_factory):
@@ -206,8 +209,8 @@ class TestCreateAndWaitForGate:
                     timeout=0.1,
                 )
 
-    async def test_returns_modifications_on_modify(self, session_factory):
-        """Simulate: gate created, then modified."""
+    async def test_modified_gate_halts_until_patch_is_applied(self, session_factory):
+        """Modified gates block when no downstream patch application exists."""
         async with session_factory() as session:
             items = build_spec_gate_items(
                 issue_tree={"branches": []},
@@ -232,20 +235,27 @@ class TestCreateAndWaitForGate:
 
             task = asyncio.create_task(modify_after_delay())
 
-            result = await create_and_wait_for_gate(
-                session,
-                engagement_id="eng-001",
-                client_id="client-001",
-                gate_type=GateType.POST_SPECIFICATION,
-                items=items,
-                poll_interval=0.05,
-                timeout=5.0,
-            )
+            with pytest.raises(
+                GateModificationRequiredError,
+                match="modifications are not yet supported",
+            ) as exc_info:
+                await create_and_wait_for_gate(
+                    session,
+                    engagement_id="eng-001",
+                    client_id="client-001",
+                    gate_type=GateType.POST_SPECIFICATION,
+                    items=items,
+                    poll_interval=0.05,
+                    timeout=5.0,
+                )
 
             await task
+            result = exc_info.value.resolution
+            assert isinstance(result, GateResolution)
             assert result.status == GateStatus.MODIFIED
             assert result.decision is not None
             assert result.decision.modifications == mods
+            assert result.patch_applied is False
 
 
 # ---------------------------------------------------------------------------
@@ -368,16 +378,17 @@ class TestHITLEventEmission:
                     )
 
             task = asyncio.create_task(modify_after_delay())
-            await create_and_wait_for_gate(
-                session,
-                engagement_id="eng-001",
-                client_id="client-001",
-                gate_type=GateType.POST_SPECIFICATION,
-                items=items,
-                poll_interval=0.05,
-                timeout=5.0,
-                event_collector=collector,
-            )
+            with pytest.raises(GateModificationRequiredError):
+                await create_and_wait_for_gate(
+                    session,
+                    engagement_id="eng-001",
+                    client_id="client-001",
+                    gate_type=GateType.POST_SPECIFICATION,
+                    items=items,
+                    poll_interval=0.05,
+                    timeout=5.0,
+                    event_collector=collector,
+                )
             await task
 
             types = [type(e) for e in collector]

@@ -31,6 +31,7 @@ from keystone.models.evaluation import (
 logger = logging.getLogger(__name__)
 
 _PROMPTS_DIR = Path(__file__).parent / "prompts"
+_GEOMETRIC_MEAN_EPSILON = 0.01
 
 # Map RubricDimension enum values to prompt file names
 _DIMENSION_PROMPT_FILES: dict[RubricDimension, str] = {
@@ -57,7 +58,7 @@ def weighted_geometric_mean(
     Formula: exp(sum(w_i * ln(x_i)) / weight_sum) when scoring a subset,
     or exp(sum(w_i * ln(x_i))) when weights sum to 1.0.
 
-    Scores are floored at 1.0 to avoid log(0). A score of 1/100 is
+    Scores are floored at 0.01 to avoid log(0). A score near 0/100 is
     effectively zero in the geometric mean.
     """
     log_sum = 0.0
@@ -65,7 +66,7 @@ def weighted_geometric_mean(
     for s in scores:
         w = weights.get(s.dimension, 0.0)
         if w > 0:
-            log_sum += w * math.log(max(s.score, 1.0))
+            log_sum += w * math.log(max(s.score, _GEOMETRIC_MEAN_EPSILON))
             weight_sum += w
     if weight_sum == 0:
         return 0.0
@@ -73,6 +74,41 @@ def weighted_geometric_mean(
         # Scoring only a subset: normalize by weight_sum
         return math.exp(log_sum / weight_sum)
     return math.exp(log_sum)
+
+
+def _format_sprint_contract_context(contract: SprintContract) -> str:
+    """Render sprint contract fields into prompt-ready evaluation context."""
+    sections: list[str] = []
+
+    def _append_list_section(title: str, items: list[str]) -> None:
+        sections.append(title)
+        if items:
+            sections.extend(f"- {item}" for item in items)
+        else:
+            sections.append("- None specified")
+
+    _append_list_section("Acceptance criteria:", contract.acceptance_criteria)
+    _append_list_section("Mandatory elements:", contract.mandatory_elements)
+    _append_list_section("Anti-patterns:", contract.anti_patterns)
+
+    return "\n".join(sections)
+
+
+def _apply_dimension_emphasis(
+    base_weights: dict[RubricDimension, float],
+    emphasis: dict[RubricDimension, float],
+) -> dict[RubricDimension, float]:
+    """Apply per-sprint emphasis multipliers and renormalize the weights."""
+    adjusted = dict(base_weights)
+    for dimension, multiplier in emphasis.items():
+        if dimension in adjusted:
+            adjusted[dimension] *= max(0.7, min(1.5, multiplier))
+
+    total = sum(adjusted.values())
+    if total <= 0:
+        return adjusted
+
+    return {dimension: weight / total for dimension, weight in adjusted.items()}
 
 
 class Layer3RubricScorer:
@@ -96,9 +132,8 @@ class Layer3RubricScorer:
         output_text: str,
         contract: SprintContract,
     ) -> Layer3Result:
-        criteria_text = "\n".join(
-            f"- {c}" for c in contract.acceptance_criteria
-        )
+        criteria_text = _format_sprint_contract_context(contract)
+        weights = _apply_dimension_emphasis(self._weights, contract.dimension_emphasis)
 
         # Step 1: Score Tier 1 dimensions in parallel
         tier1_scores = await asyncio.gather(
@@ -128,7 +163,7 @@ class Layer3RubricScorer:
         all_scores = tier1_list + list(tier2_scores)
 
         # Step 4: Compute geometric mean
-        geo_mean = weighted_geometric_mean(all_scores, self._weights)
+        geo_mean = weighted_geometric_mean(all_scores, weights)
 
         # Step 5: Gestalt overlay
         gestalt_adj = await self._gestalt_overlay(output_text)

@@ -28,6 +28,7 @@ from keystone.models.research import (
     EngagementSpec,
     EngagementType,
     MethodologyRequirement,
+    PipelineProfile,
     ResearchQuestion,
     ResearchSpec,
     SourceRequirement,
@@ -340,6 +341,9 @@ class SpecificationEngine:
             non_goals=non_goals,
             engagement_type=classification.engagement_type,
             day_1_hypothesis=intent.day_1_hypothesis,
+            recommended_pipeline_profile=classification.pipeline_profile,
+            effective_pipeline_profile=classification.pipeline_profile,
+            profile_source="classifier",
         )
 
     async def _trigger_hitl_gate(
@@ -355,6 +359,10 @@ class SpecificationEngine:
             issue_tree=tree.model_dump(),
             agent_configs=self._agent_configs,
         )
+
+        profile = self._spec.research_spec.effective_pipeline_profile
+        if profile == PipelineProfile.LIGHT:
+            return
 
         async with self._db_session_factory() as session:
             await create_and_wait_for_gate(

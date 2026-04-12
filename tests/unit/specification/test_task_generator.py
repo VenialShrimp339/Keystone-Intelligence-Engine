@@ -10,6 +10,7 @@ from keystone.models.research import (
     ResearchQuestion,
     ResearchSpec,
 )
+from keystone.models.tasks import TaskImportance
 from keystone.specification.decomposer import IssueTree, IssueTreeMetadata, IssueTreeNode
 from keystone.specification.priority_scorer import PriorityScore
 from keystone.specification.task_generator import TaskGenerator
@@ -191,3 +192,12 @@ class TestTaskGenerator:
         for task in result.tasks:
             for dep in task.dependencies:
                 assert dep in task_ids, f"task {task.id} depends on {dep} which doesn't exist"
+
+    async def test_sets_primary_importance_for_first_task(self):
+        llm = _make_task_llm()
+        registry = TemplateRegistry()
+        generator = TaskGenerator(llm, registry)
+        result = await generator.generate(
+            _make_tree(), _make_priorities(), EngagementType.EVALUATIVE, _make_spec()
+        )
+        assert result.tasks[0].importance == TaskImportance.PRIMARY

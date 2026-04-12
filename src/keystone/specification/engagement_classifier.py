@@ -6,27 +6,12 @@ appropriate pipeline depth (Light/Standard/Deep per Directive 11).
 
 from __future__ import annotations
 
-from enum import StrEnum
-
 from pydantic import BaseModel, Field
 
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
 from keystone.llm.parsing import safe_llm_json
-from keystone.models.research import EngagementType
+from keystone.models.research import EngagementType, PipelineProfile
 from keystone.specification._prompts import load_prompt
-
-
-class PipelineProfile(StrEnum):
-    """Pipeline depth profiles (Directive 11).
-
-    Light:    1-2 agents, 1 round, Layers 1-2 eval
-    Standard: 3 agents, 2-3 rounds, Layers 1-3 eval
-    Deep:     5+ agents, up to 5 rounds, full eval stack
-    """
-
-    LIGHT = "light"
-    STANDARD = "standard"
-    DEEP = "deep"
 
 
 class ClassificationResult(BaseModel):
