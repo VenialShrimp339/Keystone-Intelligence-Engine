@@ -234,8 +234,9 @@ class CitationProcessor:
 
         Builds a lookup from source_instance_id -> canonical_citation_id,
         then produces new StructuredFinding/FindingClaim objects with updated
-        citation_ids. Original citations list on each claim is preserved as-is
-        (it contains the canonical Citation objects after dedup).
+        citation_ids. Original citation objects remain attached to each claim,
+        so downstream render/text paths must prefer claim.citation_ids when
+        present.
         """
         alias_map: dict[str, str] = {
             a.source_instance_id: a.canonical_citation_id for a in aliases
@@ -282,6 +283,8 @@ class CitationProcessor:
         for pair in pairs:
             canonical_a = alias_map.get(pair.citation_a, pair.citation_a)
             canonical_b = alias_map.get(pair.citation_b, pair.citation_b)
+            if canonical_a == canonical_b:
+                continue
             pair_key = tuple(sorted((canonical_a, canonical_b)))
             if pair_key in seen:
                 continue

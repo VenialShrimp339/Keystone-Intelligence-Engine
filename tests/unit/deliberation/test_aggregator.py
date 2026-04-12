@@ -8,11 +8,18 @@ consistency check.
 from __future__ import annotations
 
 import json
+from datetime import datetime
 
 import pytest
 
 from keystone.deliberation.aggregator import Aggregator, AggregatedClaim
 from keystone.deliberation.analyst import AnalystOutput, InputClaim, ScoredClaim
+from keystone.models.citations import (
+    Citation,
+    CitationAlias,
+    CitationManifest,
+    SourceType,
+)
 
 
 # ---------------------------------------------------------------------------
@@ -53,6 +60,43 @@ def _mock_judge(selected: str = "ach", reasoning: str = "Best supported"):
             "reasoning": reasoning,
         })
     return llm
+
+
+def _shared_canonical_manifest() -> CitationManifest:
+    return CitationManifest(
+        manifest_id="MAN-001",
+        engagement_id="ENG-001",
+        client_id="CLIENT-001",
+        citations=[
+            Citation(
+                citation_id="CAN-001",
+                engagement_id="ENG-001",
+                client_id="CLIENT-001",
+                url="https://example.com/shared-source",
+                title="Shared Source",
+                source_type=SourceType.REPORT,
+                quality_score=0.9,
+                access_date=datetime(2026, 4, 1),
+                found_by_agents=["A1", "A2"],
+            )
+        ],
+        aliases=[
+            CitationAlias(
+                source_instance_id="CIT-pass",
+                canonical_citation_id="CAN-001",
+                engagement_id="ENG-001",
+                task_id="task_pass",
+                agent_id="A1",
+            ),
+            CitationAlias(
+                source_instance_id="CIT-fail",
+                canonical_citation_id="CAN-001",
+                engagement_id="ENG-001",
+                task_id="task_fail",
+                agent_id="A2",
+            ),
+        ],
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -199,6 +243,46 @@ class TestConsistencyCheck:
         result = await aggregator.aggregate(outputs, claims)
 
         assert all(c.consistency_passed for c in result)
+
+
+class TestProvenance:
+    @pytest.mark.asyncio
+    async def test_shared_canonical_support_does_not_widen_task_ids(self) -> None:
+        claims = [
+            InputClaim(
+                index=0,
+                task_id="task_pass",
+                agent_id="A1",
+                text="Passed claim",
+                evidence="Shared source evidence",
+                citation_ids=["CIT-pass"],
+                original_confidence=0.8,
+            ),
+            InputClaim(
+                index=1,
+                task_id="task_fail",
+                agent_id="A2",
+                text="Failed claim",
+                evidence="Same shared source evidence",
+                citation_ids=["CIT-fail"],
+                original_confidence=0.7,
+            ),
+        ]
+        outputs = [_analyst_output("ach", [_scored(0, 0.85), _scored(1, 0.82)])]
+
+        aggregator = Aggregator(judge_llm=_mock_judge())
+        result = await aggregator.aggregate(
+            outputs,
+            claims,
+            manifest=_shared_canonical_manifest(),
+        )
+
+        by_text = {claim.claim_text: claim for claim in result}
+        assert by_text["Passed claim"].citation_ids == ["CAN-001"]
+        assert by_text["Failed claim"].citation_ids == ["CAN-001"]
+        assert by_text["Passed claim"].task_ids == ["task_pass"]
+        assert by_text["Failed claim"].task_ids == ["task_fail"]
+        assert by_text["Failed claim"].corroboration_count == 2
 
 
 # ---------------------------------------------------------------------------

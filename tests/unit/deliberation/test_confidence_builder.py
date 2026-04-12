@@ -78,8 +78,13 @@ def _insufficient_claim(idx: int = 0, text: str = "Unknown") -> AggregatedClaim:
 def _gap_report(
     gaps: list[str] | None = None,
     absences: list[str] | None = None,
+    gap_provenance: dict[str, list[str]] | None = None,
 ) -> GapReport:
-    return GapReport(gaps=gaps or [], absence_items=absences or [])
+    return GapReport(
+        gaps=gaps or [],
+        absence_items=absences or [],
+        gap_provenance=gap_provenance or {},
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -383,3 +388,24 @@ class TestProvenancePropagation:
 
         assert len(cm.provenance_index) == 0
         assert "AGG-missing-tasks" not in cm.provenance_index
+
+    def test_gap_provenance_is_copied_to_confidence_map(self) -> None:
+        cm = build_confidence_map(
+            [_claim(0, "High claim", 0.90)],
+            [],
+            _gap_report(
+                gaps=["Passed task gap", "Failed task gap"],
+                gap_provenance={
+                    "Passed task gap": ["TASK-001"],
+                    "Failed task gap": ["TASK-002"],
+                },
+            ),
+            "ENG-001",
+            "CLT-001",
+        )
+
+        assert cm.gaps_identified == ["Passed task gap", "Failed task gap"]
+        assert cm.gap_provenance == {
+            "Passed task gap": ["TASK-001"],
+            "Failed task gap": ["TASK-002"],
+        }

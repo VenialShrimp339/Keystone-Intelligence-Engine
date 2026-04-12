@@ -102,8 +102,8 @@ class MarkdownRenderer:
                 lines.append(
                     f"- **{claim.text}** [{tier_label}, {claim.confidence:.0%}]"
                 )
-                if claim.citations:
-                    cite_ids = ", ".join(c.citation_id for c in claim.citations)
+                cite_ids = self._claim_citation_labels(claim)
+                if cite_ids:
                     lines.append(f"  - Sources: {cite_ids}")
                 if claim.caveats:
                     lines.append(f"  - Caveats: {'; '.join(claim.caveats)}")
@@ -117,6 +117,11 @@ class MarkdownRenderer:
                 lines.append(f"  - Sensitivity: {claim.sensitivity}")
 
         return "\n".join(lines)
+
+    @staticmethod
+    def _claim_citation_labels(claim) -> str:
+        citation_ids = claim.citation_ids or [c.citation_id for c in claim.citations]
+        return ", ".join(citation_ids)
 
     def _render_uncertainty(self, cm: ConfidenceMap) -> str:
         lines = ["## Areas of Uncertainty"]

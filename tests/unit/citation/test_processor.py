@@ -22,8 +22,10 @@ from keystone.events import (
 )
 from keystone.models.citations import (
     Citation,
+    CitationAlias,
     CitationManifest,
     ConfidenceTier,
+    CorroborationPair,
     SourceType,
 )
 from keystone.models.research import FindingClaim, StructuredFinding
@@ -157,8 +159,8 @@ class TestDeduplication:
 
 class TestCorroboration:
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
-    async def test_corroboration_detected(self, _mock):
-        """Two agents independently cite the same source. Verify pair detected."""
+    async def test_canonical_self_pairs_are_dropped(self, _mock):
+        """Canonical corroboration pairs never retain identical endpoints."""
         shared_url = "https://statista.com/market-size"
         f1 = _finding("agent-1", [_claim("Market is $50B", [
             _cit("CIT-001", shared_url, agents=["agent-1"]),
@@ -171,22 +173,40 @@ class TestCorroboration:
         events = await _collect(processor, [f1, f2])
 
         corr_events = [e for e in events if isinstance(e, CorroborationScored)]
-        assert len(corr_events) >= 1
-        assert corr_events[0].overlap_score > 0
+        assert corr_events == []
 
         manifest = await processor.get_manifest()
-        manifest_ids = {citation.citation_id for citation in manifest.citations}
-        assert len(manifest.corroboration_pairs) >= 1
-        for event in corr_events:
-            assert event.citation_a.startswith("CAN-")
-            assert event.citation_b.startswith("CAN-")
-            assert event.citation_a in manifest_ids
-            assert event.citation_b in manifest_ids
-        for pair in manifest.corroboration_pairs:
-            assert pair.citation_a.startswith("CAN-")
-            assert pair.citation_b.startswith("CAN-")
-            assert pair.citation_a in manifest_ids
-            assert pair.citation_b in manifest_ids
+        assert manifest.corroboration_pairs == []
+
+    def test_rewrite_corroboration_pairs_drops_canonical_self_pairs(self) -> None:
+        processor = CitationProcessor()
+        rewritten = processor._rewrite_corroboration_pairs_to_canonical(
+            [
+                CorroborationPair(
+                    citation_a="CIT-001",
+                    citation_b="CIT-002",
+                    overlap_score=1.0,
+                )
+            ],
+            [
+                CitationAlias(
+                    source_instance_id="CIT-001",
+                    canonical_citation_id="CAN-001",
+                    engagement_id="ENG-001",
+                    task_id="TASK-001",
+                    agent_id="agent-1",
+                ),
+                CitationAlias(
+                    source_instance_id="CIT-002",
+                    canonical_citation_id="CAN-001",
+                    engagement_id="ENG-001",
+                    task_id="TASK-002",
+                    agent_id="agent-2",
+                ),
+            ],
+        )
+
+        assert rewritten == []
 
 
 # ---------------------------------------------------------------------------
@@ -277,8 +297,8 @@ class TestCitationHashes:
 
 class TestEventEmission:
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
-    async def test_all_four_event_types_in_order(self, _mock):
-        """Events: CitationDeduped -> CorroborationScored -> URLVerified -> ManifestProduced."""
+    async def test_event_order_when_canonical_self_pairs_are_dropped(self, _mock):
+        """Events stay ordered even when canonical corroboration self-pairs are removed."""
         shared_url = "https://sec.gov/filing.pdf"
         f1 = _finding("agent-1", [_claim("Rev grew", [
             _cit("CIT-001", shared_url, agents=["agent-1"]),
@@ -293,19 +313,16 @@ class TestEventEmission:
         types = [type(e) for e in events]
 
         assert CitationDeduped in types
-        assert CorroborationScored in types
+        assert CorroborationScored not in types
         assert URLVerified in types
         assert ManifestProduced in types
 
         last_dedup = max(i for i, t in enumerate(types) if t is CitationDeduped)
-        first_corr = min(i for i, t in enumerate(types) if t is CorroborationScored)
-        last_corr = max(i for i, t in enumerate(types) if t is CorroborationScored)
         first_url = min(i for i, t in enumerate(types) if t is URLVerified)
         last_url = max(i for i, t in enumerate(types) if t is URLVerified)
         manifest_idx = types.index(ManifestProduced)
 
-        assert last_dedup < first_corr
-        assert last_corr < first_url
+        assert last_dedup < first_url
         assert last_url < manifest_idx
 
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)

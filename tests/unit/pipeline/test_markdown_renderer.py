@@ -280,6 +280,31 @@ class TestAllSectionsPresent:
 
 
 class TestCitationFormatting:
+    def test_key_findings_prefer_canonical_citation_ids(self) -> None:
+        renderer = MarkdownRenderer()
+        findings = _findings()
+        canonicalized = [
+            findings[0].model_copy(
+                update={
+                    "claims": [
+                        findings[0].claims[0].model_copy(
+                            update={"citation_ids": ["CAN-001"]}
+                        ),
+                        findings[0].claims[1].model_copy(
+                            update={"citation_ids": ["CAN-002"]}
+                        ),
+                    ]
+                }
+            )
+        ]
+
+        output = renderer._render_key_findings(canonicalized, _confidence_map())
+
+        assert "Sources: CAN-001" in output
+        assert "Sources: CAN-002" in output
+        assert "Sources: CIT-001" not in output
+        assert "Sources: CIT-002" not in output
+
     def test_citations_formatted_in_sources(self) -> None:
         renderer = MarkdownRenderer()
         output = renderer.render(

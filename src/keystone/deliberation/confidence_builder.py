@@ -78,6 +78,10 @@ def build_confidence_map(
         insufficient_evidence=insufficient,
         gaps_identified=gap_report.gaps,
         absence_report=gap_report.absence_items,
+        gap_provenance={
+            gap_text: list(task_ids)
+            for gap_text, task_ids in gap_report.gap_provenance.items()
+        },
         provenance_index=provenance_index,
     )
 

@@ -359,8 +359,10 @@ def _finding_to_text(finding: StructuredFinding) -> str:
         parts.append(f"\nClaim {i}: {claim.text}")
         parts.append(f"  Evidence: {claim.evidence}")
         parts.append(f"  Confidence: {claim.confidence:.0%} ({claim.confidence_tier.value})")
-        if claim.citations:
-            cite_ids = ", ".join(c.citation_id for c in claim.citations)
+        cite_ids = ", ".join(
+            claim.citation_ids or [c.citation_id for c in claim.citations]
+        )
+        if cite_ids:
             parts.append(f"  Citations: {cite_ids}")
         if claim.caveats:
             parts.append(f"  Caveats: {'; '.join(claim.caveats)}")
@@ -519,10 +521,18 @@ def _filter_confidence_map_by_passed_tasks(
         if c.aggregated_claim_id is not None
     }
     filtered_provenance = {
-        agg_id: task_ids
+        agg_id: list(task_ids)
         for agg_id, task_ids in confidence_map.provenance_index.items()
         if agg_id in surviving_agg_ids
     }
+
+    filtered_gaps: list[str] = []
+    filtered_gap_provenance: dict[str, list[str]] = {}
+    for gap in confidence_map.gaps_identified:
+        task_ids = list(confidence_map.gap_provenance.get(gap, []))
+        if _keep(task_ids):
+            filtered_gaps.append(gap)
+            filtered_gap_provenance[gap] = task_ids
 
     return ConfidenceMap(
         engagement_id=confidence_map.engagement_id,
@@ -532,7 +542,8 @@ def _filter_confidence_map_by_passed_tasks(
         weak_confidence_50_60pct=filtered_weak,
         contested_below_50pct=filtered_contested,
         insufficient_evidence=filtered_insufficient,
-        gaps_identified=confidence_map.gaps_identified,
+        gaps_identified=filtered_gaps,
         absence_report=confidence_map.absence_report,
+        gap_provenance=filtered_gap_provenance,
         provenance_index=filtered_provenance,
     )

@@ -385,7 +385,11 @@ async def test_full_pipeline_events():
     assert len(dedup_events) >= 1
 
     # Corroboration events
-    assert len(corrob_events) >= 1
+    assert all(e.citation_a != e.citation_b for e in corrob_events)
+    assert all(
+        pair.citation_a != pair.citation_b
+        for pair in manifest.corroboration_pairs
+    )
 
     # ManifestProduced has correct counts
     assert me.total_citations == len(manifest.citations)

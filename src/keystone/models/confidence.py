@@ -205,6 +205,10 @@ class ConfidenceMap(BaseModel):
         default_factory=list,
         description="Research gaps that need additional investigation",
     )
+    gap_provenance: dict[str, list[str]] = Field(
+        default_factory=dict,
+        description="gap text -> task_ids for render-time filtering",
+    )
     absence_report: list[str] = Field(
         default_factory=list,
         description="What was looked for but not found (analytically significant)",

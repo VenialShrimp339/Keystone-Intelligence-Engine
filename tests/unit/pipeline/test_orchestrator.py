@@ -8,6 +8,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+from keystone.deliberation.aggregator import Aggregator
+from keystone.deliberation.analyst import AnalystOutput, InputClaim, ScoredClaim
+from keystone.deliberation.confidence_builder import build_confidence_map
+from keystone.deliberation.gap_detector import GapReport
 from keystone.events import (
     ConfidenceMapProduced,
     EvaluationComplete,
@@ -49,6 +53,7 @@ from keystone.models.tasks import (
     TaskType,
 )
 from keystone.citation.processor import CitationProcessorResult
+from keystone.pipeline.markdown_renderer import MarkdownRenderer
 from keystone.pipeline.orchestrator import (
     Pipeline,
     PipelineComponents,
@@ -869,13 +874,22 @@ class TestRendererGating:
 
 class TestHelpers:
     def test_finding_to_text(self) -> None:
-        finding = _make_finding()
+        finding = _make_finding().model_copy(
+            update={
+                "claims": [
+                    _make_finding().claims[0].model_copy(
+                        update={"citation_ids": ["CAN-001"]}
+                    )
+                ]
+            }
+        )
         text = _finding_to_text(finding)
 
         assert "task_001" in text
         assert "agent_001" in text
         assert "$12B" in text
-        assert "CIT-001" in text
+        assert "CAN-001" in text
+        assert "Citations: CIT-001" not in text
         assert "Chinese OEM" in text
 
     def test_build_sprint_contract(self) -> None:
@@ -908,3 +922,143 @@ class TestBuildAssignments:
         assert agent_instance.client_id == "c1"
         assert "task_001" in agent_instance.task_ids
         assert agent_instance.definition.role == AgentRole.RESEARCH
+
+
+class TestConfidenceMapFiltering:
+    @pytest.mark.asyncio
+    async def test_shared_canonical_failed_claim_does_not_survive_filtering(self) -> None:
+        manifest = CitationManifest(
+            manifest_id="MAN-shared",
+            engagement_id="eng_test",
+            client_id="c1",
+            citations=[_make_citation(cid="CAN-001")],
+            aliases=[
+                CitationAlias(
+                    source_instance_id="CIT-pass-001",
+                    canonical_citation_id="CAN-001",
+                    engagement_id="eng_test",
+                    task_id="task_pass",
+                    agent_id="agent_pass",
+                ),
+                CitationAlias(
+                    source_instance_id="CIT-fail-001",
+                    canonical_citation_id="CAN-001",
+                    engagement_id="eng_test",
+                    task_id="task_fail",
+                    agent_id="agent_fail",
+                ),
+            ],
+        )
+        claims = [
+            InputClaim(
+                index=0,
+                task_id="task_pass",
+                agent_id="agent_pass",
+                text="Passed claim",
+                evidence="Shared source support",
+                citation_ids=["CIT-pass-001"],
+                original_confidence=0.85,
+            ),
+            InputClaim(
+                index=1,
+                task_id="task_fail",
+                agent_id="agent_fail",
+                text="Failed claim",
+                evidence="Same shared source support",
+                citation_ids=["CIT-fail-001"],
+                original_confidence=0.8,
+            ),
+        ]
+        outputs = [
+            AnalystOutput(
+                analyst_id="analyst-ach",
+                analyst_type="ach",
+                scored_claims=[
+                    ScoredClaim(
+                        index=0,
+                        claim_text="Passed claim",
+                        analyst_confidence=0.88,
+                        source_count=1,
+                        reasoning="Supported",
+                    ),
+                    ScoredClaim(
+                        index=1,
+                        claim_text="Failed claim",
+                        analyst_confidence=0.81,
+                        source_count=1,
+                        reasoning="Supported",
+                    ),
+                ],
+            )
+        ]
+
+        async def judge(prompt: str) -> str:
+            return '{"contradictions": []}'
+
+        aggregated = await Aggregator(judge_llm=judge).aggregate(
+            outputs,
+            claims,
+            manifest=manifest,
+        )
+        confidence_map = build_confidence_map(
+            aggregated,
+            [],
+            GapReport(),
+            "eng_test",
+            "c1",
+        )
+
+        filtered = _filter_confidence_map_by_passed_tasks(
+            confidence_map,
+            {"task_pass"},
+        )
+
+        assert [claim.claim for claim in filtered.high_confidence_above_80pct] == [
+            "Passed claim"
+        ]
+        assert all(
+            claim.claim != "Failed claim"
+            for claim in filtered.high_confidence_above_80pct
+        )
+        assert filtered.provenance_index == {
+            filtered.high_confidence_above_80pct[0].aggregated_claim_id: ["task_pass"]
+        }
+
+    def test_failed_task_gap_text_does_not_render(self) -> None:
+        confidence_map = ConfidenceMap(
+            engagement_id="eng_test",
+            client_id="c1",
+            high_confidence_above_80pct=[
+                HighConfidenceClaim(
+                    claim="Passed claim",
+                    methodological_agreement="1/1 (ach)",
+                    sources=1,
+                    corroboration_count=1,
+                    robustness="Stable",
+                    curmudgeon_challenge="None",
+                    aggregated_claim_id="AGG-pass",
+                    task_ids=["task_pass"],
+                )
+            ],
+            gaps_identified=["Passed task gap", "Failed task gap"],
+            gap_provenance={
+                "Passed task gap": ["task_pass"],
+                "Failed task gap": ["task_fail"],
+            },
+            provenance_index={"AGG-pass": ["task_pass"]},
+        )
+
+        filtered = _filter_confidence_map_by_passed_tasks(
+            confidence_map,
+            {"task_pass"},
+        )
+        output = MarkdownRenderer().render(
+            _make_spec(),
+            [_make_finding(task_id="task_pass")],
+            filtered,
+            [_make_eval_result(task_id="task_pass")],
+            _make_manifest(),
+        )
+
+        assert "Passed task gap" in output
+        assert "Failed task gap" not in output

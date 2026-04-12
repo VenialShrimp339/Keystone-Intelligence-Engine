@@ -74,11 +74,9 @@ class Aggregator:
         if not claims:
             return []
 
-        (
-            source_to_canonical,
-            task_ids_by_canonical,
-            agent_ids_by_canonical,
-        ) = self._build_manifest_provenance(manifest)
+        source_to_canonical, agent_ids_by_canonical = self._build_manifest_provenance(
+            manifest
+        )
 
         aggregated: list[AggregatedClaim] = []
         for claim in claims:
@@ -93,7 +91,6 @@ class Aggregator:
             ) = self._derive_claim_provenance(
                 claim,
                 source_to_canonical,
-                task_ids_by_canonical,
                 agent_ids_by_canonical,
             )
 
@@ -161,30 +158,21 @@ class Aggregator:
     @staticmethod
     def _build_manifest_provenance(
         manifest: CitationManifest | None,
-    ) -> tuple[dict[str, str], dict[str, list[str]], dict[str, list[str]]]:
+    ) -> tuple[dict[str, str], dict[str, list[str]]]:
         """Index canonical citation provenance from the manifest.
 
         Returns:
             source_instance_id -> canonical_citation_id
-            canonical_citation_id -> task_ids[]
             canonical_citation_id -> agent_ids[]
         """
         if manifest is None:
-            return {}, {}, {}
+            return {}, {}
 
         source_to_canonical: dict[str, str] = {}
-        task_ids_by_canonical: dict[str, list[str]] = {}
         agent_ids_by_canonical: dict[str, list[str]] = {}
 
         for alias in manifest.aliases:
             source_to_canonical[alias.source_instance_id] = alias.canonical_citation_id
-
-            if alias.task_id:
-                task_ids = task_ids_by_canonical.setdefault(
-                    alias.canonical_citation_id, []
-                )
-                if alias.task_id not in task_ids:
-                    task_ids.append(alias.task_id)
 
             if alias.agent_id:
                 agent_ids = agent_ids_by_canonical.setdefault(
@@ -199,16 +187,20 @@ class Aggregator:
                 if agent_id and agent_id not in agent_ids:
                     agent_ids.append(agent_id)
 
-        return source_to_canonical, task_ids_by_canonical, agent_ids_by_canonical
+        return source_to_canonical, agent_ids_by_canonical
 
     @staticmethod
     def _derive_claim_provenance(
         claim: InputClaim,
         source_to_canonical: dict[str, str],
-        task_ids_by_canonical: dict[str, list[str]],
         agent_ids_by_canonical: dict[str, list[str]],
     ) -> tuple[list[str], list[str], int]:
-        """Resolve canonical citations plus manifest-backed task/agent provenance."""
+        """Resolve canonical citations plus manifest-backed agent corroboration.
+
+        Claim/task provenance stays anchored to the originating claim. Shared
+        canonical citation history is allowed to increase corroboration_count,
+        but it must never widen the claim's own task_ids for L4 gating.
+        """
         citation_ids: list[str] = []
         seen_citations: set[str] = set()
         for citation_id in claim.citation_ids:
@@ -217,24 +209,15 @@ class Aggregator:
                 seen_citations.add(canonical_id)
                 citation_ids.append(canonical_id)
 
-        task_ids: list[str] = []
-        seen_tasks: set[str] = set()
+        task_ids = [claim.task_id] if claim.task_id else []
         agent_ids: list[str] = []
         seen_agents: set[str] = set()
 
         for citation_id in citation_ids:
-            for task_id in task_ids_by_canonical.get(citation_id, []):
-                if task_id and task_id not in seen_tasks:
-                    seen_tasks.add(task_id)
-                    task_ids.append(task_id)
-
             for agent_id in agent_ids_by_canonical.get(citation_id, []):
                 if agent_id and agent_id not in seen_agents:
                     seen_agents.add(agent_id)
                     agent_ids.append(agent_id)
-
-        if not task_ids and claim.task_id:
-            task_ids = [claim.task_id]
 
         if not agent_ids and claim.agent_id:
             agent_ids = [claim.agent_id]
