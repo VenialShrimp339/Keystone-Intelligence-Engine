@@ -1,125 +1,73 @@
 # Current State
-*Last updated: 2026-04-11 | Updated by: Session 20 (Wave 1 Implementation)*
+*Last updated: 2026-04-11 | Updated by: post-Wave-2A final-clearance reconciliation pass*
 
 ---
 
-## Where we are
+## Live status
 
-**Phase:** Wave 1 complete (1A + 1B + 1C). Wave 2A is next.
+- **Wave 1:** Complete.
+- **Wave 2A:** Cleared and checkpointed in commit `16e0bc7` (`Wave 2A: fix final hash and corroboration leakage`).
+- **Wave 2B:** Next implementation wave. Wave 2A's final deep review gate is now closed.
+- **Round-3 overlay:** The content-audit planning overlay is accepted for Wave 2B and later. It does **not** reopen Waves 1A through 2A.
 
-**What happened today (April 11, Session 20):**
-1. Implemented Waves 1A, 1B, 1C using agent teams (Lead + Implementer + Reviewer)
-2. 6 commits, 38 source+test files changed, 52 new tests added (721 -> 773)
-3. 3 adversarial reviews (2 Codex, 1 internal) caught 4 regressions, all fixed
-4. Key fixes: per-run lifecycle isolation, unified JSON parsing (6 extractors -> 1), citation identity with dual-layer IDs, partial-claim salvage, HITL event emission
+## What just happened
 
-## What needs to happen next (in order)
+1. Wave 2A's initial checkpoint candidate `badba75` turned out to be incomplete. Successive deep reviews surfaced additional render-side provenance leaks and one DOI-dedup hash bug.
+2. Narrow Wave 2A blocker-fix commits landed in sequence: `d6c24c7`, `bc80475`, `676be93`, and finally `16e0bc7`.
+3. The final deep review of `33695a7..16e0bc7` returned `WAVE 2A CLEARED`.
+4. This pass reconciles the control-plane docs so Wave 2B starts from the real cleared Wave 2A baseline.
 
-### 1. Wave 2A: Citation Identity Completion (Decision A pt.2)
-Start a fresh session. This is the most file-heavy wave.
+## What happens next
 
-Deliverables:
-1. Aggregator: `aggregated_claim_id`, `task_ids`, fixed `corroboration_count` semantics
-2. ConfidenceBuilder: copy provenance into tier claims, build `provenance_index`
-3. Deliberation consumes manifest + canonicalized findings
-4. Orchestrator filters confidence_map + manifest by task provenance
-5. `metadata_hash` migration (phase 2 of `content_hash` rename) -- touches 8+ files
-6. PostSynthesisVerifier contract definition
-7. Mint fresh canonical IDs in dedup (deferred from Wave 1C Codex review)
+1. Treat the updated docs below as authoritative.
+2. Start Wave 2B using `audit/remediation/WAVE-2B-SETUP.md` plus `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`.
+3. Run adversarial review on the Wave 2B diff and clear blockers before opening Wave 3.
+4. Continue through the reconciled post-2B plan: Wave 3, Wave 3B, Wave 4, Wave 4B, then Wave 5.
 
-Files to modify: `aggregator.py`, `confidence_builder.py`, `deliberation.py`, `orchestrator.py`, `hash.py`, `citation/__init__.py`, `wiki_builder.py`, `engagement_store.py`, `content_hasher.py`, `wiki_schema.py`, `dedup.py`, `models/confidence.py`, plus test files.
+## Reconciled wave plan
 
-### 2. Codex Review of Wave 2A
-After Wave 2A completes, run adversarial review scoped to the wave diff.
+| Wave | Status | Scope |
+|------|--------|-------|
+| Wave 1 (1A + 1B + 1C) | **Complete** | Lifecycle isolation, parsing standard, citation-identity foundation |
+| Wave 2A | **Complete** (`16e0bc7`) | Citation identity completion and provenance gating |
+| Wave 2B | **Next** | Enforcement model plus `E-1`, `E-9`, `E-10`, `E-6`, `E-7` |
+| Wave 3 | Planned | Completeness work plus dual-axis taxonomy and related profile/template routing |
+| Wave 3B | Planned | Thin Pipeline-L2 plus minimum viable live iterative loop |
+| Wave 4 | Planned | Polish plus content-layer research/design work |
+| Wave 4B | Planned | Implementation of Wave 4 content designs |
+| Wave 5 | Planned | Calibration against real outputs |
 
-### 3. Wave 2B: Enforcement Model (Decision B)
-Highest-risk wave. Depends on 2A provenance fields. GovernanceState, ProfileExecutionPolicy, enforcement matrix, coverage policy, task outcomes.
+## Accepted 2B+ overlay
 
-### 4. Waves 3-4
-Wave 3: Deep research events, DAG scheduling, post-synthesis verifier, remaining concurrency items. Wave 4: Polish, documentation, dead code cleanup.
+- **D-1:** Dual-axis taxonomy is in scope and stays in the plan. It lands in Wave 3, not as a narrowed substitute architecture.
+- **D-8:** Pipeline-L2 remains Phase 1 scope as a thin real layer, not a stub. It lands in Wave 3B.
+- **D-9:** Iterative research remains Phase 1 scope as a minimum viable live loop. It lands in Wave 3B.
+- **D-2:** Phase 1 output is **decision-informing analysis**, not stakeholder-specific recommendation framing.
+- **Calibration sequencing:** all calibration-policy changes remain deferred to Wave 5 except `E-1` (geometric-mean epsilon fix), which belongs in Wave 2B.
+- **Profile weights:** M&A and Restructuring profile weights are provisional until Wave 5 calibration against real scored outputs.
 
-## Remediation tracking
+## Known active gaps
 
-| Phase | Status |
-|-------|--------|
-| Phase 1A-1D: Audit + issue consolidation | Complete |
-| Phase 2: Architectural decisions | Complete (FINAL-DECISIONS-v2.md) |
-| Phase 3 Wave 1A: Lifecycle + concurrency | **Complete** (commit `9893a4d`) |
-| Phase 3 Wave 1B: LLM parsing | **Complete** (commits `0344fb2`, `884552f`) |
-| Phase 3 Wave 1C: Citation identity foundation | **Complete** (commit `1583d03`) |
-| Post-Wave 1 Codex fixes | **Complete** (commit `38bba2a`) |
-| Phase 3 Wave 2A: Citation identity completion | **Next** |
-| Phase 3 Wave 2B: Enforcement model | Pending |
-| Phase 3 Wave 3: Completeness | Pending |
-| Phase 3 Wave 4: Polish | Pending |
-| Phase 4: Final validation | Pending |
+| Gap | Next wave |
+|-----|-----------|
+| Enforcement model still mostly advisory | 2B |
+| `SprintContractGenerator` / profile routing / rubric field consumption not fully wired (`E-9`, `E-10`, `E-6`, `E-7`) | 2B |
+| Dual-axis taxonomy and domain-aware template/profile routing not built | 3 |
+| Thin Pipeline-L2 not built | 3B |
+| Minimum viable live iterative loop not built | 3B |
+| Actionability/content-layer alignment still reflects pre-D-2 assumptions | 4 |
+| Calibration unresolved beyond the epsilon bug | 5 |
 
-## Architecture summary
+## Residual non-blocking Wave 2A follow-ups
 
-```
-L0 (Spec Engine)    -> claude -p --tools "" --model opus    (fast, controlled reasoning)
-L1 (Research)       -> claude -p --allowedTools "WebSearch,WebFetch" --model sonnet  (deep multi-turn web research)
-L1.5 (Deliberation) -> claude -p --tools "" --model sonnet/opus  (fast, controlled reasoning)
-L4 (Evaluator)      -> claude -p --tools "" --model opus    (fast, controlled reasoning)
-```
+- Render-time `corroboration_count` is now leak-free, but it may underreport legitimate multi-pass corroboration in shared-source cases. Treat this as a later design follow-up, not a Wave 2A blocker.
+- `PostSynthesisVerifierContract` in `src/keystone/contracts.py` still differs from the v2.1 governing-doc seam. Reconcile that before the real verifier implementation lands.
 
-All on Max subscription. Zero API cost.
+## Authoritative docs for the next session
 
-## What's complete
-
-| Component | Status | Tests | Wave 1 Changes |
-|-----------|--------|-------|----------------|
-| #1 RESEARCH.md format | Built | 54 unit | -- |
-| #2 Citation model + utils | Built | 61 unit + 13 integration | 1C: metadata_hash, merged_from_ids, CitationAlias, aliases on manifest |
-| #3b Knowledge accumulation | Built | 45 unit | -- |
-| #4 MCP Gateway | Built | 75 unit | 1A: circuit breaker HALF_OPEN fix, BaseException |
-| #5 Specification Engine (L0) | Built + tested | 58 unit + 41 integration | 1B: safe_llm_json in all 6 spec/ files |
-| #6 Evaluator Stack (L4) | Built + tested | 77 unit + 25 integration | 1B: safe_llm_json, ParseError instead of silent defaults |
-| #7 Research Agents (L1) | Built + deep research | 64 unit + 16 integration | 1B: safe_llm_json. 1C: engagement-unique citation IDs, citation_refs, claim_id minting, partial-claim salvage |
-| #8 CitationProcessor | Built + tested | 15 unit + 13 integration | 1C: CitationProcessorResult, alias map, canonical rewrite, deduplicate_with_aliases |
-| #9 Deliberation (L1.5) | Built + tested | 78 unit + 14 integration | 1A: per-analyst exception handling. 1B: safe_llm_json |
-| #HITL | Built | 42 unit | 1C: event emission (Created/Approved/Modified/Rejected) |
-| Pipeline Orchestrator | Built + deep wiring | 27 unit + 1 e2e | 1A: per-run lifecycle via PipelineComponents. 1C: ErrorRecovery wiring, canonicalized findings |
-| LLM Client (Claude CLI) | Built | 35 unit + 3 integration | 1A: subprocess cleanup with asyncio.shield |
-| LLM Parsing (NEW) | Built | 23 unit | 1B: safe_llm_json, parse_llm_bool, ParseError |
-| Markdown Renderer | Built | 15 unit | -- |
-| **Total** | **11 components** | **773 unit + ~120 integration** | |
-
-## Known gaps (honest assessment)
-
-| Gap | Impact | Fix Wave | Status |
-|-----|--------|----------|--------|
-| Canonical IDs = source-instance IDs | Unstable canonical layer | 2A | Deferred |
-| metadata_hash migration incomplete | content_hash overloaded | 2A | Deferred |
-| Provenance not carried through confidence | Can't trace claims to tasks | 2A | Deferred |
-| Evaluator fail-open on ParseError | Broken parsing looks "clean" | 2B | Deferred |
-| Enforcement gates all fail-open | Quality signals advisory only | 2B | Deferred |
-| ErrorRecovery wired but not called | No model-tier fallback at runtime | 2B | Deferred |
-| Analyst failure inflates confidence | 3/4 agreement becomes 3/3 | 2B | Deferred |
-| HITL modify is dead code | Human modifications ignored | 2B | Deferred |
-| ReviewDecisionSubmitted not emitted | Submission timestamp not observable | 2B | Deferred |
-| ParseError not retried | Transport retries only | 2B | Deferred |
-| Dead HALF_OPEN branch in _record_failure | Misleading code | 4 | Deferred |
-| 5/7 MCP tools are stubs | Shallow mode limited | Low priority | -- |
-| No web UI | Terminal only | Phase 2 | -- |
-
-## Key files for orientation
-
-- `CLAUDE.md` -- Auto-loaded project instructions with verification rules
-- `CURRENT-STATE.md` -- This file
-- `JACK-ARCHITECTURAL-DIRECTIVES.md` -- 14 authoritative design directives
-- `SESSION-LOG.md` -- Full session history (Sessions 1-20)
-- `CAPSTONE-PLAN-v2.md` -- Architecture source of truth (1,294 lines)
-- `audit/remediation/decisions/FINAL-DECISIONS-v2.md` -- Implementation-ready decisions
-- `audit/remediation/BUILD-PROCESS.md` -- How to build without repeating mistakes
-- `audit/remediation/AGENT-TEAMS-SETUP.md` -- Agent team configuration for implementation
-- `audit/remediation/WAVE1-FULL-ADVERSARIAL-REVIEW-PROMPT.md` -- Full Wave 1 review prompt (reusable pattern)
-
-## Auth setup
-
-- Claude CLI: Max subscription, authenticated via `claude login`
-- LLM_PROVIDER=claude_cli in .env
-- ANTHROPIC_API_KEY: NOT SET (critical -- setting it switches to API billing)
-- Models: claude-opus-4-6 (flagship), claude-sonnet-4-6 (standard), claude-haiku-4-5 (fast)
-- Search APIs: EXA_API_KEY and BRAVE_SEARCH_API_KEY in .env
-- Deep research: DEEP_RESEARCH=1, DEEP_RESEARCH_TIMEOUT=1200
+- `audit/remediation/WORKSTREAM-STATUS.md` -- stream separation and orientation
+- `CURRENT-STATE.md` -- live status and next-wave summary
+- `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md` -- binding implementation design and reconciled wave order
+- `audit/remediation/BUILD-PROCESS.md` -- build discipline and checkpoint process
+- `audit/remediation/WAVE-2B-SETUP.md` -- authoritative Wave 2B execution doc
+- `SESSION-LOG.md` -- use Sessions 19-22 for recent remediation rationale and checkpoints

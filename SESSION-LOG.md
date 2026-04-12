@@ -1541,3 +1541,59 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 1. Start Wave 2A (Citation Identity Completion) in a fresh session
 2. Wave 2A is the most file-heavy wave: metadata_hash migration across 8+ files, provenance fields on aggregator/confidence, deliberation consumes canonicalized findings
 3. Continue using agent teams with Codex adversarial review between waves
+
+---
+
+## Session 21: Wave 2A Completion + Review Closure
+- **Date:** 2026-04-11
+- **Agent:** Claude Code (Opus 4.6, 1M context)
+- **Task:** Produce the initial Wave 2A checkpoint candidate and hand off to deeper review / governing-doc reconciliation.
+
+### Key results
+- Wave 2A implementation completed: citation identity completion, fresh canonical `CAN-*` IDs, provenance carried into confidence claims, filtered task-provenance gating, and the metadata/content hash split.
+- Codex adversarial review of the Wave 2A diff against `33695a7` initially returned `BLOCKED` with two real blockers (corroboration semantics and renderer-manifest filtering) plus a contract-drift concern.
+- Blocker cleanup landed, and the follow-up second opinion marked the checkpoint candidate `READY TO COMMIT`.
+- Wave 2A was checkpointed in commit `badba75` (`Wave 2A: complete citation identity and provenance gating`), but later final deep reviews found additional edge-case render/hash leaks. Wave 2A therefore remained open after this session.
+
+### What comes next
+1. Run deeper Wave 2A clearance reviews against the checkpoint candidate, not the dirty working tree.
+2. Close any additional Wave 2A render/provenance/hash blockers surfaced by those reviews.
+3. Only after final clearance, reconcile the governing docs and open Wave 2B.
+
+---
+
+## Session 22: Wave 2A Final Clearance
+- **Date:** 2026-04-11
+- **Agent:** Codex + parallel review/fix sidecars
+- **Task:** Drive Wave 2A through the final clearance loop after `badba75`, closing every remaining render-side provenance leak and the DOI-dedup hash bug, then confirm the wave against a committed snapshot.
+
+### Key results
+- Successive Wave 2A blocker-fix commits landed in sequence:
+  - `d6c24c7` -- close final provenance and rendering blockers
+  - `bc80475` -- close final render-side leakage
+  - `676be93` -- prune render-time source provenance
+  - `16e0bc7` -- fix final hash and corroboration leakage
+- Final deep reviews of the committed snapshots progressively surfaced and then closed:
+  - failed/unevaluated-task evidence leaking through findings, gaps, feedback, aliases, and `found_by_agents`
+  - stale `metadata_hash` surviving DOI-based dedup
+  - render-time `corroboration_count` leaking dropped-task support
+- Final review artifact: `audit/remediation/WAVE-2A-FINAL-DEEP-REVIEW-16e0bc7.md`
+- Final verdict on `33695a7..16e0bc7`: `WAVE 2A CLEARED`
+
+### Files created / used as the Wave 2A audit trail
+- `audit/remediation/WAVE-2A-ADVERSARIAL-REVIEW.md`
+- `audit/remediation/WAVE-2A-SECOND-OPINION.md`
+- `audit/remediation/WAVE-2A-FINAL-DEEP-REVIEW.md`
+- `audit/remediation/WAVE-2A-FINAL-DEEP-REVIEW-d6c24c7.md`
+- `audit/remediation/WAVE-2A-FINAL-DEEP-REVIEW-bc80475.md`
+- `audit/remediation/WAVE-2A-FINAL-DEEP-REVIEW-676be93.md`
+- `audit/remediation/WAVE-2A-FINAL-DEEP-REVIEW-16e0bc7.md`
+
+### Residual non-blocking follow-ups
+- Render-time corroboration is now leak-free, but may underreport legitimate multi-pass support in shared-source cases.
+- `PostSynthesisVerifierContract` still drifts from the governing `FINAL-DECISIONS-v2.1.md` seam and should be reconciled before the real verifier is implemented.
+
+### What comes next
+1. Reconcile `CURRENT-STATE.md`, `WORKSTREAM-STATUS.md`, `WAVE-2B-SETUP.md`, and this log to point at `16e0bc7` as the real cleared Wave 2A baseline.
+2. Start Wave 2B from `audit/remediation/WAVE-2B-SETUP.md` plus `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`.
+3. Keep Wave 2B on a single code lane, with sidecar review/planning streams in parallel.
