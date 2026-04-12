@@ -9,7 +9,9 @@
 - Wave 3B is now cleared at `5cc9585`.
 - Wave 4 is now the active wave in `setup` state.
 - The main workspace remains controller/docs only.
-- The next required step is Wave 4 docs work in the main workspace: carry forward the accepted research sidecars, write the next missing Wave 4 memo, and freeze exact polish specs before any new code lane opens.
+- `WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md` now records the C-1 / C-2 / C-3 / C-4 / C-9 / C-12 / C-13 design contracts.
+- `WAVE-4-POLISH-SPECS.md` now freezes the exact `E-2` / `E-4` / `E-5` polish slice.
+- The next required step is the next missing Wave 4 research memo, not a code lane.
 - Wave 4B content implementation is not active, and Wave 5 calibration remains gated off.
 - The controller is expected to continue **autonomously across checkpoints**. Docs-only checkpoints are not pause points.
 
@@ -20,12 +22,14 @@
 3. [candidate-5cc9585-clearance.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-3b/candidate-5cc9585-clearance.md)
 4. [candidate-5cc9585-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-3b/candidate-5cc9585-review-synthesis.md)
 5. [WAVE-4-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SETUP.md)
-6. [WAVE-4-4B-PREWORK.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-4B-PREWORK.md)
-7. [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md)
-8. [WAVE-3A-SEAM-FREEZE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-3A-SEAM-FREEZE.md)
-9. [FINAL-DECISIONS-v2.1.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/decisions/FINAL-DECISIONS-v2.1.md)
-10. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md)
-11. [WORKSTREAM-STATUS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md)
+6. [WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md)
+7. [WAVE-4-POLISH-SPECS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-POLISH-SPECS.md)
+8. [WAVE-4-4B-PREWORK.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-4B-PREWORK.md)
+9. [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md)
+10. [WAVE-3A-SEAM-FREEZE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-3A-SEAM-FREEZE.md)
+11. [FINAL-DECISIONS-v2.1.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/decisions/FINAL-DECISIONS-v2.1.md)
+12. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md)
+13. [WORKSTREAM-STATUS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md)
 
 ## Active State Tuple
 
@@ -52,11 +56,8 @@
 1. Stay on `codex/remediation-program` in the main workspace.
 2. Treat `5cc9585` as the last cleared code commit for every future implementation lane.
 3. Use [WAVE-4-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SETUP.md) as the binding Wave 4 scope boundary.
-4. Continue Wave 4 docs work in the main workspace:
-   - carry forward the accepted D-2 memo and Wave 4 / 4B prework
-   - author the next missing Wave 4 research memo
-   - write the exact E-2 / E-4 / E-5 polish fix specs
-5. Do **not** open a Wave 4 polish code lane until those docs are committed and the file manifest stays narrow.
+4. Author [WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md) next in the main workspace.
+5. Keep the Wave 4 polish code lane unopened until the remaining Wave 4 memos exist and the file manifest stays narrow.
 6. Do **not** start Wave 4B implementation until the required Wave 4 memos exist and the targeted seams are stable.
 7. Use [EXECUTION-TODO.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/EXECUTION-TODO.md) as the operational checklist after reading this handoff.
 8. After each checkpoint, re-read the control plane and continue automatically unless a hard stop condition is met.
@@ -76,10 +77,10 @@ sed -n '1,260p' audit/remediation/WAVE-4-SETUP.md
 
 - `audit/remediation/WAVE-4-SETUP.md`
 - `audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
+- `audit/remediation/WAVE-4-POLISH-SPECS.md`
 - `audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
 - `audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`
 - `audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`
-- `audit/remediation/WAVE-4-POLISH-SPECS.md`
 - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 - `audit/remediation/control-plane/EXECUTION-TODO.md`
@@ -132,6 +133,8 @@ Before any Wave 4 polish candidate clears, the artifact set must name probes for
 
 - [WAVE-4-4B-PREWORK.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-4B-PREWORK.md) — accepted Wave 4 / 4B planning decomposition
 - [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md) — accepted D-2 scoring contract for later Wave 4B actionability work
+- [WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md) — implementation-ready prompt-quality contract for C-1 / C-2 / C-3 / C-4 / C-9 / C-12 / C-13
+- [WAVE-4-POLISH-SPECS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-POLISH-SPECS.md) — exact Wave 4 polish contract for `E-2`, `E-4`, and `E-5`
 - [CONTENT-SYNTHESIS-v2.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/round-3/CONTENT-SYNTHESIS-v2.md) — source of the Wave 4 low-risk polish items `E-2`, `E-4`, and `E-5`
 - [PLANNING-ADDENDUM.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/round-3/PLANNING-ADDENDUM.md) — planning overlay that keeps Bucket C work in Wave 4 research rather than sneaking it into code early
 

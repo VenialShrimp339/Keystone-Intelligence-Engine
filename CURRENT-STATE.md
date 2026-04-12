@@ -22,7 +22,8 @@
 4. Wave 3B is now cleared, and `5cc9585` becomes the last cleared code commit.
 5. `WAVE-3B-SETUP.md` is now historical context rather than the live runway.
 6. `WAVE-4-SETUP.md` now defines the active Wave 4 research-and-polish boundary.
-7. The next step is Wave 4 docs work in the main workspace, not broad cleanup, not Wave 4B implementation, and not Wave 5 calibration.
+7. The first Wave 4 docs checkpoint now includes the core prompt-quality research memo and the exact Wave 4 polish specs.
+8. The next step is the next missing Wave 4 memo, not broad cleanup, not Wave 4B implementation, and not Wave 5 calibration.
 
 ## What happens next
 
@@ -32,8 +33,8 @@
 2. Treat `5cc9585` as the last cleared code commit.
 3. Use `audit/remediation/WAVE-4-SETUP.md` as the binding Wave 4 scope boundary.
 4. Continue Wave 4 docs work in the main workspace:
-   - write the next missing Wave 4 research memo
-   - freeze exact Wave 4 polish specs for `E-2`, `E-4`, and `E-5`
+   - write `WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
+   - then continue the remaining Wave 4 research memos
 5. Keep all code out of the main workspace; controller/docs only still applies.
 6. Do **not** open Wave 4B or Wave 5 without the later setup gates.
 
@@ -70,3 +71,5 @@
 - `SESSION-LOG.md` -- historical trail
 - `audit/remediation/WAVE-4-4B-PREWORK.md`
 - `audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md`
+- `audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
+- `audit/remediation/WAVE-4-POLISH-SPECS.md`

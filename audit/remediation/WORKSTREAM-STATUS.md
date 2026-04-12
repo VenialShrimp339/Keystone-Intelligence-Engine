@@ -12,7 +12,7 @@ This file is an orientation layer, not the top authority.
 ### Main remediation/build stream
 - **Status:** Wave 4 setup active from cleared Wave 3B baseline `5cc9585`
 - **Build status:** **Wave 1 complete**; **Wave 2A cleared**; **Wave 2B cleared in `2cdbfec`**; **Wave 3 cleared in `4819527`**; **Wave 3B cleared in `5cc9585`**
-- **Current focus:** Continue Wave 4 docs work in the main workspace and freeze the narrow Wave 4 polish slice before any new code lane opens
+- **Current focus:** Continue the remaining Wave 4 research memos in the main workspace; the narrow Wave 4 polish slice is now frozen on paper but still unopened in code
 
 ### Round-3 content-audit stream
 - **Status:** Parallel planning/research stream feeding Wave 4 and later
@@ -145,5 +145,5 @@ This remains a parallel planning/research stream.
 1. Use the control-plane files as the first read in future sessions.
 2. Treat `5cc9585` as the last cleared code commit.
 3. Use `WAVE-4-SETUP.md` plus the Wave 3B review packet set as the current boundary evidence.
-4. Finish the Wave 4 docs lane before opening the next clean implementation lane.
+4. Finish the remaining Wave 4 docs lane before opening the next clean implementation lane.
 5. Preserve the one-code-lane + sidecars pattern.

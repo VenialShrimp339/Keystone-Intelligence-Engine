@@ -95,13 +95,13 @@ This file is the operational checklist.
 - [x] Create `WAVE-4-SETUP.md`
 - [x] Create `audit/remediation/runs/wave-4/`
 - [x] Update the control plane so Wave 4 setup becomes the active runway
-- [ ] Re-read the control plane after the Wave 4 setup checkpoint
+- [x] Re-read the control plane after the Wave 4 setup checkpoint
 
 ## Phase 7: Wave 4 Research And Polish Prep
 
 - [x] Carry forward the accepted D-2 actionability memo as a Wave 4 sidecar
-- [ ] Create `WAVE-4-POLISH-SPECS.md` with exact fix specs for `E-2`, `E-4`, and `E-5`
-- [ ] Create `WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
+- [x] Create `WAVE-4-POLISH-SPECS.md` with exact fix specs for `E-2`, `E-4`, and `E-5`
+- [x] Create `WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
 - [ ] Create `WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
 - [ ] Create `WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`
 - [ ] Create `WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`
