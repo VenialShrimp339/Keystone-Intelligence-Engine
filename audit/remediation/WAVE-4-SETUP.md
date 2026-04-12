@@ -129,7 +129,7 @@ Rationale:
 - `audit/remediation/control-plane/EXECUTION-TODO.md`
 - `audit/remediation/WORKSTREAM-STATUS.md`
 - `CURRENT-STATE.md`
-- `audit/remediation/runs/wave-4/candidate-TEMPLATE-file-manifest.md`
+- `audit/remediation/templates/run-packets/wave-4/candidate-TEMPLATE-file-manifest.md`
 
 ### Future Wave 4 polish code lane
 
@@ -245,7 +245,7 @@ Wave 4 candidate artifacts must live under `audit/remediation/runs/wave-4/` and 
 - `candidate-<commit>-review-synthesis.md`
 - `candidate-<commit>-clearance.md` or `candidate-<commit>-blocked-checkpoint.md`
 
-Use `candidate-TEMPLATE-file-manifest.md` in the run folder as the starting scaffold.
+Use `audit/remediation/templates/run-packets/wave-4/candidate-TEMPLATE-file-manifest.md` as the starting scaffold.
 
 ## Carried Follow-Up
 

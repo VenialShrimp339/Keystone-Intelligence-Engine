@@ -42,6 +42,7 @@ Rules:
 - If you need subagents, use GPT-5.4 with xhigh fast for every spawned subagent and record any deviation.
 - Treat the dirty main workspace as non-authoritative for code truth.
 - Treat this report as a retrospective sidecar, not a controller-promoted authority artifact.
+- Treat `graphify-out/GRAPH_REPORT.md` as advisory context only, not a required authority artifact.
 
 Pinned context:
 - Pre-planning docs anchor commit: `2e6d780`
@@ -49,7 +50,7 @@ Pinned context:
 - Last cleared code commit: `65a612d`
 
 Read first, in order:
-1. `graphify-out/GRAPH_REPORT.md`
+1. `graphify-out/GRAPH_REPORT.md` if it exists in the reviewed commit snapshot; if absent, record the absence and continue
 2. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 3. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 4. `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
@@ -97,6 +98,7 @@ Rules:
 - If you need subagents, use GPT-5.4 with xhigh fast for every spawned subagent and record any deviation.
 - Treat code truth and controller/docs truth as separate histories.
 - Do not trust the dirty main workspace as code truth.
+- Treat `graphify-out/GRAPH_REPORT.md` as advisory context only, not a required authority artifact.
 
 Pinned context:
 - Pre-planning docs anchor commit: `2e6d780`
@@ -108,7 +110,7 @@ Pinned context:
   `35a8a29 -> 2c026cc -> f717507 -> a370963 -> 65074ca -> 198ab92 -> 6eafc82 -> cd8ad1f -> 5453fb9 -> 0df3596 -> b42d035 -> 456f29c -> 28ebe1a -> d16a40a -> d73c406 -> fabe847 -> 91f97c2 -> 2e6d780`
 
 Read first, in order:
-1. `graphify-out/GRAPH_REPORT.md`
+1. `graphify-out/GRAPH_REPORT.md` if it exists in the reviewed commit snapshot; if absent, record the absence and continue
 2. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 3. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 4. `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
@@ -158,13 +160,14 @@ Rules:
 - This is review-only. Do not modify packets or controller docs.
 - If you need subagents, use GPT-5.4 with xhigh fast for every spawned subagent and record any deviation.
 - This is a packet-integrity audit, not a code-quality audit.
+- Treat `graphify-out/GRAPH_REPORT.md` as advisory context only; its absence alone must not block this packet-integrity slice.
 
 Pinned context:
 - pre-planning docs anchor commit: `2e6d780`
 - last cleared-state docs checkpoint: `91f97c2`
 
 Read first:
-1. `graphify-out/GRAPH_REPORT.md`
+1. `graphify-out/GRAPH_REPORT.md` if it exists in the reviewed commit snapshot; if absent, record the absence and continue
 2. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 3. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 4. `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`

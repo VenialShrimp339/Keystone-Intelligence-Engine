@@ -194,7 +194,7 @@ Wave 3 candidate artifacts lived under `audit/remediation/runs/wave-3/` and incl
 - `candidate-<commit>-review-synthesis.md`
 - `candidate-<commit>-clearance.md` or `candidate-<commit>-blocked-checkpoint.md`
 
-Use `candidate-TEMPLATE-file-manifest.md` in the run folder as the starting scaffold.
+Use `audit/remediation/templates/run-packets/wave-3/candidate-TEMPLATE-file-manifest.md` as the starting scaffold.
 
 ## Carried Follow-Up
 

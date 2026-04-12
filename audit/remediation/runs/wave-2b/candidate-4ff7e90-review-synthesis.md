@@ -8,10 +8,10 @@
 
 ## Reviewed Inputs
 
-- [candidate-4ff7e90-adversarial-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-adversarial-review.md)
-- [candidate-4ff7e90-second-opinion.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-second-opinion.md)
-- [candidate-4ff7e90-implementation.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-implementation.md)
-- [candidate-4ff7e90-file-manifest.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-file-manifest.md)
+- [candidate-4ff7e90-adversarial-review.md](candidate-4ff7e90-adversarial-review.md)
+- [candidate-4ff7e90-second-opinion.md](candidate-4ff7e90-second-opinion.md)
+- [candidate-4ff7e90-implementation.md](candidate-4ff7e90-implementation.md)
+- [candidate-4ff7e90-file-manifest.md](candidate-4ff7e90-file-manifest.md)
 
 These in-folder wrappers preserve the legacy source locations for the original review texts and do not imply that candidate `4ff7e90` was originally packetized this way at the time the blocked candidate landed.
 
@@ -70,7 +70,7 @@ There is uncommitted dirty WIP in the main workspace that claims to address:
 - W2B-R02
 
 That WIP has been captured as recovery evidence only:
-- [candidate-4ff7e90-recovery-dirty-wip.patch](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-recovery-dirty-wip.patch)
+- [candidate-4ff7e90-recovery-dirty-wip.patch](candidate-4ff7e90-recovery-dirty-wip.patch)
 
 It is not authoritative until replayed in a clean worktree, committed, and re-reviewed.
 

@@ -7,10 +7,10 @@
 
 ## Reviewed Inputs
 
-- [candidate-6406e46-adversarial-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4/candidate-6406e46-adversarial-review.md)
-- [candidate-6406e46-second-opinion.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4/candidate-6406e46-second-opinion.md)
-- [candidate-6406e46-implementation.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4/candidate-6406e46-implementation.md)
-- [candidate-6406e46-file-manifest.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4/candidate-6406e46-file-manifest.md)
+- [candidate-6406e46-adversarial-review.md](candidate-6406e46-adversarial-review.md)
+- [candidate-6406e46-second-opinion.md](candidate-6406e46-second-opinion.md)
+- [candidate-6406e46-implementation.md](candidate-6406e46-implementation.md)
+- [candidate-6406e46-file-manifest.md](candidate-6406e46-file-manifest.md)
 
 ## Consensus
 

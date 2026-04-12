@@ -8,7 +8,7 @@
 
 ## Normalization Note
 
-This is a retrospective in-folder wrapper for the canonical historical review text in [WAVE-2B-SECOND-OPINION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-2B-SECOND-OPINION.md).
+This is a retrospective in-folder wrapper for the canonical historical review text in [WAVE-2B-SECOND-OPINION.md](../../WAVE-2B-SECOND-OPINION.md).
 
 It exists so the blocked `4ff7e90` packet chain under `audit/remediation/runs/wave-2b/` is self-contained for retrospective integrity review. It does not backdate this file into the original `4ff7e90` review process.
 

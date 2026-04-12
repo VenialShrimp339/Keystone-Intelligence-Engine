@@ -28,9 +28,9 @@ This clearance is grounded in:
 
 ## Review Packet Verdicts
 
-- [candidate-5cc9585-adversarial-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-3b/candidate-5cc9585-adversarial-review.md): `CLEARED`
-- [candidate-5cc9585-second-opinion.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-3b/candidate-5cc9585-second-opinion.md): `CLEARED`
-- [candidate-5cc9585-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-3b/candidate-5cc9585-review-synthesis.md): `CLEARED`
+- [candidate-5cc9585-adversarial-review.md](candidate-5cc9585-adversarial-review.md): `CLEARED`
+- [candidate-5cc9585-second-opinion.md](candidate-5cc9585-second-opinion.md): `CLEARED`
+- [candidate-5cc9585-review-synthesis.md](candidate-5cc9585-review-synthesis.md): `CLEARED`
 
 ## Residual Risks
 

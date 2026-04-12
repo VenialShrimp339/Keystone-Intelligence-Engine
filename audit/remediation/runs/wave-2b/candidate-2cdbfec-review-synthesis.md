@@ -7,10 +7,10 @@
 
 ## Reviewed Inputs
 
-- [candidate-2cdbfec-adversarial-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-2cdbfec-adversarial-review.md)
-- [candidate-2cdbfec-second-opinion.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-2cdbfec-second-opinion.md)
-- [candidate-2cdbfec-implementation.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-2cdbfec-implementation.md)
-- [candidate-2cdbfec-file-manifest.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-2cdbfec-file-manifest.md)
+- [candidate-2cdbfec-adversarial-review.md](candidate-2cdbfec-adversarial-review.md)
+- [candidate-2cdbfec-second-opinion.md](candidate-2cdbfec-second-opinion.md)
+- [candidate-2cdbfec-implementation.md](candidate-2cdbfec-implementation.md)
+- [candidate-2cdbfec-file-manifest.md](candidate-2cdbfec-file-manifest.md)
 
 ## Consensus
 

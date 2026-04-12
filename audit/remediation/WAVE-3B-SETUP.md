@@ -157,6 +157,8 @@ Wave 3B candidate artifacts lived under `audit/remediation/runs/wave-3b/` and in
 - `candidate-<commit>-review-synthesis.md`
 - `candidate-<commit>-clearance.md` or `candidate-<commit>-blocked-checkpoint.md`
 
+Use `audit/remediation/templates/run-packets/wave-3b/candidate-TEMPLATE-file-manifest.md` as the starting scaffold.
+
 ## Carried Follow-Up
 
 - `W2B-R01` remains visible: parseable but under-specified sprint-contract JSON can still produce empty enforcement fields. Wave 3B did not close it.

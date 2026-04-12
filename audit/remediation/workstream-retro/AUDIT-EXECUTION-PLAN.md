@@ -217,7 +217,7 @@ This is the final program-level review.
 
 Every eventual review session must:
 
-1. read `graphify-out/GRAPH_REPORT.md` first
+1. read `graphify-out/GRAPH_REPORT.md` first if it exists in the reviewed commit snapshot; if absent, record the absence and continue
 2. read `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml` before deriving any historical docs/code join from raw checkpoint text
 3. pin the exact baseline, parent, and target commits in the report header
 4. state whether code truth came from a clean worktree or detached review checkout
@@ -228,6 +228,8 @@ Every eventual review session must:
    - scope or boundary conformity
    - runtime correctness
 8. end with an explicit top-line verdict plus residual risks
+
+`graphify-out/GRAPH_REPORT.md` is advisory context only, not a required authority artifact. Its absence alone must not block `RP-1`.
 
 ## No-Go Conditions For The Program
 

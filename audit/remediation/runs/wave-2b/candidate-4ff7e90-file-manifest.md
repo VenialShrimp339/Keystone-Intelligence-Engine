@@ -8,12 +8,12 @@
 
 ## Packet Inventory
 
-- [candidate-4ff7e90-adversarial-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-adversarial-review.md)
-- [candidate-4ff7e90-second-opinion.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-second-opinion.md)
-- [candidate-4ff7e90-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-review-synthesis.md)
-- [candidate-4ff7e90-blocked-checkpoint.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-blocked-checkpoint.md)
-- [candidate-4ff7e90-implementation.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-implementation.md)
-- [candidate-4ff7e90-recovery-dirty-wip.patch](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-recovery-dirty-wip.patch)
+- [candidate-4ff7e90-adversarial-review.md](candidate-4ff7e90-adversarial-review.md)
+- [candidate-4ff7e90-second-opinion.md](candidate-4ff7e90-second-opinion.md)
+- [candidate-4ff7e90-review-synthesis.md](candidate-4ff7e90-review-synthesis.md)
+- [candidate-4ff7e90-blocked-checkpoint.md](candidate-4ff7e90-blocked-checkpoint.md)
+- [candidate-4ff7e90-implementation.md](candidate-4ff7e90-implementation.md)
+- [candidate-4ff7e90-recovery-dirty-wip.patch](candidate-4ff7e90-recovery-dirty-wip.patch)
 
 ## Packet Provenance Note
 
@@ -109,7 +109,7 @@ These files remained likely replay touchpoints or mixed-hunk risk during later r
 
 ### Recovery Evidence Boundary
 
-- [candidate-4ff7e90-recovery-dirty-wip.patch](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-2b/candidate-4ff7e90-recovery-dirty-wip.patch) captures later uncommitted recovery WIP only.
+- [candidate-4ff7e90-recovery-dirty-wip.patch](candidate-4ff7e90-recovery-dirty-wip.patch) captures later uncommitted recovery WIP only.
 - That patch is not part of candidate `4ff7e90` and does not change the exact committed diff surface listed above.
 
 ## Classification Rule

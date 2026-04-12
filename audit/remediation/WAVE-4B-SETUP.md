@@ -171,7 +171,7 @@ Out of scope:
 - `audit/remediation/control-plane/EXECUTION-TODO.md`
 - `audit/remediation/WORKSTREAM-STATUS.md`
 - `CURRENT-STATE.md`
-- `audit/remediation/runs/wave-4b/candidate-TEMPLATE-file-manifest.md`
+- `audit/remediation/templates/run-packets/wave-4b/candidate-TEMPLATE-file-manifest.md`
 
 ### Future Wave 4B implementation lane
 
@@ -288,7 +288,7 @@ Wave 4B candidate artifacts must live under `audit/remediation/runs/wave-4b/` an
 - `candidate-<commit>-review-synthesis.md`
 - `candidate-<commit>-clearance.md` or `candidate-<commit>-blocked-checkpoint.md`
 
-Use `candidate-TEMPLATE-file-manifest.md` in the run folder as the starting scaffold if it exists; otherwise create it before the first Wave 4B candidate is reviewed.
+Use `audit/remediation/templates/run-packets/wave-4b/candidate-TEMPLATE-file-manifest.md` as the starting scaffold if it exists; otherwise create it there before the first Wave 4B candidate is reviewed.
 
 ## Carried Follow-Up
 
