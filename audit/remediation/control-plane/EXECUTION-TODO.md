@@ -18,20 +18,21 @@ This file is the operational checklist.
 
 ## Current State
 
-- Last cleared code commit: `4819527`
-- Latest committed docs checkpoint before this setup state: `6eafc82`
-- Active wave state: `wave-3b / setup`
-- Next mandatory gate: `Wave 3B implementation lane`
+- Last cleared code commit: `5cc9585`
+- Latest prior docs checkpoint before this setup state: `5453fb9`
+- Active wave state: `wave-4 / setup`
+- Next mandatory gate: `Wave 4 docs lane, then narrow Wave 4 polish freeze`
 
 ## Now
 
 - [x] Confirm the control-plane tuple now says:
-  - `active_wave = wave-3b`
+  - `active_wave = wave-4`
   - `active_state = setup`
-  - `last_cleared_code_commit = 4819527`
-  - `next_action = open a clean Wave 3B implementation worktree from 4819527`
+  - `last_cleared_code_commit = 5cc9585`
+  - `next_action = continue Wave 4 docs work before any new code lane`
 - [x] Stay on `codex/remediation-program` in the main workspace
-- [x] Do **not** start Wave 3B code in the main workspace
+- [x] Keep the main workspace controller/docs only
+- [x] Do **not** start Wave 4 polish code or Wave 4B content code in the main workspace
 
 ## Phase 1: Wave 3A Seam Freeze
 
@@ -74,18 +75,55 @@ This file is the operational checklist.
 - [x] Create `WAVE-3B-SETUP.md`
 - [x] Update the control plane so Wave 3B setup becomes the active runway
 - [x] Re-read the control plane after the Wave 3B setup checkpoint
-- [ ] Preserve the single authoritative round-controller rule
+- [x] Preserve the single authoritative round-controller rule
 
 ## Phase 5: Wave 3B Implementation
 
-- [ ] Open a new clean Wave 3B implementation worktree rooted at `4819527`
-- [ ] Keep the main workspace controller/docs only
-- [ ] Implement only the Wave 3B scope approved by `WAVE-3B-SETUP.md`
-- [ ] Write `candidate-<commit>-implementation.md` under `audit/remediation/runs/wave-3b/`
-- [ ] Run focused Wave 3B tests and runtime probes
+- [x] Open a new clean Wave 3B implementation worktree rooted at `4819527`
+- [x] Keep the main workspace controller/docs only
+- [x] Implement only the Wave 3B scope approved by `WAVE-3B-SETUP.md`
+- [x] Write `candidate-<commit>-implementation.md` under `audit/remediation/runs/wave-3b/`
+- [x] Run focused Wave 3B tests and runtime probes
+- [x] Create the candidate commit
+- [x] Run adversarial review + second opinion on the committed snapshot
+- [x] Write review synthesis and clearance artifacts
+
+## Phase 6: Wave 3B Clearance / Wave 4 Gate
+
+- [x] Commit the Wave 3B cleared-state reconcile packet in the main workspace
+- [x] Create `audit/remediation/runs/wave-3b/candidate-5cc9585-clearance.md`
+- [x] Create `WAVE-4-SETUP.md`
+- [x] Create `audit/remediation/runs/wave-4/`
+- [x] Update the control plane so Wave 4 setup becomes the active runway
+- [ ] Re-read the control plane after the Wave 4 setup checkpoint
+
+## Phase 7: Wave 4 Research And Polish Prep
+
+- [x] Carry forward the accepted D-2 actionability memo as a Wave 4 sidecar
+- [ ] Create `WAVE-4-POLISH-SPECS.md` with exact fix specs for `E-2`, `E-4`, and `E-5`
+- [ ] Create `WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
+- [ ] Create `WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
+- [ ] Create `WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`
+- [ ] Create `WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`
+- [ ] Mark each new memo as `content-only`, `existing-seam code`, or `new capability`
+- [ ] If a memo implies `new capability`, explicitly re-scope it out of Wave 4B
+
+## Phase 8: Wave 4 Polish Code Lane
+
+- [ ] Do **not** open the Wave 4 polish code lane until the exact fix specs are committed
+- [ ] Open a clean Wave 4 polish worktree rooted at `5cc9585`
+- [ ] Implement only the low-risk Wave 4 polish slice frozen in `WAVE-4-SETUP.md`
+- [ ] Write the Wave 4 candidate implementation and file-manifest artifacts
+- [ ] Run focused Wave 4 polish tests and runtime probes
 - [ ] Create the candidate commit
 - [ ] Run adversarial review + second opinion on the committed snapshot
 - [ ] Write review synthesis and either blocked-checkpoint or clearance artifacts
+
+## Phase 9: Wave 4B Content Gate
+
+- [ ] Do **not** start Wave 4B until the required Wave 4 memos exist and the targeted seams are stable
+- [ ] Create `WAVE-4B-SETUP.md`
+- [ ] Update the control plane only after the Wave 4B setup checkpoint lands
 
 ## Carried Follow-Ups
 
