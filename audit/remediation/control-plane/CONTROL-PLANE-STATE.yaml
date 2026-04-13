@@ -25,8 +25,6 @@ retrospective_lineage_manifest_policy: "For retrospective audits of docs checkpo
 retrospective_review_ledger: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml
 retrospective_review_ledger_policy: "For retrospective audit-program status, this controller-promoted ledger is the authoritative current review-status layer. Use it for prerequisite proof, keep it separate from the historical snapshot under review, and do not treat it as retroactive clearance of rerun-required slices."
 retrospective_review_rerun_required:
-  - W2B-1
-  - W3A-1
   - W4D-1
 retrospective_sidecar_roots:
   - audit/remediation/workstream-retro/
@@ -69,5 +67,10 @@ wip_scope:
   - audit/remediation/runs/wave-3/candidate-4819527-setup-contract-addendum.md
   - audit/remediation/runs/wave-3/candidate-4819527-clearance.md
   - audit/remediation/runs/wave-3/candidate-4819527-review-synthesis.md
+  - audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md
+  - audit/remediation/WAVE-4B-SETUP.md
+  - audit/remediation/runs/wave-4b/candidate-65a612d-c13-contract-addendum.md
+  - audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md
+  - audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md
   - audit/remediation/workstream-retro/
   - audit/remediation/workstream-retro/reviews/

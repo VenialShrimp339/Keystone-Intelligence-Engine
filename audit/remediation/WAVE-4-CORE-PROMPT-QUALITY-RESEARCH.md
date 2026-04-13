@@ -362,6 +362,8 @@ Preserve Step 4 and make it structurally real:
 - require the JSON output to emit it explicitly
 - wire it forward as upstream input to anti-confirmatory framing or task-generation guidance
 
+Retrospective clarification for historical `65a612d` clearance: this sentence blended two layers, `(a)` seam-local Step 4 schema and prompt recovery inside the current intent-clarifier seam and `(b)` deeper downstream structural propagation into later specification or task-generation logic. The cleared `65a612d` code surface supported only the first layer. See `audit/remediation/runs/wave-4b/candidate-65a612d-c13-contract-addendum.md`.
+
 The alternative option, removing Step 4 entirely, is lower value because the concept is analytically useful once surfaced.
 
 ### Negative example

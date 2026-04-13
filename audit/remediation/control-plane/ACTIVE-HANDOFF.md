@@ -15,7 +15,8 @@
 - `RETROSPECTIVE-LINEAGE-MANIFEST.yaml` is now controller-promoted as the authoritative retrospective lineage layer for docs checkpoints `35a8a29` through `2e6d780`.
 - `RETROSPECTIVE-REVIEW-LEDGER.yaml` is now controller-promoted as the authoritative current review-status layer for retrospective audit prerequisites.
 - Batch 1 is durably `CLEARED` there for `CP-1`, `CP-2`, and `RP-1`.
-- `W2B-1`, `W3A-1`, and `W4D-1` are rerun-required after this docs-only reconcile and are not cleared by ledger promotion alone.
+- `W2B-1` and `W3A-1` are now `CLEARED` in the authoritative retrospective review ledger.
+- `W4D-1` remains `RERUN_REQUIRED` against the addendum-backed C-13 authority layer at `audit/remediation/runs/wave-4b/candidate-65a612d-c13-contract-addendum.md`.
 - The main workspace remains controller/docs only.
 - `WAVE-4B-SETUP.md` remains the frozen boundary for what Wave 4B was allowed to change.
 - All required Wave 4B review packets now exist in the main workspace.
@@ -76,7 +77,8 @@ Interpret `docs_reconcile_commit` as the exact docs snapshot this controller rec
 
 - Current authoritative prerequisite layer: [RETROSPECTIVE-REVIEW-LEDGER.yaml](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml)
 - Batch 1 currently `CLEARED` there: `CP-1`, `CP-2`, `RP-1`
-- Rerun required before trusting downstream Batch 3+ slices: `W2B-1`, `W3A-1`, `W4D-1`
+- `W2B-1` and `W3A-1` are currently `CLEARED`, so `W3-1` is launchable on the retrospective review layer once requested.
+- `W4D-1` remains `RERUN_REQUIRED`; it still blocks retrospective Wave 4B launch decisions and `X-1`, not Batch 3.
 - The ledger records current review authority only. It does not claim that the historical snapshot under review already contained later review sidecars.
 
 ## Exact Next Action
@@ -116,6 +118,11 @@ sed -n '1,220p' audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md
 - `audit/remediation/runs/wave-3/candidate-4819527-setup-contract-addendum.md`
 - `audit/remediation/runs/wave-3/candidate-4819527-clearance.md`
 - `audit/remediation/runs/wave-3/candidate-4819527-review-synthesis.md`
+- `audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
+- `audit/remediation/WAVE-4B-SETUP.md`
+- `audit/remediation/runs/wave-4b/candidate-65a612d-c13-contract-addendum.md`
+- `audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md`
+- `audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md`
 
 ### Controller-authorized retrospective sidecars
 
@@ -165,6 +172,7 @@ Wave 4B cleared only after artifacts named probes for:
 - [WAVE-4B-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4B-SETUP.md) — frozen Wave 4B scope boundary and denylist
 - [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md) — accepted D-2 scoring contract
 - [WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md) — accepted prompt-quality contracts for the Wave 4B slice
+- [candidate-65a612d-c13-contract-addendum.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-c13-contract-addendum.md) — addendum-backed authority note splitting seam-local C-13 recovery from downstream structural propagation
 - [WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md) — accepted sprint-contract and contradiction-boundary contract
 - [WAVE-4-TEMPLATE-ROUTING-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md) — accepted routing and template-envelope contract
 - [WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md) — accepted evaluator-verification boundary

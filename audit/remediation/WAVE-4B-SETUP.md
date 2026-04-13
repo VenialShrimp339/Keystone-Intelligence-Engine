@@ -121,6 +121,8 @@ Out of scope:
 - typed method-specific analyst payloads
 - dynamic lens selection or new prompt registries
 
+Retrospective clarification for historical `65a612d` interpretation: the Slice B line `intent-clarifier Step 4 schema recovery` authorizes only seam-local preservation of Step 4 within `src/keystone/specification/prompts/intent_clarification.md` and `src/keystone/specification/intent_clarifier.py`. It does not retroactively widen the historical Wave 4B write surface to `src/keystone/specification/spec_engine.py`, `src/keystone/specification/task_generator.py`, or `src/keystone/models/research.py` for downstream structural propagation. See `audit/remediation/runs/wave-4b/candidate-65a612d-c13-contract-addendum.md`.
+
 ### Slice C: Sprint Contract / Contradiction
 
 In scope:

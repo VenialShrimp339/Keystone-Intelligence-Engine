@@ -16,6 +16,8 @@
 
 The adversarial review and second opinion both clear `65a612d` for Wave 4B. They agree that the candidate stayed within the approved Wave 4B boundary and that the frozen content-layer contracts are now load-bearing on the committed runtime path.
 
+For C-13 specifically, this synthesis adopts the addendum-backed historical reading in [candidate-65a612d-c13-contract-addendum.md](candidate-65a612d-c13-contract-addendum.md): `65a612d` cleared Step 4 recovery at the current intent-clarifier seam, but did not contemporaneously clear downstream structural propagation into later specification or task-generation logic.
+
 ## Closed Wave 4B Deliverables
 
 ### D-2 Actionability Reset
@@ -29,14 +31,23 @@ The adversarial review and second opinion both clear `65a612d` for Wave 4B. They
 ### Core Prompt-Quality Slice
 
 - Closed by `65a612d`.
-- Shared conclusion: analyst, deep/shallow research, lens, and intent-clarifier prompts now encode the approved methodology guidance and injection-safe framing without changing the shared runtime envelopes.
+- Shared conclusion for `C-1/C-2/C-3/C-4/C-9/C-12`: analyst, deep/shallow research, and lens prompts now encode the approved methodology guidance and injection-safe framing without changing the shared runtime envelopes.
 - Primary evidence:
   - `tests/unit/deliberation/test_analyst.py`
   - `tests/unit/research/test_research_agent.py`
-  - `tests/unit/specification/test_intent_clarifier.py`
   - `src/keystone/deliberation/analyst.py`
   - `src/keystone/research/research_agent.py`
+
+### C-13 Intent Clarifier Step 4 Recovery
+
+- Closed by `65a612d` at the intent-clarifier seam only.
+- Shared conclusion: `evidence_would_change` is preserved in the intent-clarifier prompt and `IntentClarificationResult`, which is the seam-local layer the historical Wave 4B candidate actually implemented and cleared.
+- Explicit non-claim: `65a612d` did not touch `src/keystone/specification/spec_engine.py`, `src/keystone/specification/task_generator.py`, or `src/keystone/models/research.py`, so this packet does not clear downstream structural propagation into later specification or task-generation logic.
+- Primary evidence:
+  - `tests/unit/specification/test_intent_clarifier.py::TestIntentClarifier::test_result_includes_evidence_would_change`
+  - `src/keystone/specification/prompts/intent_clarification.md`
   - `src/keystone/specification/intent_clarifier.py`
+  - `candidate-65a612d-c13-contract-addendum.md`
 
 ### Sprint-Contract / Contradiction Slice
 
@@ -75,6 +86,7 @@ The adversarial review and second opinion both clear `65a612d` for Wave 4B. They
 - Wave 5 calibration and all deferred capability work remain intentionally outside this clearance.
 - The controller workspace remains dirty from unrelated user changes and must remain quarantined from code truth.
 - Generated graphify collateral includes one trailing-whitespace line in `GRAPH_REPORT.md`; this is cosmetic and non-blocking.
+- C-13 downstream structural propagation remains outside the historical `65a612d` clearance packet and must not be inferred from the separate `task_generation.md` edit.
 - `W2B-R01` remains a historical non-blocking follow-up.
 
 ## Controller Disposition

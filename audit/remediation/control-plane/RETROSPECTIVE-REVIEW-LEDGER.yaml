@@ -49,13 +49,30 @@ entries:
       summary: "Run-folder packet families are present, git-aligned, and cross-link complete in the reviewed snapshot."
       authority_inputs:
         - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
-pending_reruns:
   W2B-1:
-    current_status: RERUN_REQUIRED
-    reason: "Re-run this slice against the current authoritative review ledger instead of requiring Batch 1 sidecars inside the historical snapshot under review."
+    current_status: CLEARED
+    most_recent_report_verdict: CLEARED
+    reviewed_snapshot:
+      docs_commit: df9f0445b7091b7fd0eb32d95bd5d2e1e433610f
+    report_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W2B-1-wave-2b-lineage-and-closure-audit.md
+    evidence_basis:
+      kind: retrospective_boundary_and_runtime_rerun
+      summary: "The rerun cleared both blocked-parent lineage and committed runtime closure for Wave 2B against the current authoritative review ledger, while preserving W2B-R01 as an open residual risk."
+      authority_inputs:
+        - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W2B-1-wave-2b-lineage-and-closure-audit.md
   W3A-1:
-    current_status: RERUN_REQUIRED
-    reason: "Re-run this slice against the reconciled Wave 3 setup authority that now includes candidate-4819527-setup-contract-addendum.md."
+    current_status: CLEARED
+    most_recent_report_verdict: CLEARED
+    reviewed_snapshot:
+      docs_commit: df9f0445b7091b7fd0eb32d95bd5d2e1e433610f
+      docs_parent_commit: 04fbc6c9bb1de88b5649beb3c0b4fd4c014cf41f
+    report_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W3A-1-wave-3a-seam-and-setup-audit.md
+    evidence_basis:
+      kind: retrospective_setup_and_boundary_rerun
+      summary: "The rerun cleared the Wave 3A seam-freeze and setup-contract prerequisites against the reconciled setup authority, with no remaining local blocker in the Wave 3A boundary layer."
+      authority_inputs:
+        - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W3A-1-wave-3a-seam-and-setup-audit.md
+pending_reruns:
   W4D-1:
     current_status: RERUN_REQUIRED
-    reason: "Re-run this slice against the current authoritative review ledger instead of requiring Batch 1 sidecars inside the historical snapshot under review."
+    reason: "Re-run this slice against the addendum-backed C-13 authority layer in candidate-65a612d-c13-contract-addendum.md, which splits seam-local Step 4 recovery from downstream structural propagation without widening the historical 65a612d code scope."
