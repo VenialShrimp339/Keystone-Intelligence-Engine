@@ -3,7 +3,7 @@
 ## Lane Principles
 
 - The main workspace stays docs-only for this lane.
-- No UI runtime work starts until retrieval seams lock and a controller unlocks implementation.
+- No UI runtime work starts until retrieval seams lock, plan-preview semantics are frozen, and a controller unlocks implementation.
 - Parallelize by seam, not by vague theme.
 - Require adversarial review before accepting any lane.
 - Keep analyst mode, advanced mode, and dev mode responsibilities separate.
@@ -35,7 +35,7 @@
 
 - Lane D and Lane E can run in parallel because shell/navigation and history/artifact browsing are separable.
 - Lane F can run in parallel with Lane D if the state contract is frozen first.
-- Lane G should start only after gate-state semantics and reviewer scope are frozen.
+- Lane G should start only after gate-state semantics, reviewer scope, and pre-run plan/review semantics are frozen.
 
 ## What Must Wait For Retrieval Architecture Lock
 
@@ -76,6 +76,10 @@
 
 No UI implementation lane should open until all of the following are true:
 
+- plan-preview semantics are frozen:
+  - `Plan ready` means analyst confirmation
+  - `Needs review` is the first real runtime pause when `post_specification` is enabled
+  - `Running` starts only after approval or when no pre-run checkpoint exists
 - one canonical runtime surface is promoted
 - retrieval seams are locked
 - governed versus bypass behavior is artifact-backed

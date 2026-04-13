@@ -24,6 +24,35 @@ This lane is not allowed to start:
 - retrospective-audit work
 - any claim that the current checkout is the canonical product runtime
 
+## Authority Order
+
+Read and apply this package in the following order:
+
+1. External runtime truth first:
+   - `src/keystone/specification/spec_engine.py` for the real `post_specification` gate before research
+   - current HITL endpoints and schemas referenced by the state-contract docs
+2. Correction and handoff gatekeepers:
+   - [ADVERSARIAL-FINDINGS.md](./ADVERSARIAL-FINDINGS.md)
+   - [REQUIRED-CORRECTIONS-CHECKLIST.md](./REQUIRED-CORRECTIONS-CHECKLIST.md)
+   - [WORKSTREAM-HANDOFF.md](./WORKSTREAM-HANDOFF.md)
+3. Runtime-truth contracts:
+   - [RUN-STATE-CONTRACT.md](./RUN-STATE-CONTRACT.md)
+   - [REVIEWER-FLOW-SPEC.md](./REVIEWER-FLOW-SPEC.md)
+4. Analyst-surface contracts:
+   - [SCREEN-SPECS.md](./SCREEN-SPECS.md)
+   - [COPY-GUARDRAILS.md](./COPY-GUARDRAILS.md)
+   - [INFORMATION-ARCHITECTURE.md](./INFORMATION-ARCHITECTURE.md)
+5. Supporting surface docs:
+   - [RUN-INSPECTOR-AND-DEV-MODE.md](./RUN-INSPECTOR-AND-DEV-MODE.md)
+   - [CHAT-SURFACE-AND-CONTROLS.md](./CHAT-SURFACE-AND-CONTROLS.md)
+   - [MVP-UI-SCOPE.md](./MVP-UI-SCOPE.md)
+   - [IMPLEMENTATION-LANES.md](./IMPLEMENTATION-LANES.md)
+   - [RISK-REGISTER.md](./RISK-REGISTER.md)
+6. Session operations only:
+   - [SESSION-PROMPTS.md](./SESSION-PROMPTS.md)
+
+If a lower-order doc conflicts with a higher-order doc, the higher-order doc wins and the lower-order doc must be corrected.
+
 ## Hard Guardrails
 
 - Keep all outputs under `audit/remediation/ui-premium/`.
@@ -78,9 +107,10 @@ Recommended later authoritative updates:
 - File upload and speech-to-text as first-class input actions.
 - One plain-language research-depth control, not a model zoo.
 - A visible research-plan preview before heavy work begins.
+- One frozen pre-run sequence: `Plan ready` for analyst confirmation, then `Needs review` before `Running` when a `post_specification` gate exists.
 - Run history with truthful statuses.
 - A run inspector with stage, task, evidence, citation, gate, and artifact drill-down.
-- Honest banners for governed, experimental bypass, mixed, or docs/demo-only runs.
+- Honest banners for governed, experimental bypass, lineage unknown, or docs/demo-only runs. Keep `Mixed / non-canonical` reserved until lineage is artifact-backed.
 - A clear split between analyst mode, advanced analyst controls, and dev mode.
 
 ### What the eventual MVP UI should not include
@@ -114,6 +144,19 @@ Recommended later authoritative updates:
 3. HITL reviewer surface.
 4. Evidence and citation panels.
 
+## Unlock Guard
+
+No runtime UI lane may open until all of the following are true:
+
+- plan-preview semantics are frozen across the package:
+  - `Plan ready` means analyst confirmation
+  - `Needs review` is the first real runtime pause when `post_specification` is enabled
+  - `Running` begins only after checkpoint approval or when no pre-run checkpoint exists
+- retrieval seams are locked
+- governed versus bypass behavior is artifact-backed enough to avoid heuristic labeling
+- source-state labels and claim-support boundaries are frozen
+- controller approval explicitly opens runtime UI work
+
 ## Exact First 3 Session Prompts
 
 The exact prompts are in [SESSION-PROMPTS.md](./SESSION-PROMPTS.md).
@@ -128,18 +171,25 @@ Recommended order:
 
 - [DESIGN-PRINCIPLES.md](./DESIGN-PRINCIPLES.md): non-negotiable UX rules
 - [REFERENCE-PATTERN-AUDIT.md](./REFERENCE-PATTERN-AUDIT.md): external pattern synthesis
+- [SCREEN-SPECS.md](./SCREEN-SPECS.md): authoritative screen-by-screen labels, warnings, and pre-run sequence
+- [COPY-GUARDRAILS.md](./COPY-GUARDRAILS.md): required source/evidence labels and warning copy
 - [INFORMATION-ARCHITECTURE.md](./INFORMATION-ARCHITECTURE.md): navigation, objects, onboarding
 - [CHAT-SURFACE-AND-CONTROLS.md](./CHAT-SURFACE-AND-CONTROLS.md): chat launcher and control model
+- [RUN-STATE-CONTRACT.md](./RUN-STATE-CONTRACT.md): runtime-truth state model and banner contract
+- [REVIEWER-FLOW-SPEC.md](./REVIEWER-FLOW-SPEC.md): checkpoint lifecycle and review semantics
 - [RUN-INSPECTOR-AND-DEV-MODE.md](./RUN-INSPECTOR-AND-DEV-MODE.md): transparency and debug surfaces
 - [MVP-UI-SCOPE.md](./MVP-UI-SCOPE.md): now vs later vs blocked
 - [IMPLEMENTATION-LANES.md](./IMPLEMENTATION-LANES.md): safe work decomposition
 - [SESSION-PROMPTS.md](./SESSION-PROMPTS.md): exact next-session launch texts
 - [RISK-REGISTER.md](./RISK-REGISTER.md): failure modes and mitigations
+- [ADVERSARIAL-FINDINGS.md](./ADVERSARIAL-FINDINGS.md): severity-ordered adversarial review memo
+- [REQUIRED-CORRECTIONS-CHECKLIST.md](./REQUIRED-CORRECTIONS-CHECKLIST.md): required fixes before controller-safe handoff
 
 ## Controller Notes For The Next Session
 
 - Anchor every runtime claim to the current authority chain, not to this dirty checkout.
 - Treat chat as a control surface and summary layer, not as the truth surface.
 - Keep governed retrieval, bypass retrieval, and docs/demo flows visibly distinct.
+- Keep `Plan ready`, `Needs review`, and `Running` frozen in their corrected meanings unless a controller explicitly reopens that decision.
 - Require adversarial review before treating any UI spec as stable enough for implementation.
 - If a future session tries to start UI runtime code before retrieval seams lock, stop and re-check the retrieval-MVP handoff first.

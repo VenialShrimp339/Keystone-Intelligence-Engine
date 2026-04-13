@@ -1,5 +1,7 @@
 # Chat Surface And Controls
 
+See the canonical screen-by-screen copy in [SCREEN-SPECS.md](./SCREEN-SPECS.md).
+
 ## Recommended Surface
 
 The top-level experience should feel like a premium analyst workbench:
@@ -19,18 +21,20 @@ The chat surface is the launch and summary layer. The run record remains the tru
 - `Attach files`
 - `Mic`
 - depth selector
-- primary `Start analysis` button
-- `More` menu
+- primary `Preview plan` button
+- `Advanced` button
 
 ### Suggested top row
 
-`Quick | Standard | Extended | Attach files | Mic | More`
+`Quick | Standard | Extended | Attach files | Mic | Advanced`
 
 Notes:
 
 - `Standard` is the default and recommended option.
 - Do not lead with model names.
 - Do not put experimental deep research in the default row.
+- Use the exact helper under `Standard`: `Recommended for most questions`.
+- Keep the composer placeholder exact: `What decision are you trying to make? Include context, constraints, and what a useful answer should cover.`
 
 ## Plan Preview Before Execution
 
@@ -38,15 +42,23 @@ Before heavy work starts, Keystone should return a `Research Plan` card with:
 
 - what it will test
 - likely workstreams
-- expected outputs
 - expected effort
+- expected outputs
 - warnings and limitations
+
+Semantic rule:
+
+- `Plan ready` is analyst confirmation, not a HITL state.
+- If a `post_specification` gate is configured, the first real runtime pause is the review checkpoint immediately after plan confirmation.
+- If no pre-run gate is configured, the run moves directly into `Running`.
 
 Primary actions:
 
-- `Start`
-- `Refine`
+- `Start analysis` when no pre-run checkpoint is required
+- `Continue to review` when a `post_specification` checkpoint is required
+- `Edit request`
 - `Make this quicker`
+- `Show full plan details`
 
 This keeps the UI familiar while preserving the real plan/review character of Keystone.
 
@@ -66,7 +78,7 @@ This keeps the UI familiar while preserving the real plan/review character of Ke
 
 ## Experimental mode handling
 
-Place `Experimental deep research` behind `More options` with a clear warning:
+Place `Use experimental deep research` behind `Advanced controls` with a clear warning:
 
 `Experimental. May bypass governed retrieval controls and should not be treated as canonical MVP evidence.`
 
@@ -77,10 +89,10 @@ Place `Experimental deep research` behind `More options` with a clear warning:
 | Depth (`Quick/Standard/Extended`) | Yes | Yes | Yes |
 | Attach files | Yes | Yes | Yes |
 | Mic dictation | Yes | Yes | Yes |
-| Start / Refine | Yes | Yes | Yes |
+| `Preview plan` / next-step action | Yes | Yes | Yes |
 | Research plan details | Summary only | Full | Full |
-| Experimental deep research | No | Yes, with warning | Yes |
-| Engagement-type override | No | Yes | Yes |
+| Use experimental deep research | No | Yes, with warning | Yes |
+| Analysis type override | No | Yes | Yes |
 | Model choice | No | Rarely | Yes |
 | Evaluation intensity | No | Yes | Yes |
 | Raw run IDs / debug traces | No | No | Yes |
@@ -93,11 +105,13 @@ Recommended behavior:
 
 - files appear as pills immediately below the composer
 - each file shows a truthful status:
-  - `Attached to this analysis`
-  - `Used in run`
-  - `Not indexed`
-  - `Ignored`
-- the right drawer should show the full file list and later extraction metadata
+  - `Attached`
+  - `Used in analysis`
+  - `Not used`
+  - `Could not read`
+- the right-side `Outputs` pane should show the full file list and later extraction metadata
+- use the exact warning:
+  - `Uploads are attached to this analysis. Keystone may use extracted text where available. Some files may not be parsed or cited.`
 
 Do not bury file upload in settings.
 
@@ -111,6 +125,8 @@ Recommended behavior:
 - transcribe to editable text before launch
 - no always-on voice mode
 - no implied meeting intelligence unless later explicitly built
+- use the exact warning:
+  - `Speech-to-text only fills the prompt box. It does not create a meeting recording or a saved transcript.`
 
 Later-only candidate:
 
@@ -140,6 +156,8 @@ Default tabs:
 - `Outputs`
 - `Quality`
 
+If a tab has no real data, use a direct empty state rather than hiding it.
+
 Advanced tabs:
 
 - `Plan`
@@ -150,7 +168,9 @@ Advanced tabs:
 
 ## Honesty Rules
 
-- Every run must display whether it is governed, experimental bypass, mixed, or docs/demo-only.
+- Every run must display whether it is governed, experimental bypass, lineage unknown, or docs/demo-only.
+- Reserve `Mixed / non-canonical` until lineage is explicitly recorded.
 - Citation UI must distinguish source discovery from stronger support levels.
 - If only part of the run was evaluated, say so directly.
 - If the deliverable filtered out tasks or claims, expose that in the surface.
+- The right-side pane may list only files and artifacts that actually exist. Do not imply polished exports or full-document packages beyond current outputs.

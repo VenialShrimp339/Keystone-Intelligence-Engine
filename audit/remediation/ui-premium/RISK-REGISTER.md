@@ -3,8 +3,8 @@
 | ID | Risk | Severity | Likelihood | Why it matters | Mitigation | Acceptance gate |
 |---|---|---|---|---|---|---|
 | R1 | Premium shell over unstable runtime truth | P0 | High | Makes the docs checkout look like the canonical product runtime | Keep runtime-anchor banners and authority-chain notes explicit | Controller review |
-| R2 | Governed and bypass research collapse into one user concept | P0 | High | Hides the most important retrieval truth boundary | Label governed, experimental bypass, mixed, and docs/demo-only runs separately | Retrieval compliance review |
-| R3 | Citation theater | P0 | High | Implies claim support when only citation existence/liveness is proven | Distinguish discovered, cited, live, anchored, and claim-supported states | Evidence-label review |
+| R2 | Governed and bypass research collapse into one user concept | P0 | High | Hides the most important retrieval truth boundary | Label governed, experimental bypass, lineage unknown, and docs/demo-only runs separately; reserve mixed until artifact-backed | Retrieval compliance review |
+| R3 | Citation theater | P0 | High | Implies claim support when only citation existence/liveness is proven | Distinguish discovered-only, cited-in-claim, URL-checked, snippet-only, not-passage-anchored, and claim-supported states | Evidence-label review |
 | R4 | Coverage theater | P1 | High | Tool registry breadth can look like real backend coverage | Avoid provider-badge and source-count vanity metrics | Backend reality review |
 | R5 | Progress theater | P1 | High | Fake ETAs and fake completion bars create false trust | Use only real stage and wait states | Observability review |
 | R6 | UI implementation starts before retrieval seams lock | P0 | Medium | Creates rework and misleading product assumptions | Keep implementation blocked until explicit unlock | Controller review |
