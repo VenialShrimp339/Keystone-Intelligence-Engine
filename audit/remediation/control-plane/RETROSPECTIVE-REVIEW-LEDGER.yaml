@@ -139,3 +139,16 @@ entries:
       summary: "The audit cleared the historical Wave 4B implementation slice at committed snapshot 65a612d against the accepted Wave 4B memo boundary; this controller-promoted status is current retrospective review authority only, not a rewrite of the original remediation-lane clearance, and it removes the Batch 6 runtime prerequisite gate to W4B-2."
       authority_inputs:
         - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W4B-1-wave-4b-conformity-audit.md
+  W4B-2:
+    current_status: BLOCKED
+    most_recent_report_verdict: BLOCKED
+    reviewed_snapshot:
+      code_commit: 65a612dc1400abbedcfbdda1f173cd72a3a90c06
+      code_parent_commit: 6406e4639a26b2cb732c78690ae61deb6abfab6b
+      docs_commit: c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468
+    report_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W4B-2-wave-4b-runtime-audit.md
+    evidence_basis:
+      kind: retrospective_wave4b_runtime_audit
+      summary: "The runtime audit found that the committed C-15 snippet-sufficiency helper suppresses short full-sentence evidence as snippet-thin, causing false UNVERIFIABLE outcomes on the live Layer 1 path. This controller-promoted status is current retrospective review authority only, not a rewrite of the original remediation-lane clearance or the separate W4B-1 memo-conformity clearance, and it makes W4B-2 the current stop sign blocking X-1."
+      authority_inputs:
+        - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W4B-2-wave-4b-runtime-audit.md
