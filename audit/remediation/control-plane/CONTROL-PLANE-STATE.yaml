@@ -22,6 +22,12 @@ last_cleared_docs_commit: 91f97c2
 planning_anchor_commit: 2e6d780
 retrospective_lineage_manifest: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
 retrospective_lineage_manifest_policy: "For retrospective audits of docs checkpoints 35a8a29 through 2e6d780, this controller-promoted manifest is the authoritative lineage layer. It replaces the historical symbolic HEAD pins with exact git-derived checkpoint pins, preserves the 65074ca -> 198ab92 seam-freeze promotion split, and does not by itself advance Batch 2 or rewrite earlier review sidecars."
+retrospective_review_ledger: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml
+retrospective_review_ledger_policy: "For retrospective audit-program status, this controller-promoted ledger is the authoritative current review-status layer. Use it for prerequisite proof, keep it separate from the historical snapshot under review, and do not treat it as retroactive clearance of rerun-required slices."
+retrospective_review_rerun_required:
+  - W2B-1
+  - W3A-1
+  - W4D-1
 retrospective_sidecar_roots:
   - audit/remediation/workstream-retro/
   - audit/remediation/workstream-retro/reviews/
@@ -55,8 +61,13 @@ wip_scope:
   - audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
   - audit/remediation/control-plane/ACTIVE-HANDOFF.md
   - audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
+  - audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml
   - audit/remediation/control-plane/EXECUTION-TODO.md
   - CURRENT-STATE.md
   - audit/remediation/WORKSTREAM-STATUS.md
+  - audit/remediation/WAVE-3-SETUP.md
+  - audit/remediation/runs/wave-3/candidate-4819527-setup-contract-addendum.md
+  - audit/remediation/runs/wave-3/candidate-4819527-clearance.md
+  - audit/remediation/runs/wave-3/candidate-4819527-review-synthesis.md
   - audit/remediation/workstream-retro/
   - audit/remediation/workstream-retro/reviews/

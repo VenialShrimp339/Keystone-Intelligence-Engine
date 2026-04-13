@@ -13,8 +13,22 @@ This clearance is grounded in:
 - the full review scope `2cdbfec..4819527`
 - the focused Wave 3 proof matrix
 - the focused seven-probe runtime bundle
+- the retrospective setup-contract reconcile in `candidate-4819527-setup-contract-addendum.md`
 - the candidate implementation packet and file manifest
 - the adversarial review and second-opinion packet
+
+## Retrospective Contract Reconcile
+
+`candidate-4819527-setup-contract-addendum.md` is the authoritative post-clearance reconcile for the historical Wave 3 setup contract.
+
+It records that:
+
+- `src/keystone/governance/models.py`, `src/keystone/specification/spec_engine.py`, and `tests/unit/test_research_models.py` were part of the actual cleared `4819527` surface even though the original setup doc omitted them
+- that write-surface reconcile is retrospective contract repair for the cleared deliverable, not a claim of original contemporaneous authorization
+- the original E2 wording in `WAVE-3-SETUP.md` was broader than the cleared packet's actual work, so the unchanged E2 surfaces are interpreted truthfully as verification-only carry-forward from baseline rather than reopened implementation scope in `4819527`
+- the six setup probe invariants are satisfied through a mixed evidence model, with named runtime-probe evidence where the seven-probe bundle directly names the invariant and proof-table / focused-matrix evidence where it does not
+
+Accordingly, this clearance means `4819527` cleared Wave 3 as retrospectively reconciled by the addendum, not that every setup-contract detail was already contemporaneously stated in `WAVE-3-SETUP.md`.
 
 ## Proof Table
 
@@ -40,6 +54,6 @@ This clearance is grounded in:
 
 ## Controller Decision
 
-Wave 3 is cleared at `4819527`.
+Wave 3 is cleared at `4819527` as retrospectively reconciled by `candidate-4819527-setup-contract-addendum.md`.
 
 The next required step is a docs-only Wave 3B setup checkpoint before any new Wave 3B implementation lane begins.

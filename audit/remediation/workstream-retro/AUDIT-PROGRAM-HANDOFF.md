@@ -40,7 +40,7 @@ This session may:
 - use parallel read-only explorers or subagents
 - write planning docs under `audit/remediation/workstream-retro/`
 - write retrospective review sidecars under `audit/remediation/workstream-retro/reviews/`
-- treat both paths as retrospective sidecars unless a later controller reconcile promotes them
+- treat both paths as retrospective sidecars unless a later controller reconcile promotes them into the authoritative review-status layer or other control-plane authority docs
 
 ## Why this handoff exists
 
@@ -69,30 +69,31 @@ Read these first, in order:
 2. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 3. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 4. `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
-5. `CURRENT-STATE.md`
-6. `audit/remediation/WORKSTREAM-STATUS.md`
-7. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
+5. `audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml`
+6. `CURRENT-STATE.md`
+7. `audit/remediation/WORKSTREAM-STATUS.md`
+8. `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
 
 Then read these workstream artifacts:
 
-8. `audit/remediation/runs/wave-2b/`
-9. `audit/remediation/runs/wave-3/`
-10. `audit/remediation/runs/wave-3b/`
-11. `audit/remediation/runs/wave-4/`
-12. `audit/remediation/runs/wave-4b/`
+9. `audit/remediation/runs/wave-2b/`
+10. `audit/remediation/runs/wave-3/`
+11. `audit/remediation/runs/wave-3b/`
+12. `audit/remediation/runs/wave-4/`
+13. `audit/remediation/runs/wave-4b/`
 
 Then read the setup/seam/research docs relevant to boundary review:
 
-13. `audit/remediation/WAVE-3A-SEAM-FREEZE.md`
-14. `audit/remediation/WAVE-3-SETUP.md`
-15. `audit/remediation/WAVE-3B-SETUP.md`
-16. `audit/remediation/WAVE-4-SETUP.md`
-17. `audit/remediation/WAVE-4B-SETUP.md`
-18. `audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md`
-19. `audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
-20. `audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
-21. `audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`
-22. `audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`
+14. `audit/remediation/WAVE-3A-SEAM-FREEZE.md`
+15. `audit/remediation/WAVE-3-SETUP.md`
+16. `audit/remediation/WAVE-3B-SETUP.md`
+17. `audit/remediation/WAVE-4-SETUP.md`
+18. `audit/remediation/WAVE-4B-SETUP.md`
+19. `audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md`
+20. `audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
+21. `audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md`
+22. `audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md`
+23. `audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md`
 
 ## Important structural fact
 
@@ -124,6 +125,14 @@ Important historical note:
 - `RETROSPECTIVE-LINEAGE-MANIFEST.yaml` is now the controller-promoted lineage layer that pins this chain exactly for retrospective audit use without rewriting those historical commits.
 
 This means a monolithic audit of the current branch is **not sufficient**.
+
+## Current Audit Authority Vs Historical Snapshot
+
+Current audit authority and the historical snapshot under review are separate axes.
+
+- Use `RETROSPECTIVE-REVIEW-LEDGER.yaml` to determine whether earlier retrospective review slices are currently authoritative for prerequisite purposes.
+- Do not require the historical snapshot under review to contain later review sidecars.
+- Later review sidecars become prerequisite proof only when a controller reconcile promotes them into the review ledger or a later controller-approved successor layer.
 
 ## Candidate audit-slice plan to pressure-test
 
@@ -198,7 +207,7 @@ At minimum:
 
 4. `BATCH-2-PLUS-PROMPTS.md`
    - exact copy-paste prompts for later batches
-   - clearly labeled prerequisites for each
+   - clearly labeled prerequisites for each, with prerequisite proof sourced from the controller-promoted review ledger rather than from the historical snapshot under review
 
 5. `AUDIT-SYNTHESIS-PLAN.md`
    - how the results from all review sessions should later be merged

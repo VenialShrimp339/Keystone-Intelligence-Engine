@@ -19,6 +19,10 @@ This file is retained to explain what Wave 3 covered and what was required to cl
 
 Do **not** use this file as permission to continue Wave 3 coding.
 
+Retrospective contract reconcile note:
+
+Use `audit/remediation/runs/wave-3/candidate-4819527-setup-contract-addendum.md` for the post-clearance reconciliation of this historical setup contract to the actual cleared `4819527` deliverable. That addendum records the omitted write-surface files and the E2/probe interpretation without rewriting the historical sections below.
+
 ## Cleared State
 
 - Seam-freeze checkpoint: `65074ca`

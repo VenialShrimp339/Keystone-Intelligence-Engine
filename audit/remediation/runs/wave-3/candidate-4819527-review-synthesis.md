@@ -11,10 +11,21 @@
 - [candidate-4819527-second-opinion.md](candidate-4819527-second-opinion.md)
 - [candidate-4819527-implementation.md](candidate-4819527-implementation.md)
 - [candidate-4819527-file-manifest.md](candidate-4819527-file-manifest.md)
+- [candidate-4819527-setup-contract-addendum.md](candidate-4819527-setup-contract-addendum.md)
 
 ## Consensus
 
-The adversarial review and second opinion both clear `4819527` for Wave 3. They agree that the candidate stayed within the approved Wave 3 boundary and that the new completeness surfaces are now real on the committed runtime path.
+The adversarial review and second opinion both clear `4819527` for Wave 3. With `candidate-4819527-setup-contract-addendum.md` now carrying the retrospective setup-contract reconcile, the candidate stayed within the Wave 3 boundary as retrospectively reconciled by that addendum, and the new completeness surfaces are real on the committed runtime path.
+
+## Boundary Reconcile Note
+
+The authoritative boundary reading for `4819527` now includes the retrospective setup-contract reconcile in [candidate-4819527-setup-contract-addendum.md](candidate-4819527-setup-contract-addendum.md).
+
+That reconcile:
+
+- records the omitted write-surface files as part of the actual cleared deliverable without recasting them as original contemporaneous authorization
+- narrows the original E2 wording to verification-only carry-forward for the unchanged baseline surfaces
+- distinguishes named runtime-probe evidence from proof-table / focused-matrix evidence for the Wave 3 setup invariants
 
 ## Closed Wave 3 Deliverables
 
@@ -62,7 +73,7 @@ The adversarial review and second opinion both clear `4819527` for Wave 3. They 
 
 ## Controller Disposition
 
-`4819527` clears Wave 3.
+`4819527` clears Wave 3 as retrospectively reconciled by `candidate-4819527-setup-contract-addendum.md`.
 
 The controller should:
 

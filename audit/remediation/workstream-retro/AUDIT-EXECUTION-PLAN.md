@@ -20,6 +20,7 @@ Default launch mode is strict.
 - Last cleared-state docs checkpoint: `91f97c2`
 - Current planning-package docs commit at reconciliation start: `c5dbd05`
 - Controller-promoted retrospective lineage manifest: `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
+- Controller-promoted retrospective review ledger: `audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml`
 - Current planning-package lineage after the pre-planning anchor:
   `2e6d780 -> c5dbd05`
 - Last cleared code commit: `65a612d`
@@ -39,8 +40,10 @@ Historical interpretation note:
 1. Review only. No implementation, no Wave 5 work, no controller-state mutation as part of the retrospective audits.
 2. Review only committed snapshots. Do not trust dirty `HEAD` or the controller/docs branch as code truth.
 3. Treat outputs under `audit/remediation/workstream-retro/` as planning or retrospective sidecars unless a later controller reconcile promotes them.
-4. Every review session must use GPT-5.4 with xhigh fast for any spawned subagent and record any deviation.
-5. Every review session must return a top-line verdict: `BLOCKED`, `CLEARED`, or `CONTINGENT`.
+4. Use the controller-promoted retrospective review ledger to determine the current authoritative status of prior review slices for prerequisite checks.
+5. Do not require the reviewed historical snapshot to contain later review sidecars when checking prerequisites.
+6. Every review session must use GPT-5.4 with xhigh fast for any spawned subagent and record any deviation.
+7. Every review session must return a top-line verdict: `BLOCKED`, `CLEARED`, or `CONTINGENT`.
 
 ## Verdict Semantics
 
@@ -50,7 +53,7 @@ Use only when:
 
 - the slice's inputs were authoritative and pinned
 - all slice-specific checks passed
-- all required upstream prerequisites were already `CLEARED`
+- all required upstream prerequisites were already `CLEARED` in the current authoritative review-status layer
 
 ### `BLOCKED`
 
@@ -82,6 +85,8 @@ Eventual retrospective review sessions should write reports under:
 
 These review reports are not controller authority artifacts by default.
 
+They become current prerequisite authority only when a later controller reconcile promotes them into the retrospective review ledger or a later controller-approved successor layer.
+
 ## Batch Structure
 
 ### Batch 1: Trust Gate
@@ -102,7 +107,7 @@ Rationale:
 
 ### Batch 2: Boundary Foundations
 
-Run in parallel, but only after Batch 1 is fully `CLEARED`:
+Run in parallel, but only after `CP-1`, `CP-2`, and `RP-1` are currently `CLEARED` in the controller-promoted retrospective review ledger:
 
 1. `W2B-1` Wave 2B lineage and closure audit
 2. `W3A-1` Wave 3A seam-freeze and Wave 3 setup contract audit
@@ -123,7 +128,7 @@ Notes:
 
 ### Batch 3: Wave 3 Runtime
 
-Run only after `W2B-1` and `W3A-1` are `CLEARED`:
+Run only after `W2B-1` and `W3A-1` are currently `CLEARED`:
 
 1. `W3-1` Wave 3 runtime audit
 
@@ -133,7 +138,7 @@ Stop rule:
 
 ### Batch 4: Wave 3B Control Path
 
-Run only after `W3-1` is `CLEARED`:
+Run only after `W3-1` is currently `CLEARED`:
 
 1. `W3B-1` Wave 3B control-path audit
 
@@ -149,7 +154,7 @@ Notes:
 
 ### Batch 5: Wave 4 Polish
 
-Run only after `W3B-1` is `CLEARED`:
+Run only after `W3B-1` is currently `CLEARED`:
 
 1. `W4-1` Wave 4 polish/runtime audit
 
@@ -166,8 +171,8 @@ Default order:
 
 Prerequisites:
 
-- `W4-1` must be `CLEARED`
-- `W4D-1` must be `CLEARED`
+- `W4-1` must be currently `CLEARED`
+- `W4D-1` must be currently `CLEARED`
 
 Allowed contingent overlap:
 
@@ -190,7 +195,7 @@ Notes:
 
 ### Batch 7: Cross-Wave Synthesis Guard
 
-Run only after every prior slice is `CLEARED`:
+Run only after every prior slice is currently `CLEARED`:
 
 1. `X-1` Cross-wave regression and cascading invalidation audit
 
@@ -203,15 +208,15 @@ This is the final program-level review.
 | `CP-1` | 1 | none | `audit/remediation/workstream-retro/reviews/CP-1-control-plane-authority-audit.md` |
 | `CP-2` | 1 | none | `audit/remediation/workstream-retro/reviews/CP-2-controller-lineage-join-audit.md` |
 | `RP-1` | 1 | none | `audit/remediation/workstream-retro/reviews/RP-1-review-packet-integrity-audit.md` |
-| `W2B-1` | 2 | Batch 1 cleared | `audit/remediation/workstream-retro/reviews/W2B-1-wave-2b-lineage-and-closure-audit.md` |
-| `W3A-1` | 2 | Batch 1 cleared | `audit/remediation/workstream-retro/reviews/W3A-1-wave-3a-seam-and-setup-audit.md` |
-| `W4D-1` | 2 | Batch 1 cleared | `audit/remediation/workstream-retro/reviews/W4D-1-wave-4-memo-boundary-audit.md` |
-| `W3-1` | 3 | `W2B-1`, `W3A-1` cleared | `audit/remediation/workstream-retro/reviews/W3-1-wave-3-runtime-audit.md` |
-| `W3B-1` | 4 | `W3-1` cleared | `audit/remediation/workstream-retro/reviews/W3B-1-wave-3b-control-path-audit.md` |
-| `W4-1` | 5 | `W3B-1` cleared | `audit/remediation/workstream-retro/reviews/W4-1-wave-4-polish-audit.md` |
-| `W4B-1` | 6 | `W4-1`, `W4D-1` cleared | `audit/remediation/workstream-retro/reviews/W4B-1-wave-4b-conformity-audit.md` |
-| `W4B-2` | 6 | `W4-1`, `W4D-1` cleared; `W4B-1` cleared for unconditional `CLEARED` | `audit/remediation/workstream-retro/reviews/W4B-2-wave-4b-runtime-audit.md` |
-| `X-1` | 7 | all prior slices cleared | `audit/remediation/workstream-retro/reviews/X-1-cross-wave-regression-audit.md` |
+| `W2B-1` | 2 | Batch 1 cleared in review ledger | `audit/remediation/workstream-retro/reviews/W2B-1-wave-2b-lineage-and-closure-audit.md` |
+| `W3A-1` | 2 | Batch 1 cleared in review ledger | `audit/remediation/workstream-retro/reviews/W3A-1-wave-3a-seam-and-setup-audit.md` |
+| `W4D-1` | 2 | Batch 1 cleared in review ledger | `audit/remediation/workstream-retro/reviews/W4D-1-wave-4-memo-boundary-audit.md` |
+| `W3-1` | 3 | `W2B-1`, `W3A-1` currently cleared | `audit/remediation/workstream-retro/reviews/W3-1-wave-3-runtime-audit.md` |
+| `W3B-1` | 4 | `W3-1` currently cleared | `audit/remediation/workstream-retro/reviews/W3B-1-wave-3b-control-path-audit.md` |
+| `W4-1` | 5 | `W3B-1` currently cleared | `audit/remediation/workstream-retro/reviews/W4-1-wave-4-polish-audit.md` |
+| `W4B-1` | 6 | `W4-1`, `W4D-1` currently cleared | `audit/remediation/workstream-retro/reviews/W4B-1-wave-4b-conformity-audit.md` |
+| `W4B-2` | 6 | `W4-1`, `W4D-1` currently cleared; `W4B-1` currently cleared for unconditional `CLEARED` | `audit/remediation/workstream-retro/reviews/W4B-2-wave-4b-runtime-audit.md` |
+| `X-1` | 7 | all prior slices currently cleared | `audit/remediation/workstream-retro/reviews/X-1-cross-wave-regression-audit.md` |
 
 ## Required Launch Discipline
 
@@ -219,15 +224,17 @@ Every eventual review session must:
 
 1. read `graphify-out/GRAPH_REPORT.md` first if it exists in the reviewed commit snapshot; if absent, record the absence and continue
 2. read `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml` before deriving any historical docs/code join from raw checkpoint text
-3. pin the exact baseline, parent, and target commits in the report header
-4. state whether code truth came from a clean worktree or detached review checkout
-5. state that the dirty main workspace was not trusted as code truth
-6. list the exact authority docs read
-7. distinguish:
+3. read `audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml` before asserting any prior review slice is currently `CLEARED`
+4. do not require the reviewed historical snapshot to contain later review sidecars when checking prerequisites
+5. pin the exact baseline, parent, and target commits in the report header
+6. state whether code truth came from a clean worktree or detached review checkout
+7. state that the dirty main workspace was not trusted as code truth
+8. list the exact authority docs read
+9. distinguish:
    - packet integrity
    - scope or boundary conformity
    - runtime correctness
-8. end with an explicit top-line verdict plus residual risks
+10. end with an explicit top-line verdict plus residual risks
 
 `graphify-out/GRAPH_REPORT.md` is advisory context only, not a required authority artifact. Its absence alone must not block `RP-1`.
 

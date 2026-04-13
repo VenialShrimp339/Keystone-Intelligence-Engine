@@ -1,0 +1,61 @@
+version: 1
+status: controller_promoted
+ledger_role: authoritative_current_review_status_layer
+scope:
+  applies_to: retrospective_remediation_audit_program
+  planning_anchor_commit: 2e6d7807dbe7a9eace9649a39fc455e739ac4da2
+authority_policy:
+  prerequisite_use: "Use this ledger to determine whether prior review slices are currently CLEARED for launch and prerequisite purposes."
+  historical_scope_limit: "Entries here are current controller-promoted review authority only. They do not imply the reviewed historical snapshot under review contained these sidecars, and they do not rewrite historical packet contents or checkpoint truth."
+  non_advancement_rule: "This ledger records current review authority but does not by itself clear rerun-required slices or rewrite earlier review reports."
+promotion:
+  promoted_by_controller_epoch: 4
+  promoted_from_docs_reconcile_commit: c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468
+entries:
+  CP-1:
+    current_status: CLEARED
+    most_recent_report_verdict: CLEARED
+    reviewed_snapshot:
+      docs_commit: 04fbc6c9bb1de88b5649beb3c0b4fd4c014cf41f
+      docs_parent_commit: ad002976e53d8071e8ef1889af68ef650408750d
+    report_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/CP-1-control-plane-authority-audit.md
+    evidence_basis:
+      kind: control_plane_authority
+      summary: "Live authority stack pinned and internally coherent for the Wave 4B hard stop."
+      authority_inputs:
+        - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
+        - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/ACTIVE-HANDOFF.md
+        - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
+  CP-2:
+    current_status: CLEARED
+    most_recent_report_verdict: CLEARED
+    reviewed_snapshot:
+      docs_commit: 04fbc6c9bb1de88b5649beb3c0b4fd4c014cf41f
+      docs_parent_commit: ad002976e53d8071e8ef1889af68ef650408750d
+    report_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/CP-2-controller-lineage-join-audit.md
+    evidence_basis:
+      kind: retrospective_lineage_join
+      summary: "Manifest-backed docs/code joins verified against git history plus packet and boundary-artifact presence."
+      authority_inputs:
+        - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
+  RP-1:
+    current_status: CLEARED
+    most_recent_report_verdict: CLEARED
+    reviewed_snapshot:
+      docs_commit: 04fbc6c9bb1de88b5649beb3c0b4fd4c014cf41f
+    report_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/RP-1-review-packet-integrity-audit.md
+    evidence_basis:
+      kind: packet_integrity
+      summary: "Run-folder packet families are present, git-aligned, and cross-link complete in the reviewed snapshot."
+      authority_inputs:
+        - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
+pending_reruns:
+  W2B-1:
+    current_status: RERUN_REQUIRED
+    reason: "Re-run this slice against the current authoritative review ledger instead of requiring Batch 1 sidecars inside the historical snapshot under review."
+  W3A-1:
+    current_status: RERUN_REQUIRED
+    reason: "Re-run this slice against the reconciled Wave 3 setup authority that now includes candidate-4819527-setup-contract-addendum.md."
+  W4D-1:
+    current_status: RERUN_REQUIRED
+    reason: "Re-run this slice against the current authoritative review ledger instead of requiring Batch 1 sidecars inside the historical snapshot under review."

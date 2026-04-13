@@ -6,17 +6,26 @@
 
 ## Shared Launch Rule
 
-Do not launch any prompt in this file unless all Batch 1 slices are already `CLEARED`.
+Do not launch any prompt in this file unless the authoritative retrospective review ledger records `CP-1`, `CP-2`, and `RP-1` as `CLEARED`.
 
 Pinned context for all prompts:
 
 - pre-planning docs anchor commit: `2e6d780`
 - last cleared-state docs checkpoint: `91f97c2`
 - last cleared code commit: `65a612d`
+- authoritative prerequisite layer: `audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml`
 - code lineage:
   `4ff7e90 -> 2cdbfec -> 4819527 -> 5cc9585 -> 6406e46 -> 65a612d`
 - controller/docs lineage:
   `35a8a29 -> 2c026cc -> f717507 -> a370963 -> 65074ca -> 198ab92 -> 6eafc82 -> cd8ad1f -> 5453fb9 -> 0df3596 -> b42d035 -> 456f29c -> 28ebe1a -> d16a40a -> d73c406 -> fabe847 -> 91f97c2 -> 2e6d780`
+
+## Shared Prerequisite-Proof Rule
+
+Every prompt in this file inherits this rule:
+
+1. Use `audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml` to determine the current authoritative status of prior review slices.
+2. Do not require the historical snapshot under review to contain later review sidecars when checking prerequisites.
+3. Treat the reviewed snapshot as the local evidence surface for the slice being audited, not as the source of current prerequisite authority.
 
 ## W2B-1 Prompt
 
