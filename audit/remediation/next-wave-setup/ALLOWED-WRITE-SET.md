@@ -20,20 +20,58 @@ Any path not listed here is denied.
 - `src/keystone/gateway/simple_client.py`
 - `src/keystone/gateway/tool_registry.py`
 - `src/keystone/models/research.py`
-- `src/keystone/tool_names.py`
 
-Allowed edits inside those files are additive-only and limited to:
+Allowed edits inside those files are limited to:
 
+- raw fetch transport
 - fetch-tool registration and dispatch
 - fetch audit fields
 - fetch artifact identity metadata
+- fetch coverage metadata
 - explicit discovery-only treatment for Exa and Brave on the canonical path
+- additive isolated retrieval DTOs only if they do not alter existing shared model semantics
+
+## Frozen Cross-Cutting Surfaces
+
+The two cross-cutting files in the allowed set are not open refactor surfaces.
+
+### `src/keystone/gateway/mcp_gateway.py`
+
+This file may be touched only for fetch-local routing or fetch-audit extensions.
+
+It may not change:
+
+- authorization logic or assigned-tool enforcement
+- rate-limiter invocation, provider naming, or token-consumption behavior
+- circuit-breaker acquisition, state use, or recovery behavior
+- retry counts, backoff settings, retry sequencing, or exception policy
+- dead-letter append/logging behavior
+- citation extraction sequencing
+- HITL-adjacent control flow
+
+### `src/keystone/models/research.py`
+
+This file may be touched only if an isolated additive retrieval block is unavoidable for fetch identity, fetch coverage, or fetch audit metadata.
+
+It may not change existing semantics, fields, validators, defaults, or behavior for:
+
+- `ResearchSpec`
+- `EngagementSpec`
+- `PipelineProfile`
+- `StructuredFinding`
+- `FindingClaim`
+
+If an implementation task cannot stay inside an isolated additive block, it is broader runtime scope creep and must stop.
+
+## Explicitly Blocked Indirect Scope Creep
 
 The allowed files above do not authorize:
 
 - auth changes
 - rate-limiting changes
 - circuit-breaker changes
+- retry-policy changes
+- dead-letter behavior changes
 - HITL behavior changes
 - parser work
 - evidence normalization
@@ -43,8 +81,14 @@ The allowed files above do not authorize:
 - synthesis behavior changes
 - schema migration work
 - new dependency introduction outside the exact fetch seam
+- tool-assignment changes through any allowed file
+- shared research-model behavior changes through any allowed file
 
-### Tests
+Tool-assignment changes through allowed files count as blocked L1 integration scope creep.
+
+Shared research-model behavior changes through allowed files count as broader runtime scope creep.
+
+## Tests
 
 - `tests/unit/gateway/test_auth.py`
 - `tests/unit/gateway/test_gateway.py`
@@ -55,13 +99,13 @@ The allowed files above do not authorize:
 - `tests/unit/test_research_models.py`
 - `tests/unit/test_tool_registry.py`
 
-### Review packet root
+## Review Packet Root
 
 - `audit/remediation/runs/retrieval-mvp-fetch/`
 
 Only the candidate packet family for this lane may be written there.
 
-### Generated collateral
+## Generated Collateral
 
 - `graphify-out/GRAPH_REPORT.md`
 - `graphify-out/graph.json`
@@ -74,8 +118,11 @@ The following are explicitly denied:
 
 - every path outside the exact allowed paths above
 - any new file outside `audit/remediation/runs/retrieval-mvp-fetch/`
-- any edit that changes auth, rate limiting, circuit breaking, or HITL behavior
+- any edit that changes auth, rate limiting, circuit breaking, retry policy, dead-letter behavior, or HITL behavior
 - any edit that changes existing Exa or Brave semantics beyond keeping them discovery-only
+- any edit that changes tool assignment, `DEFAULT_TOOLS`, `ALL_TOOLS`, or existing tool semantic groupings
+- any edit that changes shared research-model semantics
+- `src/keystone/tool_names.py`
 - `src/keystone/research/research_agent.py`
 - `src/keystone/pipeline/orchestrator.py`
 - `src/keystone/evaluator/**`
@@ -105,5 +152,7 @@ The candidate file manifest must classify every touched path as one of:
 - legitimate generated collateral
 - blocked scope creep
 - quarantined unrelated change
+
+The file manifest must also state whether any allowed-file diff changed shared runtime behavior outside raw fetch transport, fetch identity, fetch coverage, or fetch audit.
 
 Lane clearance requires an explicit statement that no unresolved scope creep remains.

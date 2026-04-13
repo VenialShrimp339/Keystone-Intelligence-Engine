@@ -4,12 +4,12 @@ Date: 2026-04-13
 
 ## Decision
 
-The next forward code lane should be Retrieval MVP Lane D only, but only after the missing docs/setup checkpoint is promoted.
+The next forward code lane should be Retrieval MVP Lane D only, but only after the corrected setup package is later promoted through a control-plane reconcile.
 
 That means:
 
-- the immediate next work item is the setup artifact in this package
-- the first forward runtime lane after promotion is the retrieval fetch lane
+- the immediate next work item in this session is the docs-only setup-package correction pass
+- the first forward runtime lane after a later promotion session is the retrieval fetch lane
 - no broader runtime lane should open first
 
 ## Why This Is The Right First Lane
@@ -21,15 +21,13 @@ That means:
    - governed full-document fetch does not
 4. Lane D is the narrowest runtime slice that can improve retrieval truth without reopening the parser, L1, evaluator, or UI surfaces.
 5. Graphify reinforces that shape:
-   - `MCP Gateway` is a core god node
-   - gateway audit and `SimpleMCPClient` form a bounded seam
+   - `MCP Gateway` is a core god node, so its write surface must be fenced tightly
+   - shared research models are core abstractions, so any semantic changes there are too broad for Lane D
    - nothing in the current graph suggests parser, evaluator, or orchestration work should be bundled into the first fetch unlock
 
-## Why Another Docs Checkpoint Does Not Need To Come Before Lane D
+## Why Another Design Memo Does Not Need To Come Before Lane D
 
-The only remaining docs/setup checkpoint is the one created in this package.
-
-The retrieval packet already contains the required contract, benchmark, scoring, provenance, and governance documents named by the retrieval unlock memo and checklist:
+The retrieval packet already contains the contract, benchmark, scoring, provenance, and governance docs named by the retrieval unlock memo and checklist:
 
 - `CURRENT-RETRIEVAL-VS-TARGET.md`
 - `MVP-RETRIEVAL-REQUIREMENTS.md`
@@ -48,7 +46,12 @@ The retrieval packet already contains the required contract, benchmark, scoring,
 - `ACCEPTANCE-MATH-ADDENDUM.md`
 - `ACCEPTANCE-RUN-CHECKLIST.md`
 
-What was missing was not another design memo. What was missing was the controller-grade packaging that freezes one exact forward lane.
+What was missing was not another design memo. What was missing was controller-grade packaging that:
+
+- freezes one exact forward lane
+- fences indirect scope creep through cross-cutting files
+- turns narrative gates into explicit gate artifacts with verdicts
+- makes backend-reality proof load-bearing instead of aspirational
 
 ## Why Not Wave 5, Parser, L1, Or UI
 
@@ -86,27 +89,19 @@ That choice is deliberate:
 - it avoids prematurely implying a true Wave 5 authority state
 - it makes the permitted lane explicit in the title itself
 
-## Authority Nuance
+## Authority And Staleness Fence
 
-This package makes the hard stop satisfiable in substance because the missing artifact now exists.
+This package does not lift the hard stop by narrative intent. It only becomes promotable when its required gate artifacts exist and remain `CLEARED`, and a later controller reconcile explicitly adopts it into the live control plane.
 
-This package does not by itself make the lane formally open, because the core control-plane authority docs remain unchanged by instruction.
+Subordinate retrieval docs may still contain historical or stale status prose. Those lines are fenced here:
 
-The required follow-on action is a narrow controller reconcile that promotes this package into the live control plane without broadening scope.
-
-## Coherence Note
-
-`audit/remediation/retrieval-mvp/RUNTIME-LANE-UNLOCK-MEMO.md` still contains an older sentence referring to retrospective `W4-1` as `CONTINGENT`.
-
-That sentence is stale relative to the current authoritative control plane and retrospective review ledger, but it does not change the lane decision because:
-
-- the memo is explicitly subordinate to the control plane
-- its forward recommendation still points to the same narrow fetch lane
-- the current hard stop is about missing setup authority, not unresolved retrospective review
+- they are non-authoritative for forward-lane promotion
+- they may not be used as proof that the hard stop is lifted
+- only `CONTROL-PLANE-STATE.yaml`, `ACTIVE-HANDOFF.md`, and the required next-wave gate artifacts in this package may be used as live authority for promotion decisions
 
 ## Final Judgment
 
-- Immediate next checkpoint: this docs-only setup artifact
-- First forward lane after promotion: Retrieval MVP Lane D fetch
-- Additional docs/setup checkpoint before Lane D: no, beyond promotion of this package itself
-- Broader forward runtime lane before Lane D: no
+- Immediate next checkpoint: this corrected docs-only setup package
+- First forward lane after later promotion: Retrieval MVP Lane D fetch
+- Additional broader runtime lane before Lane D: no
+- Parser Lane E, L1 integration Lane F, UI work, benchmark acceptance, Wave 5, and calibration remain blocked
