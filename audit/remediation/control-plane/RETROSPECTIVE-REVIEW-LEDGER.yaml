@@ -9,7 +9,7 @@ authority_policy:
   historical_scope_limit: "Entries here are current controller-promoted review authority only. They do not imply the reviewed historical snapshot under review contained these sidecars, and they do not rewrite historical packet contents or checkpoint truth."
   non_advancement_rule: "This ledger records current review authority but does not by itself clear rerun-required slices or rewrite earlier review reports."
 promotion:
-  promoted_by_controller_epoch: 4
+  promoted_by_controller_epoch: 5
   promoted_from_docs_reconcile_commit: c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468
 entries:
   CP-1:
@@ -111,3 +111,15 @@ entries:
         - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W3B-1-wave-3b-control-path-audit.md
         - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/w3b-control-fix/W3B-FIX-CODE-REVIEW.md
         - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/w3b-control-fix/W3B-FIX-BEHAVIOR-REVIEW.md
+  W4-1:
+    current_status: CONTINGENT
+    most_recent_report_verdict: CONTINGENT
+    reviewed_snapshot:
+      code_commit: 6406e4639a26b2cb732c78690ae61deb6abfab6b
+      code_parent_commit: 5cc95858213e7ed817339fa910aaeaa85730c5a7
+    report_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W4-1-wave-4-polish-audit.md
+    evidence_basis:
+      kind: retrospective_wave4_polish_runtime_audit
+      summary: "The rerun keeps W4-1 current CONTINGENT because the committed Wave 4 polish snapshot still misses the E-4 manifest-order reference invariant, so later retrospective slices may not launch from the current review ledger."
+      authority_inputs:
+        - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W4-1-wave-4-polish-audit.md

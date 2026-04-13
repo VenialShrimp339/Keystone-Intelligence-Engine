@@ -16,10 +16,10 @@
 - `RETROSPECTIVE-REVIEW-LEDGER.yaml` is now controller-promoted as the authoritative current review-status layer for retrospective audit prerequisites.
 - Batch 1 is durably `CLEARED` there for `CP-1`, `CP-2`, and `RP-1`.
 - The Wave clearances above remain historical original remediation clearances for the live implementation lane; they are not retrospective review authority by themselves.
-- `W2B-1`, `W3A-1`, `W3-1`, and `W4D-1` are now `CLEARED` in the authoritative retrospective review ledger.
-- `W3B-1` is now current `CLEARED` in that ledger.
-- `W4-1` may now launch from the current retrospective review ledger.
-- `W4B-1`, `W4B-2`, and `X-1` remain sequence-gated behind `W4-1` and the existing Batch 6 / Batch 7 prerequisites.
+- `W2B-1`, `W3A-1`, `W3-1`, `W3B-1`, and `W4D-1` are now `CLEARED` in the authoritative retrospective review ledger.
+- `W4-1` is now current `CONTINGENT` in that ledger and is the current retrospective stop sign.
+- No later retrospective slice may now launch from the current review ledger.
+- `W4B-1`, `W4B-2`, and `X-1` are blocked on retrospective audit authority until `W4-1` is later current `CLEARED`.
 - The main workspace remains controller/docs only.
 - `WAVE-4B-SETUP.md` remains the frozen boundary for what Wave 4B was allowed to change.
 - All required Wave 4B review packets now exist in the main workspace.
@@ -69,21 +69,20 @@ Interpret `docs_reconcile_commit` as the exact docs snapshot this controller rec
 ## Open Blockers
 
 - Hard stop: required authority artifact missing for any post-Wave-4B lane. Do not start Wave 5, calibration, or any new capability work until a new committed setup checkpoint exists.
+- Retrospective authority stop sign: `W4-1` is current `CONTINGENT` in the authoritative review ledger, so `W4B-1`, `W4B-2`, and `X-1` may not launch from the current review ledger.
 
 ## Latest Review Packets
 
-- [W3B-FIX-CODE-REVIEW.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/w3b-control-fix/W3B-FIX-CODE-REVIEW.md)
-- [W3B-FIX-BEHAVIOR-REVIEW.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/w3b-control-fix/W3B-FIX-BEHAVIOR-REVIEW.md)
-- [W3B-1-wave-3b-control-path-audit.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W3B-1-wave-3b-control-path-audit.md)
+- [W4-1-wave-4-polish-audit.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W4-1-wave-4-polish-audit.md)
 
 ## Retrospective Review Status
 
 - Current authoritative prerequisite layer: [RETROSPECTIVE-REVIEW-LEDGER.yaml](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml)
 - Batch 1 currently `CLEARED` there: `CP-1`, `CP-2`, `RP-1`
-- `W2B-1`, `W3A-1`, `W3-1`, and `W4D-1` are currently `CLEARED`.
-- `W3B-1` is currently `CLEARED`.
-- `W4-1` may now launch from the current retrospective review ledger.
-- `W4B-1`, `W4B-2`, and `X-1` remain gated behind `W4-1` and the existing Batch 6 / Batch 7 prerequisites.
+- `W2B-1`, `W3A-1`, `W3-1`, `W3B-1`, and `W4D-1` are currently `CLEARED`.
+- `W4-1` is currently `CONTINGENT` and is the current stop sign.
+- No later retrospective slice may now launch from the current review ledger.
+- `W4B-1`, `W4B-2`, and `X-1` are blocked on retrospective audit authority until `W4-1` is current `CLEARED`.
 - The ledger records current review authority only. It does not rewrite the historical original remediation clearances listed above or claim that the historical snapshot under review already contained later review sidecars.
 
 ## Exact Next Action
@@ -92,8 +91,8 @@ Interpret `docs_reconcile_commit` as the exact docs snapshot this controller rec
 2. Treat `65a612d` as the last cleared code commit.
 3. Keep the main workspace docs-only.
 4. Do **not** start Wave 5, calibration, or any deferred capability slice.
-5. `W4-1` may now launch from the current retrospective review ledger.
-6. Do **not** launch `W4B-1`, `W4B-2`, or `X-1` until `W4-1` is current `CLEARED`.
+5. Treat `W4-1` as the current retrospective stop sign with current `CONTINGENT` status.
+6. Do **not** launch `W4B-1`, `W4B-2`, or `X-1` until a later controller reconcile promotes `W4-1` to current `CLEARED`.
 7. Forward implementation and new-capability lanes remain hard-stopped until a controller-approved next-wave setup artifact is created and committed.
 
 ## Exact Recovery Command
@@ -104,9 +103,7 @@ sed -n '1,240p' audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
 sed -n '1,260p' audit/remediation/control-plane/ACTIVE-HANDOFF.md
 sed -n '1,400p' audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
 sed -n '1,240p' audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml
-sed -n '1,220p' audit/remediation/w3b-control-fix/W3B-FIX-CODE-REVIEW.md
-sed -n '1,220p' audit/remediation/w3b-control-fix/W3B-FIX-BEHAVIOR-REVIEW.md
-sed -n '1,220p' audit/remediation/workstream-retro/reviews/W3B-1-wave-3b-control-path-audit.md
+sed -n '1,220p' audit/remediation/workstream-retro/reviews/W4-1-wave-4-polish-audit.md
 ```
 
 ## Allowed Write Set
@@ -236,3 +233,8 @@ Wave 4B cleared only after artifacts named probes for:
   Repo-state verification completed before takeover: the main workspace was still on `codex/remediation-program`, `active_wave`/`active_state` still reconciled to `wave-4b` / `cleared`, `last_cleared_code_commit` was still `65a612d`, the retro planning-package lineage already extended through `c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468` (`c5dbd05`), and the remaining work was docs-only reconciliation rather than runtime implementation.
 - `2026-04-12T22:46:41-04:00` — Wave 3B fix review-and-promotion reconcile recorded `W3B-1` as current `CLEARED`.
   Result: authoritative fix snapshot `8dd97be` cleared both independent fix reviews and the rerun `W3B-1` sidecar, `RETROSPECTIVE-REVIEW-LEDGER.yaml` now records `W3B-1` as current `CLEARED`, and `W4-1` may now launch from the current retrospective review ledger while the forward Wave 5 / new-capability hard stop remains in place.
+- `2026-04-13T11:06:14-04:00` — controller lease takeover by `codex-gpt-5.4-xhigh-main-controller` for retrospective `W4-1` reconcile.
+  Reason: the previous lease heartbeat (`2026-04-12T22:46:41-04:00`) had aged out long before the next authority mutation, so `controller_epoch` was incremented before promoting the next retrospective review status.
+  Repo-state verification completed before takeover: the main workspace was still on `codex/remediation-program`, `active_wave`/`active_state` still reconciled to `wave-4b` / `cleared`, `last_cleared_code_commit` was still `65a612d`, the `W4-1` review sidecar was present under `audit/remediation/workstream-retro/reviews/`, and the remaining work stayed inside the controller-authorized docs-only write set.
+- `2026-04-13T11:06:14-04:00` — Wave 4 review-and-promotion reconcile recorded `W4-1` as current `CONTINGENT`.
+  Result: historical Wave 4 runtime clearance at `6406e46` remains the original remediation-lane clearance, but the authoritative retrospective review ledger now records `W4-1` as current `CONTINGENT`, making `W4-1` the current retrospective stop sign and preventing `W4B-1`, `W4B-2`, and `X-1` from launching from the current review ledger.
