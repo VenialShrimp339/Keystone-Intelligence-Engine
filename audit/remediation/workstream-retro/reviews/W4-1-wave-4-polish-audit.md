@@ -1,26 +1,108 @@
 # W4-1 Wave 4 Polish Audit
 
 - Slice: `W4-1`
-- Baseline / parent: `5cc9585`
-- Target: `6406e46`
-- Review mode: committed snapshot only, audited from detached worktree `/tmp/keystone-w4-1-jzvvQl`
-- Subagents: none
+- Top-line verdict: `CLEARED`
+- Authority docs source for current review context: current controller authority stack in the main workspace rooted at `CONTROL-PLANE-STATE.yaml`, `ACTIVE-HANDOFF.md`, `RETROSPECTIVE-LINEAGE-MANIFEST.yaml`, and `RETROSPECTIVE-REVIEW-LEDGER.yaml`
+- Code baseline: `65a612dc1400abbedcfbdda1f173cd72a3a90c06`
+- Code parent: `65a612dc1400abbedcfbdda1f173cd72a3a90c06`
+- Code target: `104658506075ccdc0e5c4eeeca8f8982ac6c3566`
+- Code truth source: detached review checkout at `/tmp/keystone-w4-e4-rerun-j0GXxp`
+- Dirty main workspace status: present and explicitly not trusted as code truth
+- Pre-rerun fix-review gate:
+  - `audit/remediation/w4-e4-fix/W4-E4-FIX-CODE-REVIEW.md`: `ACCEPTABLE`
+  - `audit/remediation/w4-e4-fix/W4-E4-FIX-BEHAVIOR-REVIEW.md`: `ACCEPTABLE`
+- Graphify status in reviewed code snapshot `1046585`: `graphify-out/GRAPH_REPORT.md` present; `graphify-out/wiki/index.md` absent
 
 ## Authority Note
 
-The prompt-required controller docs under `audit/remediation/control-plane/` plus the Wave 4 run-packet sidecars are not present inside commit `6406e46`. I used the current-workspace copies of those docs as audit instructions only, but all code and diff evidence below comes from the detached `6406e46` snapshot and the committed diff `5cc9585..6406e46`.
+- This rerun preserves the original `W4-1` slice contract (`E-2`, `E-4`, `E-5`, and scope discipline) but applies it to authoritative repair snapshot `1046585`, a direct child of cleared base `65a612d`, per the `W4 E-4` bug-analysis, minimum-fix, regression-test, and downstream-rerun docs.
+- Do not interpret this sidecar as rewriting the historical Wave 4 remediation-lane clearance at `6406e46`. It is current retrospective review authority for the repaired `W4-1` slice only.
+
+## Prerequisite Proof
+
+Authoritative prerequisite layer:
+
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml`
+
+Current authoritative statuses read from that layer before launch:
+
+- `CP-1`: `CLEARED`
+- `CP-2`: `CLEARED`
+- `RP-1`: `CLEARED`
+- `W2B-1`: `CLEARED`
+- `W3A-1`: `CLEARED`
+- `W3-1`: `CLEARED`
+- `W3B-1`: `CLEARED`
+- `W4D-1`: `CLEARED`
+
+Pre-rerun fix gate:
+
+- code review: `ACCEPTABLE`
+- behavior review: `ACCEPTABLE`
+
+Result:
+
+- `W4-1` was launchable on the authoritative prerequisite layer, and the repaired `W4 E-4` snapshot cleared the required pre-rerun review gate before this slice re-ran.
+
+## Exact Authority Docs Read
+
+From the current controller authority stack in the main workspace:
+
+- `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
+- `audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml`
+- `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+- `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- `audit/remediation/w4-e4-fix/W4-E4-BUG-ANALYSIS.md`
+- `audit/remediation/w4-e4-fix/W4-E4-MINIMUM-FIX-SPEC.md`
+- `audit/remediation/w4-e4-fix/W4-E4-REGRESSION-TEST-SPEC.md`
+- `audit/remediation/w4-e4-fix/DOWNSTREAM-RERUN-SCOPE.md`
+- `audit/remediation/w4-e4-fix/W4-E4-FIX-CODE-REVIEW.md`
+- `audit/remediation/w4-e4-fix/W4-E4-FIX-BEHAVIOR-REVIEW.md`
+- `audit/remediation/workstream-retro/AUDIT-EXECUTION-PLAN.md`
+- `audit/remediation/workstream-retro/BATCH-2-PLUS-PROMPTS.md`
+- `audit/remediation/WAVE-4-SETUP.md`
+- `audit/remediation/WAVE-4-POLISH-SPECS.md`
+- `audit/remediation/runs/wave-4/candidate-6406e46-implementation.md`
+- `audit/remediation/runs/wave-4/candidate-6406e46-file-manifest.md`
+
+From the detached `1046585` reviewed code snapshot:
+
+- `graphify-out/GRAPH_REPORT.md`
+- focused diffs for `src/keystone/pipeline/markdown_renderer.py` and `tests/unit/pipeline/test_markdown_renderer.py`
+- spot checks for `src/keystone/models/evaluation.py` and `tests/unit/test_schemas.py`
+
+## Packet Integrity
+
+- The fix delta `65a612d..1046585` stays inside the approved minimum `W4 E-4` remediation surface:
+  - `src/keystone/pipeline/markdown_renderer.py`
+  - `tests/unit/pipeline/test_markdown_renderer.py`
+  - generated graphify collateral
+- No diff widened into `src/keystone/structuring/content_structuring.py`, structuring models, sample fixtures, schema tests beyond the inherited Wave 4 state, control-plane files, or later-slice-owned runtime surfaces.
+- The inherited `E-2` and `E-5` surfaces remain present in the reviewed target snapshot and were revalidated by the original named `W4-1` proof bundle plus targeted spot checks.
+- The detached review checkout was used as the sole code-truth surface. The dirty controller workspace remained docs-only and non-authoritative for code truth.
+
+Packet-integrity verdict:
+
+- no blocker
+
+Reason:
+
+- the rerun target is a narrow repair child of `65a612d`
+- the reopened delta stays inside the approved minimum fix seam
+- the broader Wave 4 polish invariants still pass on the authoritative repaired snapshot
 
 ## Verification
 
-- Re-ran the candidate proof suite against the detached snapshot:
+- Re-ran the original named `W4-1` proof suite against the detached snapshot:
   - `PYTHONPATH=src /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/.venv/bin/pytest -q tests/unit/test_schemas.py tests/unit/pipeline/test_markdown_renderer.py tests/e2e/test_mock_pipeline.py`
-  - Result: `32 passed in 1.28s`
-- Re-ran the E-2 runtime probe:
-  - `RUBRIC_EVAL_TYPES[RubricDimension.COMPLETENESS] == EvalType.EXPERT_CHECKABLE`
+  - Result: `33 passed in 25.03s`
+- Re-ran the `E-2` runtime probe:
+  - `PYTHONPATH=src /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/.venv/bin/python -c "from keystone.models.evaluation import RUBRIC_EVAL_TYPES, EvalType, RubricDimension; value = RUBRIC_EVAL_TYPES[RubricDimension.COMPLETENESS]; print(value); raise SystemExit(0 if value == EvalType.EXPERT_CHECKABLE else 1)"`
   - Result: `expert_checkable`
-- Added one detached-snapshot reproduction probe for E-4:
-  - Manifest order `CAN-001`, `CAN-002` plus item citations `["CAN-002", "CAN-001"]`
-  - Rendered output: `Sources: [2, 1]`
+- Re-ran the `E-4` repair probe:
+  - manifest order `CAN-001`, `CAN-002` plus item citations `["CAN-002", "CAN-001"]`
+  - Rendered output: `Sources: [1, 2]`
+- The pre-rerun fix-review gate also established that the direct parent snapshot `65a612d` still reproduced the broken `Sources: [2, 1]` case, so the rerun is evaluating a real repair rather than a non-repro bug.
 
 ## E-2
 
@@ -28,17 +110,24 @@ No formal finding.
 
 Evidence:
 
-- `src/keystone/models/evaluation.py:80-90` now maps `RubricDimension.COMPLETENESS` to `EvalType.EXPERT_CHECKABLE`.
+- `src/keystone/models/evaluation.py:80-90` still maps `RubricDimension.COMPLETENESS` to `EvalType.EXPERT_CHECKABLE`.
 - The detached runtime probe returned `expert_checkable`.
-- No extra evaluator-policy drift landed with the change; weights, thresholds, and other rubric-dimension eval types remain untouched in the committed diff.
+- `src/keystone/models/evaluation.py` is untouched in `65a612d..1046585`, so the `W4 E-4` repair did not drift completeness weights, thresholds, or any other evaluation-type mapping.
 
 ## E-4
 
-### Finding: inline numbered references are still ordered by claim citation order, not manifest order
+No formal finding.
 
-The frozen Wave 4 spec requires client references to be numbered from manifest order and to keep that manifest order stable rather than reordering per claim occurrence. `src/keystone/pipeline/markdown_renderer.py:207-222` numbers citations from the manifest, but it emits inline references by iterating the incoming `citation_ids` list in whatever order the claim/outline already has. Upstream, that input order is not normalized to manifest order: branch items can preserve raw claim citation order at `src/keystone/structuring/content_structuring.py:121-127`, and confidence-derived items are sorted lexicographically by citation id at `src/keystone/structuring/content_structuring.py:479-489`, not by manifest position.
+Evidence:
 
-That mismatch is observable in the committed snapshot: with manifest citations `[CAN-001, CAN-002]` and an outline item carrying `["CAN-002", "CAN-001"]`, the renderer outputs `Sources: [2, 1]`. The current regression coverage misses this because `tests/unit/pipeline/test_markdown_renderer.py:299-326` only asserts single-reference cases and never exercises a multi-citation item whose local order disagrees with manifest order. This means E-4 is only partially landed: raw ids are hidden and the quality block is gone, but the manifest-stable numbering contract is still violated.
+- `src/keystone/pipeline/markdown_renderer.py:207-221` now resolves incoming ids through the manifest-number map, drops unknown ids, dedupes after alias resolution, sorts the surviving numeric references ascending, and renders the final stable inline label from that sorted numeric list.
+- The direct rerun probe for manifest `[CAN-001, CAN-002]` plus item citations `["CAN-002", "CAN-001"]` now renders `Sources: [1, 2]`.
+- `tests/unit/pipeline/test_markdown_renderer.py:257-260` and `:334-343` make the exact reversed-order regression load-bearing by requiring `Sources: [1, 2]` and forbidding `Sources: [2, 1]`.
+- `tests/unit/pipeline/test_markdown_renderer.py:321-343` still proves the rest of the frozen Wave 4 renderer invariants:
+  - `## Quality Assessment` is absent
+  - raw `CAN-` / `CIT-` ids are absent from client-facing source labels
+  - numbered references still appear in client-facing markdown
+- The committed fix reviews independently accepted the repair on both code-shape and behavior grounds before this rerun launched.
 
 ## E-5
 
@@ -46,13 +135,9 @@ No formal finding.
 
 Evidence:
 
-- The three frozen sample `RESEARCH.md.json` fixtures no longer carry `alternative_hypothesis`, `prior_confidence`, or `max_rounds`.
-- The committed sample task files no longer contain the stale unregistered tool names called out by the Wave 4 spec.
-- `tests/unit/test_schemas.py:20-22` and `:65-91` now make both invariants load-bearing by failing on reintroduced legacy fields or unregistered tools.
-
-Residual note, not escalated to a formal finding:
-
-- Two regulatory tasks now use `fred_data` as the third tool (`samples/luminar_lidar/research-tasks.json:186-192` and `samples/specialty_chemicals_ma/research-tasks.json:78-84`). That keeps enum validity, but it is the main place where sample realism feels thinnest if this slice is reopened.
+- `tests/unit/test_schemas.py:20-22` and `:65-91` still make the Wave 4 sample-schema invariants load-bearing by rejecting legacy `RESEARCH.md` fields and unregistered tool names.
+- The detached named proof suite passed `tests/unit/test_schemas.py` as part of the rerun.
+- The `W4 E-4` repair delta does not touch sample fixtures, task fixtures, or schema enforcement files, so the repaired snapshot preserves the already-landed `E-5` closure rather than reopening it.
 
 ## Scope Discipline
 
@@ -60,19 +145,31 @@ No formal finding.
 
 Evidence:
 
-- The committed diff touches 13 files, and that set matches the candidate manifest exactly:
-  - `src/keystone/models/evaluation.py`
+- The committed fix diff touches only:
   - `src/keystone/pipeline/markdown_renderer.py`
-  - the three sample `RESEARCH.md.json` files
-  - the three sample `research-tasks.json` files
   - `tests/unit/pipeline/test_markdown_renderer.py`
-  - `tests/unit/test_schemas.py`
-  - `tests/e2e/test_mock_pipeline.py`
   - `graphify-out/GRAPH_REPORT.md`
   - `graphify-out/graph.json`
-- No denylisted prompt, rubric, template, routing, evaluator-policy, or Wave 4B files were touched in `5cc9585..6406e46`.
-- I found no evidence of prompt, rubric, template, or Wave 4B content leakage in the committed file surface.
+- That runtime/test surface is narrower than the original Wave 4 polish candidate surface and stays inside the approved minimum repair boundary for the carried-forward `E-4` defect.
+- No prompt, rubric, template, routing, evaluator-policy, sample-schema, or Wave 4B content file was touched in `65a612d..1046585`.
+- I found no evidence of later-slice content leakage or out-of-scope runtime expansion in the repaired diff.
 
-## Top-Line
+## Top-Line Verdict
 
-`CONTINGENT` — the snapshot stays inside the frozen Wave 4 polish lane and lands E-2 plus the mechanical parts of E-5, but E-4 still misses the manifest-order reference invariant required by the Wave 4 polish spec.
+`CLEARED`
+
+Why:
+
+- packet integrity passed
+- `E-2` remains correct on the reviewed target snapshot
+- the previously blocked `E-4` manifest-order invariant is now repaired on the authoritative runtime path
+- `E-5` remains intact and load-bearing in the rerun proof bundle
+- the repair delta stays inside the approved minimum fix surface
+
+## Later-Wave Trust Impact
+
+Because `W4-1` is now `CLEARED` on slice merits:
+
+- `W4B-1` may now launch once this rerun is promoted into the authoritative review ledger
+- `W4B-2` may launch only under the existing Batch 6 sequencing rules; unconditional `CLEARED` still depends on `W4B-1`
+- `X-1` remains gated behind `W4B-1` and `W4B-2`
