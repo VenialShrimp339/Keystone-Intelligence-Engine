@@ -2,8 +2,8 @@ version: 1
 controller_epoch: 6
 lease_owner: codex-gpt-5.4-xhigh-main-controller
 lease_acquired_at: "2026-04-13T11:50:01-04:00"
-lease_heartbeat_at: "2026-04-13T11:50:01-04:00"
-lease_expires_at: "2026-04-13T12:20:01-04:00"
+lease_heartbeat_at: "2026-04-13T12:04:35-04:00"
+lease_expires_at: "2026-04-13T12:34:35-04:00"
 lease_takeover_rule: "If lease_heartbeat_at is older than 30 minutes, or the new controller cannot confirm repo state from disk, it must increment controller_epoch, rewrite lease fields, and append the takeover to ACTIVE-HANDOFF.md before mutating state."
 lease_stolen_by: codex-gpt-5.4-xhigh-main-controller
 active_branch: codex/remediation-program
@@ -26,7 +26,7 @@ retrospective_review_ledger: /Users/jackriddle/Desktop/Keystone-Intelligence-Eng
 retrospective_review_ledger_policy: "For retrospective audit-program status, this controller-promoted ledger is the authoritative current review-status layer. Use it for prerequisite proof, keep it separate from the historical snapshot under review, and do not treat it as retroactive clearance of rerun-required slices."
 retrospective_review_launch:
   may_launch_now:
-    - W4B-1
+    - W4B-2
   current_stop_sign: null
   current_stop_sign_status: null
   no_later_slice_may_launch_from_current_ledger: false
@@ -39,8 +39,6 @@ retrospective_review_launch:
       - W4-1
       - W4D-1
     X-1:
-      - W4-1
-      - W4B-1
       - W4B-2
 retrospective_sidecar_roots:
   - audit/remediation/workstream-retro/
@@ -60,11 +58,9 @@ hard_stop_conditions:
   - "The controller cannot reconcile repo state to the control plane without risking unrelated user changes."
 blocked_on:
   - "Required authority artifact missing: no controller-approved next-wave setup checkpoint is committed after Wave 4B clearance."
-next_action: "HARD STOP remains for forward implementation and new-capability lanes after Wave 4B clearance at 65a612d, but retrospective review authority now records W4-1 as current CLEARED. Keep the main workspace docs-only, do not start Wave 5 or calibration, and treat W4B-1 as the next launchable retrospective slice."
+next_action: "HARD STOP remains for forward implementation and new-capability lanes after Wave 4B clearance at 65a612d, but retrospective review authority now records W4B-1 as current CLEARED. Keep the main workspace docs-only, do not start Wave 5 or calibration, treat W4B-2 as the next launchable retrospective slice, and keep X-1 gated until W4B-2 is current CLEARED."
 latest_review_packets:
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/w4-e4-fix/W4-E4-FIX-CODE-REVIEW.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/w4-e4-fix/W4-E4-FIX-BEHAVIOR-REVIEW.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W4-1-wave-4-polish-audit.md
+  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W4B-1-wave-4b-conformity-audit.md
 dirty_state_status: wave4b_cleared_hard_stop_pending_next_setup
 recovery_patch_path: null
 recovery_patch_sha256: null

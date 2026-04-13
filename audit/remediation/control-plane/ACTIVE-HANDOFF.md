@@ -16,10 +16,10 @@
 - `RETROSPECTIVE-REVIEW-LEDGER.yaml` is now controller-promoted as the authoritative current review-status layer for retrospective audit prerequisites.
 - Batch 1 is durably `CLEARED` there for `CP-1`, `CP-2`, and `RP-1`.
 - The Wave clearances above remain historical original remediation clearances for the live implementation lane; they are not retrospective review authority by themselves.
-- `W2B-1`, `W3A-1`, `W3-1`, `W3B-1`, `W4D-1`, and `W4-1` are now `CLEARED` in the authoritative retrospective review ledger.
-- `W4-1` is now current `CLEARED` in that ledger.
-- `W4B-1` may now launch from the current retrospective review ledger.
-- `W4B-2` and `X-1` remain sequence-gated behind `W4B-1` and the remaining Batch 6 / Batch 7 prerequisites.
+- `W2B-1`, `W3A-1`, `W3-1`, `W3B-1`, `W4D-1`, `W4-1`, and `W4B-1` are now `CLEARED` in the authoritative retrospective review ledger.
+- `W4B-1` is now current `CLEARED` in that ledger.
+- `W4B-2` may now launch from the current retrospective review ledger.
+- `X-1` remains gated behind `W4B-2` and the Batch 7 rule that every prior slice be current `CLEARED`.
 - The main workspace remains controller/docs only.
 - `WAVE-4B-SETUP.md` remains the frozen boundary for what Wave 4B was allowed to change.
 - All required Wave 4B review packets now exist in the main workspace.
@@ -72,17 +72,15 @@ Interpret `docs_reconcile_commit` as the exact docs snapshot this controller rec
 
 ## Latest Review Packets
 
-- [W4-E4-FIX-CODE-REVIEW.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/w4-e4-fix/W4-E4-FIX-CODE-REVIEW.md)
-- [W4-E4-FIX-BEHAVIOR-REVIEW.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/w4-e4-fix/W4-E4-FIX-BEHAVIOR-REVIEW.md)
-- [W4-1-wave-4-polish-audit.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W4-1-wave-4-polish-audit.md)
+- [W4B-1-wave-4b-conformity-audit.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W4B-1-wave-4b-conformity-audit.md)
 
 ## Retrospective Review Status
 
 - Current authoritative prerequisite layer: [RETROSPECTIVE-REVIEW-LEDGER.yaml](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml)
 - Batch 1 currently `CLEARED` there: `CP-1`, `CP-2`, `RP-1`
-- `W2B-1`, `W3A-1`, `W3-1`, `W3B-1`, `W4D-1`, and `W4-1` are currently `CLEARED`.
-- `W4B-1` may now launch from the current retrospective review ledger.
-- `W4B-2` and `X-1` remain gated by the existing Batch 6 / Batch 7 sequencing rules.
+- `W2B-1`, `W3A-1`, `W3-1`, `W3B-1`, `W4D-1`, `W4-1`, and `W4B-1` are currently `CLEARED`.
+- `W4B-2` may now launch from the current retrospective review ledger.
+- `X-1` remains gated behind `W4B-2` until that slice is current `CLEARED`.
 - The ledger records current review authority only. It does not rewrite the historical original remediation clearances listed above or claim that the historical snapshot under review already contained later review sidecars.
 
 ## Exact Next Action
@@ -91,8 +89,8 @@ Interpret `docs_reconcile_commit` as the exact docs snapshot this controller rec
 2. Treat `65a612d` as the last cleared code commit.
 3. Keep the main workspace docs-only.
 4. Do **not** start Wave 5, calibration, or any deferred capability slice.
-5. `W4B-1` may now launch from the current retrospective review ledger.
-6. `W4B-2` and `X-1` remain gated by the existing Batch 6 / Batch 7 sequencing rules.
+5. `W4B-2` may now launch from the current retrospective review ledger.
+6. `X-1` remains gated until `W4B-2` is current `CLEARED`.
 7. Forward implementation and new-capability lanes remain hard-stopped until a controller-approved next-wave setup artifact is created and committed.
 
 ## Exact Recovery Command
@@ -103,9 +101,7 @@ sed -n '1,240p' audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
 sed -n '1,260p' audit/remediation/control-plane/ACTIVE-HANDOFF.md
 sed -n '1,400p' audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
 sed -n '1,240p' audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml
-sed -n '1,220p' audit/remediation/w4-e4-fix/W4-E4-FIX-CODE-REVIEW.md
-sed -n '1,220p' audit/remediation/w4-e4-fix/W4-E4-FIX-BEHAVIOR-REVIEW.md
-sed -n '1,220p' audit/remediation/workstream-retro/reviews/W4-1-wave-4-polish-audit.md
+sed -n '1,240p' audit/remediation/workstream-retro/reviews/W4B-1-wave-4b-conformity-audit.md
 ```
 
 ## Allowed Write Set
@@ -245,3 +241,5 @@ Wave 4B cleared only after artifacts named probes for:
   Repo-state verification completed before takeover: the main workspace was still on `codex/remediation-program`, `active_wave`/`active_state` still reconciled to `wave-4b` / `cleared`, `last_cleared_code_commit` was still `65a612d`, the `W4 E-4` fix-review sidecars and repaired `W4-1` rerun sidecar were present under the controller-authorized sidecar roots, and the remaining work stayed inside the docs-only write set.
 - `2026-04-13T11:50:01-04:00` — Wave 4 fix review-and-promotion reconcile recorded `W4-1` as current `CLEARED`.
   Result: authoritative fix snapshot `1046585` cleared both independent `W4 E-4` fix reviews and the rerun `W4-1` sidecar, `RETROSPECTIVE-REVIEW-LEDGER.yaml` now records `W4-1` as current `CLEARED`, and `W4B-1` may now launch from the current retrospective review ledger while the forward Wave 5 / new-capability hard stop remains in place.
+- `2026-04-13T12:04:35-04:00` — Wave 4B memo-conformity review-and-promotion reconcile recorded `W4B-1` as current `CLEARED`.
+  Result: historical Wave 4B remediation clearance at `65a612d` remains the original implementation-lane clearance, while the authoritative retrospective review ledger now records `W4B-1` as current `CLEARED`; `W4B-2` may now launch from the current retrospective review ledger, and `X-1` remains gated until `W4B-2` is current `CLEARED`.
