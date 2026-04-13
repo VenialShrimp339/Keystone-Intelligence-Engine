@@ -96,3 +96,16 @@ entries:
       summary: "The rerun cleared the committed Wave 3 runtime packet against the current authoritative review ledger, with the historical setup-contract defect now reconciled by the addendum-backed authority layer."
       authority_inputs:
         - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W3-1-wave-3-runtime-audit.md
+  W3B-1:
+    current_status: BLOCKED
+    most_recent_report_verdict: BLOCKED
+    reviewed_snapshot:
+      code_commit: 5cc95858213e7ed817339fa910aaeaa85730c5a7
+      code_parent_commit: 4819527ed12810e0a1c2996308525ec23a906cb3
+      docs_commit: 7e9bf3423cb05fcc66407a0c3bae24b1816cda0a
+    report_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W3B-1-wave-3b-control-path-audit.md
+    evidence_basis:
+      kind: retrospective_control_path_rerun
+      summary: "The rerun found a real Wave 3B control-path blocker in the committed orchestrator stop law, so W3B-1 is current BLOCKED and remains the stop sign for later retrospective slices."
+      authority_inputs:
+        - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/W3B-1-wave-3b-control-path-audit.md

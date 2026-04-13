@@ -15,10 +15,11 @@
 - `RETROSPECTIVE-LINEAGE-MANIFEST.yaml` is now controller-promoted as the authoritative retrospective lineage layer for docs checkpoints `35a8a29` through `2e6d780`.
 - `RETROSPECTIVE-REVIEW-LEDGER.yaml` is now controller-promoted as the authoritative current review-status layer for retrospective audit prerequisites.
 - Batch 1 is durably `CLEARED` there for `CP-1`, `CP-2`, and `RP-1`.
+- The Wave clearances above remain historical original remediation clearances for the live implementation lane; they are not retrospective review authority by themselves.
 - `W2B-1`, `W3A-1`, `W3-1`, and `W4D-1` are now `CLEARED` in the authoritative retrospective review ledger.
-- `W3B-1` may now launch on the retrospective review layer.
-- `W4-1` may not yet launch until `W3B-1` is current `CLEARED` in that ledger.
-- `W4B-1` and `W4B-2` may not yet launch until `W4-1` and `W4D-1` are current `CLEARED` in that ledger.
+- `W3B-1` is now current `BLOCKED` in that ledger and is the current retrospective stop sign.
+- No later retrospective slice may now launch from the current review ledger.
+- `W4-1`, `W4B-1`, `W4B-2`, and `X-1` are blocked on retrospective audit authority until `W3B-1` is later current `CLEARED`.
 - The main workspace remains controller/docs only.
 - `WAVE-4B-SETUP.md` remains the frozen boundary for what Wave 4B was allowed to change.
 - All required Wave 4B review packets now exist in the main workspace.
@@ -68,6 +69,7 @@ Interpret `docs_reconcile_commit` as the exact docs snapshot this controller rec
 ## Open Blockers
 
 - Hard stop: required authority artifact missing for any post-Wave-4B lane. Do not start Wave 5, calibration, or any new capability work until a new committed setup checkpoint exists.
+- Retrospective authority stop sign: `W3B-1` is current `BLOCKED` in the authoritative review ledger, so no later retrospective slice (`W4-1`, `W4B-1`, `W4B-2`, `X-1`) may launch from the current review ledger.
 
 ## Latest Review Packets
 
@@ -81,10 +83,10 @@ Interpret `docs_reconcile_commit` as the exact docs snapshot this controller rec
 - Current authoritative prerequisite layer: [RETROSPECTIVE-REVIEW-LEDGER.yaml](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml)
 - Batch 1 currently `CLEARED` there: `CP-1`, `CP-2`, `RP-1`
 - `W2B-1`, `W3A-1`, `W3-1`, and `W4D-1` are currently `CLEARED`.
-- `W3B-1` may now launch on the retrospective review layer.
-- `W4-1` may not yet launch until `W3B-1` is current `CLEARED`.
-- `W4B-1` and `W4B-2` may not yet launch until `W4-1` and `W4D-1` are current `CLEARED`.
-- The ledger records current review authority only. It does not claim that the historical snapshot under review already contained later review sidecars.
+- `W3B-1` is currently `BLOCKED` and is the current stop sign.
+- No later retrospective slice may now launch from the current review ledger.
+- `W4-1`, `W4B-1`, `W4B-2`, and `X-1` are blocked on retrospective audit authority until `W3B-1` is current `CLEARED`.
+- The ledger records current review authority only. It does not rewrite the historical original remediation clearances listed above or claim that the historical snapshot under review already contained later review sidecars.
 
 ## Exact Next Action
 
@@ -92,7 +94,8 @@ Interpret `docs_reconcile_commit` as the exact docs snapshot this controller rec
 2. Treat `65a612d` as the last cleared code commit.
 3. Keep the main workspace docs-only.
 4. Do **not** start Wave 5, calibration, or any deferred capability slice.
-5. Stop until a controller-approved next-wave setup artifact is created and committed.
+5. Do **not** launch `W4-1`, `W4B-1`, `W4B-2`, or `X-1` from the current retrospective review ledger while `W3B-1` remains current `BLOCKED`.
+6. Stop until a controller-approved next-wave setup artifact is created and committed.
 
 ## Exact Recovery Command
 
@@ -102,6 +105,7 @@ sed -n '1,240p' audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
 sed -n '1,260p' audit/remediation/control-plane/ACTIVE-HANDOFF.md
 sed -n '1,400p' audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
 sed -n '1,240p' audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml
+sed -n '1,220p' audit/remediation/workstream-retro/reviews/W3B-1-wave-3b-control-path-audit.md
 sed -n '1,220p' audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md
 ```
 
