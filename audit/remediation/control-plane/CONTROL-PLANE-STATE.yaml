@@ -24,8 +24,18 @@ retrospective_lineage_manifest: /Users/jackriddle/Desktop/Keystone-Intelligence-
 retrospective_lineage_manifest_policy: "For retrospective audits of docs checkpoints 35a8a29 through 2e6d780, this controller-promoted manifest is the authoritative lineage layer. It replaces the historical symbolic HEAD pins with exact git-derived checkpoint pins, preserves the 65074ca -> 198ab92 seam-freeze promotion split, and does not by itself advance Batch 2 or rewrite earlier review sidecars."
 retrospective_review_ledger: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml
 retrospective_review_ledger_policy: "For retrospective audit-program status, this controller-promoted ledger is the authoritative current review-status layer. Use it for prerequisite proof, keep it separate from the historical snapshot under review, and do not treat it as retroactive clearance of rerun-required slices."
-retrospective_review_rerun_required:
-  - W4D-1
+retrospective_review_launch:
+  may_launch_now:
+    - W3B-1
+  blocked_until_current_cleared:
+    W4-1:
+      - W3B-1
+    W4B-1:
+      - W4-1
+      - W4D-1
+    W4B-2:
+      - W4-1
+      - W4D-1
 retrospective_sidecar_roots:
   - audit/remediation/workstream-retro/
   - audit/remediation/workstream-retro/reviews/

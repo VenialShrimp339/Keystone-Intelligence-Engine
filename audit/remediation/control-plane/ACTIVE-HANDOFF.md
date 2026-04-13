@@ -15,14 +15,17 @@
 - `RETROSPECTIVE-LINEAGE-MANIFEST.yaml` is now controller-promoted as the authoritative retrospective lineage layer for docs checkpoints `35a8a29` through `2e6d780`.
 - `RETROSPECTIVE-REVIEW-LEDGER.yaml` is now controller-promoted as the authoritative current review-status layer for retrospective audit prerequisites.
 - Batch 1 is durably `CLEARED` there for `CP-1`, `CP-2`, and `RP-1`.
-- `W2B-1` and `W3A-1` are now `CLEARED` in the authoritative retrospective review ledger.
-- `W4D-1` remains `RERUN_REQUIRED` against the addendum-backed C-13 authority layer at `audit/remediation/runs/wave-4b/candidate-65a612d-c13-contract-addendum.md`.
+- `W2B-1`, `W3A-1`, `W3-1`, and `W4D-1` are now `CLEARED` in the authoritative retrospective review ledger.
+- `W3B-1` may now launch on the retrospective review layer.
+- `W4-1` may not yet launch until `W3B-1` is current `CLEARED` in that ledger.
+- `W4B-1` and `W4B-2` may not yet launch until `W4-1` and `W4D-1` are current `CLEARED` in that ledger.
 - The main workspace remains controller/docs only.
 - `WAVE-4B-SETUP.md` remains the frozen boundary for what Wave 4B was allowed to change.
 - All required Wave 4B review packets now exist in the main workspace.
 - The clean Wave 4B implementation lane stayed inside the approved content slices and did not reopen deferred capability work.
 - Wave 5 calibration remains gated off.
 - A hard stop is now active because the required next-wave authority artifact is missing.
+- That hard stop applies to forward implementation or new-capability lanes; retrospective review launch decisions continue to flow from the authoritative review ledger.
 - The controller is expected to continue **autonomously across checkpoints**, but hard stops still terminate forward motion.
 
 ## Authoritative Order
@@ -77,8 +80,10 @@ Interpret `docs_reconcile_commit` as the exact docs snapshot this controller rec
 
 - Current authoritative prerequisite layer: [RETROSPECTIVE-REVIEW-LEDGER.yaml](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml)
 - Batch 1 currently `CLEARED` there: `CP-1`, `CP-2`, `RP-1`
-- `W2B-1` and `W3A-1` are currently `CLEARED`, so `W3-1` is launchable on the retrospective review layer once requested.
-- `W4D-1` remains `RERUN_REQUIRED`; it still blocks retrospective Wave 4B launch decisions and `X-1`, not Batch 3.
+- `W2B-1`, `W3A-1`, `W3-1`, and `W4D-1` are currently `CLEARED`.
+- `W3B-1` may now launch on the retrospective review layer.
+- `W4-1` may not yet launch until `W3B-1` is current `CLEARED`.
+- `W4B-1` and `W4B-2` may not yet launch until `W4-1` and `W4D-1` are current `CLEARED`.
 - The ledger records current review authority only. It does not claim that the historical snapshot under review already contained later review sidecars.
 
 ## Exact Next Action
