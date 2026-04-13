@@ -11,7 +11,7 @@
 - Wave 4B is now cleared at `65a612d`.
 - `91f97c2` remains the last cleared-state docs checkpoint.
 - `2e6d780` is the pre-planning retro handoff anchor.
-- `c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468` (`c5dbd05`) is the exact planning-package docs snapshot this docs-only reconcile started from.
+- `8bb00ab0298babd50d24fa3c07afae2ae7172ff6` (`8bb00ab`) is the exact cleared setup-package docs snapshot this promotion reconcile started from.
 - `RETROSPECTIVE-LINEAGE-MANIFEST.yaml` is now controller-promoted as the authoritative retrospective lineage layer for docs checkpoints `35a8a29` through `2e6d780`.
 - `RETROSPECTIVE-REVIEW-LEDGER.yaml` is now controller-promoted as the authoritative current review-status layer for retrospective audit prerequisites.
 - Batch 1 is durably `CLEARED` there for `CP-1`, `CP-2`, and `RP-1`.
@@ -19,20 +19,22 @@
 - `W2B-1`, `W3A-1`, `W3-1`, `W3B-1`, `W4D-1`, `W4-1`, `W4B-1`, `W4B-2`, and `X-1` are now `CLEARED` in the authoritative retrospective review ledger.
 - `X-1` is now current `CLEARED` in that ledger.
 - The retrospective audit program is now complete under the authoritative review ledger.
+- Those retrospective `CLEARED` statuses remain prerequisite proof only. They do not, by themselves, authorize a forward lane.
 - The main workspace remains controller/docs only.
 - `WAVE-4B-SETUP.md` remains the frozen boundary for what Wave 4B was allowed to change.
 - All required Wave 4B review packets now exist in the main workspace.
 - The clean Wave 4B implementation lane stayed inside the approved content slices and did not reopen deferred capability work.
-- Wave 5 calibration remains gated off.
-- A hard stop is now active because the required next-wave authority artifact is missing.
-- That hard stop applies to forward implementation or new-capability lanes even though the retrospective audit program is complete.
-- The next controller-priority workstream is docs-only creation and commitment of the missing post-Wave-4B next-wave authority/setup artifact.
-- The controller is expected to continue **autonomously across checkpoints**, but hard stops still terminate forward motion.
+- `NEXT-WAVE-SETUP-ARTIFACT.md` is now promoted as the live next-wave setup authority for Retrieval MVP Lane D fetch.
+- The five required docs-only gate artifacts in `audit/remediation/next-wave-setup/` exist and are `CLEARED` for the reviewed `8bb00ab` snapshot.
+- The promoted forward lane is pinned to baseline `65a612d`, branch `codex/retrieval-mvp-fetch`, worktree `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch`, and the exact approved write set in `audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md`.
+- Retrieval MVP Lane D fetch is now the only authorized forward setup lane.
+- Parser Lane E, L1 integration Lane F, UI work, benchmark acceptance claims, Wave 5, and calibration remain blocked.
+- The controller is expected to continue **autonomously across checkpoints**. This promotion changes the live forward-lane authority, but the main workspace still stays docs-only.
 
 ## Authoritative Order
 
 Any summary doc or retrospective planning doc that offers a shortcut list must defer to this order.
-Item 3 is the authoritative lineage layer for retrospective checkpoint-chain questions. Item 4 is the authoritative current review-status layer for retrospective audit prerequisites. Items 5-19 remain the live Wave 4B packet and boundary stack for the current hard-stop state.
+Item 3 is the authoritative lineage layer for retrospective checkpoint-chain questions. Item 4 is the authoritative current review-status layer for retrospective audit prerequisites. Items 5-18 are the live forward-lane authorization stack: historical Wave 4B clearance plus the promoted Retrieval MVP Lane D setup package and its cleared gate artifacts.
 
 1. [CONTROL-PLANE-STATE.yaml](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml)
 2. [ACTIVE-HANDOFF.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/ACTIVE-HANDOFF.md)
@@ -43,36 +45,49 @@ Item 3 is the authoritative lineage layer for retrospective checkpoint-chain que
 7. [candidate-65a612d-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md)
 8. [candidate-65a612d-clearance.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md)
 9. [candidate-65a612d-file-manifest.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-file-manifest.md)
-10. [WAVE-4B-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4B-SETUP.md)
-11. [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md)
-12. [WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md)
-13. [WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md)
-14. [WAVE-4-TEMPLATE-ROUTING-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md)
-15. [WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md)
-16. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md)
-17. [WORKSTREAM-STATUS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md)
-18. [FINAL-DECISIONS-v2.1.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/decisions/FINAL-DECISIONS-v2.1.md)
-19. [AUTONOMOUS-REMEDIATION-PLAN-v4.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md)
-20. `audit/remediation/workstream-retro/` and `audit/remediation/workstream-retro/reviews/` outputs as retrospective sidecars only unless a later controller reconcile promotes them.
+10. [NEXT-WAVE-SETUP-ARTIFACT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ARTIFACT.md)
+11. [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md)
+12. [REVIEW-AND-GATE-CHECKLIST.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/REVIEW-AND-GATE-CHECKLIST.md)
+13. [BACKEND-REALITY-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/BACKEND-REALITY-GATE.md)
+14. [TOOL-CONTRACT-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/TOOL-CONTRACT-GATE.md)
+15. [GOVERNANCE-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/GOVERNANCE-GATE.md)
+16. [RUN-CONTRACT-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/RUN-CONTRACT-GATE.md)
+17. [CONTROLLER-UNLOCK-WORKTREE-PROVENANCE-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/CONTROLLER-UNLOCK-WORKTREE-PROVENANCE-GATE.md)
+18. [NEXT-WAVE-SETUP-ADVERSARIAL-REVIEW.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ADVERSARIAL-REVIEW.md)
+19. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md)
+20. [WORKSTREAM-STATUS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md)
+21. [FINAL-DECISIONS-v2.1.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/decisions/FINAL-DECISIONS-v2.1.md)
+22. [AUTONOMOUS-REMEDIATION-PLAN-v4.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md)
+23. `audit/remediation/workstream-retro/` and `audit/remediation/workstream-retro/reviews/` outputs as retrospective sidecars only unless a later controller reconcile promotes them.
 
 ## Active State Tuple
 
-- `active_wave`: `wave-4b`
-- `active_state`: `cleared`
-- `execution_baseline_commit`: `6406e46`
-- `review_target_commit`: `65a612d`
-- `docs_reconcile_commit`: `c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468`
+- `active_wave`: `retrieval-mvp-fetch`
+- `active_state`: `setup`
+- `execution_baseline_commit`: `65a612d`
+- `review_target_commit`: `not yet created; any future Retrieval MVP Lane D candidate roots from 65a612d`
+- `docs_reconcile_commit`: `8bb00ab0298babd50d24fa3c07afae2ae7172ff6`
 - `next_recovery_checkout`: `65a612d`
+- `implementation_branch`: `codex/retrieval-mvp-fetch`
+- `implementation_worktree`: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch`
+- `approved_write_set`: [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md)
 
 Interpret `docs_reconcile_commit` as the exact docs snapshot this controller reconcile started from. It is not symbolic `HEAD`; future controller docs checkpoints must repin it explicitly.
 
 ## Open Blockers
 
-- Hard stop: required authority artifact missing for any post-Wave-4B lane. Do not start Wave 5, calibration, or any new capability work until a new committed setup checkpoint exists.
+- No remaining blocker prevents opening the Retrieval MVP Lane D fetch worktree from the promoted setup state.
+- Still blocked: parser Lane E, L1 integration Lane F, UI work, benchmark acceptance claims, Wave 5, calibration, and any write-set expansion beyond [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md).
 
 ## Latest Review Packets
 
-- [X-1-cross-wave-regression-audit.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/workstream-retro/reviews/X-1-cross-wave-regression-audit.md)
+- [candidate-65a612d-clearance.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md)
+- [BACKEND-REALITY-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/BACKEND-REALITY-GATE.md)
+- [TOOL-CONTRACT-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/TOOL-CONTRACT-GATE.md)
+- [GOVERNANCE-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/GOVERNANCE-GATE.md)
+- [RUN-CONTRACT-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/RUN-CONTRACT-GATE.md)
+- [CONTROLLER-UNLOCK-WORKTREE-PROVENANCE-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/CONTROLLER-UNLOCK-WORKTREE-PROVENANCE-GATE.md)
+- [NEXT-WAVE-SETUP-ADVERSARIAL-REVIEW.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ADVERSARIAL-REVIEW.md)
 
 ## Retrospective Review Status
 
@@ -81,16 +96,18 @@ Interpret `docs_reconcile_commit` as the exact docs snapshot this controller rec
 - `W2B-1`, `W3A-1`, `W3-1`, `W3B-1`, `W4D-1`, `W4-1`, `W4B-1`, `W4B-2`, and `X-1` are currently `CLEARED`.
 - The retrospective audit program is complete under the current authoritative review ledger.
 - The ledger records current review authority only. It does not rewrite the historical original remediation clearances listed above or claim that the historical snapshot under review already contained later review sidecars.
+- The forward-lane authorization now comes from the promoted Retrieval MVP Lane D setup package, not from retrospective `CLEARED` prose.
 
 ## Exact Next Action
 
 1. Stay on `codex/remediation-program` in the main workspace.
 2. Treat `65a612d` as the last cleared code commit.
-3. Keep the main workspace docs-only.
-4. Do **not** start Wave 5, calibration, or any deferred capability slice.
-5. Treat the retrospective audit program as complete under the authoritative review ledger.
-6. Make the next controller-priority workstream the creation and commitment of the missing post-Wave-4B next-wave authority/setup artifact.
-7. Forward implementation and new-capability lanes remain hard-stopped until that controller-approved setup artifact is created and committed.
+3. Treat [NEXT-WAVE-SETUP-ARTIFACT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ARTIFACT.md) plus [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md) as the binding forward-lane boundary.
+4. Keep the main workspace docs-only.
+5. In the next runtime session, open `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch` on branch `codex/retrieval-mvp-fetch` from baseline `65a612d`.
+6. Implement only gateway-owned article, EDGAR filing, PDF, and paper fetch seams, plus fetch identity, coverage, and audit work that stays inside the exact approved write set.
+7. Write the candidate packet only under `audit/remediation/runs/retrieval-mvp-fetch/`.
+8. Do **not** start parser Lane E, L1 integration Lane F, UI work, benchmark acceptance, Wave 5, calibration, or any write-set expansion without a later controller checkpoint.
 
 ## Exact Recovery Command
 
@@ -100,69 +117,98 @@ sed -n '1,240p' audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
 sed -n '1,260p' audit/remediation/control-plane/ACTIVE-HANDOFF.md
 sed -n '1,400p' audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
 sed -n '1,240p' audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml
-sed -n '1,260p' audit/remediation/workstream-retro/reviews/X-1-cross-wave-regression-audit.md
+sed -n '1,260p' audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md
+sed -n '1,420p' audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ARTIFACT.md
+sed -n '1,260p' audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md
+sed -n '1,260p' audit/remediation/next-wave-setup/REVIEW-AND-GATE-CHECKLIST.md
 ```
 
 ## Allowed Write Set
 
-### Active docs-only cleared scope
+### Active docs-only controller scope
 
 - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-- `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
-- `audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml`
-- `audit/remediation/control-plane/EXECUTION-TODO.md`
-- `audit/remediation/WORKSTREAM-STATUS.md`
-- `CURRENT-STATE.md`
 
-### Controller-authorized docs-only Batch 2 reconcile repairs
+### Promoted forward-lane authority package
 
-- `audit/remediation/WAVE-3-SETUP.md`
-- `audit/remediation/runs/wave-3/candidate-4819527-setup-contract-addendum.md`
-- `audit/remediation/runs/wave-3/candidate-4819527-clearance.md`
-- `audit/remediation/runs/wave-3/candidate-4819527-review-synthesis.md`
-- `audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
-- `audit/remediation/WAVE-4B-SETUP.md`
-- `audit/remediation/runs/wave-4b/candidate-65a612d-c13-contract-addendum.md`
-- `audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md`
-- `audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md`
+- `audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ARTIFACT.md`
+- `audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md`
+- `audit/remediation/next-wave-setup/REVIEW-AND-GATE-CHECKLIST.md`
+- `audit/remediation/next-wave-setup/BACKEND-TRUTH-MATRIX-SPEC.md`
+- `audit/remediation/next-wave-setup/LIVE-PROBE-EVIDENCE-SCHEMA.md`
+- `audit/remediation/next-wave-setup/BACKEND-REALITY-GATE.md`
+- `audit/remediation/next-wave-setup/TOOL-CONTRACT-GATE.md`
+- `audit/remediation/next-wave-setup/GOVERNANCE-GATE.md`
+- `audit/remediation/next-wave-setup/RUN-CONTRACT-GATE.md`
+- `audit/remediation/next-wave-setup/CONTROLLER-UNLOCK-WORKTREE-PROVENANCE-GATE.md`
+- `audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ADVERSARIAL-REVIEW.md`
+- `audit/remediation/next-wave-setup/REQUIRED-CORRECTIONS-CHECKLIST.md`
+- `audit/remediation/next-wave-setup/LANE-CHOICE-RATIONALE.md`
+- `audit/remediation/next-wave-setup/WORKSTREAM-HANDOFF.md`
 
-### Controller-authorized retrospective sidecars
+### Retrieval MVP Lane D implementation lane
+
+The exact write-set authority is [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md). The approved runtime surface is:
+
+- `src/keystone/gateway/audit_log.py`
+- `src/keystone/gateway/mcp_gateway.py`
+- `src/keystone/gateway/servers.py`
+- `src/keystone/gateway/simple_client.py`
+- `src/keystone/gateway/tool_registry.py`
+- `src/keystone/models/research.py`
+- `tests/unit/gateway/test_auth.py`
+- `tests/unit/gateway/test_gateway.py`
+- `tests/unit/gateway/test_tool_registry.py`
+- `tests/unit/test_auth.py`
+- `tests/unit/test_audit_log.py`
+- `tests/unit/test_gateway.py`
+- `tests/unit/test_research_models.py`
+- `tests/unit/test_tool_registry.py`
+- `audit/remediation/runs/retrieval-mvp-fetch/`
+- `graphify-out/GRAPH_REPORT.md`
+- `graphify-out/graph.json`
+
+Everything else remains denied unless a later controller checkpoint explicitly widens scope.
+
+### Retrospective sidecars
 
 - `audit/remediation/workstream-retro/`
 - `audit/remediation/workstream-retro/reviews/`
 
 Write here only for retrospective audit planning, docs/package reconciliation, or review-sidecar output. These paths do not outrank the live control plane unless a later controller reconcile promotes them.
 
-### No active code lane
-
-Any future post-Wave-4B code lane requires a new controller-approved setup artifact first.
-
 ## Required Test Matrix
 
-Wave 4B cleared with the following required matrix:
+Before any Retrieval MVP Lane D candidate may clear, run at minimum:
 
-1. `tests/unit/deliberation/test_analyst.py`
-2. `tests/unit/deliberation/test_aggregator.py`
-3. `tests/unit/research/test_research_agent.py`
-4. `tests/unit/specification/test_intent_clarifier.py`
-5. `tests/unit/specification/test_task_generator.py`
-6. `tests/unit/specification/test_template_registry.py`
-7. `tests/unit/evaluator/test_layer1.py`
-8. `tests/unit/evaluator/test_layer3.py`
-9. `tests/unit/evaluator/test_sprint_contract.py`
-10. `tests/unit/evaluator/test_evaluator.py`
-11. `tests/e2e/test_mock_pipeline.py`
+1. `tests/unit/gateway/test_auth.py`
+2. `tests/unit/gateway/test_gateway.py`
+3. `tests/unit/gateway/test_tool_registry.py`
+4. `tests/unit/test_auth.py`
+5. `tests/unit/test_audit_log.py`
+6. `tests/unit/test_gateway.py`
+7. `tests/unit/test_research_models.py`
+8. `tests/unit/test_tool_registry.py`
+
+This unit matrix is not sufficient backend-reality evidence on its own. The candidate packet must also satisfy the backend-truth and live-fetch requirements in the promoted setup package.
 
 ## Required Runtime Probes
 
-Wave 4B cleared only after artifacts named probes for:
+Before any Retrieval MVP Lane D candidate may clear, the candidate packet must include:
 
-1. Actionability rewards decision-informing specificity and penalizes recommendation creep.
-2. Differentiated analyst prompts still emit the shared `ScoredClaim` envelope.
-3. Sprint-contract generation exposes all 10 dimensions and contradiction handling still fits the current boolean seam without a 10-claim cap.
-4. Task-generation tool guidance stays inside the registered tool set and template enrichment stays inside the current envelope.
-5. Thin or absent verification snippets are surfaced as `UNVERIFIABLE`-style evidence gaps rather than false `NOT_SUPPORTED`.
+- `candidate-<commit>-backend-truth-matrix.md`
+- `candidate-<commit>-live-fetch-review.md`
+
+The candidate packet must prove these invariants:
+
+1. Article fetch returns canonical URL, MIME, content hash, and explicit coverage.
+2. EDGAR fetch returns official filing content rather than placeholder or stub text.
+3. PDF fetch persists raw bytes with explicit coverage and hash.
+4. Paper fetch returns full text when available, else explicit `abstract_only` or `metadata_only`.
+5. Exa and Brave remain discovery-only on the canonical path.
+6. Stubbed tool behavior cannot be misreported as canonical backend support.
+7. Fetch activity is gateway-audited.
 
 ## Docs Explicitly Ignored As Stale
 
@@ -172,21 +218,23 @@ Wave 4B cleared only after artifacts named probes for:
 
 ## Active Sidecars
 
-- [WAVE-4B-SETUP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4B-SETUP.md) — frozen Wave 4B scope boundary and denylist
-- [WAVE-4-D2-ACTIONABILITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md) — accepted D-2 scoring contract
-- [WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md) — accepted prompt-quality contracts for the Wave 4B slice
-- [candidate-65a612d-c13-contract-addendum.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-c13-contract-addendum.md) — addendum-backed authority note splitting seam-local C-13 recovery from downstream structural propagation
-- [WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-SPRINT-CONTRACT-RUBRIC-RESEARCH.md) — accepted sprint-contract and contradiction-boundary contract
-- [WAVE-4-TEMPLATE-ROUTING-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-TEMPLATE-ROUTING-RESEARCH.md) — accepted routing and template-envelope contract
-- [WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WAVE-4-EVALUATOR-VERIFICATION-RESEARCH.md) — accepted evaluator-verification boundary
-- [candidate-65a612d-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md) — consensus review packet clearing the Wave 4B lane
-- [candidate-65a612d-clearance.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md) — immutable cleared-state proof for the current last-cleared code commit
+- [candidate-65a612d-clearance.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md) — immutable cleared-state proof for the runtime baseline that the new fetch lane must root from
+- [NEXT-WAVE-SETUP-ARTIFACT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ARTIFACT.md) — active Retrieval MVP Lane D setup authority
+- [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md) — exact approved write set and denylist for the forward lane
+- [REVIEW-AND-GATE-CHECKLIST.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/REVIEW-AND-GATE-CHECKLIST.md) — candidate review, runtime proof, and clearance requirements
+- [BACKEND-REALITY-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/BACKEND-REALITY-GATE.md) — controller-grade proof that backend reality is load-bearing
+- [TOOL-CONTRACT-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/TOOL-CONTRACT-GATE.md) — controller-grade proof that tool-contract boundaries stay narrow
+- [GOVERNANCE-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/GOVERNANCE-GATE.md) — controller-grade proof that the lane stays governance-safe and narrow
+- [RUN-CONTRACT-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/RUN-CONTRACT-GATE.md) — controller-grade proof that runtime-truth and invocation-contract requirements are explicit
+- [CONTROLLER-UNLOCK-WORKTREE-PROVENANCE-GATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/CONTROLLER-UNLOCK-WORKTREE-PROVENANCE-GATE.md) — controller-grade proof that branch, worktree, and baseline provenance are pinned
+- [NEXT-WAVE-SETUP-ADVERSARIAL-REVIEW.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ADVERSARIAL-REVIEW.md) — hostile review confirming the setup package is safe to promote
 
 ## Retrospective Audit Anchors
 
 - Treat `91f97c2` as the last cleared-state docs checkpoint.
 - Treat `2e6d780` as the first retro-planning handoff anchor, not as literal current `HEAD`.
-- Treat `c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468` (`c5dbd05`) as the exact planning-package docs snapshot this docs-only reconcile started from.
+- Treat `8bb00ab0298babd50d24fa3c07afae2ae7172ff6` (`8bb00ab`) as the exact cleared setup-package docs snapshot this promotion reconcile started from.
+- Treat `c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468` (`c5dbd05`) as the earlier Batch 1 planning-package docs snapshot, not as the current docs-reconcile pin.
 - Treat `RETROSPECTIVE-LINEAGE-MANIFEST.yaml` as the authoritative retrospective lineage layer for docs checkpoints `35a8a29` through `2e6d780`.
 - Treat `RETROSPECTIVE-REVIEW-LEDGER.yaml` as the authoritative current review-status layer for retrospective audit prerequisites.
 - Treat the manifest's exact git-derived pins as the replacement for the historical symbolic `HEAD` defect during retrospective audit use.
@@ -248,3 +296,10 @@ Wave 4B cleared only after artifacts named probes for:
   Result: historical Wave 4B remediation clearance at `65a612d` remains the original implementation-lane clearance, `W4B-1` remains current `CLEARED` as the separate memo-conformity authority, authoritative fix snapshot `4d8f647` cleared both independent `W4B C-15` fix reviews and the rerun `W4B-2` sidecar, and `X-1` may now launch from the current retrospective review ledger while the forward Wave 5 / new-capability hard stop remains in place.
 - `2026-04-13T13:13:30-04:00` — Cross-wave synthesis reconcile recorded `X-1` as current `CLEARED`.
   Result: historical Wave 2A through Wave 4B clearances remain the original remediation-lane clearances, the authoritative retrospective review ledger now records `X-1` as current `CLEARED`, the retrospective audit program is complete under that current review authority layer, and the forward Wave 5 / new-capability hard stop remains in place until a controller-approved next-wave setup artifact is committed.
+- `2026-04-13T14:58:17-04:00` — cleared setup-package commit `8bb00ab` landed.
+  Result: the corrected `audit/remediation/next-wave-setup/` package was committed with the required docs-only gate artifacts on disk, but the live control plane still remained on the old missing-artifact hard stop until a later controller reconcile promoted that package.
+- `2026-04-13T15:16:20-04:00` — controller lease takeover by `codex-gpt-5.4-xhigh-main-controller` for Retrieval MVP Lane D setup promotion.
+  Reason: the previous lease heartbeat (`2026-04-13T13:13:30-04:00`) had aged past the 30-minute limit before the next authority mutation, so `controller_epoch` was incremented before promoting the next-wave setup state.
+  Repo-state verification completed before takeover: the main workspace was still on `codex/remediation-program`, `HEAD` was the cleared setup-package commit `8bb00ab`, `active_wave`/`active_state` still reconciled to `wave-4b` / `cleared`, `last_cleared_code_commit` was still `65a612d`, and all five required next-wave gate artifacts plus `NEXT-WAVE-SETUP-ARTIFACT.md` were present on disk and `CLEARED` for the reviewed snapshot.
+- `2026-04-13T15:16:20-04:00` — Retrieval MVP Lane D setup promotion reconcile replaced the missing-artifact hard stop with live fetch-lane setup authority.
+  Result: the live control plane advanced from `wave-4b / cleared` hard-stop state to `retrieval-mvp-fetch / setup`, pinned the forward lane to baseline `65a612d`, branch `codex/retrieval-mvp-fetch`, worktree `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch`, and the exact approved write set in `ALLOWED-WRITE-SET.md`, while preserving retrospective audit completion as prerequisite proof only rather than forward-lane authority by itself.
