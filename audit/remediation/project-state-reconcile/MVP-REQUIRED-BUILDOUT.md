@@ -18,9 +18,10 @@ If this file conflicts with the control plane, the control plane wins.
 
 ## Current audited snapshot
 
-- Last cleared code commit: `65a612d`
+- Last cleared code commit: `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`
 - Main workspace role: controller/docs only
-- Current authorized forward runtime lane: `Lane H - Retrieval Tool-Surface Authority Expansion`
+- Current cleared runtime lane: `Lane H - Retrieval Tool-Surface Authority Expansion`
+- Current controller-priority workstream: `Professor-Demo Narrow Lane E Setup`
 - Frozen blocked retrieval reference: `f1af7dfafa2e66b831810d70006ab8295411c61b`
 - Browser Use classification: `FALLBACK_ONLY`, with a strong secondary `BENCHMARK_OR_CONTROL_ARM_ONLY` role
 - Retrospective audit program: complete and cleared, but prerequisite proof only
@@ -47,33 +48,34 @@ It is not:
 
 ## Gap map: current state -> MVP
 
-### 1. Lane H must still be implemented and cleared
+### 1. Narrow Lane E setup still needs to be packaged, reviewed, and promoted
 
 Status now:
 
-- setup is promoted
-- coding is authorized
-- implementation is not yet cleared
+- Lane H is cleared
+- article/PDF governed fetch is real on the canonical path
+- no new retrieval code lane is currently authorized
+- the next live milestone is docs-only setup work, not runtime coding
 
 Why it matters:
 
-- current Retrieval MVP cannot honestly support governed article/PDF canonical fetch without settling the tool-surface contract
-- Lane H is the lane that does that honestly
+- the project now has governed article/PDF fetch, but it still does not have deterministic parse/evidence normalization on the canonical path
+- before any more coding happens, the next parse lane needs a narrow setup package so the controller can keep the professor-demo path honest and small
 
 What remains:
 
-- implement the system-owned, non-task-assignable `document_fetch` contract
-- prove article/PDF governed fetch under that contract
-- prove `document_fetch` cannot leak into `ResearchTask.assigned_tools`
-- clear Lane H review
+- create a docs-only narrow Lane E setup package rooted from `93a5ca8`
+- constrain it to article/PDF deterministic parse and evidence normalization only
+- adversarially review it
+- promote it into the live control plane before any Lane E coding starts
 
 ### 2. SEC / EDGAR still needs a separate venue/backend reality decision
 
 Status now:
 
-- explicitly separated from Lane H
+- explicitly separated from the cleared article/PDF path
 - not solved
-- not current critical-path work until Lane H review is complete
+- not current critical-path work until the article/PDF parse/integration path advances further
 
 Why it matters:
 
@@ -91,7 +93,7 @@ What remains:
 Status now:
 
 - designed
-- not yet the active authorized code lane
+- not yet packaged/promoted as the active authorized code lane
 
 Why it matters:
 
@@ -102,6 +104,8 @@ Why it matters:
 What remains:
 
 - parser Lane E
+- Lane E setup package
+- Lane E promotion decision
 - deterministic parse reviews
 - evidence normalization reviews
 - source-type-specific locators and parse confidence handling
@@ -222,6 +226,166 @@ What it does not remove:
 - control-plane/tool-surface authority work
 
 So Browser Use is valuable, but it belongs after the core governed retrieval seams are real, not before.
+
+## Fresh-session note
+
+Because long-running chats compact aggressively, the authoritative takeover path for a brand-new controller session is now:
+
+- `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+- `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- `audit/remediation/control-plane/FRESH-ORCHESTRATOR-BOOTSTRAP.md`
+- `audit/remediation/control-plane/FRESH-ORCHESTRATOR-SESSION-PROMPT.md`
+
+Treat this file as a gap map, not as the first authority read.
+
+## Gap map: MVP -> fuller product
+
+These are the bigger product/design goals from the original architecture/spec vision that still remain after an MVP.
+
+Some are researched.
+Some are partially scaffolded.
+Some are mostly backlog/architecture intent.
+
+### A. Advanced retrieval stack
+
+Still later than MVP:
+
+- embeddings
+- `pgvector`
+- BM25
+- RRF
+- rerank
+- Docling-style or equivalent richer document processing
+- multi-source retrieval federation
+- cross-engagement semantic retrieval
+- internal document federation
+
+What these add:
+
+- better recall
+- better ranking
+- better large-corpus retrieval depth
+- more reuse of accumulated knowledge
+
+### B. Browser-native fallback acquisition
+
+Still later than MVP-critical governed fetch:
+
+- Browser Use or equivalent browser-native fallback
+- JS-heavy and interaction-gated acquisition
+- auth/session heavy source access
+- richer replay/control-arm browser traces
+
+What this adds:
+
+- resilience on hard pages ordinary HTTP fetch cannot handle cleanly
+
+### C. Observation Library and compounding self-improvement
+
+Still later than MVP:
+
+- Observation Library runtime as a real system, not just plan language
+- CBR retrieve/promotion loops
+- trajectory storage and trajectory learning
+- prompt/skill evolution
+- client calibration profiles
+
+What this adds:
+
+- compounding quality gains across engagements
+- reusable institutional intelligence
+
+### D. Fuller evaluator stack and calibration
+
+Still later than MVP:
+
+- evaluator calibration against human scoring
+- Layers 4-5 evaluator work
+- process-trajectory judging
+- richer ensemble/judge selection
+
+What this adds:
+
+- stronger trust calibration
+- better alignment between automatic and human judgment
+
+### E. Rich output generation
+
+Still later than MVP:
+
+- PowerPoint generation
+- Excel/model generation
+- PDF export/redraft stack
+- richer consultant-ready packaging surfaces
+
+What this adds:
+
+- better deliverable polish and downstream usability
+
+### F. Fuller product UI and collaboration layer
+
+Still later than MVP:
+
+- polished consultant-facing UI
+- richer reviewer workflows
+- collaborative editing/workspaces
+- cross-engagement memory browser
+- more mature artifact browsing and run-inspection surfaces
+
+What this adds:
+
+- better usability and team workflow
+
+### G. Production infrastructure and deployment shape
+
+Still later than MVP:
+
+- Temporal migration / hardened orchestration
+- stronger auth
+- multi-tenancy hardening
+- deployment hardening
+- operationalized long-running workflows
+
+What this adds:
+
+- robustness at real product scale
+
+### H. Broader analytical product depth from the original design
+
+Still later/backburnered:
+
+- full Observation Library flywheel
+- richer causal-inference or advanced analytical agents from the longer-horizon plan
+- anything that assumes the retrieval/evidence spine is already stable and trusted
+
+## What has already been solved well enough that it is no longer the main gap
+
+- retrospective trust repair
+- control-plane authority discipline
+- baseline citation/provenance/evaluator spine through Wave 4B
+- honest retrieval/UI planning packets
+- one safer workflow-supervisor/control helper
+
+Those were necessary. They are just no longer the main blocker.
+
+## Bottom line
+
+The remaining MVP gap is no longer "invent the system."
+
+It is:
+
+1. finish the governed retrieval buildout honestly
+2. prove it against real source acquisition and real review
+3. package it into one canonical runtime story
+
+The remaining full-product gap is then everything that compounds, scales, or polishes that core:
+
+- advanced retrieval
+- browser-native fallback
+- self-improvement/meta-learning
+- deeper evaluation
+- richer UI/exports
+- production infrastructure
 
 ## Gap map: MVP -> fuller product
 

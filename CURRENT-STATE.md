@@ -1,5 +1,5 @@
 # Current State
-*Last updated: 2026-04-13 | Updated by: docs-only Lane H promotion reconcile*
+*Last updated: 2026-04-14 | Updated by: fresh-orchestrator bootstrap reconcile*
 
 ---
 
@@ -15,8 +15,9 @@
 - **Wave 4B:** Cleared in commit `65a612d` (`feat: implement wave 4b content slice`).
 - **Retrospective audit program:** Complete under `audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml`, but that completion remains prerequisite proof only.
 - **Retrieval MVP Lane D:** Candidate `f1af7dfafa2e66b831810d70006ab8295411c61b` is frozen as `BLOCKED` superseded reference material only.
-- **Current forward authorization:** `Lane H - Retrieval Tool-Surface Authority Expansion` is promoted in setup state.
-- **Current retrieval code authorization:** `Lane H` may launch only in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface` on `codex/retrieval-tool-surface`.
+- **Current runtime truth:** Lane H candidate `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` is `CLEARED` in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface`.
+- **Current forward authorization:** no retrieval code lane is currently authorized from the main control plane.
+- **Current controller-priority workstream:** docs-only `Professor-Demo Narrow Lane E Setup`.
 - **Browser Use research:** Classified as `FALLBACK_ONLY` with a secondary `BENCHMARK_OR_CONTROL_ARM_ONLY` role. It is not on the critical path for the current governed retrieval build.
 
 ## What just happened
@@ -26,11 +27,11 @@
    - a separate SEC / EDGAR venue blocker
 2. The controller then rejected `document_fetch` for the old Lane D boundary and froze `f1af7df` as blocked reference material only.
 3. A new docs-only authority package was created, adversarially reviewed, corrected, and promoted as `Lane H - Retrieval Tool-Surface Authority Expansion`.
-4. The live control plane now points to:
-   - baseline `65a612d`
-   - branch `codex/retrieval-tool-surface`
-   - worktree `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface`
-   - approved write set `audit/remediation/retrieval-tool-surface/ALLOWED-WRITE-SET.md`
+4. The control plane was then reconciled again so Lane H is no longer only "setup-promoted"; it now records:
+   - cleared runtime truth commit `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`
+   - cleared runtime worktree `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface`
+   - no currently open retrieval code lane
+   - next controller-priority workstream `Professor-Demo Narrow Lane E Setup`
 5. A separate Browser Use audit concluded that Browser Use is valuable as fallback/browser-native acquisition research, but not as the canonical retrieval path or current critical-path replacement.
 
 ## What happens next
@@ -38,13 +39,14 @@
 1. Read the control-plane files first:
    - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
    - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-2. Treat `65a612d` as the last cleared code commit.
+2. Treat `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` as the current cleared runtime truth anchor.
 3. Treat `f1af7dfafa2e66b831810d70006ab8295411c61b` as superseded blocked reference material, not as a promotable recovery stop.
 4. Keep the main workspace controller/docs only.
-5. Launch only `Lane H` coding in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface` if you are doing runtime work.
-6. After Lane H implementation, run Lane H adversarial review before any SEC / EDGAR venue retry.
-7. Keep parser Lane E, L1 integration Lane F, UI runtime work, benchmark acceptance claims, Wave 5, and calibration blocked until the control plane explicitly reauthorizes them.
+5. The next session should be a fresh controller/orchestrator session that creates a docs-only narrow Lane E setup package rooted from `93a5ca8`.
+6. Do not reopen Lane H coding, Lane D coding, or SEC / EDGAR work unless the control plane is explicitly updated again.
+7. Keep parser Lane E code, L1 integration Lane F, UI runtime work, benchmark acceptance claims, Wave 5, and calibration blocked until the control plane explicitly reauthorizes them.
 8. Use [audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md) for the full gap picture from current state -> MVP -> longer-horizon product.
+9. Use [audit/remediation/control-plane/FRESH-ORCHESTRATOR-BOOTSTRAP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/FRESH-ORCHESTRATOR-BOOTSTRAP.md) and [audit/remediation/control-plane/FRESH-ORCHESTRATOR-SESSION-PROMPT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/FRESH-ORCHESTRATOR-SESSION-PROMPT.md) to start a brand-new controller session cleanly.
 
 ## Reconciled wave plan
 
@@ -59,7 +61,8 @@
 | Wave 4 | **Cleared** (`6406e46`) | Low-risk polish slice `E-2`, `E-4`, `E-5` |
 | Wave 4B | **Cleared** (`65a612d`) | Frozen content implementation from the Wave 4 memo set |
 | Retrieval MVP Lane D | **Blocked / superseded** (`f1af7df`) | Candidate proved fetch progress but is not promotable under old authority |
-| Lane H | **Setup promoted; implementation authorized** | Owns article/PDF tool-surface authority expansion and governed article/PDF fetch |
+| Lane H | **Cleared** (`93a5ca8`) | Established system-owned `document_fetch` and governed article/PDF fetch on the real path |
+| Professor-Demo Narrow Lane E Setup | **Next docs-only controller milestone** | Must package deterministic parse/evidence normalization for the article/PDF path rooted from `93a5ca8` |
 
 ## Authoritative docs for a fresh session
 
@@ -80,6 +83,8 @@
 - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-blocked-checkpoint.md`
 - `audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md`
 - `audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md`
+- `audit/remediation/control-plane/FRESH-ORCHESTRATOR-BOOTSTRAP.md`
+- `audit/remediation/control-plane/FRESH-ORCHESTRATOR-SESSION-PROMPT.md`
 - `audit/remediation/WORKSTREAM-STATUS.md`
 - `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
 
