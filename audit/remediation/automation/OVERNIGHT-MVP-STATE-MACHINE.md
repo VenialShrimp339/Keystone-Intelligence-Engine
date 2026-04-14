@@ -7,7 +7,7 @@ One wake, one milestone.
 Every wake starts from disk and re-determines the current stage.
 Do not assume the previous wake finished what it intended.
 
-## Stage 0: Reconcile Stale Lane H State
+## Stage H0: Reconcile Stale Lane H State
 
 Enter this stage if:
 
@@ -29,9 +29,78 @@ Stop after:
 
 ## Stage 1: Narrow Professor-Demo Lane E Setup Package
 
+## Stage H1: Lane H Implementation
+
 Enter this stage if:
 
-- Lane H is fully reconciled
+- the live control plane still authorizes Lane H implementation
+- no cleared Lane H packet exists yet
+- no final Lane H review synthesis exists yet
+
+Allowed work:
+
+- one Lane H runtime implementation candidate inside the promoted Lane H write set
+
+Required result:
+
+- one candidate commit
+- one Lane H run packet
+- required Lane H tests
+
+May not:
+
+- start Lane E
+- reopen Lane D
+- conflate article/PDF proof with SEC
+
+Stop after:
+
+- one candidate commit or one blocker note
+
+## Stage H2: Lane H Review Stack
+
+Enter this stage if:
+
+- a Lane H candidate exists
+- final Lane H synthesis has not yet cleared or blocked it
+
+Allowed work:
+
+- full Lane H review stack
+- final Lane H synthesis
+
+Required result:
+
+- `CLEARED` or `BLOCKED`
+
+Stop after:
+
+- one synthesis/clear-block milestone or one blocker note
+
+## Stage H3: Lane H Reconcile
+
+Enter this stage if:
+
+- a final Lane H review outcome exists
+- the live control plane is stale relative to that outcome
+
+Allowed work:
+
+- docs-only reconcile
+
+Required result:
+
+- live control plane truthfully reflects the Lane H outcome
+
+Stop after:
+
+- one docs-only reconcile commit or one blocker note
+
+## Stage E0: Narrow Professor-Demo Lane E Setup Package
+
+Enter this stage if:
+
+- Lane H is cleared and fully reconciled
 - Lane E is still blocked / not yet authorized
 
 Allowed work:
@@ -53,7 +122,7 @@ Stop after:
 
 - one docs-only package commit or one blocker note
 
-## Stage 2: Lane E Package Review And Promotion Decision
+## Stage E1: Lane E Package Review And Promotion Decision
 
 Enter this stage if:
 
@@ -74,7 +143,7 @@ Stop after:
 
 - one review/promotion decision commit or one blocker note
 
-## Stage 3: Lane E Control-Plane Promotion
+## Stage E2: Lane E Control-Plane Promotion
 
 Enter this stage if:
 
@@ -93,7 +162,7 @@ Stop after:
 
 - one docs-only reconcile commit or one blocker note
 
-## Stage 4: Lane E Implementation
+## Stage E3: Lane E Implementation
 
 Enter this stage if:
 
@@ -114,7 +183,7 @@ Stop after:
 
 - one candidate commit or one blocker note
 
-## Stage 5: Lane E Review Stack
+## Stage E4: Lane E Review Stack
 
 Enter this stage if:
 
@@ -134,7 +203,7 @@ Stop after:
 
 - one synthesis/clear-block commit or one blocker note
 
-## Stage 6: Lane E Reconcile
+## Stage E5: Lane E Reconcile
 
 Enter this stage if:
 
@@ -153,7 +222,7 @@ Stop after:
 
 - one docs-only reconcile commit or one blocker note
 
-## Stage 7: Narrow Professor-Demo Lane F Setup Package
+## Stage F0: Narrow Professor-Demo Lane F Setup Package
 
 Enter this stage if:
 
@@ -174,7 +243,7 @@ Stop after:
 
 - one docs-only package commit or one blocker note
 
-## Stage 8: Lane F Package Review And Promotion Decision
+## Stage F1: Lane F Package Review And Promotion Decision
 
 Same pattern as Lane E package review.
 
@@ -184,7 +253,7 @@ Required result:
 
 Stop after one milestone.
 
-## Stage 9: Lane F Control-Plane Promotion
+## Stage F2: Lane F Control-Plane Promotion
 
 Same pattern as Lane E promotion.
 
@@ -194,7 +263,7 @@ Required result:
 
 Stop after one milestone.
 
-## Stage 10: Lane F Implementation
+## Stage F3: Lane F Implementation
 
 Enter this stage if:
 
@@ -213,7 +282,7 @@ Required result:
 
 Stop after one milestone.
 
-## Stage 11: Lane F Review Stack
+## Stage F4: Lane F Review Stack
 
 Same pattern as Lane E review stack.
 
@@ -223,7 +292,7 @@ Required result:
 
 Stop after one milestone.
 
-## Stage 12: Lane F Reconcile
+## Stage F5: Lane F Reconcile
 
 Same pattern as Lane E reconcile.
 
@@ -233,7 +302,7 @@ Required result:
 
 Stop after one milestone.
 
-## Stage 13: Thin Comparison/Demo Run
+## Stage C0: Thin Comparison/Demo Run
 
 Enter this stage if:
 
@@ -257,7 +326,7 @@ Do not:
 
 Stop after one milestone.
 
-## Stage 14: Professor Demo Handoff Package
+## Stage C1: Professor Demo Handoff Package
 
 Enter this stage if:
 

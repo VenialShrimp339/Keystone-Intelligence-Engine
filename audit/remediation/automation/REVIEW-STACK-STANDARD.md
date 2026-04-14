@@ -19,6 +19,9 @@ Every runtime candidate must get:
 
 These may be parallelized except for the final synthesis.
 
+The generic stack is necessary but not sufficient.
+Lane-specific checks below are also mandatory when those lanes exist.
+
 ## Runtime Review Questions
 
 ### Contract/Governance Review
@@ -123,3 +126,42 @@ A runtime candidate is not clearable unless:
 The controller may use subagents aggressively for review breadth, but it may not use review breadth as an excuse to skip synthesis.
 
 The final state mutation still requires one controller synthesis pass that reads the actual review artifacts on disk.
+
+## Lane-Specific Mandatory Reviews
+
+### Lane H
+
+Lane H is not clearable unless the reviews explicitly show:
+
+- article fetch is real on the governed path
+- PDF fetch is real on the governed path
+- `document_fetch` stays system-owned and non-task-assignable
+- SEC remains separate and unclaimed
+
+### Lane E
+
+Lane E is not clearable unless the reviews explicitly show:
+
+- deterministic parse behavior for the approved source classes
+- source-shaped locators are present and reviewable
+- evidence-bundle normalization is explicit and stable
+
+The minimum Lane E review set must include:
+
+- deterministic parse review
+- citation-locator review
+- evidence-bundle schema review
+
+### Lane F
+
+Lane F is not clearable unless the reviews explicitly show:
+
+- the reporting path actually consumes the approved Lane E bundles
+- citations are anchored to fetched/parsed evidence
+- mixed-governance boundaries remain intact
+
+The minimum Lane F review set must include:
+
+- integration regression review
+- mixed-governance review
+- citation-support spot-check review

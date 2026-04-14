@@ -7,13 +7,16 @@ This contract governs any unattended Codex heartbeat that tries to move Keystone
 The automation is allowed to make progress.
 It is not allowed to improvise authority, skip review depth, or silently widen scope.
 
-This document is not live authority by itself.
-Live authority still comes from:
+This document is not live lane authority by itself.
+Live lane authority still comes from:
 
 1. `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 2. `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 
-If this contract conflicts with the live control plane, the control plane wins.
+If this contract conflicts with the live control plane on lane authority, allowed write sets, blocker state, or baseline pins, the control plane wins.
+
+If this contract is stricter on pacing, review depth, or stop behavior, the stricter contract wins.
+In other words: the control plane may allow continued autonomous progress, but this contract may still require the automation to stop after one milestone for safety.
 
 ## Overnight Goal
 
@@ -54,7 +57,32 @@ It must re-verify them from disk at the start of every wake.
 - The last cleared code baseline is `65a612d`.
 - The old Retrieval MVP Lane D candidate `f1af7dfafa2e66b831810d70006ab8295411c61b` is frozen as blocked superseded reference material only.
 - `Lane H - Retrieval Tool-Surface Authority Expansion` is the active forward retrieval lane.
-- `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` is the current Lane H candidate under review/clearance reconciliation pressure.
+- `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` may be the current Lane H candidate, but the automation must verify that from disk before acting on it.
+
+## Minimum Startup Read Set
+
+At the start of every wake, the automation must read:
+
+1. the live control plane
+2. the active handoff
+3. this controller contract
+4. the overnight state machine
+5. the review stack standard
+6. the current MVP gap map
+7. the current state summary
+
+In addition, it must read the exact active lane authority stack named by the handoff.
+
+For the current Lane H state, that means at minimum:
+
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/WORKSTREAM-HANDOFF.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/AUTHORITY-EXPANSION-DECISION.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/NEW-LANE-SETUP-ARTIFACT.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/ALLOWED-WRITE-SET.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/TOOL-CONTRACT-CHANGES.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/PROMOTION-DECISION.md`
+
+If a current candidate packet exists for the active lane, it must also read the lane's current review synthesis and current blocked-or-cleared checkpoint before acting.
 
 ## Non-Negotiable Safety Rules
 
@@ -162,7 +190,9 @@ If a hard stop is hit:
 
 The overnight controller is allowed to chase only this narrow path:
 
-1. reconcile Lane H clearance into the live control plane if stale
+1. finish Lane H from the current live state:
+   - reconcile stale Lane H clearance if a cleared packet already exists
+   - or implement/review Lane H if it truly remains unresolved
 2. create and promote a narrow professor-demo Lane E setup package
 3. implement Lane E
 4. review and reconcile Lane E
@@ -170,6 +200,7 @@ The overnight controller is allowed to chase only this narrow path:
 6. implement Lane F
 7. review and reconcile Lane F
 8. run one thin comparison/demo package
+9. write one professor-demo handoff package
 
 Anything else is either later or sidecar.
 
