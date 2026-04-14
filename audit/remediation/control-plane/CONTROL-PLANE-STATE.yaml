@@ -1,29 +1,30 @@
 version: 1
-controller_epoch: 7
+controller_epoch: 8
 lease_owner: codex-gpt-5.4-xhigh-main-controller
-lease_acquired_at: "2026-04-13T15:16:20-04:00"
-lease_heartbeat_at: "2026-04-13T15:16:20-04:00"
-lease_expires_at: "2026-04-13T15:46:20-04:00"
+lease_acquired_at: "2026-04-13T19:55:07-04:00"
+lease_heartbeat_at: "2026-04-13T19:55:07-04:00"
+lease_expires_at: "2026-04-13T20:25:07-04:00"
 lease_takeover_rule: "If lease_heartbeat_at is older than 30 minutes, or the new controller cannot confirm repo state from disk, it must increment controller_epoch, rewrite lease fields, and append the takeover to ACTIVE-HANDOFF.md before mutating state."
 lease_stolen_by: codex-gpt-5.4-xhigh-main-controller
 active_branch: codex/remediation-program
 controller_workspace_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine
 active_worktree_path: null
-planned_worktree_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch
-planned_worktree_branch: codex/retrieval-mvp-fetch
+planned_worktree_path: null
+planned_worktree_branch: null
 runtime_truth_anchor_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wave-4b
 runtime_truth_anchor_commit: 65a612d
-review_worktrees: []
-active_wave: retrieval-mvp-fetch
+review_worktrees:
+  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch
+active_wave: retrieval-mvp-authority-expansion
 active_state: setup
 execution_baseline_commit: 65a612d
 last_cleared_code_commit: 65a612d
-current_candidate_commit: 65a612d
-candidate_parent_commit: 65a612d
+current_candidate_commit: f1af7dfafa2e66b831810d70006ab8295411c61b
+candidate_parent_commit: 65a612dc1400abbedcfbdda1f173cd72a3a90c06
 approved_setup_artifact: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ARTIFACT.md
 approved_write_set: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md
-candidate_packet_root: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/retrieval-mvp-fetch/
-last_docs_reconcile_commit: 8bb00ab0298babd50d24fa3c07afae2ae7172ff6
+candidate_packet_root: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/
+last_docs_reconcile_commit: 66f6178c1d710effe44cb5c278c5c729d5bcc216
 docs_reconcile_commit_policy: "Pinned to the exact docs snapshot this controller reconcile started from. Do not treat it as symbolic HEAD; later controller docs checkpoints must advance this pin explicitly."
 last_cleared_docs_commit: 91f97c2
 planning_anchor_commit: 2e6d780
@@ -49,7 +50,7 @@ retrospective_review_launch:
 retrospective_sidecar_roots:
   - audit/remediation/workstream-retro/
   - audit/remediation/workstream-retro/reviews/
-required_review_stage: retrieval_mvp_lane_d_fetch_setup
+required_review_stage: retrieval_mvp_article_pdf_canonical_fetch_authority_decision
 accepted_overlays:
   - round-3-content-audit-planning-overlay
 workspace_policy: "Main workspace is controller/docs only. Any future code lane must run in a dedicated clean worktree rooted at the last cleared code commit."
@@ -62,17 +63,24 @@ hard_stop_conditions:
   - "A review finds a blocker that cannot be resolved within the active wave's approved scope."
   - "An external dependency requires Jack's judgment, scoring, or a new architecture decision not already settled in FINAL-DECISIONS-v2.1.md."
   - "The controller cannot reconcile repo state to the control plane without risking unrelated user changes."
-blocked_on: []
-next_action: "The retrospective audit program remains complete under the authoritative review ledger, but that retrospective completion is prerequisite proof only. The live forward authorization is now Retrieval MVP Lane D fetch in setup state from baseline 65a612d. Keep the main workspace docs-only; in the next runtime session open branch codex/retrieval-mvp-fetch in /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch from 65a612d and implement only the exact write set in audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md. Do not start Wave 5, calibration, parser Lane E, L1 integration Lane F, or UI work."
+blocked_on:
+  - "Candidate f1af7dfafa2e66b831810d70006ab8295411c61b is BLOCKED on a document_fetch authority / scope conflict under the current Lane D setup package."
+  - "Candidate f1af7dfafa2e66b831810d70006ab8295411c61b is BLOCKED on EDGAR venue / access proof from the current execution environment."
+  - "No Retrieval MVP Lane D coding is authorized until a later controller checkpoint resolves the docs-only authority-expansion decision for article/PDF canonical fetch."
+forward_code_lane_authorized: false
+blocked_candidate_status: BLOCKED
+blocked_candidate_blocker_classification: both
+controller_priority_workstream: docs_only_article_pdf_canonical_fetch_authority_expansion_decision
+next_action: "The retrospective audit program remains complete under the authoritative review ledger, but that retrospective completion is prerequisite proof only. Candidate f1af7dfafa2e66b831810d70006ab8295411c61b is now BLOCKED, and Retrieval MVP Lane D may not continue coding from /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch. The live forward authorization is now a docs-only controller authority-expansion decision for article/PDF canonical fetch: decide whether a new callable tool surface such as document_fetch is explicitly authorized, or whether Retrieval MVP scope is narrowed to existing tool names only. Only after that decision is committed may any later retrieval code lane or EDGAR venue retry be considered. Do not start Wave 5, calibration, parser Lane E, L1 integration Lane F, or UI work."
 latest_review_packets:
+  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-mvp/LANE-D-AUTHORITY-RESOLUTION.md
+  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-mvp/NEXT-CONTROLLER-ACTION.md
+  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-review-synthesis.md
+  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-blocked-checkpoint.md
   - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/BACKEND-REALITY-GATE.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/TOOL-CONTRACT-GATE.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/GOVERNANCE-GATE.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/RUN-CONTRACT-GATE.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/CONTROLLER-UNLOCK-WORKTREE-PROVENANCE-GATE.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ADVERSARIAL-REVIEW.md
-dirty_state_status: retrieval_mvp_lane_d_fetch_setup_ready
+  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ARTIFACT.md
+  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md
+dirty_state_status: retrieval_mvp_lane_d_blocked_authority_expansion_pending
 recovery_patch_path: null
 recovery_patch_sha256: null
 recovery_branch: codex/retrieval-mvp-fetch
@@ -80,18 +88,16 @@ wip_parent_candidate_commit: 65a612d
 wip_scope:
   - audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
   - audit/remediation/control-plane/ACTIVE-HANDOFF.md
+  - CURRENT-STATE.md
+  - audit/remediation/WORKSTREAM-STATUS.md
+  - audit/remediation/retrieval-mvp/LANE-D-AUTHORITY-RESOLUTION.md
+  - audit/remediation/retrieval-mvp/NEXT-CONTROLLER-ACTION.md
   - audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ARTIFACT.md
   - audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md
   - audit/remediation/next-wave-setup/REVIEW-AND-GATE-CHECKLIST.md
-  - audit/remediation/next-wave-setup/BACKEND-TRUTH-MATRIX-SPEC.md
-  - audit/remediation/next-wave-setup/LIVE-PROBE-EVIDENCE-SCHEMA.md
-  - audit/remediation/next-wave-setup/BACKEND-REALITY-GATE.md
   - audit/remediation/next-wave-setup/TOOL-CONTRACT-GATE.md
   - audit/remediation/next-wave-setup/GOVERNANCE-GATE.md
   - audit/remediation/next-wave-setup/RUN-CONTRACT-GATE.md
-  - audit/remediation/next-wave-setup/CONTROLLER-UNLOCK-WORKTREE-PROVENANCE-GATE.md
-  - audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ADVERSARIAL-REVIEW.md
-  - audit/remediation/next-wave-setup/REQUIRED-CORRECTIONS-CHECKLIST.md
-  - audit/remediation/next-wave-setup/LANE-CHOICE-RATIONALE.md
-  - audit/remediation/next-wave-setup/WORKSTREAM-HANDOFF.md
-  - audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md
+  - audit/remediation/retrieval-mvp/IMPLEMENTATION-LANES.md
+  - audit/remediation/retrieval-mvp/RUNTIME-LANE-UNLOCK-MEMO.md
+  - audit/remediation/retrieval-mvp/WORKTREE-AND-REVIEW-GATE-CHECKLIST.md

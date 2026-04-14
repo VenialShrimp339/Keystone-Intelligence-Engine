@@ -1,5 +1,5 @@
 # Current State
-*Last updated: 2026-04-12 | Updated by: Batch 1 docs/package reconcile + retrospective lineage normalization*
+*Last updated: 2026-04-13 | Updated by: docs-only control-plane blocked-state reconcile*
 
 ---
 
@@ -13,17 +13,19 @@
 - **Wave 3B:** Cleared in commit `5cc9585` (`feat: implement wave 3b round control`).
 - **Wave 4:** Cleared in commit `6406e46` (`fix: implement wave 4 polish slice`).
 - **Wave 4B:** Cleared in commit `65a612d` (`feat: implement wave 4b content slice`).
-- **Round-3 overlay:** Accepted for Wave 2B and later. It did **not** reopen Waves 1A through 2A.
+- **Retrospective audit program:** Complete under `audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml`, but that completion remains prerequisite proof only.
+- **Retrieval MVP Lane D:** Latest candidate `f1af7dfafa2e66b831810d70006ab8295411c61b` is `BLOCKED`.
+- **Current forward authorization:** Docs-only authority-expansion decision for article/PDF canonical fetch.
+- **Current retrieval code authorization:** None.
 
 ## What just happened
 
-1. The clean Wave 4B implementation lane landed in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wave-4b` as `65a612d`.
-2. The required Wave 4B verification matrix passed on the committed snapshot, and the named runtime-probe bundle passed as well.
-3. Independent adversarial review and second opinion both returned `CLEARED` for `6406e46..65a612d`.
-4. Wave 4B is now cleared, and `65a612d` becomes the last cleared code commit.
-5. The approved `D-2`, `C-1` / `C-2` / `C-3` / `C-4` / `C-5` / `C-7` / `C-8` / `C-9` / `C-12` / `C-13` / `C-14` / `C-15` slices are now load-bearing on the committed runtime path.
-6. A hard stop now applies because no post-Wave-4B authority artifact is yet committed.
-7. `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml` is now promoted as the authoritative retrospective lineage layer for docs checkpoints `35a8a29` through `2e6d780`.
+1. The corrected next-wave setup package was previously promoted and pinned Lane D fetch to baseline `65a612d`.
+2. A Lane D candidate was then created in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch` at `f1af7dfafa2e66b831810d70006ab8295411c61b`.
+3. The latest review synthesis and blocked checkpoint classify that candidate as `BLOCKED` with two separate blockers: a `document_fetch` authority / scope conflict and an EDGAR venue / access blocker.
+4. `audit/remediation/retrieval-mvp/LANE-D-AUTHORITY-RESOLUTION.md` rejects `document_fetch` for the current Lane D authority, and `audit/remediation/retrieval-mvp/NEXT-CONTROLLER-ACTION.md` forbids more Lane D coding from the current worktree.
+5. The live control plane now records that no retrieval code lane is currently authorized.
+6. The next controller-priority workstream is a docs-only decision on whether article/PDF canonical fetch gets an explicitly authorized callable tool surface or Retrieval MVP narrows itself to existing tool names only.
 
 ## What happens next
 
@@ -31,10 +33,11 @@
    - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
    - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 2. Treat `65a612d` as the last cleared code commit.
-3. Use the Wave 4B clearance packet set plus `audit/remediation/WAVE-4B-SETUP.md` as the binding proof of what cleared.
-4. For retrospective audits, use `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml` instead of reconstructing the historical symbolic-`HEAD` chain by hand.
-5. Keep the main workspace controller/docs only.
-6. Do **not** open Wave 5, calibration, or any deferred-capability lane until a later controller-approved setup artifact exists.
+3. Treat `f1af7dfafa2e66b831810d70006ab8295411c61b` as the latest blocked Retrieval MVP Lane D candidate, not as a promotable recovery stop.
+4. Keep the main workspace controller/docs only.
+5. Do **not** authorize more coding in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch`.
+6. Open only the docs-side authority decision lane that resolves article/PDF canonical fetch policy before any later retrieval code lane or EDGAR retry is considered.
+7. Do **not** start parser Lane E, L1 integration Lane F, UI work, benchmark acceptance claims, Wave 5, or calibration.
 
 ## Reconciled wave plan
 
@@ -48,7 +51,8 @@
 | Wave 3B | **Cleared** (`5cc9585`) | Thin Pipeline-L2 plus minimum viable live iterative loop |
 | Wave 4 | **Cleared** (`6406e46`) | Low-risk polish slice `E-2`, `E-4`, `E-5` |
 | Wave 4B | **Cleared** (`65a612d`) | Frozen content implementation from the Wave 4 memo set |
-| Wave 5 | Not authorized | Hard stop pending a committed next-wave setup artifact |
+| Retrieval MVP Lane D | **Blocked** (`f1af7df`) | Candidate proved fetch progress but is not promotable under current authority |
+| Authority-expansion controller lane | **Active docs-only workstream** | Decide article/PDF canonical fetch authority before any later retrieval coding |
 
 ## Authoritative docs for a fresh session
 
@@ -56,20 +60,22 @@
 - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 - `audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml`
-- `audit/remediation/runs/wave-4b/candidate-65a612d-adversarial-review.md`
-- `audit/remediation/runs/wave-4b/candidate-65a612d-second-opinion.md`
-- `audit/remediation/runs/wave-4b/candidate-65a612d-file-manifest.md`
+- `audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml`
+- `audit/remediation/retrieval-mvp/LANE-D-AUTHORITY-RESOLUTION.md`
+- `audit/remediation/retrieval-mvp/NEXT-CONTROLLER-ACTION.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-review-synthesis.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-blocked-checkpoint.md`
 - `audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md`
-- `audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md`
-- `audit/remediation/WAVE-4B-SETUP.md`
+- `audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ARTIFACT.md`
+- `audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md`
 - `audit/remediation/WORKSTREAM-STATUS.md`
 - `audit/remediation/decisions/FINAL-DECISIONS-v2.1.md`
 
 ## Non-authoritative but still useful
 
 - `audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md`
-- `audit/remediation/runs/wave-4b/candidate-65a612d-implementation.md`
-- `audit/remediation/runs/wave-4/candidate-6406e46-clearance.md`
+- `audit/remediation/runs/wave-4b/candidate-65a612d-review-synthesis.md`
+- `audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md`
 - `audit/remediation/WAVE-4-4B-PREWORK.md`
 - `audit/remediation/WAVE-4-D2-ACTIONABILITY-RESEARCH.md`
 - `audit/remediation/WAVE-4-CORE-PROMPT-QUALITY-RESEARCH.md`
