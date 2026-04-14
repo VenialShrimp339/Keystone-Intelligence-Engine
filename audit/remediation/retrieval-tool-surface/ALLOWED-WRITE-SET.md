@@ -87,6 +87,22 @@ They may not:
 - alter template matching semantics beyond tool validation
 - introduce L1 integration behavior
 
+### `src/keystone/models/research.py`
+
+This file may be changed only if an isolated additive block is unavoidable for
+article/PDF fetch request, response, identity, coverage, or audit DTOs.
+
+It may not change existing semantics, fields, validators, defaults, or behavior for:
+
+- `ResearchSpec`
+- `EngagementSpec`
+- `PipelineProfile`
+- `StructuredFinding`
+- `FindingClaim`
+
+If the lane cannot stay inside isolated additive DTO blocks, it has crossed into
+broader runtime scope creep and must stop for controller guidance.
+
 ### `src/keystone/gateway/auth.py` and `src/keystone/gateway/mcp_gateway.py`
 
 These files may be changed only to support an explicit system-owned call path for `document_fetch` and to audit it.

@@ -36,11 +36,12 @@ If the controller promotes this package, update at minimum:
 3. `audit/remediation/retrieval-mvp/WORKTREE-AND-REVIEW-GATE-CHECKLIST.md`
 4. `audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ARTIFACT.md` or a successor setup artifact
 5. `audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md` or a successor write-set file
-6. `audit/remediation/next-wave-setup/TOOL-CONTRACT-GATE.md`
-7. `audit/remediation/next-wave-setup/GOVERNANCE-GATE.md`
-8. `audit/remediation/next-wave-setup/RUN-CONTRACT-GATE.md`
-9. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
-10. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+6. `audit/remediation/next-wave-setup/REVIEW-AND-GATE-CHECKLIST.md` or a successor gate-checklist file
+7. `audit/remediation/next-wave-setup/TOOL-CONTRACT-GATE.md`
+8. `audit/remediation/next-wave-setup/GOVERNANCE-GATE.md`
+9. `audit/remediation/next-wave-setup/RUN-CONTRACT-GATE.md`
+10. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+11. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 
 Do not mark Lane H as active until those updates exist.
 

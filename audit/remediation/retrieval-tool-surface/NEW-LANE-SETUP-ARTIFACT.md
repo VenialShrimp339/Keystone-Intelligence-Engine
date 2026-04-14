@@ -132,9 +132,10 @@ At minimum, a future candidate must run:
 3. `tests/unit/gateway/test_tool_registry.py`
 4. `tests/unit/specification/test_task_generator.py`
 5. `tests/unit/test_auth.py`
-6. `tests/unit/test_gateway.py`
-7. `tests/unit/test_research_models.py`
-8. `tests/unit/test_tool_registry.py`
+6. `tests/unit/test_audit_log.py`
+7. `tests/unit/test_gateway.py`
+8. `tests/unit/test_research_models.py`
+9. `tests/unit/test_tool_registry.py`
 
 If `src/keystone/models/research.py` changes, add targeted model coverage for the new DTOs.
 
@@ -144,10 +145,12 @@ The review packet under `audit/remediation/runs/retrieval-tool-surface/` must in
 
 - `candidate-<sha>-implementation.md`
 - `candidate-<sha>-file-manifest.md`
+- `candidate-<sha>-backend-truth-matrix.md`
 - `candidate-<sha>-tool-contract-review.md`
 - `candidate-<sha>-live-fetch-review.md`
 - `candidate-<sha>-adversarial-review.md`
 - `candidate-<sha>-second-opinion.md`
+- `candidate-<sha>-review-synthesis.md`
 - `candidate-<sha>-blocked-or-cleared-checkpoint.md`
 - `live-probe-results.json`
 
