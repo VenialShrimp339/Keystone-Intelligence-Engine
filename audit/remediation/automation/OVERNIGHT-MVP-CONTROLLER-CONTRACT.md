@@ -18,6 +18,27 @@ If this contract conflicts with the live control plane on lane authority, allowe
 If this contract is stricter on pacing, review depth, or stop behavior, the stricter contract wins.
 In other words: the control plane may allow continued autonomous progress, but this contract may still require the automation to stop after one milestone for safety.
 
+## Thread Model
+
+This heartbeat thread is not the real work session.
+
+Treat it as a stateless dispatcher with three durable anchors:
+
+1. the saved automation prompt in `/Users/jackriddle/.codex/automations/overnight-mvp-push/automation.toml`
+2. the live disk-backed authority docs and lane packets
+3. the git/worktree artifacts created by prior milestones
+
+Thread compaction is expected and acceptable.
+The controller must behave as if the thread remembers nothing useful.
+
+That means:
+
+- every wake starts from disk
+- every substantial milestone is handed off to fresh workers
+- the parent heartbeat only decides stage, launches work, validates returned artifacts, and performs small controller reconciles or blocker stops
+
+The heartbeat must not rely on preserved conversational context to carry the project.
+
 ## Overnight Goal
 
 The overnight goal is the shortest honest path from the current state to a professor-usable MVP demo.
@@ -119,6 +140,23 @@ Why this rule exists:
 - it reduces overlapping state mutations
 - it keeps context windows from turning into silent workflow engines
 
+## Fresh-Worker Rule
+
+For anything larger than a trivial docs-only reconcile or blocker note, the heartbeat must dispatch the actual milestone work to fresh subagents.
+
+Use this rule:
+
+- docs-only reconcile or blocker write: parent thread may do it directly
+- setup package creation: fresh worker
+- setup-package review: fresh review workers plus fresh synthesis worker
+- runtime implementation candidate: fresh code-writing worker
+- runtime review stack: fresh read-only reviewers plus fresh synthesis worker
+- comparison/demo package: fresh worker
+
+Fresh workers should be launched with self-contained prompts and explicit file paths.
+They should not depend on inherited chat context.
+When possible, use `fork_context: false` so the worker starts clean and is forced to re-read the exact disk inputs it needs.
+
 ## Allowed Subagent Pattern
 
 The safe subagent pattern is:
@@ -126,6 +164,9 @@ The safe subagent pattern is:
 - one controller
 - zero or one code-writing implementer
 - multiple read-only reviewers
+
+The controller heartbeat should prefer fresh child workers over doing deep work inline.
+This is the main protection against thread compaction drift.
 
 Do not use multiple overlapping code-writing implementers on the same lane unless the write sets are explicitly disjoint and controller-promoted. The current overnight MVP path does not justify that complexity.
 
@@ -140,6 +181,8 @@ Run these in parallel where useful:
 
 Then run one synthesis pass that decides `CLEARED` or `BLOCKED`.
 
+The review workers and the synthesis worker should all be fresh workers with explicit read sets and output paths.
+
 ### Preferred Review Team For Docs-Only Setup Packages
 
 Run at least:
@@ -149,6 +192,8 @@ Run at least:
 3. MVP usefulness review if the package changes the professor-demo path
 
 Then run one promotion decision pass.
+
+Again, prefer fresh workers with explicit disk inputs over inline thread reasoning.
 
 ## Required Evidence Before Continuing
 

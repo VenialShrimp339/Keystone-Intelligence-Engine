@@ -37,15 +37,20 @@ The durable repo-backed rules it reads live under:
 4. The first hardened draft did not explicitly allow the final professor-demo handoff package.
    Fix: the saved automation prompt now includes the professor-demo handoff package as a valid milestone.
 
+5. The earlier heartbeat design still risked feeling like "keep reasoning in one long chat thread" rather than "start fresh each milestone."
+   Fix: the controller contract and state machine now define the heartbeat as a dispatcher only. Any substantial setup, implementation, review, or demo milestone must be pushed into fresh workers with explicit disk inputs and explicit output artifacts.
+
 ## Current Safety Posture
 
 The current model is:
 
 - one heartbeat controller on a fixed thread
+- one stateless dispatcher thread
 - one milestone per wake
 - zero or one code writer
 - read-only review fanout
 - mandatory blocker file plus self-pause behavior on hard stops
+- fresh-worker dispatch for any substantial milestone
 
 This is materially safer than the earlier loose heartbeat prompt.
 
@@ -58,11 +63,12 @@ Known limits:
 - it depends on the Codex app remaining open and able to run
 - it is not a durable queue or exact-once scheduler
 - it still relies on the model correctly following disk authority and the written contract
+- fresh workers are subagents, not separate visible top-level Codex windows
 - it is designed to reach at most `professor_demo_ready_on_article_pdf_path`, not claim full MVP clearance
 
 ## Current Recommendation
 
 - keep the schedule at hourly
-- keep the automation paused until you intentionally start the overnight run
+- keep the automation active only after the dispatcher-style prompt is installed
 - treat the first overnight milestone as a Lane H stale-state reconcile if the control plane is still behind the cleared Lane H packet
 - keep SEC, Browser Use implementation, advanced retrieval, UI runtime, and all broader product work deferred

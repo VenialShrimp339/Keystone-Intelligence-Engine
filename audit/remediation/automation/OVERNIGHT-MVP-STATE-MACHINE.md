@@ -7,6 +7,21 @@ One wake, one milestone.
 Every wake starts from disk and re-determines the current stage.
 Do not assume the previous wake finished what it intended.
 
+## Dispatch Rule
+
+The heartbeat thread is a dispatcher, not the primary work session.
+
+So for each wake:
+
+1. read disk and determine the stage
+2. if the milestone is only a tiny docs reconcile or blocker note, the parent may do it directly
+3. otherwise dispatch the milestone to fresh workers with explicit file paths and explicit output targets
+4. read only the returned artifact set needed to close the milestone
+5. stop after that single milestone
+
+Fresh workers should avoid inherited chat context whenever possible.
+Treat them as the automation equivalent of starting a new session from scratch.
+
 ## Stage H0: Reconcile Stale Lane H State
 
 Enter this stage if:
@@ -18,6 +33,10 @@ Allowed work:
 
 - docs-only reconcile
 - update control-plane files only
+
+Worker model:
+
+- parent may do this directly because it is a small controller reconcile
 
 Required result:
 
@@ -107,6 +126,11 @@ Allowed work:
 
 - docs-only narrow setup package for deterministic parse/evidence normalization
 
+Worker model:
+
+- dispatch to one fresh docs worker
+- then stop after the package exists
+
 Required scope:
 
 - article/PDF path only
@@ -134,6 +158,11 @@ Allowed work:
 - docs-only adversarial review
 - docs-only promotion decision
 
+Worker model:
+
+- one or more fresh read-only reviewers
+- one fresh synthesis/promotion-decision worker
+
 Required result:
 
 - either `PROMOTE`
@@ -154,6 +183,10 @@ Allowed work:
 
 - docs-only reconcile
 
+Worker model:
+
+- parent may do this directly
+
 Required result:
 
 - live control plane authorizes narrow Lane E
@@ -172,6 +205,10 @@ Enter this stage if:
 Allowed work:
 
 - one runtime implementation candidate inside the approved Lane E write set
+
+Worker model:
+
+- dispatch to one fresh code-writing worker only
 
 Required result:
 
@@ -195,6 +232,11 @@ Allowed work:
 - full review stack
 - synthesis
 
+Worker model:
+
+- multiple fresh read-only reviewers in parallel
+- one fresh synthesis worker
+
 Required result:
 
 - `CLEARED` or `BLOCKED`
@@ -214,6 +256,10 @@ Allowed work:
 
 - docs-only reconcile
 
+Worker model:
+
+- parent may do this directly
+
 Required result:
 
 - live control plane reflects Lane E outcome
@@ -232,6 +278,10 @@ Enter this stage if:
 Allowed work:
 
 - docs-only narrow setup package for L1 integration and anchored citations
+
+Worker model:
+
+- dispatch to one fresh docs worker
 
 Required scope:
 
