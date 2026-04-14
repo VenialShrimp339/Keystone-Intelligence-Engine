@@ -1,4 +1,4 @@
-# Package `068d7ef` Usefulness Review
+# Package `c9c7a15` Usefulness Review
 
 Date: 2026-04-14  
 Review scope: docs-only pre-promotion package review for narrow Lane E
@@ -7,23 +7,27 @@ Review scope: docs-only pre-promotion package review for narrow Lane E
 
 - Reviewer role: `Usefulness And End-Of-Day Target Sanity Reviewer`
 - Reviewer: `Codex GPT-5.4 xhigh fast`
-- Reviewed snapshot: `068d7efc74049acb387e8b5f802527415e2eec65`
+- Reviewed snapshot: `c9c7a1596d68171881023ce832412b74b2ee5c7c`
 - Package root: `audit/remediation/retrieval-parse/`
 - Verdict: `CLEARED`
-- Lane H invariants remain preserved: `yes`
 - Thin post-E bridge still needed later: `yes`
 
 ## Evidence Inputs
 
+- `c9c7a1596d68171881023ce832412b74b2ee5c7c:audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md`
+- `c9c7a1596d68171881023ce832412b74b2ee5c7c:audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md`
+- `c9c7a1596d68171881023ce832412b74b2ee5c7c:audit/remediation/retrieval-parse/ALLOWED-WRITE-SET.md`
+- `c9c7a1596d68171881023ce832412b74b2ee5c7c:audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md`
+- `c9c7a1596d68171881023ce832412b74b2ee5c7c:audit/remediation/retrieval-parse/LANE-CHOICE-RATIONALE.md`
+- `c9c7a1596d68171881023ce832412b74b2ee5c7c:audit/remediation/retrieval-parse/SESSION-PROMPTS.md`
 - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md`
-- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md`
-- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md`
-- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/LANE-CHOICE-RATIONALE.md`
-- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/SESSION-PROMPTS.md`
 - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md`
 - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md`
+
+## Lane H Invariant Statement
+
+Lane H invariants remain preserved for reviewed snapshot `c9c7a1596d68171881023ce832412b74b2ee5c7c`: `document_fetch` stays system-owned and non-task-assignable, governed article/PDF fetch authority remains frozen at the cleared Lane H seam, and narrow Lane E consumes only persisted Lane H outputs downstream of that seam.
 
 ## Judgment
 
@@ -46,4 +50,4 @@ That bridge remains separate from full Lane F integration and is not authorized 
 
 ## Final Verdict
 
-Usefulness review for package snapshot `068d7efc74049acb387e8b5f802527415e2eec65`: `CLEARED`.
+Usefulness review for package snapshot `c9c7a1596d68171881023ce832412b74b2ee5c7c`: `CLEARED`.
