@@ -1,72 +1,89 @@
-# Keystone Intelligence Engine — Claude Code Project
+# The Keystone Intelligence Engine
 
-**30 files | 1.1MB | Ready for Claude Code**
+A multi-agent AI system for automated consulting research.
 
-## Setup
+Jack Riddle | IU Kelley School of Business | Econ Consulting Capstone, Prof. Youle | Spring 2026
 
-1. Point Claude Code at this directory
-2. `CLAUDE.md` loads automatically — lean project context + working rules
-3. Skills and agents in `.claude/` load on demand
+## Status
 
-### Getting started
+The audited project is materially real, but it is not yet an honest play-ready MVP with the full governed retrieval layer.
 
-```
-# Analyze Thread A reports (landscape):
-"Read reports 1-5 in research-reports/. For each, cross-reference with RESEARCH-PROMPTS-FINAL.md and produce a structured analysis following the research-synthesis skill methodology."
+Current high-level truth:
 
-# Or invoke the research-analyst agent directly:
-"@research-analyst Analyze Report 1 (A1: Multi-Agent Research Systems)"
-```
+- historical implementation is cleared through Wave 4B at `65a612d`
+- the retrospective audit program is complete
+- the live forward workstream is `Lane H - Retrieval Tool-Surface Authority Expansion`
+- governed full-document retrieval, deterministic parse/evidence normalization, and L1 retrieval integration are still in active buildout
 
-## File Structure
+Use these docs first for current truth before relying on any older readiness language:
 
-### Root (read first)
-| File | What |
-|------|------|
-| `CLAUDE.md` | Project context, working rules, evidence standards. Loaded every session. |
-| `CAPSTONE-PLAN-v2.md` (1051 lines) | **Source of truth.** Full 6-layer pipeline architecture. |
-| `RESEARCH-PROMPTS-FINAL.md` | 16 finalized research prompts. Maps prompt numbers → topics. |
-| `CAPSTONE-PLAN.md` | V1 for comparison. |
+- [CURRENT-STATE.md](CURRENT-STATE.md)
+- [audit/remediation/WORKSTREAM-STATUS.md](audit/remediation/WORKSTREAM-STATUS.md)
+- [audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md](audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md)
 
-### .claude/ (Claude Code configuration)
-```
-.claude/
-├── settings.json                          # Project-level permissions
-├── skills/
-│   ├── research-synthesis/SKILL.md        # Analysis methodology, phases, evidence tiers
-│   └── architecture/SKILL.md             # Pipeline layers, handoff contracts, design principles
-└── agents/
-    └── research-analyst.md                # Report analysis agent (Opus, structured output)
+Full architecture/evolution context remains in [docs/architecture-and-evolution.md](docs/architecture-and-evolution.md).
+
+## Quick Start
+
+These commands are still useful for local setup and legacy demos, but they are not by themselves proof that the current project state is MVP-complete. Read the status/buildout docs above first if you need the truthful current build picture.
+
+**Prerequisites:** Python 3.11+, API keys (OpenAI, Exa, Brave Search)
+
+```bash
+./scripts/setup.sh          # Creates venv, installs deps, configures API keys
+./scripts/run_demo.sh       # Runs the pipeline on a sample research question
+pytest tests/unit/ -q       # Runs the test suite (no API keys needed)
 ```
 
-### research-reports/ (16 files, ~508KB)
-| Reports | Thread | Topic |
-|---------|--------|-------|
-| 1-5 | A1-A5 | Open source landscape, evaluation frameworks, self-improvement, orchestration, deep research tooling |
-| 6-9 | B1-B4 | What partners value, decision-useful research, quality of thought, AI failure modes |
-| 10-13 | C1-C4 | Specification-driven dev, deliberation, report generation, data retrieval |
-| 14-16 | D1-D3 | Best small-team AI systems, academic papers, 10x ideas |
+## For Prof. Youle
 
-### nate-synthesis/ (3 files, ~164KB)
-| File | What |
-|------|------|
-| `SYNTHESIS.md` | Master synthesis of 91 articles. Core thesis + validated frameworks. |
-| `CAPSTONE-IMPLICATIONS.md` | How the 91 articles reshape the capstone architecture. |
-| `FRAMEWORKS.md` | 76 named frameworks + 112-term concept dictionary. |
+The comprehensive project report is at [docs/architecture-and-evolution.md](docs/architecture-and-evolution.md). It covers the architecture, how the design evolved through 26 deep research reports, key design decisions with empirical evidence, and the AI-assisted build methodology.
 
-### source-analysis/ (4 files, ~164KB)
-| File | What |
-|------|------|
-| `BOOKMARK-ARCHITECTURE-INSIGHTS.md` | Distilled insights from 189 bookmarks, organized by pipeline layer. |
-| `NEW-BOOKMARKS-SYNTHESIS-APR4.md` | 20 April 4 bookmarks with architecture-changing findings. |
-| `source-by-source-analysis.md` | Deep analysis of 39 X bookmarks → architecture decisions. |
-| `external-sources-analysis.md` | 12 key external source analyses. |
+## Directory Guide
 
-### quality-audits/ (3 files, ~116KB)
-Audit of all 16 research prompts, system prompt analysis, cross-cutting analysis.
+| Path | What's Here |
+|------|-------------|
+| `docs/architecture-and-evolution.md` | Comprehensive architecture, evolution, and methodology report |
+| `src/keystone/` | Production Python code (10 components, ~11K lines) |
+| `tests/` | 830 automated tests (unit, integration, e2e) |
+| `samples/` | Example engagement specifications (Luminar, auto body chain, specialty chemicals M&A) |
+| `CAPSTONE-PLAN-v2.md` | Architecture source of truth (1,294 lines) |
+| `JACK-ARCHITECTURAL-DIRECTIVES.md` | 14 authoritative design directives from project owner |
+| `SESSION-LOG.md` | Chronological record of every development session |
+| `CURRENT-STATE.md` | Living project status snapshot |
+| `audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md` | Honest gap map from current state -> MVP -> fuller product vision |
+| `research/` | All research artifacts: 30 reports, synthesis, codebase analysis, external sources |
+| `audit/` | Active remediation (`remediation/`) + archived audit phases (`archive/`) |
+| `reference/` | External references: nano-claude-code submodule, session prompts, switchover docs |
+| `output/` | Pipeline execution outputs from test runs |
 
-## What's NOT Included (and Why)
+## The Pipeline
 
-- 91 individual Nate article analyses — distilled into the 3 synthesis docs
-- 6 raw X bookmark analysis files (230KB) — distilled into BOOKMARK-ARCHITECTURE-INSIGHTS.md
-- OpenClaw/Merlin workspace files — not capstone-relevant
+The system implements DPVI (Decompose, Parallelize, Verify, Iterate):
+
+```
+Research Question
+  -> L0: Specification Engine (question -> MECE issue tree -> task decomposition)
+  -> L1: Parallel Research Agents (isolated execution, real search APIs)
+  -> CitationProcessor (dedup, corroboration scoring, URL verification)
+  -> L1.5: Deliberation (independent multi-perspective analysis + aggregation)
+  -> L4: Evaluator (10-dimension rubric, geometric mean, citation gate)
+  -> Markdown Renderer -> Analytical Brief
+```
+
+## Running Tests
+
+```bash
+# Unit tests (no API keys needed)
+pytest tests/unit/ -q
+
+# Integration tests (requires API keys in .env)
+pytest tests/integration/ -v -m integration
+
+# Full pipeline end-to-end (real API calls, ~15-30 min)
+pytest tests/integration/test_pipeline_real.py -v -m integration -s
+```
+
+## License
+
+Proprietary. Built for Keystone Group.
