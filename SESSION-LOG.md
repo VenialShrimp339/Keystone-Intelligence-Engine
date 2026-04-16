@@ -1,5 +1,7 @@
 # Session Log
 
+> Provenance-only historical session narrative. Do not use this file as the complete live chronology or as live status authority. Start with `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, and the control-plane pair.
+
 Chronological record of every agent session on the Keystone Intelligence Engine. New agents: read this to understand the project arc. Each entry captures what was done, what was produced, and what it set up for the next session.
 
 ---
@@ -1641,3 +1643,84 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 3. Create the clean `4ff7e90` Wave 2B worktree.
 4. Replay only the approved recovery patch into that worktree.
 5. Create the next Wave 2B candidate commit and review the committed snapshot against `16e0bc7`.
+
+---
+
+## Session 24: Canon And Reconciliation Pass
+- **Timestamp:** 2026-04-16T16:51:40-0400
+- **Agent:** Codex (GPT-5.4)
+- **Task:** Docs/provenance canonization and front-door reconciliation pass. Establish a shared canon for founder intent, live truth, provenance, fresh-session read order, and Claude/Codex session discipline without touching code or packet contents.
+- **Authority docs read:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/graphify-out/GRAPH_REPORT.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/JACK-ARCHITECTURAL-DIRECTIVES.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CAPSTONE-PLAN-v2.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CLAUDE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/AGENTS.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/README.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-LOG.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/ARCHITECTURE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/architecture-and-evolution.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/README.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/project-state-reconcile/DOCS-CONTRADICTIONS-AND-SOURCE-OF-TRUTH.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/ACTIVE-HANDOFF.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/FRESH-ORCHESTRATOR-BOOTSTRAP.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/FRESH-ORCHESTRATOR-SESSION-PROMPT.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md`
+- **Start commit:** `8e002a77e149aba86ef5f0520e16e58b5647a551`
+- **End commit:** `no commit`
+- **Branch:** `codex/remediation-program`
+- **Worktree:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine`
+
+### Key results
+- Added a shared canon layer:
+  - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/FOUNDER-INTENT-DOCTRINE.md`
+  - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/AUTHORITY-INDEX.md`
+  - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-STANDARD.md`
+- Rewrote `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CLAUDE.md` and `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/AGENTS.md` as thin wrappers around the shared standard and front door.
+- Made graphify guidance conditional/fallback-safe so tracked entrypoints do not depend on generated `graphify-out/` artifacts as unconditional canonical inputs.
+- Updated the control-plane pair to:
+  - record the stale-lease takeover to controller epoch `11`
+  - record the narrow docs/provenance-only override for this session
+  - change the durable next action from Lane E package creation to Lane E promotion reconcile / decision or explicit blocker recording
+  - pin runtime truth as commit plus worktree path
+- Reconciled summary/onboarding docs so they state:
+  - Lane H is the cleared runtime truth anchor, not an active execution lane
+  - the tracked Lane E setup package exists at `c9c7a15`
+  - cleared pre-promotion Lane E reviews are persisted on the current branch at `8e002a7`
+  - live control-plane promotion is still pending
+  - `docs-only` is authorization policy, not a cleanliness claim
+- Reworked `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/README.md` into a truthful landing page and rebannered:
+  - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/README.md`
+  - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/ARCHITECTURE.md`
+  - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/architecture-and-evolution.md`
+- Added a provenance-only / non-complete-live-ledger banner to `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-LOG.md`.
+- Intentionally brought these previously untracked authority-looking docs under version control in this session:
+  - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/AGENTS.md`
+  - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/architecture-and-evolution.md`
+  - `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/README.md`
+
+### Files changed
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/FOUNDER-INTENT-DOCTRINE.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/AUTHORITY-INDEX.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-STANDARD.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CLAUDE.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/AGENTS.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/README.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-LOG.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/README.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/ARCHITECTURE.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/architecture-and-evolution.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/FRESH-ORCHESTRATOR-BOOTSTRAP.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/FRESH-ORCHESTRATOR-SESSION-PROMPT.md`
+
+### Evidence / verification
+- Verified the modified/untracked file set stayed inside the approved write set.
+- Verified the new wrappers point to `AUTHORITY-INDEX.md` and `SESSION-STANDARD.md`.
+- Verified no touched front-door doc still says Lane H is the active execution lane or that Lane E package creation is next.
+- Verified runtime truth wording in touched front-door and onboarding docs uses pinned commit plus worktree path rather than path alone.
+- Verified `SESSION-LOG.md` is explicitly demoted from complete live chronology to provenance-only history.
+- Verified the three intentionally adopted docs are now staged/tracked locally before session end.
+- Verified no code files, packet-family contents, archive contents, or external worktree contents were modified in this session.
+
+### Dirty / staged state at session end
+- This session ends without a commit.
+- The docs-only canonization diff remains locally staged/dirty in the paths listed above.
+- Safe resume:
+  1. inspect `git status --porcelain`
+  2. re-read `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, and the control-plane pair
+  3. do not treat this overlay as durable canon until it is committed
+
+### What comes next
+1. Review and commit the staged docs/provenance canonization overlay if accepted.
+2. In the next controller session, use the existing Lane E package and `package-c9c7a15-review-index.md` as the starting point.
+3. Produce promotion reconcile / decision for that existing package, or record an explicit blocker.

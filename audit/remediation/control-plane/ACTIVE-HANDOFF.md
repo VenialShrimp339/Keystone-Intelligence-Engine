@@ -2,104 +2,114 @@
 
 ## Current Truth
 
-- Wave 2A is cleared at `16e0bc7`.
-- Wave 2B is cleared at `2cdbfec`.
-- Wave 3A seam-freeze artifact lands in `65074ca`, but the first coherent live promotion into `wave-3 / setup` is `198ab92`.
-- Wave 3 is cleared at `4819527`.
-- Wave 3B is cleared at `5cc9585`.
-- Wave 4 is cleared at `6406e46`.
-- Wave 4B is now cleared at `65a612d`.
-- `91f97c2` remains the last cleared-state docs checkpoint.
-- `2e6d780` is the pre-planning retro handoff anchor.
-- `8bb00ab0298babd50d24fa3c07afae2ae7172ff6` (`8bb00ab`) is the exact cleared setup-package docs snapshot the earlier Lane D setup-promotion reconcile started from.
-- `48293d262714c59ee9d45b6f01213b887fade48d` (`48293d2`) is the exact authority-decision-pending control-plane snapshot the Lane H setup-promotion reconcile started from.
-- `725a223e56dc5fd86fc135bd4bae940aed71db12` (`725a223`) is the exact docs snapshot this Lane H cleared-state reconcile started from.
-- `RETROSPECTIVE-LINEAGE-MANIFEST.yaml` is now controller-promoted as the authoritative retrospective lineage layer for docs checkpoints `35a8a29` through `2e6d780`.
-- `RETROSPECTIVE-REVIEW-LEDGER.yaml` is now controller-promoted as the authoritative current review-status layer for retrospective audit prerequisites.
-- Batch 1 is durably `CLEARED` there for `CP-1`, `CP-2`, and `RP-1`.
-- The Wave clearances above remain historical original remediation clearances for the live implementation lane; they are not retrospective review authority by themselves.
-- `W2B-1`, `W3A-1`, `W3-1`, `W3B-1`, `W4D-1`, `W4-1`, `W4B-1`, `W4B-2`, and `X-1` are now `CLEARED` in the authoritative retrospective review ledger.
-- `X-1` is now current `CLEARED` in that ledger.
-- The retrospective audit program is now complete under the authoritative review ledger.
-- Those retrospective `CLEARED` statuses remain prerequisite proof only. They do not, by themselves, authorize a forward lane.
-- The main workspace remains controller/docs only.
-- `WAVE-4B-SETUP.md` remains the frozen boundary for what Wave 4B was allowed to change.
-- All required Wave 4B review packets now exist in the main workspace.
-- The clean Wave 4B implementation lane stayed inside the approved content slices and did not reopen deferred capability work.
-- `NEXT-WAVE-SETUP-ARTIFACT.md` plus the cleared gate artifacts remain the historical setup authority candidate `f1af7dfafa2e66b831810d70006ab8295411c61b` was reviewed against.
-- Candidate `f1af7dfafa2e66b831810d70006ab8295411c61b` from branch `codex/retrieval-mvp-fetch` in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch` remains frozen as `BLOCKED` superseded reference material.
-- That superseded blocked candidate carries two separate historical blocker classes: a `document_fetch` authority / scope conflict first, and an EDGAR venue / access blocker second.
-- Retrieval MVP Lane D may not continue coding from the current worktree or candidate.
-- Lane H candidate `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` from branch `codex/retrieval-tool-surface` in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface` is now `CLEARED`.
-- `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` is now the current runtime truth for governed article/PDF canonical fetch.
-- Article/PDF canonical-fetch authority and implementation are now cleared separately from the later SEC venue review.
-- No retrieval code lane is currently authorized to continue from the main control plane.
-- The next controller-priority workstream is a docs-only `Professor-Demo Narrow Lane E Setup` rooted from cleared Lane H commit `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`.
-- Parser Lane E, L1 integration Lane F, UI work, benchmark acceptance claims, Wave 5, and calibration remain blocked until later controller promotion.
-- The controller is expected to continue **autonomously across checkpoints**. This reconcile advances live forward truth from Lane H setup to Lane H cleared state while preserving the distinction between retrospective completion, the blocked Lane D candidate, the cleared Lane H runtime, and the later SEC venue review.
+- `AUTHORITY-INDEX.md` is now the mandatory front door and `SESSION-STANDARD.md` is the shared operating standard, but live current truth still begins with this control-plane pair.
+- Historical implementation remains cleared through Wave 4B at `65a612d`.
+- Lane H commit `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface` is the current cleared runtime truth anchor for governed article/PDF fetch.
+- Treat runtime truth as pinned commit plus worktree path. The retrieval-tool-surface worktree may carry newer docs-only commits above that pin; path alone is not authoritative.
+- No retrieval code lane is currently authorized from the main control plane.
+- The tracked narrow Lane E setup package exists at `c9c7a1596d68171881023ce832412b74b2ee5c7c`.
+- Cleared pre-promotion Lane E package reviews are persisted in current-branch commit `8e002a77e149aba86ef5f0520e16e58b5647a551`.
+- Live control-plane promotion of the Lane E package is still pending.
+- Retrieval MVP Lane D candidate `f1af7dfafa2e66b831810d70006ab8295411c61b` remains frozen as `BLOCKED` superseded reference material only.
+- The main workspace is in docs/provenance scope for this session. That is an authorization policy, not a cleanliness claim.
+- Retrospective audit completion remains prerequisite proof only. It does not authorize forward coding by itself.
 
-## Authoritative Order
+## Fresh-Session Read Order
 
-Any summary doc or retrospective planning doc that offers a shortcut list must defer to this order.
-Item 3 is the authoritative lineage layer for retrospective checkpoint-chain questions. Item 4 is the authoritative current review-status layer for retrospective audit prerequisites. Items 5-11 are the promoted Lane H authority stack. Items 12-20 are the cleared Lane H candidate packet. Items 21-24 preserve the blocked Lane D candidate state as superseded reference material. Items 25-26 are the historical setup-boundary docs the blocked candidate was reviewed against.
+1. [AUTHORITY-INDEX.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/AUTHORITY-INDEX.md)
+2. [SESSION-STANDARD.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-STANDARD.md)
+3. [CONTROL-PLANE-STATE.yaml](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml)
+4. [ACTIVE-HANDOFF.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/ACTIVE-HANDOFF.md)
+5. [FOUNDER-INTENT-DOCTRINE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/FOUNDER-INTENT-DOCTRINE.md)
+6. [FRESH-ORCHESTRATOR-BOOTSTRAP.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/FRESH-ORCHESTRATOR-BOOTSTRAP.md)
+7. [FRESH-ORCHESTRATOR-SESSION-PROMPT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/FRESH-ORCHESTRATOR-SESSION-PROMPT.md)
+8. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md)
+9. [MVP-REQUIRED-BUILDOUT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md)
+10. The active Lane H authority stack if runtime-truth detail is needed.
+11. The existing Lane E package docs plus [package-c9c7a15-review-index.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md) for promotion work.
+12. [SESSION-LOG.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-LOG.md) only if historical rationale is needed.
+
+## Live Authority Order
+
+Any lower-order file that conflicts with a higher-order item below loses for live current-truth questions.
+`AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, `README.md`, `CLAUDE.md`, `AGENTS.md`, `docs/ARCHITECTURE.md`, `docs/architecture-and-evolution.md`, and `audit/remediation/README.md` are navigation or narrative layers; they do not outrank the control plane.
 
 1. [CONTROL-PLANE-STATE.yaml](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml)
 2. [ACTIVE-HANDOFF.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/ACTIVE-HANDOFF.md)
 3. [RETROSPECTIVE-LINEAGE-MANIFEST.yaml](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml)
 4. [RETROSPECTIVE-REVIEW-LEDGER.yaml](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml)
-5. [WORKSTREAM-HANDOFF.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/WORKSTREAM-HANDOFF.md)
-6. [AUTHORITY-EXPANSION-DECISION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/AUTHORITY-EXPANSION-DECISION.md)
-7. [NEW-LANE-SETUP-ARTIFACT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/NEW-LANE-SETUP-ARTIFACT.md)
-8. [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/ALLOWED-WRITE-SET.md)
-9. [TOOL-CONTRACT-CHANGES.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/TOOL-CONTRACT-CHANGES.md)
-10. [CONTROL-PLANE-PROMOTION-CHECKLIST.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/CONTROL-PLANE-PROMOTION-CHECKLIST.md)
-11. [PROMOTION-DECISION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/PROMOTION-DECISION.md)
-12. [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-implementation.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-implementation.md)
-13. [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-file-manifest.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-file-manifest.md)
-14. [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-backend-truth-matrix.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-backend-truth-matrix.md)
-15. [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-tool-contract-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-tool-contract-review.md)
-16. [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-live-fetch-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-live-fetch-review.md)
-17. [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-adversarial-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-adversarial-review.md)
-18. [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-second-opinion.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-second-opinion.md)
-19. [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md)
-20. [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md)
-21. [LANE-D-AUTHORITY-RESOLUTION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-mvp/LANE-D-AUTHORITY-RESOLUTION.md)
-22. [NEXT-CONTROLLER-ACTION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-mvp/NEXT-CONTROLLER-ACTION.md)
-23. [candidate-f1af7df-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-review-synthesis.md)
-24. [candidate-f1af7df-blocked-checkpoint.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-blocked-checkpoint.md)
-25. [candidate-65a612d-clearance.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md)
-26. [NEXT-WAVE-SETUP-ARTIFACT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ARTIFACT.md)
-27. [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md)
-28. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md)
-29. [WORKSTREAM-STATUS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md)
-30. [FINAL-DECISIONS-v2.1.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/decisions/FINAL-DECISIONS-v2.1.md)
-31. [AUTONOMOUS-REMEDIATION-PLAN-v4.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/AUTONOMOUS-REMEDIATION-PLAN-v4.md)
-32. `audit/remediation/workstream-retro/` and `audit/remediation/workstream-retro/reviews/` outputs as retrospective sidecars only unless a later controller reconcile promotes them.
+5. [CURRENT-STATE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md) as summary only
+6. [MVP-REQUIRED-BUILDOUT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md) as gap map only
+7. [WORKSTREAM-HANDOFF.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/WORKSTREAM-HANDOFF.md)
+8. [AUTHORITY-EXPANSION-DECISION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/AUTHORITY-EXPANSION-DECISION.md)
+9. [NEW-LANE-SETUP-ARTIFACT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/NEW-LANE-SETUP-ARTIFACT.md)
+10. [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/ALLOWED-WRITE-SET.md)
+11. [TOOL-CONTRACT-CHANGES.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/TOOL-CONTRACT-CHANGES.md)
+12. [PROMOTION-DECISION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/PROMOTION-DECISION.md)
+13. [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md)
+14. [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md)
+15. [LANE-D-AUTHORITY-RESOLUTION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-mvp/LANE-D-AUTHORITY-RESOLUTION.md)
+16. [candidate-f1af7df-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-review-synthesis.md)
+17. [candidate-f1af7df-blocked-checkpoint.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-blocked-checkpoint.md)
+18. [WORKSTREAM-HANDOFF.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md)
+19. [NEW-LANE-SETUP-ARTIFACT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md)
+20. [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/ALLOWED-WRITE-SET.md)
+21. [REVIEW-AND-GATE-CHECKLIST.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md)
+22. [LANE-CHOICE-RATIONALE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/LANE-CHOICE-RATIONALE.md)
+23. [SESSION-PROMPTS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/SESSION-PROMPTS.md)
+24. [package-c9c7a15-review-index.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md)
+25. [SESSION-LOG.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-LOG.md) as provenance only
 
 ## Active State Tuple
 
-- `active_wave`: `retrieval-tool-surface`
-- `active_state`: `cleared`
-- `execution_baseline_commit`: `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`
-- `review_target_commit`: `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`
+- `runtime_truth_anchor_commit`: `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`
+- `runtime_truth_anchor_worktree`: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface`
 - `docs_reconcile_commit`: `725a223e56dc5fd86fc135bd4bae940aed71db12`
-- `next_recovery_checkout`: `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`
-- `cleared_runtime_worktree`: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface`
-- `implementation_lane`: `Lane H - Retrieval Tool-Surface Authority Expansion (cleared at 93a5ca8)`
-- `next_setup_workstream`: `Professor-Demo Narrow Lane E Setup`
-- `approved_write_set`: [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/ALLOWED-WRITE-SET.md)
-- `superseded_blocked_reference`: `f1af7dfafa2e66b831810d70006ab8295411c61b` (`BLOCKED`; historical Lane D reference only)
-- `sec_venue_review`: `deferred separate later step`
+- `current_branch_docs_commit`: `8e002a77e149aba86ef5f0520e16e58b5647a551`
+- `lane_e_package_commit`: `c9c7a1596d68171881023ce832412b74b2ee5c7c`
+- `lane_e_review_persist_commit`: `8e002a77e149aba86ef5f0520e16e58b5647a551`
+- `lane_e_promotion_status`: `pending`
+- `next_controller_workstream`: `Lane E promotion reconcile or explicit blocker recording`
+- `workspace_scope_policy`: `docs/provenance only for this session`
 
-Interpret `docs_reconcile_commit` as the exact docs snapshot this controller reconcile started from. It is not symbolic `HEAD`; future controller docs checkpoints must repin it explicitly.
+Interpret `docs_reconcile_commit` as the exact docs snapshot the prior control-plane reconcile started from.
+Interpret `current_branch_docs_commit` as the persisted current-branch commit that contains the tracked Lane E review sidecars. The canonization overlay remains local uncommitted workspace state and is not part of that commit pin; this field is not, by itself, the live control-plane pin.
 
 ## Open Blockers
 
 - No remaining blocker prevents using `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` as the cleared runtime truth for governed article/PDF fetch.
-- No retrieval code lane is currently authorized beyond the cleared Lane H state because the next milestone is still a docs-only narrow Lane E setup package.
-- Candidate `f1af7dfafa2e66b831810d70006ab8295411c61b` remains frozen as blocked, superseded reference material and may not be patched forward or reopened as Retrieval MVP Lane D coding.
-- SEC / EDGAR venue review remains deferred as a later separate step after the article/PDF path is integrated further.
-- Still blocked: parser Lane E code, L1 integration Lane F, UI work, benchmark acceptance claims, Wave 5, calibration, and any write-set expansion beyond later controller-approved setup packages.
+- No retrieval code lane is currently authorized from the main control plane.
+- Lane E package promotion is still pending because the tracked package exists, but the live control plane has not yet been advanced from package-review state into promotion-decision state.
+- Candidate `f1af7dfafa2e66b831810d70006ab8295411c61b` remains frozen as blocked superseded reference material and may not be patched forward or reopened.
+- SEC / EDGAR venue review remains deferred as a separate later step.
+- Still blocked until later controller promotion: parser Lane E code, L1 integration Lane F, UI work, benchmark acceptance claims, Wave 5, and calibration.
+
+## Exact Next Action
+
+1. Stay on `codex/remediation-program` in the main workspace.
+2. Treat Lane H commit `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface` as the current cleared runtime truth anchor.
+3. Do **not** recreate the Lane E package. Use the existing tracked package at `c9c7a1596d68171881023ce832412b74b2ee5c7c`.
+4. Use [package-c9c7a15-review-index.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md) as the pre-promotion provenance layer for that package.
+5. Produce a promotion reconcile / decision for the existing Lane E package, or record an explicit blocker.
+6. Do **not** reopen Lane H coding, Lane D coding, SEC / EDGAR, Lane F, UI work, benchmark acceptance claims, Wave 5, or calibration unless the control plane is explicitly updated again.
+
+## Exact Recovery Command
+
+```bash
+cd /Users/jackriddle/Desktop/Keystone-Intelligence-Engine
+sed -n '1,220p' AUTHORITY-INDEX.md
+sed -n '1,240p' SESSION-STANDARD.md
+sed -n '1,260p' audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
+sed -n '1,320p' audit/remediation/control-plane/ACTIVE-HANDOFF.md
+sed -n '1,220p' FOUNDER-INTENT-DOCTRINE.md
+sed -n '1,220p' CURRENT-STATE.md
+sed -n '1,260p' audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md
+sed -n '1,220p' audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md
+sed -n '1,220p' audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md
+sed -n '1,220p' audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md
+sed -n '1,220p' audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md
+tail -n 80 SESSION-LOG.md
+```
 
 ## Latest Review Packets
 
@@ -108,180 +118,79 @@ Interpret `docs_reconcile_commit` as the exact docs snapshot this controller rec
 - [NEW-LANE-SETUP-ARTIFACT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/NEW-LANE-SETUP-ARTIFACT.md)
 - [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/ALLOWED-WRITE-SET.md)
 - [TOOL-CONTRACT-CHANGES.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/TOOL-CONTRACT-CHANGES.md)
-- [CONTROL-PLANE-PROMOTION-CHECKLIST.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/CONTROL-PLANE-PROMOTION-CHECKLIST.md)
 - [PROMOTION-DECISION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/PROMOTION-DECISION.md)
-- [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-implementation.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-implementation.md)
-- [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-file-manifest.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-file-manifest.md)
-- [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-backend-truth-matrix.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-backend-truth-matrix.md)
-- [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-tool-contract-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-tool-contract-review.md)
-- [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-live-fetch-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-live-fetch-review.md)
-- [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-adversarial-review.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-adversarial-review.md)
-- [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-second-opinion.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-second-opinion.md)
 - [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md)
 - [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md)
 - [candidate-f1af7df-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-review-synthesis.md)
 - [candidate-f1af7df-blocked-checkpoint.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-blocked-checkpoint.md)
-- [MVP-REQUIRED-BUILDOUT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md)
+- [WORKSTREAM-HANDOFF.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md)
+- [NEW-LANE-SETUP-ARTIFACT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md)
+- [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/ALLOWED-WRITE-SET.md)
+- [REVIEW-AND-GATE-CHECKLIST.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md)
+- [package-c9c7a15-review-index.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md)
 
-## Retrospective Review Status
+## Docs/Provenance Canonization Override
 
-- Current authoritative prerequisite layer: [RETROSPECTIVE-REVIEW-LEDGER.yaml](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml)
-- Batch 1 currently `CLEARED` there: `CP-1`, `CP-2`, `RP-1`
-- `W2B-1`, `W3A-1`, `W3-1`, `W3B-1`, `W4D-1`, `W4-1`, `W4B-1`, `W4B-2`, and `X-1` are currently `CLEARED`.
-- The retrospective audit program is complete under the current authoritative review ledger.
-- The ledger records current review authority only. It does not rewrite the historical original remediation clearances listed above or claim that the historical snapshot under review already contained later review sidecars.
-- The retrospective audit completion remains prerequisite proof only. It does not authorize the frozen `f1af7df` reference candidate, reopen Retrieval MVP Lane D, or replace the cleared Lane H runtime truth.
+Status: completed as an uncommitted local overlay in this workspace.
 
-## Exact Next Action
+Authorized paths:
 
-1. Stay on `codex/remediation-program` in the main workspace.
-2. Treat `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` as the last cleared code commit and current runtime truth anchor.
-3. Treat Lane H as cleared runtime truth; do **not** reopen Lane H coding unless a later controller action explicitly says so.
-4. Treat `f1af7dfafa2e66b831810d70006ab8295411c61b` as superseded blocked reference material only; do **not** patch it forward or reopen Lane D coding.
-5. Keep the main workspace docs-only.
-6. In the next controller session, create a docs-only narrow Lane E setup package for deterministic parse and evidence normalization rooted from `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`.
-7. Keep SEC / EDGAR venue review separate and later.
-8. Do **not** start parser Lane E coding, L1 integration Lane F, UI work, benchmark acceptance, Wave 5, or calibration until a later control-plane promotion authorizes them.
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/FOUNDER-INTENT-DOCTRINE.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/AUTHORITY-INDEX.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-STANDARD.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CLAUDE.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/AGENTS.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/README.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-LOG.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/README.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/ARCHITECTURE.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/architecture-and-evolution.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/FRESH-ORCHESTRATOR-BOOTSTRAP.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/FRESH-ORCHESTRATOR-SESSION-PROMPT.md`
 
-## Exact Recovery Command
+Boundaries:
 
-```bash
-cd /Users/jackriddle/Desktop/Keystone-Intelligence-Engine
-sed -n '1,240p' audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
-sed -n '1,360p' audit/remediation/control-plane/ACTIVE-HANDOFF.md
-sed -n '1,240p' audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml
-sed -n '1,240p' audit/remediation/retrieval-tool-surface/WORKSTREAM-HANDOFF.md
-sed -n '1,240p' audit/remediation/retrieval-tool-surface/AUTHORITY-EXPANSION-DECISION.md
-sed -n '1,260p' audit/remediation/retrieval-tool-surface/NEW-LANE-SETUP-ARTIFACT.md
-sed -n '1,240p' audit/remediation/retrieval-tool-surface/ALLOWED-WRITE-SET.md
-sed -n '1,240p' audit/remediation/retrieval-tool-surface/TOOL-CONTRACT-CHANGES.md
-sed -n '1,220p' audit/remediation/retrieval-tool-surface/PROMOTION-DECISION.md
-sed -n '1,260p' /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md
-sed -n '1,220p' /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md
-sed -n '1,260p' /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-review-synthesis.md
-sed -n '1,220p' /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-blocked-checkpoint.md
-sed -n '1,260p' audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md
-```
+- No code files.
+- No packet-family content edits.
+- No archive rewrites or sweeps.
+- No worktree cleanup.
+- No `reference/nano-claude-code` repair.
 
-## Allowed Write Set
+Safe resume rule:
+If these changes remain uncommitted, inspect `git status --porcelain`, then re-read `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, and the control-plane pair before continuing.
 
-### Active docs-only controller scope
+## Docs Explicitly Demoted
 
-- `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
-- `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
-
-Until a later controller session creates and promotes the next setup package, the live main-workspace write set remains these control-plane files only.
-
-### Historical Lane H authority package
-
-- `audit/remediation/retrieval-tool-surface/WORKSTREAM-HANDOFF.md`
-- `audit/remediation/retrieval-tool-surface/AUTHORITY-EXPANSION-DECISION.md`
-- `audit/remediation/retrieval-tool-surface/NEW-LANE-SETUP-ARTIFACT.md`
-- `audit/remediation/retrieval-tool-surface/ALLOWED-WRITE-SET.md`
-- `audit/remediation/retrieval-tool-surface/TOOL-CONTRACT-CHANGES.md`
-- `audit/remediation/retrieval-tool-surface/CONTROL-PLANE-PROMOTION-CHECKLIST.md`
-- `audit/remediation/retrieval-tool-surface/PROMOTION-DECISION.md`
-
-These remain the authority stack the cleared Lane H candidate was reviewed against. They are not current permission for additional code changes by themselves.
-
-### Cleared Lane H runtime line
-
-- The current runtime truth is the cleared Lane H worktree at `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface`.
-- The cleared runtime snapshot is `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`.
-- No further coding is currently authorized there until a later control-plane action says so.
-
-### Superseded Lane D reference package
-
-- [NEXT-WAVE-SETUP-ARTIFACT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/NEXT-WAVE-SETUP-ARTIFACT.md) and [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/next-wave-setup/ALLOWED-WRITE-SET.md) remain historical review-boundary evidence for the frozen `f1af7dfafa2e66b831810d70006ab8295411c61b` candidate only.
-- They are not current live coding authority.
-
-### Retrospective sidecars
-
-- `audit/remediation/workstream-retro/`
-- `audit/remediation/workstream-retro/reviews/`
-
-Write here only for retrospective audit planning, docs/package reconciliation, or review-sidecar output. These paths do not outrank the live control plane unless a later controller reconcile promotes them.
-
-## Cleared Lane H Historical Test Matrix
-
-The cleared Lane H candidate was reviewed against this minimum matrix:
-
-1. `tests/unit/gateway/test_auth.py`
-2. `tests/unit/gateway/test_gateway.py`
-3. `tests/unit/gateway/test_tool_registry.py`
-4. `tests/unit/specification/test_task_generator.py`
-5. `tests/unit/test_auth.py`
-6. `tests/unit/test_audit_log.py`
-7. `tests/unit/test_gateway.py`
-8. `tests/unit/test_research_models.py`
-9. `tests/unit/test_tool_registry.py`
-
-No new code-lane test matrix is active yet because the next milestone is a docs-only Lane E setup package.
-
-## Cleared Lane H Historical Review Packet
-
-The cleared Lane H review packet under `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/` includes:
-
-- `candidate-93a5ca8-implementation.md`
-- `candidate-93a5ca8-file-manifest.md`
-- `candidate-93a5ca8-backend-truth-matrix.md`
-- `candidate-93a5ca8-tool-contract-review.md`
-- `candidate-93a5ca8-live-fetch-review.md`
-- `candidate-93a5ca8-adversarial-review.md`
-- `candidate-93a5ca8-second-opinion.md`
-- `candidate-93a5ca8-review-synthesis.md`
-- `candidate-93a5ca8-blocked-or-cleared-checkpoint.md`
-- `live-probe-results.json`
-
-Lane H cleared because all of the following were explicit:
-
-- article and PDF fetch had real governed proof
-- `document_fetch` never leaked into task assignment surfaces
-- SEC remained explicitly unclaimed and separate
-- no reviewer had to infer the assignable versus system-owned distinction from scattered files
-
-## Docs Explicitly Ignored As Stale
-
-- [CLAUDE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CLAUDE.md) below its remediation banner
-- [EXECUTION-GUIDE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/EXECUTION-GUIDE.md) below its tombstone banner
-- [BUILD-PROCESS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/BUILD-PROCESS.md) below its tombstone banner
-
-## Active Sidecars
-
-- [WORKSTREAM-HANDOFF.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/WORKSTREAM-HANDOFF.md) — promoted Lane H handoff and boundary statement
-- [AUTHORITY-EXPANSION-DECISION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/AUTHORITY-EXPANSION-DECISION.md) — promoted authority decision for the system-owned `document_fetch` contract shape
-- [NEW-LANE-SETUP-ARTIFACT.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/NEW-LANE-SETUP-ARTIFACT.md) — Lane H setup authority that governed the cleared candidate
-- [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/ALLOWED-WRITE-SET.md) — exact approved write set and denylist Lane H was reviewed against
-- [TOOL-CONTRACT-CHANGES.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/TOOL-CONTRACT-CHANGES.md) — canonical tool-definition contract shape Lane H implemented
-- [CONTROL-PLANE-PROMOTION-CHECKLIST.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/CONTROL-PLANE-PROMOTION-CHECKLIST.md) — promotion preconditions and post-promotion rule set
-- [PROMOTION-DECISION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/PROMOTION-DECISION.md) — docs-only promotion verdict clearing Lane H for live control-plane adoption
-- [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md) — cleared candidate synthesis for the current runtime truth
-- [/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md) — immutable cleared-state checkpoint for the current runtime truth
-- [LANE-D-AUTHORITY-RESOLUTION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-mvp/LANE-D-AUTHORITY-RESOLUTION.md) — historical Lane D ruling that froze `f1af7df`
-- [NEXT-CONTROLLER-ACTION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-mvp/NEXT-CONTROLLER-ACTION.md) — historical bridge from the blocked Lane D state into the Lane H package
-- [candidate-f1af7df-review-synthesis.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-review-synthesis.md) — frozen blocked-candidate synthesis for reference only
-- [candidate-f1af7df-blocked-checkpoint.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-blocked-checkpoint.md) — immutable blocked-state checkpoint for the superseded Lane D candidate
-- [candidate-65a612d-clearance.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/wave-4b/candidate-65a612d-clearance.md) — immutable cleared-state proof for the Wave 4B baseline the retrieval lanes rooted from
+- [README.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/README.md): front door only, not live authority
+- [CLAUDE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CLAUDE.md): Claude wrapper only
+- [AGENTS.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/AGENTS.md): Codex wrapper only
+- [docs/ARCHITECTURE.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/ARCHITECTURE.md): older scaffold/code-structure snapshot
+- [docs/architecture-and-evolution.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/architecture-and-evolution.md): derived historical/professor narrative
+- [audit/remediation/README.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/README.md): historical remediation-process narrative
+- [SESSION-LOG.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-LOG.md): provenance-only history, not the complete live chronology
 
 ## Retrospective Audit Anchors
 
 - Treat `91f97c2` as the last cleared-state docs checkpoint.
 - Treat `2e6d780` as the first retro-planning handoff anchor, not as literal current `HEAD`.
-- Treat `725a223e56dc5fd86fc135bd4bae940aed71db12` (`725a223`) as the exact control-plane snapshot this Lane H cleared-state reconcile started from.
-- Treat `48293d262714c59ee9d45b6f01213b887fade48d` (`48293d2`) as the earlier Lane H setup-promotion control-plane snapshot, not as the current docs-reconcile pin.
-- Treat `66f6178c1d710effe44cb5c278c5c729d5bcc216` (`66f6178`) as the earlier blocked-candidate control-plane snapshot, not as the current docs-reconcile pin.
-- Treat `8bb00ab0298babd50d24fa3c07afae2ae7172ff6` (`8bb00ab`) as the earlier Lane D setup-promotion snapshot, not as the current docs-reconcile pin.
-- Treat `c5dbd055d1b9d67c0d40a46f18b6b3a7f2b46468` (`c5dbd05`) as the earlier Batch 1 planning-package docs snapshot, not as the current docs-reconcile pin.
-- Treat `RETROSPECTIVE-LINEAGE-MANIFEST.yaml` as the authoritative retrospective lineage layer for docs checkpoints `35a8a29` through `2e6d780`.
-- Treat `RETROSPECTIVE-REVIEW-LEDGER.yaml` as the authoritative current review-status layer for retrospective audit prerequisites.
-- Treat the manifest's exact git-derived pins as the replacement for the historical symbolic `HEAD` defect during retrospective audit use.
-- Treat `65074ca` as the real seam-freeze artifact landing, but use `198ab92` as the first coherent live promotion of that artifact into active `wave-3 / setup`.
-- The manifest repairs retrospective audit use of the older symbolic-`HEAD` defect without rewriting the historical checkpoint text itself.
+- Treat `725a223e56dc5fd86fc135bd4bae940aed71db12` (`725a223`) as the exact control-plane snapshot the prior Lane H cleared-state reconcile started from.
+- Treat `48293d262714c59ee9d45b6f01213b887fade48d` (`48293d2`) as the earlier Lane H setup-promotion control-plane snapshot, not as the live docs-reconcile pin.
+- Treat `c9c7a1596d68171881023ce832412b74b2ee5c7c` (`c9c7a15`) as the exact tracked Lane E setup-package snapshot.
+- Treat `8e002a77e149aba86ef5f0520e16e58b5647a551` (`8e002a7`) as the persisted current-branch commit that contains the cleared pre-promotion review sidecars for that package, not the still-uncommitted canonization overlay.
+- Treat `RETROSPECTIVE-LINEAGE-MANIFEST.yaml` as the authoritative retrospective lineage layer.
+- Treat `RETROSPECTIVE-REVIEW-LEDGER.yaml` as the authoritative retrospective review-status layer.
 
 ## Controller Lease Events
 
-- `2026-04-13T22:13:44.196852-04:00`: controller epoch advanced from `9` to `10` because the prior lease heartbeat (`2026-04-13T20:28:07-04:00`) was older than 30 minutes. This reconcile took over the stale lease before advancing the live control plane from Lane H setup to Lane H cleared state.
+- `2026-04-13T22:13:44.196852-04:00`: controller epoch advanced from `9` to `10` and advanced the live control plane from Lane H setup to Lane H cleared state.
+- `2026-04-16T16:51:40-0400`: controller epoch advanced from `10` to `11` because the prior lease heartbeat was older than 30 minutes. This takeover authorized the narrow docs/provenance canonization write set and updated the durable next action from Lane E package creation to Lane E promotion reconcile / decision or explicit blocker recording.
 
 ## Residual Follow-Ups
 
-- `W2B-R01`: parse-invalid sprint-contract JSON now fails explicitly, but parseable under-specified JSON can still return empty Wave 2B enforcement fields.
+- Commit the docs/provenance canonization overlay if the resulting diff is accepted.
+- Run the next controller pass against the existing Lane E package and review index rather than recreating the package.

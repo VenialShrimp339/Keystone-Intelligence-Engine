@@ -1,7 +1,7 @@
-# Claude Session Wrapper
+# Codex Session Wrapper
 
-This file is a Claude-specific wrapper around the shared repo standards.
-Do not use it as standalone project canon.
+This file is the Codex-facing wrapper around the shared repo standards.
+It does not replace `AUTHORITY-INDEX.md` or `SESSION-STANDARD.md`.
 
 Read these first:
 
@@ -12,10 +12,6 @@ Read these first:
 
 For founder doctrine, use `FOUNDER-INTENT-DOCTRINE.md`.
 For historical rationale, use `SESSION-LOG.md` only after the authority stack.
-
-## Claude-Specific Note
-
-Founder/runtime doctrine is Claude-first, but live runtime truth is still pinned by the control-plane pair, not by this wrapper.
 
 ## graphify
 

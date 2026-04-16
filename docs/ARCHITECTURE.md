@@ -1,6 +1,8 @@
 # Keystone Intelligence Engine: Code Architecture
 
-*Regenerated: 2026-04-06 (Audit Session 15) | Source of truth for code structure*
+> Status: older scaffold/code-structure snapshot. Use `AUTHORITY-INDEX.md` and the control-plane pair for live operational truth. This file is derived narrative about code layout, not current operational authority.
+
+*Regenerated: 2026-04-06 (Audit Session 15) | Historical code-structure snapshot*
 
 ## Directory Tree (Actual)
 

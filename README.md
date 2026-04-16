@@ -1,89 +1,50 @@
 # The Keystone Intelligence Engine
 
-A multi-agent AI system for automated consulting research.
+Spec-driven, multi-agent consulting research system for Keystone Group.
 
-Jack Riddle | IU Kelley School of Business | Econ Consulting Capstone, Prof. Youle | Spring 2026
+## Start Here
 
-## Status
+Read these first:
 
-The audited project is materially real, but it is not yet an honest play-ready MVP with the full governed retrieval layer.
+1. [AUTHORITY-INDEX.md](AUTHORITY-INDEX.md)
+2. [SESSION-STANDARD.md](SESSION-STANDARD.md)
+3. [audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml](audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml)
+4. [audit/remediation/control-plane/ACTIVE-HANDOFF.md](audit/remediation/control-plane/ACTIVE-HANDOFF.md)
 
-Current high-level truth:
+## Current Truth Snapshot
 
-- historical implementation is cleared through Wave 4B at `65a612d`
-- the retrospective audit program is complete
-- the live forward workstream is `Lane H - Retrieval Tool-Surface Authority Expansion`
-- governed full-document retrieval, deterministic parse/evidence normalization, and L1 retrieval integration are still in active buildout
+- Historical implementation remains cleared through Wave 4B at `65a612d`.
+- Current cleared runtime truth anchor: Lane H commit `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface`.
+- Treat runtime truth as pinned commit plus worktree path. Path alone is not enough.
+- No retrieval code lane is currently authorized from the main control plane.
+- The tracked narrow Lane E setup package exists at `c9c7a1596d68171881023ce832412b74b2ee5c7c`.
+- Cleared pre-promotion Lane E reviews are persisted on the current branch at `8e002a77e149aba86ef5f0520e16e58b5647a551`.
+- Live control-plane promotion of that package is still pending.
+- The main workspace is in docs/provenance scope for this session. That is a scope policy, not a cleanliness claim.
 
-Use these docs first for current truth before relying on any older readiness language:
+## Canon Stack
 
-- [CURRENT-STATE.md](CURRENT-STATE.md)
-- [audit/remediation/WORKSTREAM-STATUS.md](audit/remediation/WORKSTREAM-STATUS.md)
-- [audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md](audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md)
+| Layer | Use |
+|---|---|
+| `AUTHORITY-INDEX.md` | front door and doc routing |
+| `SESSION-STANDARD.md` | shared Claude/Codex session discipline |
+| control-plane pair | live operational truth |
+| `FOUNDER-INTENT-DOCTRINE.md` | stable founder doctrine |
+| `JACK-ARCHITECTURAL-DIRECTIVES.md` + `CAPSTONE-PLAN-v2.md` | detailed founder intent and architecture plan |
+| `CURRENT-STATE.md` | summary-only current state |
+| `SESSION-LOG.md` | provenance-only history |
 
-Full architecture/evolution context remains in [docs/architecture-and-evolution.md](docs/architecture-and-evolution.md).
+## Project Narrative
 
-## Quick Start
+- Founder-intent doctrine: [FOUNDER-INTENT-DOCTRINE.md](FOUNDER-INTENT-DOCTRINE.md)
+- Founder source docs: [JACK-ARCHITECTURAL-DIRECTIVES.md](JACK-ARCHITECTURAL-DIRECTIVES.md), [CAPSTONE-PLAN-v2.md](CAPSTONE-PLAN-v2.md)
+- Current state summary: [CURRENT-STATE.md](CURRENT-STATE.md)
+- Gap map: [audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md](audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md)
+- Historical narrative: [docs/architecture-and-evolution.md](docs/architecture-and-evolution.md) as derived/professor history only
+- Older code-structure snapshot: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 
-These commands are still useful for local setup and legacy demos, but they are not by themselves proof that the current project state is MVP-complete. Read the status/buildout docs above first if you need the truthful current build picture.
+## Scope Note
 
-**Prerequisites:** Python 3.11+, API keys (OpenAI, Exa, Brave Search)
-
-```bash
-./scripts/setup.sh          # Creates venv, installs deps, configures API keys
-./scripts/run_demo.sh       # Runs the pipeline on a sample research question
-pytest tests/unit/ -q       # Runs the test suite (no API keys needed)
-```
-
-## For Prof. Youle
-
-The comprehensive project report is at [docs/architecture-and-evolution.md](docs/architecture-and-evolution.md). It covers the architecture, how the design evolved through 26 deep research reports, key design decisions with empirical evidence, and the AI-assisted build methodology.
-
-## Directory Guide
-
-| Path | What's Here |
-|------|-------------|
-| `docs/architecture-and-evolution.md` | Comprehensive architecture, evolution, and methodology report |
-| `src/keystone/` | Production Python code (10 components, ~11K lines) |
-| `tests/` | 830 automated tests (unit, integration, e2e) |
-| `samples/` | Example engagement specifications (Luminar, auto body chain, specialty chemicals M&A) |
-| `CAPSTONE-PLAN-v2.md` | Architecture source of truth (1,294 lines) |
-| `JACK-ARCHITECTURAL-DIRECTIVES.md` | 14 authoritative design directives from project owner |
-| `SESSION-LOG.md` | Chronological record of every development session |
-| `CURRENT-STATE.md` | Living project status snapshot |
-| `audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md` | Honest gap map from current state -> MVP -> fuller product vision |
-| `research/` | All research artifacts: 30 reports, synthesis, codebase analysis, external sources |
-| `audit/` | Active remediation (`remediation/`) + archived audit phases (`archive/`) |
-| `reference/` | External references: nano-claude-code submodule, session prompts, switchover docs |
-| `output/` | Pipeline execution outputs from test runs |
-
-## The Pipeline
-
-The system implements DPVI (Decompose, Parallelize, Verify, Iterate):
-
-```
-Research Question
-  -> L0: Specification Engine (question -> MECE issue tree -> task decomposition)
-  -> L1: Parallel Research Agents (isolated execution, real search APIs)
-  -> CitationProcessor (dedup, corroboration scoring, URL verification)
-  -> L1.5: Deliberation (independent multi-perspective analysis + aggregation)
-  -> L4: Evaluator (10-dimension rubric, geometric mean, citation gate)
-  -> Markdown Renderer -> Analytical Brief
-```
-
-## Running Tests
-
-```bash
-# Unit tests (no API keys needed)
-pytest tests/unit/ -q
-
-# Integration tests (requires API keys in .env)
-pytest tests/integration/ -v -m integration
-
-# Full pipeline end-to-end (real API calls, ~15-30 min)
-pytest tests/integration/test_pipeline_real.py -v -m integration -s
-```
-
-## License
-
-Proprietary. Built for Keystone Group.
+This landing page is for truthful orientation.
+It does not certify MVP completeness, runtime readiness, or lane authorization by itself.
+For those questions, use the control-plane pair.
