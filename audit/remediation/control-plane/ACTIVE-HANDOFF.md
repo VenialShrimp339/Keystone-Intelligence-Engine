@@ -6,12 +6,13 @@
 - Historical implementation remains cleared through Wave 4B at `65a612d`.
 - Lane H commit `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface` is the current cleared runtime truth anchor for governed article/PDF fetch.
 - Treat runtime truth as pinned commit plus worktree path. The retrieval-tool-surface worktree may carry newer docs-only commits above that pin; path alone is not authoritative.
-- No retrieval code lane is currently authorized from the main control plane.
+- No retrieval code is authorized from this controller rerun worktree.
 - The tracked narrow Lane E setup package exists at `c9c7a1596d68171881023ce832412b74b2ee5c7c`.
+- The repaired package-integrity snapshot at `f954edffa9d6b78e98bdbfedff78097539f425d5` removed missing required subordinate references and made graphify optional when absent without widening Lane E scope.
 - Cleared pre-promotion Lane E package reviews are persisted in current-branch commit `8e002a77e149aba86ef5f0520e16e58b5647a551`.
-- Live control-plane promotion of the Lane E package is still pending.
+- Live control-plane promotion of the Lane E package is now `PROMOTED`.
 - Retrieval MVP Lane D candidate `f1af7dfafa2e66b831810d70006ab8295411c61b` remains frozen as `BLOCKED` superseded reference material only.
-- The main workspace is in docs/provenance scope for this session. That is an authorization policy, not a cleanliness claim.
+- This rerun controller worktree remains docs/provenance-only in this session. That is an authorization policy, not a cleanliness claim.
 - Retrospective audit completion remains prerequisite proof only. It does not authorize forward coding by itself.
 
 ## Fresh-Session Read Order
@@ -64,39 +65,40 @@ Any lower-order file that conflicts with a higher-order item below loses for liv
 
 - `runtime_truth_anchor_commit`: `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`
 - `runtime_truth_anchor_worktree`: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface`
-- `docs_reconcile_commit`: `725a223e56dc5fd86fc135bd4bae940aed71db12`
-- `current_branch_docs_commit`: `8e002a77e149aba86ef5f0520e16e58b5647a551`
+- `docs_reconcile_commit`: `f954edffa9d6b78e98bdbfedff78097539f425d5`
+- `current_branch_docs_commit`: `f954edffa9d6b78e98bdbfedff78097539f425d5`
 - `lane_e_package_commit`: `c9c7a1596d68171881023ce832412b74b2ee5c7c`
 - `lane_e_review_persist_commit`: `8e002a77e149aba86ef5f0520e16e58b5647a551`
-- `lane_e_promotion_status`: `pending`
-- `next_controller_workstream`: `Lane E promotion reconcile or explicit blocker recording`
-- `workspace_scope_policy`: `docs/provenance only for this session`
+- `lane_e_promotion_status`: `promoted`
+- `next_controller_workstream`: `Lane E runtime worktree open / implementation session`
+- `workspace_scope_policy`: `docs/provenance only in this controller rerun worktree; next code work only in the clean parse worktree`
 
-Interpret `docs_reconcile_commit` as the exact docs snapshot the prior control-plane reconcile started from.
-Interpret `current_branch_docs_commit` as the persisted current-branch commit that contains the tracked Lane E review sidecars. The canonization overlay remains local uncommitted workspace state and is not part of that commit pin; this field is not, by itself, the live control-plane pin.
+Interpret `docs_reconcile_commit` as the repaired Lane E package-integrity snapshot this promotion rerun started from.
+Interpret `current_branch_docs_commit` as the persisted current-branch docs snapshot that carries the repaired package-integrity state; the separate pre-promotion review sidecars remain persisted at `8e002a7`.
 
 ## Open Blockers
 
 - No remaining blocker prevents using `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` as the cleared runtime truth for governed article/PDF fetch.
-- No retrieval code lane is currently authorized from the main control plane.
-- Lane E package promotion is still pending because the tracked package exists, but the live control plane has not yet been advanced from package-review state into promotion-decision state.
+- No remaining blocker prevents promoting the repaired current-canon view of package `c9c7a15`.
+- No retrieval code is authorized from this controller rerun worktree; the next code step is to open the clean planned Lane E runtime worktree.
 - Candidate `f1af7dfafa2e66b831810d70006ab8295411c61b` remains frozen as blocked superseded reference material and may not be patched forward or reopened.
 - SEC / EDGAR venue review remains deferred as a separate later step.
-- Still blocked until later controller promotion: parser Lane E code, L1 integration Lane F, UI work, benchmark acceptance claims, Wave 5, and calibration.
+- The later thin post-E bridge, Lane F integration, UI work, benchmark acceptance claims, Wave 5, and calibration all remain separate later work.
 
 ## Exact Next Action
 
-1. Stay on `codex/remediation-program` in the main workspace.
+1. Stay on `codex/lane-e-promotion-rerun` in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun` for controller docs/provenance work only.
 2. Treat Lane H commit `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface` as the current cleared runtime truth anchor.
 3. Do **not** recreate the Lane E package. Use the existing tracked package at `c9c7a1596d68171881023ce832412b74b2ee5c7c`.
-4. Use [package-c9c7a15-review-index.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md) as the pre-promotion provenance layer for that package.
-5. Produce a promotion reconcile / decision for the existing Lane E package, or record an explicit blocker.
-6. Do **not** reopen Lane H coding, Lane D coding, SEC / EDGAR, Lane F, UI work, benchmark acceptance claims, Wave 5, or calibration unless the control plane is explicitly updated again.
+4. Use [package-c9c7a15-review-index.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md) and [PROMOTION-DECISION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/PROMOTION-DECISION.md) as the durable provenance record for this promotion.
+5. Open the clean Lane E runtime worktree at `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-parse` on branch `codex/retrieval-mvp-parse` from baseline `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`.
+6. Start implementation only inside `audit/remediation/retrieval-parse/ALLOWED-WRITE-SET.md`.
+7. Do **not** reopen Lane H coding, Lane D coding, SEC / EDGAR, Lane F, UI work, benchmark acceptance claims, Wave 5, or calibration from this controller worktree.
 
 ## Exact Recovery Command
 
 ```bash
-cd /Users/jackriddle/Desktop/Keystone-Intelligence-Engine
+cd /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun
 sed -n '1,220p' AUTHORITY-INDEX.md
 sed -n '1,240p' SESSION-STANDARD.md
 sed -n '1,260p' audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
@@ -108,6 +110,7 @@ sed -n '1,220p' audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md
 sed -n '1,220p' audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md
 sed -n '1,220p' audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md
 sed -n '1,220p' audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md
+sed -n '1,220p' audit/remediation/retrieval-parse/PROMOTION-DECISION.md
 tail -n 80 SESSION-LOG.md
 ```
 
@@ -128,10 +131,11 @@ tail -n 80 SESSION-LOG.md
 - [ALLOWED-WRITE-SET.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/ALLOWED-WRITE-SET.md)
 - [REVIEW-AND-GATE-CHECKLIST.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md)
 - [package-c9c7a15-review-index.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md)
+- [PROMOTION-DECISION.md](/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/PROMOTION-DECISION.md)
 
 ## Docs/Provenance Canonization Override
 
-Status: completed as an uncommitted local overlay in this workspace.
+Status: historical reference only; the later rerun lineage now carries committed package-integrity repair at `f954edf`.
 
 Authorized paths:
 
@@ -162,7 +166,7 @@ Boundaries:
 - No `reference/nano-claude-code` repair.
 
 Safe resume rule:
-If these changes remain uncommitted, inspect `git status --porcelain`, then re-read `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, and the control-plane pair before continuing.
+Treat this section as provenance only. For the live rerun state, inspect `git status --porcelain`, then re-read `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, and the control-plane pair in this worktree before continuing.
 
 ## Docs Explicitly Demoted
 
@@ -181,7 +185,8 @@ If these changes remain uncommitted, inspect `git status --porcelain`, then re-r
 - Treat `725a223e56dc5fd86fc135bd4bae940aed71db12` (`725a223`) as the exact control-plane snapshot the prior Lane H cleared-state reconcile started from.
 - Treat `48293d262714c59ee9d45b6f01213b887fade48d` (`48293d2`) as the earlier Lane H setup-promotion control-plane snapshot, not as the live docs-reconcile pin.
 - Treat `c9c7a1596d68171881023ce832412b74b2ee5c7c` (`c9c7a15`) as the exact tracked Lane E setup-package snapshot.
-- Treat `8e002a77e149aba86ef5f0520e16e58b5647a551` (`8e002a7`) as the persisted current-branch commit that contains the cleared pre-promotion review sidecars for that package, not the still-uncommitted canonization overlay.
+- Treat `8e002a77e149aba86ef5f0520e16e58b5647a551` (`8e002a7`) as the persisted current-branch commit that contains the cleared pre-promotion review sidecars for that package.
+- Treat `f954edffa9d6b78e98bdbfedff78097539f425d5` (`f954edf`) as the later docs-only repair snapshot that removed missing required subordinate references and made graphify optional if absent before this promotion rerun.
 - Treat `RETROSPECTIVE-LINEAGE-MANIFEST.yaml` as the authoritative retrospective lineage layer.
 - Treat `RETROSPECTIVE-REVIEW-LEDGER.yaml` as the authoritative retrospective review-status layer.
 
@@ -189,8 +194,9 @@ If these changes remain uncommitted, inspect `git status --porcelain`, then re-r
 
 - `2026-04-13T22:13:44.196852-04:00`: controller epoch advanced from `9` to `10` and advanced the live control plane from Lane H setup to Lane H cleared state.
 - `2026-04-16T16:51:40-0400`: controller epoch advanced from `10` to `11` because the prior lease heartbeat was older than 30 minutes. This takeover authorized the narrow docs/provenance canonization write set and updated the durable next action from Lane E package creation to Lane E promotion reconcile / decision or explicit blocker recording.
+- `2026-04-16T18:32:49-0400`: controller epoch advanced from `11` to `12` because the prior lease heartbeat was older than 30 minutes and the current rerun checkout had diverged workspace metadata from the prior control-plane record. This takeover recorded the repaired-package promotion decision and updated the durable next action to the clean Lane E runtime worktree open / implementation session.
 
 ## Residual Follow-Ups
 
-- Commit the docs/provenance canonization overlay if the resulting diff is accepted.
-- Run the next controller pass against the existing Lane E package and review index rather than recreating the package.
+- Open the clean Lane E runtime worktree on `codex/retrieval-mvp-parse` from baseline `93a5ca8`.
+- Keep SEC / EDGAR, the later thin post-E bridge, Lane F, UI work, benchmark acceptance, Wave 5, and calibration separate from that next session.

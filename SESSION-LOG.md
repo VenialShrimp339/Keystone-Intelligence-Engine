@@ -1763,3 +1763,50 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 1. Commit the narrow Lane E package integrity repair.
 2. Create a fresh clean worktree from that commit for a rerun of the Lane E promotion reconcile / decision review.
 3. Re-run the controller promotion review against the repaired package.
+
+---
+
+## Session 26: Lane E Promotion Reconcile Rerun
+- **Timestamp:** 2026-04-16T18:32:49-0400
+- **Agent:** Codex (GPT-5.4)
+- **Task:** Controller-grade docs/provenance rerun of the Lane E promotion decision against the repaired package state. Re-evaluate whether tracked package snapshot `c9c7a1596d68171881023ce832412b74b2ee5c7c` should now be promoted, using primary evidence only and without opening runtime code.
+- **Authority docs read:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/AUTHORITY-INDEX.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/SESSION-STANDARD.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/control-plane/ACTIVE-HANDOFF.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/FOUNDER-INTENT-DOCTRINE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/control-plane/FRESH-ORCHESTRATOR-BOOTSTRAP.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/control-plane/FRESH-ORCHESTRATOR-SESSION-PROMPT.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/CURRENT-STATE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-tool-surface/PROMOTION-DECISION.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-tool-surface/WORKSTREAM-HANDOFF.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-tool-surface/AUTHORITY-EXPANSION-DECISION.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-tool-surface/TOOL-CONTRACT-CHANGES.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/ALLOWED-WRITE-SET.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/LANE-CHOICE-RATIONALE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/SESSION-PROMPTS.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/runs/retrieval-parse/package-c9c7a15-scope-write-set-review.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/runs/retrieval-parse/package-c9c7a15-stale-doc-conflict-review.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/runs/retrieval-parse/package-c9c7a15-usefulness-review.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md`
+- **Start commit:** `f954edffa9d6b78e98bdbfedff78097539f425d5`
+- **End commit:** `no commit`
+- **Branch:** `codex/lane-e-promotion-rerun`
+- **Worktree:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun`
+
+### Key results
+- Re-ran the Lane E promotion decision from primary evidence in the repaired rerun snapshot rather than relying on the earlier `DO_NOT_PROMOTE` outcome.
+- Confirmed the narrow Lane E package remains rooted in Lane H cleared runtime truth at `93a5ca8`, stays article/PDF-only, stays deterministic parse plus evidence normalization only, preserves `document_fetch` as system-owned and non-task-assignable, keeps SEC / EDGAR and papers out of scope, and keeps the thin post-E bridge later and separate.
+- Confirmed the tracked `package-c9c7a15-*` review sidecars are present, pinned to the correct reviewed snapshot, and all `CLEARED`.
+- Confirmed the repaired current canon closes the earlier package defects by removing required references to missing Retrieval MVP docs and by making graphify optional if absent.
+- Took over the stale controller lease and advanced the live control plane from pending promotion reconcile into promoted Lane E state.
+- Recorded the explicit verdict `PROMOTE` and updated the durable next action to opening the clean Lane E runtime worktree on `codex/retrieval-mvp-parse` from baseline `93a5ca8`.
+
+### Files changed
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/PROMOTION-DECISION.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/CURRENT-STATE.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/SESSION-LOG.md`
+
+### Evidence / verification
+- Verified `git status --short --branch` showed no tracked repo dirt beyond expected local Codex metadata directories.
+- Verified the stale controller lease in `CONTROL-PLANE-STATE.yaml` required takeover before mutation.
+- Verified `HEAD` is `f954edf` and diffed `c9c7a15..HEAD` to confirm the repaired current canon only closed missing-reference and mandatory-graphify defects in Lane E package docs.
+- Verified the three tracked pre-promotion sidecars exist on disk and are pinned to `c9c7a1596d68171881023ce832412b74b2ee5c7c`.
+- Verified Lane H proof remains cleared at `93a5ca8` and still enforces `document_fetch` as system-owned and non-task-assignable.
+- Verified `graphify-out/` support artifacts are absent in this worktree and are now treated as optional rather than required.
+- Used four fresh read-only `gpt-5.4` `xhigh` subagents for control-plane coherence, Lane E boundary validation, review-stack validation, and blocker hunting.
+
+### Residual risks
+- The promotion evidence stack remains intentionally cross-worktree because Lane H runtime proof lives in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface`.
+- The original `c9c7a15` tree viewed in isolation still contained the earlier missing-reference and mandatory-graphify defects; the promotion is justified only in the repaired current canon used for this rerun.
+- SEC / EDGAR venue work, the later thin post-E bridge, Lane F integration, UI work, benchmark acceptance, Wave 5, and calibration remain separate later steps.
+
+### What comes next
+1. Open the clean Lane E runtime worktree at `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-parse`.
+2. Check out branch `codex/retrieval-mvp-parse` from baseline `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`.
+3. Start the narrow Lane E runtime implementation session inside `audit/remediation/retrieval-parse/ALLOWED-WRITE-SET.md` without reopening Lane H, Lane F, SEC / EDGAR, UI, or benchmark scope.
