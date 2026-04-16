@@ -120,14 +120,14 @@ Task:
 - Implement deterministic article/PDF parse and evidence normalization from persisted Lane H artifacts.
 - Emit source-shaped locators and parse confidence where needed.
 - Produce the required review packet under `audit/remediation/runs/retrieval-parse/`.
-- Rebuild graphify after any code-file change.
+- If graphify is available, rebuild its collateral after code-file changes; otherwise continue and record that graphify was unavailable.
 
 Deliverables:
 
 - one candidate commit
 - one run packet
 - passing required test matrix
-- graphify rebuild collateral
+- optional graphify collateral if generated, or an explicit absence note if graphify is unavailable
 
 ### Prompt 6: Adversarial Review And Second Opinion For Lane E Candidate
 

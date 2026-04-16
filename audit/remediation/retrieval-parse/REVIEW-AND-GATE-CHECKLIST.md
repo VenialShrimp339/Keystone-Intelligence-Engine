@@ -105,7 +105,7 @@ Before a candidate may clear the lane, all of these must be true:
 6. File manifest confirms no unresolved scope creep.
 7. The exact named test matrix passed on the candidate snapshot.
 8. The exact named parse probes passed on the candidate snapshot.
-9. Graphify collateral was rebuilt after code-file changes and is either committed or explicitly classified.
+9. If graphify is available in the runtime worktree, graphify collateral was rebuilt after code-file changes and is either committed or explicitly classified; if graphify is unavailable, the candidate packet records that absence explicitly.
 10. The candidate explicitly states that Lane H invariants remained unchanged.
 
 ## Later Gates That Stay Out Of Scope For Lane Open

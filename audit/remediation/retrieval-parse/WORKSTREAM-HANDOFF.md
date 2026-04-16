@@ -57,30 +57,24 @@ If any lower-order file conflicts with a higher-order file, the higher-order fil
 18. `audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md`
 19. `audit/remediation/retrieval-parse/LANE-CHOICE-RATIONALE.md`
 20. `audit/remediation/retrieval-parse/SESSION-PROMPTS.md`
-21. `audit/remediation/retrieval-mvp/RETRIEVAL-MVP-ARCHITECTURE-MEMO.md`
-22. `audit/remediation/retrieval-mvp/RETRIEVAL-MVP-SEAM-CONTRACT.md`
-23. `audit/remediation/retrieval-mvp/RETRIEVAL-MVP-MIGRATION-CHECKLIST.md`
-24. `graphify-out/GRAPH_REPORT.md`
 
 Items 15 through 20 are the live narrow Lane E package.
-For live Lane E scope, boundary, and ownership questions, those package docs outrank items 21 through 24.
-The three broader Retrieval MVP docs remain useful only as subordinate future-state design references and may not be used to widen live Lane E into filings, papers, `EvidenceBundle`, `AnchoredCitation`, retrieval-coordinator work, Lane F integration, SEC / EDGAR, or benchmark / acceptance scope.
+The numbered authority stack stops there for live Lane E authority.
+Broader Retrieval MVP design material, if present in a given tracked snapshot, remains optional future-state context only and may not be used to widen live Lane E into filings, papers, `EvidenceBundle`, `AnchoredCitation`, retrieval-coordinator work, Lane F integration, SEC / EDGAR, or benchmark / acceptance scope.
+Generated support such as `graphify-out/GRAPH_REPORT.md` is optional orientation only if present and is never part of the required Lane E authority stack.
 
 ## Staleness And Subordination Fence
 
-These older or broader docs may be useful as historical or future-state context, but they are non-authoritative for live Lane E boundary decisions if they imply Lane H is still pending, Lane D fetch is still next, or broad Retrieval MVP scope is already authorized:
+These older or broader materials may be useful as historical or future-state context, but they are non-authoritative for live Lane E boundary decisions if they imply Lane H is still pending, Lane D fetch is still next, or broad Retrieval MVP scope is already authorized:
 
-- `audit/remediation/retrieval-mvp/RETRIEVAL-MVP-ARCHITECTURE-MEMO.md`
-- `audit/remediation/retrieval-mvp/RETRIEVAL-MVP-SEAM-CONTRACT.md`
-- `audit/remediation/retrieval-mvp/RETRIEVAL-MVP-MIGRATION-CHECKLIST.md`
-
+- older Retrieval MVP design docs, if present in the tracked snapshot
 - `audit/remediation/WORKSTREAM-STATUS.md`
 - `audit/remediation/retrieval-mvp/NEXT-CONTROLLER-ACTION.md`
 - `audit/remediation/retrieval-mvp/RUNTIME-LANE-UNLOCK-MEMO.md`
-- `audit/remediation/retrieval-mvp/IMPLEMENTATION-LANES.md`
+- other older Retrieval MVP planning artifacts, if present in the tracked snapshot
 
-Use the three Retrieval MVP design docs only for future-state design intent, never for live Lane E authority.
-If they conflict with this narrow Lane E package on source-family scope, `document_fetch` ownership, retrieval-coordinator work, citation-schema migration, Lane F ownership, SEC / EDGAR, or benchmark / acceptance scope, this package wins.
+Use any such broader Retrieval MVP design material only for future-state design intent, never for live Lane E authority.
+If it conflicts with this narrow Lane E package on source-family scope, `document_fetch` ownership, retrieval-coordinator work, citation-schema migration, Lane F ownership, SEC / EDGAR, or benchmark / acceptance scope, this package wins.
 Use the remaining stale docs only for historical intent, never for live lane authority.
 
 ## Package Map

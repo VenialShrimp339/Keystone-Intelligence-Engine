@@ -32,9 +32,10 @@ Before opening this lane, read:
 10. `audit/remediation/retrieval-tool-surface/PROMOTION-DECISION.md`
 11. `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md`
 12. `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md`
-13. `audit/remediation/retrieval-mvp/RETRIEVAL-MVP-ARCHITECTURE-MEMO.md`
-14. `audit/remediation/retrieval-mvp/RETRIEVAL-MVP-SEAM-CONTRACT.md`
-15. `graphify-out/GRAPH_REPORT.md`
+
+The required pre-open authority stack ends at item 12.
+Broader Retrieval MVP design material, if present in a given tracked snapshot, is optional future-state context only and is never required to open narrow Lane E.
+Generated support such as `graphify-out/GRAPH_REPORT.md` is optional only if present and is never a required pre-open dependency.
 
 ## Activation Block
 

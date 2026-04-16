@@ -1724,3 +1724,42 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 1. Review and commit the staged docs/provenance canonization overlay if accepted.
 2. In the next controller session, use the existing Lane E package and `package-c9c7a15-review-index.md` as the starting point.
 3. Produce promotion reconcile / decision for that existing package, or record an explicit blocker.
+
+---
+
+## Session 25: Lane E Package Integrity Repair
+- **Timestamp:** 2026-04-16T18:23:02-0400
+- **Agent:** Codex (GPT-5.4)
+- **Task:** Narrow docs-only repair of the existing Lane E package so its required/read-first, authority-order, and graphify references no longer depend on missing tracked Retrieval MVP files or absent generated artifacts.
+- **Authority docs read:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/AUTHORITY-INDEX.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/SESSION-STANDARD.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/control-plane/ACTIVE-HANDOFF.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/FOUNDER-INTENT-DOCTRINE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/CURRENT-STATE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/retrieval-parse/ALLOWED-WRITE-SET.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/retrieval-parse/LANE-CHOICE-RATIONALE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/retrieval-parse/SESSION-PROMPTS.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md`
+- **Start commit:** `bfb7497`
+- **End commit:** `no commit`
+- **Branch:** `codex/lane-e-package-integrity-repair`
+- **Worktree:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair`
+
+### Key results
+- Removed missing tracked Retrieval MVP docs from the required pre-open read stack in `audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md`.
+- Removed missing tracked Retrieval MVP docs and absent generated graphify support from the required Lane E authority stack in `audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md`.
+- Reworded the stale-doc fence so broader Retrieval MVP material is only referenced generically if present in a tracked snapshot.
+- Made graphify expectations explicitly conditional in `audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md` and `audit/remediation/retrieval-parse/SESSION-PROMPTS.md`.
+
+### Files changed
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/audit/remediation/retrieval-parse/SESSION-PROMPTS.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-package-integrity-repair/SESSION-LOG.md`
+
+### Evidence / verification
+- Verified the missing tracked references were limited to Retrieval MVP docs not present in `audit/remediation/retrieval-mvp/`.
+- Verified `graphify-out/GRAPH_REPORT.md` is absent in this worktree and repaired all Lane E package references so graphify is optional if absent.
+- Preserved Lane E scope: article/PDF only, deterministic parse only, evidence normalization only, no Lane H or Lane F reopening.
+- Did not change code, tests, schemas, control-plane docs, or `CURRENT-STATE.md`.
+
+### Dirty / staged state at session end
+- This session log entry is recorded before commit; the repair patch remains local state until committed.
+
+### What comes next
+1. Commit the narrow Lane E package integrity repair.
+2. Create a fresh clean worktree from that commit for a rerun of the Lane E promotion reconcile / decision review.
+3. Re-run the controller promotion review against the repaired package.
