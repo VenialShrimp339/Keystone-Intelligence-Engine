@@ -17,6 +17,7 @@ from collections.abc import AsyncIterator, Callable
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
+from keystone.evaluator.rubric_config import ENGAGEMENT_PROFILE_MAP
 from keystone.evaluator.retry import LLMCallable
 from keystone.events import (
     AgentDispatched,
@@ -24,9 +25,11 @@ from keystone.events import (
     SpecificationGenerated,
     TasksDecomposed,
 )
+from keystone.governance.policy import ProfileExecutionPolicy
 from keystone.models.research import (
     EngagementSpec,
     EngagementType,
+    EvaluationProfileName,
     MethodologyRequirement,
     PipelineProfile,
     ResearchQuestion,
@@ -162,16 +165,17 @@ class SpecificationEngine:
         logger.info("Step 2 complete: intent_clear=%s", intent.intent_clear)
 
         # Steps 3-4: Decompose with MECE validation (retry loop)
-        tree = await self._decompose_with_validation(
+        tree, mece_passed = await self._decompose_with_validation(
             question,
             classification.engagement_type,
             intent.day_1_hypothesis,
             client_context,
         )
         logger.info(
-            "Steps 3-4 complete: %d leaves, depth %d",
+            "Steps 3-4 complete: %d leaves, depth %d, mece_passed=%s",
             tree.metadata.leaf_count,
             tree.metadata.depth,
+            mece_passed,
         )
 
         # Step 5: Priority scoring
@@ -201,14 +205,15 @@ class SpecificationEngine:
                 "tools": task.assigned_tools,
             })
 
-        # Yield SpecificationGenerated
+        # Yield SpecificationGenerated (truthful validation state)
+        all_validation_passed = intent.intent_clear and mece_passed
         yield SpecificationGenerated(
             event_id=f"evt_{uuid.uuid4().hex[:12]}",
             engagement_id=engagement_id,
             client_id=client_id,
             spec_version=research_spec.specification_version,
             question_count=len(research_spec.questions),
-            validation_passed=True,
+            validation_passed=all_validation_passed,
         )
 
         # Yield TasksDecomposed
@@ -222,12 +227,12 @@ class SpecificationEngine:
             rationale=task_decomposition.decomposition_rationale,
         )
 
-        # Build EngagementSpec
+        # Build EngagementSpec (truthful validation state)
         validation_report = ValidationReport(
             intent_clear=intent.intent_clear,
-            scope_valid=True,
+            scope_valid=mece_passed,
             within_frontier=True,
-            quality_threshold_met=intent.intent_clear,
+            quality_threshold_met=intent.intent_clear and mece_passed,
         )
         self._spec = EngagementSpec(
             research_spec=research_spec,
@@ -269,8 +274,12 @@ class SpecificationEngine:
         engagement_type: EngagementType,
         day_1_hypothesis: str,
         client_context: str | None,
-    ) -> IssueTree:
-        """Run decomposition with MECE validation retry loop."""
+    ) -> tuple[IssueTree, bool]:
+        """Run decomposition with MECE validation retry loop.
+
+        Returns (tree, validation_passed) tuple. If validation fails after
+        all retries, returns the last tree with validation_passed=False.
+        """
         for attempt in range(_MAX_DECOMPOSE_RETRIES + 1):
             tree = await self._decomposer.decompose(
                 question, engagement_type, day_1_hypothesis, client_context
@@ -281,7 +290,7 @@ class SpecificationEngine:
             )
 
             if validation.all_passed:
-                return tree
+                return tree, True
 
             logger.warning(
                 "MECE validation failed (attempt %d/%d): %s",
@@ -292,7 +301,7 @@ class SpecificationEngine:
 
         # Return last tree even if validation didn't fully pass
         logger.warning("Returning tree after %d attempts despite validation issues", _MAX_DECOMPOSE_RETRIES + 1)
-        return tree
+        return tree, False
 
     def _build_research_spec(
         self,
@@ -343,6 +352,9 @@ class SpecificationEngine:
             day_1_hypothesis=intent.day_1_hypothesis,
             recommended_pipeline_profile=classification.pipeline_profile,
             effective_pipeline_profile=classification.pipeline_profile,
+            effective_evaluation_profile=_resolve_effective_evaluation_profile(
+                classification.engagement_type
+            ),
             profile_source="classifier",
         )
 
@@ -361,7 +373,7 @@ class SpecificationEngine:
         )
 
         profile = self._spec.research_spec.effective_pipeline_profile
-        if profile == PipelineProfile.LIGHT:
+        if not ProfileExecutionPolicy(profile).should_run_hitl_gate():
             return
 
         async with self._db_session_factory() as session:
@@ -372,3 +384,13 @@ class SpecificationEngine:
                 gate_type=GateType.POST_SPECIFICATION,
                 items=items,
             )
+
+
+def _resolve_effective_evaluation_profile(
+    engagement_type: EngagementType,
+) -> EvaluationProfileName:
+    """Resolve the evaluator rubric profile once at spec construction time."""
+    profile = ENGAGEMENT_PROFILE_MAP.get(engagement_type)
+    if profile is None:
+        return EvaluationProfileName.DEFAULT
+    return EvaluationProfileName(profile.value)

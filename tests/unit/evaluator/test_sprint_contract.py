@@ -154,3 +154,16 @@ class TestSprintContractGeneration:
         assert contract.task_id == "task_001"
         assert contract.engagement_id == "ENG-001"
         assert contract.client_id == "CLT-001"
+
+    @pytest.mark.asyncio
+    async def test_malformed_json_raises_explicit_error(self) -> None:
+        async def mock_llm(prompt: str) -> str:
+            return "{not valid json"
+
+        gen = SprintContractGenerator(llm=mock_llm)
+
+        with pytest.raises(
+            RuntimeError,
+            match="Failed to parse sprint contract JSON for task task_001",
+        ):
+            await gen.generate(_make_task(), _make_spec())

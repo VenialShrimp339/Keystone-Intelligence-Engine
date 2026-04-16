@@ -2,8 +2,16 @@
 
 from __future__ import annotations
 
+from datetime import UTC, datetime
+
 from keystone.governance import EnforcementAction, ProfileExecutionPolicy, ResearchStatus
 from keystone.models.citations import ConfidenceTier
+from keystone.models.evaluation import (
+    EvaluationIntensity,
+    EvaluationResult,
+    Layer1Result,
+    Layer2Result,
+)
 from keystone.models.research import (
     FindingClaim,
     FindingStatus,
@@ -63,6 +71,26 @@ def _partial_finding(task_id: str) -> StructuredFinding:
     )
 
 
+def _failed_evaluation(task_id: str) -> EvaluationResult:
+    return EvaluationResult(
+        evaluation_id=f"eval-{task_id}",
+        engagement_id="eng-001",
+        client_id="client-001",
+        task_id=task_id,
+        evaluated_at=datetime.now(UTC),
+        intensity=EvaluationIntensity.LIGHT_TOUCH,
+        passed=False,
+        overall_score=48.0,
+        layer1_results=Layer1Result(facts_verified=5, facts_failed=0),
+        layer2_results=Layer2Result(
+            citations_checked=3,
+            citations_verified=3,
+            gate_passed=True,
+        ),
+        feedback="Needs revision.",
+    )
+
+
 class TestProfileExecutionPolicy:
     def test_failed_no_output_task_non_renderable(self) -> None:
         task = _task("task_001")
@@ -109,3 +137,30 @@ class TestProfileExecutionPolicy:
 
         assert flag is not None
         assert flag.action == EnforcementAction.HALT
+
+    def test_light_coverage_halts_on_failed_evaluated_output(self) -> None:
+        task = _task("task_001")
+        policy = ProfileExecutionPolicy(PipelineProfile.LIGHT)
+        state = policy.new_state([task])
+
+        research_outcome = policy.record_research_outcome(
+            state,
+            task,
+            _partial_finding(task.id),
+        )
+        assert research_outcome.renderable is True
+
+        evaluation_outcome = policy.record_evaluation_outcome(
+            state,
+            task,
+            _failed_evaluation(task.id),
+        )
+
+        assert evaluation_outcome.evaluation_status == "failed"
+        assert evaluation_outcome.renderable is False
+
+        flag = policy.evaluate_coverage(state)
+
+        assert flag is not None
+        assert flag.action == EnforcementAction.HALT
+        assert "task_001" in flag.message

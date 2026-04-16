@@ -62,7 +62,7 @@ class TaskGenerator:
         If the LLM produces cyclic dependencies, catches ValidationError
         and retries (max 2 retries).
         """
-        priority_map = {p.branch_id: p for p in priorities}
+        priority_ranks = self._build_priority_ranks(priorities)
 
         prompt = load_prompt(
             "task_generation",
@@ -82,7 +82,12 @@ class TaskGenerator:
                     self._llm, prompt, description=f"task_generation_attempt_{attempt}"
                 )
                 data = safe_llm_json(raw, required_keys=("tasks",))
-                tasks = self._parse_tasks(data, spec, engagement_type, priority_map)
+                tasks = self._parse_tasks(
+                    data,
+                    spec,
+                    engagement_type,
+                    priority_ranks,
+                )
                 if not tasks:
                     raise ValueError("LLM returned empty tasks list")
                 decomposition = TaskDecomposition(
@@ -112,7 +117,7 @@ class TaskGenerator:
         data: dict,
         spec: ResearchSpec,
         engagement_type: EngagementType,
-        priority_map: dict[str, PriorityScore],
+        priority_ranks: dict[str, int],
     ) -> list[ResearchTask]:
         """Parse LLM output into validated ResearchTask objects."""
         tasks_raw = data.get("tasks", [])
@@ -121,8 +126,9 @@ class TaskGenerator:
         for i, t in enumerate(tasks_raw):
             task_id = t.get("id", f"task_{i + 1:03d}")
             branch_id = t.get("issue_tree_branch_id")
-            priority_entry = priority_map.get(branch_id or "") if branch_id else None
-            priority_rank = i + 1
+            priority_rank = priority_ranks.get(branch_id or "")
+            if priority_rank is None:
+                priority_rank = self._coerce_priority(t.get("priority")) or (i + 1)
 
             # Match template for tool assignment
             category = self._resolve_category(t.get("category", "strategic_positioning"))
@@ -141,7 +147,7 @@ class TaskGenerator:
                 importance=self._resolve_importance(
                     priority_rank=priority_rank,
                     spec=spec,
-                    task_data=t,
+                    target_decision_usefulness=t.get("target_decision_usefulness", 3),
                 ),
                 anti_confirmatory_framing=t.get("anti_confirmatory_framing", "Evaluate evidence both for and against"),
                 assigned_tools=self._resolve_tools(t, category, engagement_type),
@@ -153,7 +159,7 @@ class TaskGenerator:
             )
             tasks.append(temp_task)
 
-        return tasks
+        return sorted(tasks, key=lambda task: task.priority)
 
     def _resolve_category(self, raw: str) -> TaskCategory:
         """Map raw category string to TaskCategory, defaulting gracefully."""
@@ -206,16 +212,9 @@ class TaskGenerator:
         *,
         priority_rank: int,
         spec: ResearchSpec,
-        task_data: dict,
+        target_decision_usefulness: int,
     ) -> TaskImportance:
-        """Assign task importance for Wave 2B coverage policy."""
-        raw = task_data.get("importance")
-        if isinstance(raw, str):
-            try:
-                return TaskImportance(raw)
-            except ValueError:
-                logger.warning("Ignoring unknown task importance '%s'", raw)
-
+        """Assign task importance from scored task priority for Wave 2B policy."""
         if priority_rank == 1:
             return TaskImportance.PRIMARY
 
@@ -225,7 +224,30 @@ class TaskGenerator:
         ):
             return TaskImportance.CRITICAL
 
-        if task_data.get("target_decision_usefulness", 3) <= 2 and priority_rank > 5:
+        if target_decision_usefulness <= 2 and priority_rank > 5:
             return TaskImportance.OPTIONAL
 
         return TaskImportance.SUPPORTING
+
+    def _build_priority_ranks(
+        self,
+        priorities: list[PriorityScore],
+    ) -> dict[str, int]:
+        ordered = sorted(
+            priorities,
+            key=lambda score: (
+                -score.priority_score,
+                -score.decision_relevance,
+                -score.uncertainty_reduction,
+                score.branch_id,
+            ),
+        )
+        return {
+            priority.branch_id: index
+            for index, priority in enumerate(ordered, start=1)
+        }
+
+    def _coerce_priority(self, raw: object) -> int | None:
+        if not isinstance(raw, int):
+            return None
+        return raw if raw >= 1 else None

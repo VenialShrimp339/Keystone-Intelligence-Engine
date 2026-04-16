@@ -21,7 +21,7 @@ from pydantic import BaseModel, Field
 from keystone.citation.processor import CitationProcessor
 from keystone.deliberation.deliberation import Deliberation
 from keystone.evaluator.evaluator import Evaluator
-from keystone.evaluator.rubric_config import ENGAGEMENT_PROFILE_MAP, EvaluationProfile
+from keystone.evaluator.rubric_config import EvaluationProfile
 from keystone.evaluator.retry import LLMCallable
 from keystone.evaluator.sprint_contract import SprintContractGenerator
 from keystone.events import AnyPipelineEvent
@@ -617,10 +617,10 @@ def _filter_confidence_map_by_passed_tasks(
 
 
 def _resolve_evaluation_profile(spec: EngagementSpec) -> EvaluationProfile:
-    """Route the evaluation profile from the classified engagement."""
-    return ENGAGEMENT_PROFILE_MAP.get(
-        spec.research_spec.engagement_type,
-        EvaluationProfile.DEFAULT,
+    """Route the persisted evaluation profile from ResearchSpec."""
+    stored_profile = spec.research_spec.effective_evaluation_profile
+    return EvaluationProfile(
+        stored_profile.value if hasattr(stored_profile, "value") else stored_profile
     )
 
 

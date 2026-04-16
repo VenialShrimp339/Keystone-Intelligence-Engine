@@ -14,6 +14,7 @@ import uuid
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 
+from keystone.evaluator.layer3_rubric import _apply_dimension_emphasis
 from keystone.evaluator.layer1_deterministic import Layer1Evaluator
 from keystone.evaluator.layer2_citation_gate import DOIVerifier, Layer2CitationGate
 from keystone.evaluator.retry import LLMCallable
@@ -103,8 +104,8 @@ class Evaluator:
                 task.id, exc,
             )
             layer1_result = Layer1Result(
-                facts_verified=0, facts_failed=0, facts_total=0,
-                fact_details=[], numerical_inconsistencies=[], dead_urls=[],
+                facts_verified=0, facts_failed=0,
+                numerical_inconsistencies=[], dead_urls=[],
             )
         yield DeterministicCheckPassed(
             event_id=_uid(),
@@ -172,9 +173,13 @@ class Evaluator:
                 task.id, exc,
             )
             layer3_result = Layer3Result(
-                dimension_scores=[], raw_weighted_score=0.0,
+                dimension_scores=[], weighted_total=0.0,
                 gestalt_adjustment=0.0, final_score=0.0,
             )
+        event_weights = _apply_dimension_emphasis(
+            self._weights,
+            contract.dimension_emphasis,
+        )
         for score in layer3_result.dimension_scores:
             yield RubricDimensionScored(
                 event_id=_uid(),
@@ -183,7 +188,7 @@ class Evaluator:
                 layer="L4",
                 dimension=score.dimension.value,
                 score=score.score,
-                weight=self._weights.get(score.dimension, 0.0),
+                weight=event_weights.get(score.dimension, 0.0),
             )
 
         # --- Determine pass/fail ---

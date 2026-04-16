@@ -52,9 +52,13 @@ class SprintContractGenerator:
         )
         try:
             parsed = safe_llm_json(raw)
-        except ParseError:
-            logger.warning("Failed to parse sprint contract JSON, using task defaults")
-            parsed = {}
+        except ParseError as exc:
+            msg = (
+                f"Failed to parse sprint contract JSON for task {task.id}; "
+                "cannot continue with a bare contract."
+            )
+            logger.warning(msg)
+            raise RuntimeError(msg) from exc
 
         dimension_emphasis: dict[RubricDimension, float] = {}
         for dim_str, weight in parsed.get("dimension_emphasis", {}).items():

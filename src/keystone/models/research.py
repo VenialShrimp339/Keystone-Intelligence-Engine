@@ -43,6 +43,15 @@ class PipelineProfile(StrEnum):
     DEEP = "deep"
 
 
+class EvaluationProfileName(StrEnum):
+    """Persisted evaluator rubric profile for a run."""
+
+    DEFAULT = "default"
+    ESTIMATIVE = "estimative"
+    CURRENT = "current"
+    STRATEGIC = "strategic"
+
+
 class ResearchQuestion(BaseModel):
     """A research question within the engagement specification."""
 
@@ -161,6 +170,10 @@ class ResearchSpec(BaseModel):
     effective_pipeline_profile: PipelineProfile = Field(
         default=PipelineProfile.STANDARD,
         description="Execution profile used for this run.",
+    )
+    effective_evaluation_profile: EvaluationProfileName = Field(
+        default=EvaluationProfileName.DEFAULT,
+        description="Resolved evaluator rubric profile used for this run.",
     )
     profile_source: str = Field(
         default="classifier",

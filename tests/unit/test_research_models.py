@@ -371,11 +371,12 @@ class TestResearchSpecBatch2:
         assert "Luminar" in spec.day_1_hypothesis
 
     def test_pipeline_profile_defaults(self):
-        from keystone.models.research import PipelineProfile
+        from keystone.models.research import EvaluationProfileName, PipelineProfile
 
         spec = self._make_spec()
         assert spec.recommended_pipeline_profile is None
         assert spec.effective_pipeline_profile == PipelineProfile.STANDARD
+        assert spec.effective_evaluation_profile == EvaluationProfileName.DEFAULT
         assert spec.profile_source == "classifier"
 
     def test_invalid_engagement_type_rejected(self):

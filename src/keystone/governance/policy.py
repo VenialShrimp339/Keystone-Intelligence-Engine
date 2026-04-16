@@ -114,7 +114,7 @@ class ProfileExecutionPolicy:
             uncovered = [
                 outcome.task_id
                 for outcome in outcomes
-                if outcome.renderable and outcome.evaluation_status != "passed"
+                if self._requires_light_pass(outcome)
             ]
             if uncovered:
                 return QualityFlag(
@@ -124,7 +124,8 @@ class ProfileExecutionPolicy:
                     severity="critical",
                     message=(
                         "LIGHT profile requires every renderable task to be evaluated "
-                        f"and passed. Missing or failed tasks: {sorted(uncovered)}"
+                        "and passed, including tasks that produced output and later "
+                        f"failed evaluation. Missing or failed tasks: {sorted(uncovered)}"
                     ),
                 )
             return None
@@ -257,3 +258,11 @@ class ProfileExecutionPolicy:
         if self.profile != PipelineProfile.DEEP:
             return True
         return importance in {TaskImportance.SUPPORTING, TaskImportance.OPTIONAL}
+
+    def _requires_light_pass(self, outcome: TaskOutcome) -> bool:
+        if outcome.evaluation_status == "failed":
+            return outcome.research_status in {
+                ResearchStatus.SUCCESS,
+                ResearchStatus.PARTIAL,
+            }
+        return outcome.renderable and outcome.evaluation_status != "passed"

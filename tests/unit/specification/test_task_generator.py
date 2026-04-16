@@ -7,6 +7,7 @@ from datetime import UTC, datetime
 
 from keystone.models.research import (
     EngagementType,
+    PipelineProfile,
     ResearchQuestion,
     ResearchSpec,
 )
@@ -201,3 +202,85 @@ class TestTaskGenerator:
             _make_tree(), _make_priorities(), EngagementType.EVALUATIVE, _make_spec()
         )
         assert result.tasks[0].importance == TaskImportance.PRIMARY
+
+    async def test_uses_priority_scores_when_highest_scored_branch_is_listed_second(self):
+        async def llm(prompt: str) -> str:
+            return json.dumps(
+                {
+                    "decomposition_rationale": "Order is intentionally inverted.",
+                    "tasks": [
+                        {
+                            "id": "task_low",
+                            "category": "market_sizing",
+                            "type": "current",
+                            "target_decision_usefulness": 4,
+                            "description": "Lower-scored branch listed first",
+                            "required_sources": ["industry_reports"],
+                            "acceptance_criteria": ["Criterion low"],
+                            "deliverable_destination": "Section Low",
+                            "priority": 1,
+                            "anti_confirmatory_framing": "Evaluate whether the low branch holds, including evidence both for and against",
+                            "assigned_tools": ["exa_search", "brave_search", "edgar_filings"],
+                            "assigned_model": "standard",
+                            "end_product": "Low branch analysis",
+                            "dependencies": [],
+                            "issue_tree_branch_id": "branch_1.1",
+                            "custom_category": None,
+                        },
+                        {
+                            "id": "task_high",
+                            "category": "competitive_landscape",
+                            "type": "estimative",
+                            "target_decision_usefulness": 5,
+                            "description": "Higher-scored branch listed second",
+                            "required_sources": ["industry_reports"],
+                            "acceptance_criteria": ["Criterion high"],
+                            "deliverable_destination": "Section High",
+                            "priority": 2,
+                            "anti_confirmatory_framing": "Evaluate whether the high branch holds, including evidence both for and against",
+                            "assigned_tools": ["exa_search", "brave_search", "edgar_filings"],
+                            "assigned_model": "standard",
+                            "end_product": "High branch analysis",
+                            "dependencies": [],
+                            "issue_tree_branch_id": "branch_2.1",
+                            "custom_category": None,
+                        },
+                    ],
+                }
+            )
+
+        priorities = [
+            PriorityScore(
+                branch_id="branch_1.1",
+                decision_relevance=0.6,
+                uncertainty_reduction=0.5,
+                priority_score=0.3,
+                reasoning="Lower score.",
+            ),
+            PriorityScore(
+                branch_id="branch_2.1",
+                decision_relevance=0.9,
+                uncertainty_reduction=0.9,
+                priority_score=0.81,
+                reasoning="Higher score.",
+            ),
+        ]
+        spec = _make_spec().model_copy(
+            update={"effective_pipeline_profile": PipelineProfile.DEEP}
+        )
+        registry = TemplateRegistry()
+        generator = TaskGenerator(llm, registry)
+
+        result = await generator.generate(
+            _make_tree(),
+            priorities,
+            EngagementType.EVALUATIVE,
+            spec,
+        )
+        tasks_by_id = {task.id: task for task in result.tasks}
+
+        assert result.tasks[0].id == "task_high"
+        assert tasks_by_id["task_high"].priority == 1
+        assert tasks_by_id["task_high"].importance == TaskImportance.PRIMARY
+        assert tasks_by_id["task_low"].priority == 2
+        assert tasks_by_id["task_low"].importance == TaskImportance.CRITICAL

@@ -3,12 +3,19 @@
 from __future__ import annotations
 
 import json
+from unittest.mock import AsyncMock, patch
 
 import pytest
 
 from keystone.contracts import SpecificationEngineContract
 from keystone.events import AgentDispatched, SpecificationGenerated, TasksDecomposed
-from keystone.models.research import EngagementSpec, EngagementType, PipelineProfile
+from keystone.governance.policy import ProfileExecutionPolicy
+from keystone.models.research import (
+    EngagementSpec,
+    EngagementType,
+    EvaluationProfileName,
+    PipelineProfile,
+)
 from keystone.specification.spec_engine import SpecificationEngine
 from keystone.specification.template_registry import TemplateRegistry
 
@@ -122,7 +129,11 @@ def _make_tasks() -> dict:
     }
 
 
-def _make_full_mock_llm():
+def _make_full_mock_llm(
+    *,
+    engagement_type: str = "strategic",
+    pipeline_profile: str = "deep",
+):
     """Create a mock LLM that handles all pipeline steps in sequence."""
     call_count = 0
 
@@ -133,8 +144,8 @@ def _make_full_mock_llm():
         # Step 1: Classification
         if call_count == 1:
             return json.dumps({
-                "engagement_type": "strategic",
-                "pipeline_profile": "deep",
+                "engagement_type": engagement_type,
+                "pipeline_profile": pipeline_profile,
                 "confidence": 0.92,
                 "reasoning": "Complex multi-variable strategic question about competitive positioning.",
             })
@@ -175,6 +186,18 @@ def _make_full_mock_llm():
         return json.dumps({"error": f"Unexpected call {call_count}"})
 
     return llm
+
+
+class _NullAsyncSession:
+    async def __aenter__(self) -> object:
+        return object()
+
+    async def __aexit__(self, exc_type, exc, tb) -> bool:
+        return False
+
+
+def _session_factory() -> _NullAsyncSession:
+    return _NullAsyncSession()
 
 
 class TestSpecificationEngine:
@@ -257,7 +280,59 @@ class TestSpecificationEngine:
         assert any(q.is_primary for q in rs.questions)
         assert rs.recommended_pipeline_profile == PipelineProfile.DEEP
         assert rs.effective_pipeline_profile == PipelineProfile.DEEP
+        assert rs.effective_evaluation_profile == EvaluationProfileName.STRATEGIC
         assert rs.profile_source == "classifier"
+
+    async def test_light_profile_skips_hitl_gate_via_shared_policy(self):
+        llm = _make_full_mock_llm(
+            engagement_type="exploratory",
+            pipeline_profile="light",
+        )
+        engine = SpecificationEngine(llm, db_session_factory=_session_factory)
+        mock_create_gate = AsyncMock()
+        original = ProfileExecutionPolicy.should_run_hitl_gate
+
+        with (
+            patch.object(
+                ProfileExecutionPolicy,
+                "should_run_hitl_gate",
+                autospec=True,
+                side_effect=original,
+            ) as should_run_gate,
+            patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate),
+        ):
+            async for _ in engine.generate_spec(
+                question="Test question",
+                client_id="client_test",
+            ):
+                pass
+
+        should_run_gate.assert_called_once()
+        mock_create_gate.assert_not_awaited()
+
+    async def test_non_light_hitl_gate_uses_shared_policy_decision(self):
+        llm = _make_full_mock_llm()
+        engine = SpecificationEngine(llm, db_session_factory=_session_factory)
+        mock_create_gate = AsyncMock()
+        original = ProfileExecutionPolicy.should_run_hitl_gate
+
+        with (
+            patch.object(
+                ProfileExecutionPolicy,
+                "should_run_hitl_gate",
+                autospec=True,
+                side_effect=original,
+            ) as should_run_gate,
+            patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate),
+        ):
+            async for _ in engine.generate_spec(
+                question="Test question",
+                client_id="client_test",
+            ):
+                pass
+
+        should_run_gate.assert_called_once()
+        mock_create_gate.assert_awaited_once()
 
     async def test_get_spec_raises_before_generate(self):
         """get_spec() raises RuntimeError before generate_spec() is called."""

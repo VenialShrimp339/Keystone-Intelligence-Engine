@@ -427,3 +427,45 @@ class TestProfileVariance:
             if abs(default_w[dim] - est_w[dim]) > 0.001
         ]
         assert len(diffs) >= 1
+
+    @pytest.mark.asyncio
+    async def test_rubric_events_emit_adjusted_weights(self) -> None:
+        from keystone.evaluator.rubric_config import get_profile_weights
+
+        llm = _make_mock_llm()
+        verifier = MockDOIVerifier({})
+        evaluator = Evaluator(llm=llm, doi_verifier=verifier)
+        manifest = _manifest(_cit("CIT-001"))
+        contract = _contract().model_copy(
+            update={
+                "dimension_emphasis": {
+                    RubricDimension.ANALYTICAL_DEPTH: 1.5,
+                }
+            }
+        )
+
+        with patch(
+            "keystone.evaluator.layer1_deterministic.batch_check_urls",
+            new_callable=AsyncMock,
+            return_value={"CIT-001": True},
+        ):
+            events = []
+            async for event in evaluator.evaluate(
+                "Test text.", contract, _task(), manifest, _spec()
+            ):
+                events.append(event)
+
+        rubric_events = [e for e in events if isinstance(e, RubricDimensionScored)]
+        weights_by_dimension = {
+            RubricDimension(event.dimension): event.weight for event in rubric_events
+        }
+        base_weights = get_profile_weights(EvaluationProfile.DEFAULT)
+
+        assert (
+            weights_by_dimension[RubricDimension.ANALYTICAL_DEPTH]
+            > base_weights[RubricDimension.ANALYTICAL_DEPTH]
+        )
+        assert (
+            weights_by_dimension[RubricDimension.SOURCE_QUALITY]
+            < base_weights[RubricDimension.SOURCE_QUALITY]
+        )

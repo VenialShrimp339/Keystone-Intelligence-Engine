@@ -22,6 +22,7 @@ from keystone.events import (
     ConfidenceMapProduced,
     IndependentAnalysisComplete,
 )
+from keystone.governance.policy import ProfileExecutionPolicy
 from keystone.hitl.models import Base
 from keystone.hitl.schemas import GateResponse, GateResolution, GateStatus, GateType
 from keystone.models.agents import DeliberationAnalystType
@@ -321,6 +322,7 @@ class TestHITLGate:
         session_factory = async_sessionmaker(engine, expire_on_commit=False)
 
         mock_create_gate = AsyncMock()
+        original = ProfileExecutionPolicy.should_run_hitl_gate
 
         findings = [_finding("agent-1", [_fc("Claim", 0.8)])]
         delib = Deliberation(
@@ -329,11 +331,68 @@ class TestHITLGate:
             effective_pipeline_profile=PipelineProfile.LIGHT,
         )
 
-        with patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate):
+        with (
+            patch.object(
+                ProfileExecutionPolicy,
+                "should_run_hitl_gate",
+                autospec=True,
+                side_effect=original,
+            ) as should_run_gate,
+            patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate),
+        ):
             events = await _collect_events(delib, _manifest(), findings)
 
+        should_run_gate.assert_called_once()
         mock_create_gate.assert_not_awaited()
         assert any(isinstance(e, ConfidenceMapProduced) for e in events)
+
+        await engine.dispose()
+
+    @pytest.mark.asyncio
+    async def test_non_light_gate_two_uses_shared_policy_path(self) -> None:
+        engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
+        async with engine.begin() as conn:
+            await conn.run_sync(Base.metadata.create_all)
+        session_factory = async_sessionmaker(engine, expire_on_commit=False)
+
+        mock_gate_response = GateResponse(
+            id="gate-003",
+            engagement_id="ENG-001",
+            client_id="CLT-001",
+            gate_type=GateType.POST_DELIBERATION,
+            status=GateStatus.APPROVED,
+            created_at=datetime.now(UTC),
+        )
+        mock_gate_resolution = GateResolution(
+            status=GateStatus.APPROVED,
+            gate_response=mock_gate_response,
+            patch_applied=True,
+        )
+        mock_create_gate = AsyncMock(return_value=mock_gate_resolution)
+        original = ProfileExecutionPolicy.should_run_hitl_gate
+        findings = [_finding("agent-1", [_fc("Claim", 0.8)])]
+        delib = Deliberation(
+            analyst_llm=_mock_llm(),
+            db_session_factory=session_factory,
+            effective_pipeline_profile=PipelineProfile.DEEP,
+        )
+
+        with (
+            patch.object(
+                ProfileExecutionPolicy,
+                "should_run_hitl_gate",
+                autospec=True,
+                side_effect=original,
+            ) as should_run_gate,
+            patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate),
+        ):
+            events = await _collect_events(delib, _manifest(), findings)
+
+        should_run_gate.assert_called_once()
+        mock_create_gate.assert_awaited_once()
+        assert any(isinstance(e, ConfidenceMapProduced) for e in events)
+
+        await engine.dispose()
 
         await engine.dispose()
 

@@ -1810,3 +1810,78 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 1. Open the clean Lane E runtime worktree at `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-parse`.
 2. Check out branch `codex/retrieval-mvp-parse` from baseline `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`.
 3. Start the narrow Lane E runtime implementation session inside `audit/remediation/retrieval-parse/ALLOWED-WRITE-SET.md` without reopening Lane H, Lane F, SEC / EDGAR, UI, or benchmark scope.
+
+---
+
+## Session 27: WIP Bundle Preservation Capture
+- **Timestamp:** `2026-04-16T19:22:47-0400`
+- **Agent:** `Codex (GPT-5.4 xhigh)`
+- **Task:** Preserve the high-confidence implementation WIP bundle from the dirty main workspace into the clean capture worktree without widening scope beyond the listed preserve-now files and required provenance.
+- **Authority docs read:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wip-bundle-capture/AUTHORITY-INDEX.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wip-bundle-capture/SESSION-STANDARD.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wip-bundle-capture/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wip-bundle-capture/audit/remediation/control-plane/ACTIVE-HANDOFF.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wip-bundle-capture/FOUNDER-INTENT-DOCTRINE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wip-bundle-capture/CURRENT-STATE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wip-bundle-capture/SESSION-LOG.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wip-bundle-capture/audit/remediation/retrieval-parse/PROMOTION-DECISION.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/graphify-out/GRAPH_REPORT.md`
+- **Evidence source workspace:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine`
+- **Branch:** `codex/wip-bundle-capture`
+- **Worktree:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wip-bundle-capture`
+- **Start commit:** `1ea62fa55232`
+- **End commit:** `pending session commit; exact hash reported in closeout`
+
+### Files changed
+- `.env.example`
+- `schemas/citation.schema.json`
+- `src/keystone/deliberation/deliberation.py`
+- `src/keystone/evaluator/evaluator.py`
+- `src/keystone/evaluator/sprint_contract.py`
+- `src/keystone/gateway/mcp_gateway.py`
+- `src/keystone/governance/policy.py`
+- `src/keystone/models/config.py`
+- `src/keystone/models/research.py`
+- `src/keystone/pipeline/orchestrator.py`
+- `src/keystone/specification/spec_engine.py`
+- `src/keystone/specification/task_generator.py`
+- `tests/unit/deliberation/test_deliberation.py`
+- `tests/unit/evaluator/test_evaluator.py`
+- `tests/unit/evaluator/test_sprint_contract.py`
+- `tests/unit/governance/test_policy.py`
+- `tests/unit/pipeline/test_orchestrator.py`
+- `tests/unit/specification/test_spec_engine.py`
+- `tests/unit/specification/test_task_generator.py`
+- `tests/unit/test_research_models.py`
+- `tests/canary/__init__.py`
+- `tests/integration/test_deep_research.py`
+- `SESSION-LOG.md`
+
+### Files reviewed only
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/.claude/settings.json`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/.gitignore`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/tests/integration/test_pipeline_real.py`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/.graphifyignore`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/reference/nano-claude-code`
+- deleted docs/archive/research surfaces in the dirty evidence workspace
+
+### Summary of work
+- Compared the dirty evidence workspace against the clean `1ea62fa` capture baseline only for the preserve-now bundle and excluded-file follow-up surfaces.
+- Confirmed the preserved code changes form one coherent slice: persisted `effective_evaluation_profile` wiring, truthful specification validation state, shared HITL/LIGHT profile policy routing, richer structured citation extraction, stricter sprint-contract parse handling, and matching unit/integration tests.
+- Transplanted the listed preserve-now files from `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine` into this clean worktree without normalizing or deleting unrelated dirty-main content.
+- Kept excluded files out of the write set after review; no excluded file was required for correctness of the preserved bundle.
+
+### Decisions / contradictions resolved
+- Preserved `tests/canary/__init__.py` and `tests/integration/test_deep_research.py` because both fit the preserved implementation/test surface and do not require widening into excluded repo-cleanup areas.
+- Did not preserve `.claude/settings.json`, `.gitignore`, `tests/integration/test_pipeline_real.py`, `.graphifyignore`, `graphify-out/`, `output/`, docs/archive/research relocations, or `reference/nano-claude-code` because no hard runtime dependency from the preserved bundle required them.
+- Treated the dirty-main `graphify-out/GRAPH_REPORT.md` as orientation evidence only, not as a dependency of tracked entrypoints.
+
+### Evidence / verification
+- `git diff --stat` for the transplanted preserve-now bundle showed only the intended 22 preserve-now files plus provenance, with no spillover into excluded paths.
+- `git diff --check` returned clean for the transplanted code/test/config/schema changes.
+- `PYTHONPATH=src pytest -q tests/unit/deliberation/test_deliberation.py tests/unit/evaluator/test_evaluator.py tests/unit/evaluator/test_sprint_contract.py tests/unit/governance/test_policy.py tests/unit/pipeline/test_orchestrator.py tests/unit/specification/test_spec_engine.py tests/unit/specification/test_task_generator.py tests/unit/test_research_models.py` produced `113 passed, 4 failed`; all 4 failures were `ModuleNotFoundError: No module named 'aiosqlite'` in the deliberation HITL tests.
+- `PYTHONPATH=src pytest --collect-only -q tests/integration/test_deep_research.py` collected both tests successfully, with warnings that `integration` and `timeout` markers are not registered in this environment.
+- `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` failed with `ModuleNotFoundError: No module named 'graphify'`, so the required graphify rebuild could not run in this environment and did not generate excluded artifacts.
+- Read-only `gpt-5.4 xhigh` subagent review agreed the preserve-now bundle is coherent against baseline `1ea62fa` and found no missing repo-file dependency outside the bundle.
+
+### Blockers / residual risks
+- Full targeted test success is blocked by the missing `aiosqlite` package in the available pytest interpreter, not by a repo-coherence error in the preserved files.
+- The new deep-research integration test is only collection-verified here; executing it would require live credentials, external network/tool availability, and a much longer run window.
+- The pytest environment does not register the `integration` and `timeout` markers yet; that is a test-environment hygiene follow-up, not a preserve-now blocker.
+
+### What comes next
+1. Commit this preserved implementation bundle on `codex/wip-bundle-capture`.
+2. In a separate follow-up review, decide whether adjacent but explicitly excluded files such as `.gitignore`, `.claude/settings.json`, or `tests/integration/test_pipeline_real.py` deserve their own preservation pass.
+3. If stronger verification is needed later, install `aiosqlite` into the pytest environment and rerun the four deliberation HITL tests plus the deep-research integration tests under real credentials.

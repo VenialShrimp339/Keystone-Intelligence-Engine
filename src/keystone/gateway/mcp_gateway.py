@@ -136,6 +136,13 @@ def extract_citations(result: Any) -> list[dict[str, Any]]:
     # Structured citations first (richer metadata: title, source type)
     if isinstance(result, dict):
         _extract_structured_citations(result, citations, seen_urls)
+        # Recurse into nested result lists (e.g., search API responses)
+        for key in ("results", "items", "data"):
+            nested = result.get(key)
+            if isinstance(nested, list):
+                for item in nested:
+                    if isinstance(item, dict):
+                        _extract_structured_citations(item, citations, seen_urls)
     elif isinstance(result, list):
         for item in result:
             if isinstance(item, dict):
@@ -171,21 +178,27 @@ def _extract_structured_citations(
     """Extract citations from structured dict fields."""
     citation_keys = {"url", "link", "href", "source_url", "reference_url"}
     title_keys = {"title", "name", "headline"}
+    text_keys = {"text", "description", "snippet", "content", "summary"}
 
     url = None
     title = None
+    text = None
 
     for key, value in data.items():
         if key.lower() in citation_keys and isinstance(value, str):
             url = value
         if key.lower() in title_keys and isinstance(value, str):
             title = value
+        if key.lower() in text_keys and isinstance(value, str) and value:
+            text = value
 
     if url and url not in seen_urls:
         seen_urls.add(url)
         citation: dict[str, Any] = {"url": url, "source": "structured"}
         if title:
             citation["title"] = title
+        if text:
+            citation["text"] = text
         citations.append(citation)
 
 

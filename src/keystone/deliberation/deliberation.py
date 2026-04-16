@@ -28,6 +28,7 @@ from keystone.events import (
     ConfidenceMapProduced,
     IndependentAnalysisComplete,
 )
+from keystone.governance.policy import ProfileExecutionPolicy
 from keystone.models.agents import DeliberationAnalystType
 from keystone.models.citations import CitationManifest
 from keystone.models.confidence import ConfidenceMap
@@ -187,7 +188,9 @@ class Deliberation:
         client_id: str,
     ) -> None:
         """Trigger HITL Gate 2 (post-deliberation review)."""
-        if self._effective_pipeline_profile == PipelineProfile.LIGHT:
+        if not ProfileExecutionPolicy(
+            self._effective_pipeline_profile
+        ).should_run_hitl_gate():
             logger.info("Skipping HITL Gate 2 for LIGHT profile")
             return
 

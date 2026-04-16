@@ -40,6 +40,7 @@ from keystone.models.evaluation import (
 from keystone.models.research import (
     EngagementSpec,
     EngagementType,
+    EvaluationProfileName,
     FindingClaim,
     PipelineProfile,
     ResearchQuestion,
@@ -120,6 +121,7 @@ def _make_spec(eid: str = "eng_test", cid: str = "c1") -> EngagementSpec:
             output_format="markdown",
             engagement_type=EngagementType.SIZING,
             day_1_hypothesis="L4+ AV sensor TAM exceeds $10B by 2030",
+            effective_evaluation_profile=EvaluationProfileName.ESTIMATIVE,
         ),
         task_decomposition=TaskDecomposition(
             project="AV Sensors",
@@ -1481,7 +1483,7 @@ class TestWave2BWiring:
         assert inst.evaluate.call_args.args[1] is generated_contract
 
     @pytest.mark.asyncio
-    async def test_orchestrator_passes_profile_to_evaluator(self) -> None:
+    async def test_orchestrator_uses_persisted_evaluation_profile(self) -> None:
         factory = _mock_llm_factory()
         gw = _make_gateway()
         pipeline = Pipeline(llm_factory=factory, gateway=gw)
@@ -1491,9 +1493,10 @@ class TestWave2BWiring:
             update={
                 "research_spec": base_spec.research_spec.model_copy(
                     update={
-                        "engagement_type": EngagementType.STRATEGIC,
+                        "engagement_type": EngagementType.EVALUATIVE,
                         "recommended_pipeline_profile": PipelineProfile.DEEP,
                         "effective_pipeline_profile": PipelineProfile.DEEP,
+                        "effective_evaluation_profile": EvaluationProfileName.STRATEGIC,
                     }
                 )
             }
@@ -1583,3 +1586,75 @@ class TestWave2BWiring:
 
         with pytest.raises(RuntimeError, match="LIGHT profile requires every renderable task"):
             await pipeline.run("Test question", "c1")
+
+    @pytest.mark.asyncio
+    async def test_light_coverage_halts_on_failed_evaluated_output(self) -> None:
+        factory = _mock_llm_factory()
+        gw = _make_gateway()
+        pipeline = Pipeline(llm_factory=factory, gateway=gw)
+
+        base_spec = _make_spec()
+        spec = base_spec.model_copy(
+            update={
+                "research_spec": base_spec.research_spec.model_copy(
+                    update={
+                        "recommended_pipeline_profile": PipelineProfile.LIGHT,
+                        "effective_pipeline_profile": PipelineProfile.LIGHT,
+                    }
+                )
+            }
+        )
+        finding = _make_finding()
+        manifest = _make_manifest()
+        cm = _make_confidence_map()
+        failed_eval = _make_eval_result().model_copy(
+            update={
+                "passed": False,
+                "overall_score": 48.0,
+                "intensity": EvaluationIntensity.LIGHT_TOUCH,
+            }
+        )
+
+        async def noop_gen(*a, **kw):
+            return
+            yield
+
+        c = pipeline._build_components()
+        c.spec_engine.generate_spec = noop_gen
+        c.spec_engine.get_spec = AsyncMock(return_value=spec)
+        c.agent_pool.execute_all = AsyncMock(
+            return_value=[AgentResult("a1", "task_001", finding=finding)]
+        )
+        c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
+        c.citation_processor.process = noop_gen
+        c.citation_processor.get_result = AsyncMock(
+            return_value=CitationProcessorResult(
+                manifest=manifest,
+                canonicalized_findings=[finding],
+            )
+        )
+        c.deliberation.deliberate = noop_gen
+        c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
+        c.sprint_contract_generator.generate = AsyncMock(
+            return_value=SprintContract(
+                section_id="generated_task_001",
+                engagement_id="eng_test",
+                client_id="c1",
+                task_id="task_001",
+                section_title="Generated Section",
+                acceptance_criteria=["Generated criterion"],
+            )
+        )
+        pipeline._pending_components = c
+
+        with patch("keystone.pipeline.orchestrator.Evaluator") as MockEval:
+            inst = MagicMock()
+            inst.evaluate = noop_gen
+            inst.get_result = AsyncMock(return_value=failed_eval)
+            MockEval.return_value = inst
+
+            with pytest.raises(
+                RuntimeError,
+                match="LIGHT profile requires every renderable task",
+            ):
+                await pipeline.run("Test question", "c1")

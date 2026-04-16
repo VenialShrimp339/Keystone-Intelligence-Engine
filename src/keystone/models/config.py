@@ -181,10 +181,16 @@ class AppConfig(BaseSettings):
     max_parallel_agents: int = Field(default=5)
     provider_rpm_limit: int = Field(default=60)
 
+    # LLM provider
+    llm_provider: str = Field(
+        default="claude_cli",
+        description="LLM provider: claude_cli, api_key, or codex_oauth",
+    )
+
     # Model IDs
-    flagship_model: str = Field(default="gpt-5.4")
-    standard_model: str = Field(default="gpt-5.4")
-    fast_model: str = Field(default="gpt-5.4-mini")
+    flagship_model: str = Field(default="claude-opus-4-6")
+    standard_model: str = Field(default="claude-sonnet-4-6")
+    fast_model: str = Field(default="claude-haiku-4-5")
 
     # Evaluation
     prometheus_model_path: str | None = Field(default=None)
