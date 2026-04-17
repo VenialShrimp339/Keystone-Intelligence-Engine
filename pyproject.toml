@@ -37,10 +37,6 @@ dependencies = [
     # LLM provider
     "openai>=1.60.0",
     "pydantic-ai>=1.77.0",
-
-    # Retrieval
-    "edgartools>=5.0.0",     # SEC EDGAR filings + XBRL + MCP server
-    "docling>=2.0.0",        # Granite-Docling PDF parsing
 ]
 
 # Dependencies to add back when the corresponding components are built:
@@ -54,6 +50,19 @@ dependencies = [
 # "alembic>=1.13.0"         -- Component #3a (migrations)
 
 [project.optional-dependencies]
+# Retrieval extras are optional so minimal installs don't pull heavy
+# ML runtimes. Both backends degrade gracefully when absent: the Docling
+# backend emits a DOCLING_UNAVAILABLE warning and the edgartools MCP
+# server simply fails to launch under the existing MockMCPClient path.
+retrieval-edgar = [
+    "edgartools>=5.0.0",     # SEC EDGAR filings + XBRL + MCP server
+]
+retrieval-docling = [
+    "docling>=2.0.0",        # Granite-Docling PDF parsing
+]
+retrieval = [
+    "keystone-intelligence-engine[retrieval-edgar,retrieval-docling]",
+]
 dev = [
     "pytest>=8.0",
     "pytest-asyncio>=0.24.0",

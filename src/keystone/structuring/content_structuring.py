@@ -25,7 +25,7 @@ from typing import TYPE_CHECKING
 from keystone.events import (
     OutlineGenerated,
     SectionDrafted,
-    SprintContractNegotiated,
+    SprintContractProposed,
 )
 from keystone.models.evaluation import SprintContract
 from keystone.models.structuring import (
@@ -74,8 +74,10 @@ class ContentStructurer:
     def __init__(
         self,
         sprint_contract_generator: SprintContractGenerator | None = None,
+        frameworks_override: list[FrameworkHint] | None = None,
     ) -> None:
         self._sprint_contract_generator = sprint_contract_generator
+        self._frameworks_override = frameworks_override
         self._outline: StructuredOutline | None = None
         self._section_texts: dict[str, str] = {}
         self._sprint_contracts: dict[str, SprintContract] = {}
@@ -93,12 +95,18 @@ class ContentStructurer:
 
         Yields:
             SectionDrafted: one per renderable task.
-            SprintContractNegotiated: one per renderable task (after the
+            SprintContractProposed: one per renderable task (after the
                 generator returns; skipped if no generator is wired in).
             OutlineGenerated: one at the end, after all tasks processed.
         """
-        frameworks = frameworks_for_engagement(spec.research_spec.engagement_type)
-        framework = primary_framework(spec.research_spec.engagement_type)
+        frameworks = frameworks_for_engagement(
+            spec.research_spec.engagement_type,
+            override=self._frameworks_override,
+        )
+        framework = primary_framework(
+            spec.research_spec.engagement_type,
+            override=self._frameworks_override,
+        )
         finding_by_task = {finding.task_id: finding for finding in findings}
 
         for task in tasks:
@@ -125,7 +133,7 @@ class ContentStructurer:
             if self._sprint_contract_generator is not None:
                 contract = await self._negotiate_contract(task, spec)
                 self._sprint_contracts[task.id] = contract
-                yield SprintContractNegotiated(
+                yield SprintContractProposed(
                     event_id=_uid(),
                     engagement_id=engagement_id,
                     client_id=client_id,

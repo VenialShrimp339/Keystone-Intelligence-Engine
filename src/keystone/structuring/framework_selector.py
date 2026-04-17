@@ -2,8 +2,12 @@
 
 Maps the five EngagementType values to consulting analytical frameworks.
 The selection is deterministic: the classifier in L0 has already chosen
-the engagement type, so L2 just honors that choice. An LLM-driven
-alternative lives outside scope; this layer's job is consistency.
+the engagement type, so L2 just honors that choice.
+
+Callers can supply an ``override`` list of FrameworkHint to bypass the
+default mapping for novel engagements that don't fit the predefined
+types (per Jack's architectural directive #1: predefined types are
+templates, not constraints).
 """
 
 from __future__ import annotations
@@ -83,16 +87,29 @@ _FRAMEWORK_MAP: dict[EngagementType, list[FrameworkHint]] = {
 
 def frameworks_for_engagement(
     engagement_type: EngagementType,
+    override: list[FrameworkHint] | None = None,
 ) -> list[FrameworkHint]:
-    """Return the ordered framework hints for an engagement type."""
+    """Return the ordered framework hints for an engagement type.
+
+    When ``override`` is non-None it replaces the default mapping entirely,
+    including the empty-list case — an explicit empty override yields an
+    empty framework list (the caller has decided no framework applies).
+    """
+    if override is not None:
+        return list(override)
     return list(_FRAMEWORK_MAP.get(engagement_type, []))
 
 
 def primary_framework(
     engagement_type: EngagementType,
+    override: list[FrameworkHint] | None = None,
 ) -> AnalyticalFramework | None:
-    """Return the mandatory (primary) framework for the engagement type."""
-    hints = _FRAMEWORK_MAP.get(engagement_type, [])
+    """Return the mandatory (primary) framework for the engagement type.
+
+    When ``override`` is non-None it is the selection source, using the
+    same mandatory-first / first-listed fallback as the default mapping.
+    """
+    hints = override if override is not None else _FRAMEWORK_MAP.get(engagement_type, [])
     for hint in hints:
         if hint.mandatory:
             return hint.framework

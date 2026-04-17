@@ -503,7 +503,7 @@ class TestPipelineStageOrder:
         assert len(result.markdown_output) > 0
         assert result.total_tokens == 1200
         # L2 emits 3 events for the single renderable task:
-        # SectionDrafted, SprintContractNegotiated, OutlineGenerated.
+        # SectionDrafted, SprintContractProposed, OutlineGenerated.
         assert result.total_events == 3
 
 
@@ -592,7 +592,7 @@ class TestEventCollection:
         l2_events = [e for e in events if e.layer == "L2"]
         assert {type(e).__name__ for e in l2_events} == {
             "SectionDrafted",
-            "SprintContractNegotiated",
+            "SprintContractProposed",
             "OutlineGenerated",
         }
 

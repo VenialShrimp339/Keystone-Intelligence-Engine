@@ -16,7 +16,7 @@ from keystone.contracts import ContentStructuringContract
 from keystone.events import (
     OutlineGenerated,
     SectionDrafted,
-    SprintContractNegotiated,
+    SprintContractProposed,
 )
 from keystone.models.citations import Citation, ConfidenceTier, SourceType
 from keystone.models.confidence import (
@@ -39,6 +39,7 @@ from keystone.models.research import (
 )
 from keystone.models.structuring import (
     AnalyticalFramework,
+    FrameworkHint,
     OutlineItemType,
     OutlineSectionType,
 )
@@ -314,6 +315,75 @@ class TestFrameworkSelection:
             AnalyticalFramework.SCENARIO_PLANNING,
             AnalyticalFramework.SWOT,
         ]
+
+    def test_override_replaces_default_mapping(self) -> None:
+        override = [
+            FrameworkHint(
+                framework=AnalyticalFramework.SWOT,
+                rationale="Custom choice for a novel engagement.",
+                mandatory=True,
+            ),
+        ]
+        assert frameworks_for_engagement(EngagementType.SIZING, override=override) == override
+        assert (
+            primary_framework(EngagementType.SIZING, override=override) == AnalyticalFramework.SWOT
+        )
+
+    def test_empty_override_yields_no_frameworks(self) -> None:
+        # An explicit empty list is a caller decision, not a fallback signal.
+        assert frameworks_for_engagement(EngagementType.SIZING, override=[]) == []
+        assert primary_framework(EngagementType.SIZING, override=[]) is None
+
+    def test_override_primary_prefers_mandatory_then_first(self) -> None:
+        override = [
+            FrameworkHint(
+                framework=AnalyticalFramework.VALUE_CHAIN,
+                rationale="Augmenting.",
+                mandatory=False,
+            ),
+            FrameworkHint(
+                framework=AnalyticalFramework.PORTERS_FIVE_FORCES,
+                rationale="Primary.",
+                mandatory=True,
+            ),
+        ]
+        assert (
+            primary_framework(EngagementType.SIZING, override=override)
+            == AnalyticalFramework.PORTERS_FIVE_FORCES
+        )
+
+    @pytest.mark.asyncio
+    async def test_structurer_threads_frameworks_override_into_outline(self) -> None:
+        override = [
+            FrameworkHint(
+                framework=AnalyticalFramework.SWOT,
+                rationale="Novel engagement; SWOT chosen by Spec Engine.",
+                mandatory=True,
+            ),
+        ]
+        spec = _spec()  # engagement_type=SIZING → default would be ESTIMATION
+        structurer = ContentStructurer(
+            sprint_contract_generator=_mock_contract_generator(),
+            frameworks_override=override,
+        )
+        async for _event in structurer.structure(
+            _confidence_map(),
+            [_finding("task_001", "Branch one claim", "CAN-001")],
+            spec,
+            spec.task_decomposition.tasks,
+            "eng_test",
+            "client_test",
+        ):
+            pass
+
+        outline = await structurer.get_outline()
+        framework_section = next(
+            section
+            for section in outline.sections
+            if section.section_type == OutlineSectionType.FRAMEWORK_ANALYSIS
+        )
+        assert framework_section.framework == AnalyticalFramework.SWOT
+        assert [hint.framework for hint in outline.frameworks] == [AnalyticalFramework.SWOT]
 
 
 # ---------------------------------------------------------------------------
@@ -638,7 +708,7 @@ class TestSprintContractNegotiation:
         ):
             events.append(event)
 
-        assert not any(isinstance(e, SprintContractNegotiated) for e in events)
+        assert not any(isinstance(e, SprintContractProposed) for e in events)
         assert await structurer.get_sprint_contracts() == []
 
 
@@ -666,12 +736,12 @@ class TestEventEmission:
         ):
             events.append(event)
 
-        # Per task: SectionDrafted -> SprintContractNegotiated.
+        # Per task: SectionDrafted -> SprintContractProposed.
         # Then: OutlineGenerated once at the end.
         assert isinstance(events[0], SectionDrafted)
-        assert isinstance(events[1], SprintContractNegotiated)
+        assert isinstance(events[1], SprintContractProposed)
         assert isinstance(events[2], SectionDrafted)
-        assert isinstance(events[3], SprintContractNegotiated)
+        assert isinstance(events[3], SprintContractProposed)
         assert isinstance(events[4], OutlineGenerated)
         assert events[4].section_count == len((await structurer.get_outline()).sections)
 

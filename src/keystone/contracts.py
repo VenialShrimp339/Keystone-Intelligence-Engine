@@ -231,7 +231,7 @@ class ContentStructuringContract(Protocol):
     ) -> AsyncIterator[AnyPipelineEvent]:
         """Structure findings into deliverable outline and sections.
 
-        Yields SectionDrafted (one per task), SprintContractNegotiated
+        Yields SectionDrafted (one per task), SprintContractProposed
         (one per task when a generator is wired in), and OutlineGenerated
         (once at the end).
         """

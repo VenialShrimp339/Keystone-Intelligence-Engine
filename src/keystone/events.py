@@ -19,6 +19,7 @@ from pydantic import BaseModel, Field
 # Base event
 # ---------------------------------------------------------------------------
 
+
 class PipelineEvent(BaseModel):
     """Base class for all pipeline events.
 
@@ -38,6 +39,7 @@ class PipelineEvent(BaseModel):
 # ---------------------------------------------------------------------------
 # L0: Specification Engine events
 # ---------------------------------------------------------------------------
+
 
 class SpecificationGenerated(PipelineEvent):
     """RESEARCH.md specification has been generated and validated."""
@@ -71,6 +73,7 @@ class AgentDispatched(PipelineEvent):
 # ---------------------------------------------------------------------------
 # L1: Research Agent events
 # ---------------------------------------------------------------------------
+
 
 class ResearchStarted(PipelineEvent):
     """A research agent has started working on its assigned task."""
@@ -123,6 +126,7 @@ class ResearchComplete(PipelineEvent):
 # CitationProcessor events
 # ---------------------------------------------------------------------------
 
+
 class CitationDeduped(PipelineEvent):
     """Two citations have been merged (same source, different agents)."""
 
@@ -164,6 +168,7 @@ class ManifestProduced(PipelineEvent):
 # ---------------------------------------------------------------------------
 # L1.5: Deliberation events
 # ---------------------------------------------------------------------------
+
 
 class AnalystSpawned(PipelineEvent):
     """A deliberation analyst has been spawned."""
@@ -207,6 +212,7 @@ class ConfidenceMapProduced(PipelineEvent):
 # L2: Content Structuring events
 # ---------------------------------------------------------------------------
 
+
 class OutlineGenerated(PipelineEvent):
     """A deliverable outline has been generated."""
 
@@ -223,8 +229,12 @@ class SectionDrafted(PipelineEvent):
     claim_count: int = Field(description="Claims incorporated in this section")
 
 
-class SprintContractNegotiated(PipelineEvent):
-    """A sprint contract has been established for a section."""
+class SprintContractProposed(PipelineEvent):
+    """A sprint contract has been proposed for a section.
+
+    Phase 1 is unilateral proposal by the Evaluator-side generator; Phase 2
+    will add bidirectional negotiation without a schema change.
+    """
 
     layer: str = "L2"
     section_id: str = Field(description="Section this contract covers")
@@ -234,6 +244,7 @@ class SprintContractNegotiated(PipelineEvent):
 # ---------------------------------------------------------------------------
 # L3: Generation events
 # ---------------------------------------------------------------------------
+
 
 class DraftGenerated(PipelineEvent):
     """A deliverable draft has been generated."""
@@ -263,6 +274,7 @@ class DeliverableAssembled(PipelineEvent):
 # ---------------------------------------------------------------------------
 # L4: Evaluator events
 # ---------------------------------------------------------------------------
+
 
 class DeterministicCheckPassed(PipelineEvent):
     """Layer 1 deterministic verification completed."""
@@ -307,6 +319,7 @@ class EvaluationComplete(PipelineEvent):
 # META: Self-Improvement events
 # ---------------------------------------------------------------------------
 
+
 class ObservationRecorded(PipelineEvent):
     """An observation has been recorded in the Observation Library."""
 
@@ -339,14 +352,13 @@ class ConstraintEncoded(PipelineEvent):
 # HITL: Human-in-the-Loop events
 # ---------------------------------------------------------------------------
 
+
 class ReviewGateCreated(PipelineEvent):
     """A human review gate has been created. Pipeline is paused."""
 
     layer: str = "HITL"
     gate_id: str = Field(description="Review gate ID")
-    gate_type: str = Field(
-        description="Gate type: 'post_specification' or 'post_deliberation'"
-    )
+    gate_type: str = Field(description="Gate type: 'post_specification' or 'post_deliberation'")
     item_count: int = Field(description="Number of review artifacts")
 
 
@@ -376,9 +388,7 @@ class ReviewGateModified(PipelineEvent):
     layer: str = "HITL"
     gate_id: str = Field(description="Review gate ID")
     gate_type: str = Field(description="Which gate was modified")
-    modification_keys: list[str] = Field(
-        description="Top-level keys in the modifications payload"
-    )
+    modification_keys: list[str] = Field(description="Top-level keys in the modifications payload")
 
 
 class ReviewGateRejected(PipelineEvent):
@@ -387,9 +397,7 @@ class ReviewGateRejected(PipelineEvent):
     layer: str = "HITL"
     gate_id: str = Field(description="Review gate ID")
     gate_type: str = Field(description="Which gate was rejected")
-    reasoning: str | None = Field(
-        default=None, description="Reviewer's reason for rejection"
-    )
+    reasoning: str | None = Field(default=None, description="Reviewer's reason for rejection")
 
 
 # ---------------------------------------------------------------------------
@@ -398,25 +406,46 @@ class ReviewGateRejected(PipelineEvent):
 
 AnyPipelineEvent = (
     # L0
-    SpecificationGenerated | TasksDecomposed | AgentDispatched
+    SpecificationGenerated
+    | TasksDecomposed
+    | AgentDispatched
     # L1
-    | ResearchStarted | SourceFound | CitationExtracted
-    | FindingSynthesized | ResearchComplete
+    | ResearchStarted
+    | SourceFound
+    | CitationExtracted
+    | FindingSynthesized
+    | ResearchComplete
     # CitationProcessor
-    | CitationDeduped | CorroborationScored | URLVerified | ManifestProduced
+    | CitationDeduped
+    | CorroborationScored
+    | URLVerified
+    | ManifestProduced
     # L1.5
-    | AnalystSpawned | IndependentAnalysisComplete
-    | AggregationComplete | ConfidenceMapProduced
+    | AnalystSpawned
+    | IndependentAnalysisComplete
+    | AggregationComplete
+    | ConfidenceMapProduced
     # L2
-    | OutlineGenerated | SectionDrafted | SprintContractNegotiated
+    | OutlineGenerated
+    | SectionDrafted
+    | SprintContractProposed
     # L3
-    | DraftGenerated | CitationFormatted | DeliverableAssembled
+    | DraftGenerated
+    | CitationFormatted
+    | DeliverableAssembled
     # L4
-    | DeterministicCheckPassed | CitationGateResult
-    | RubricDimensionScored | EvaluationComplete
+    | DeterministicCheckPassed
+    | CitationGateResult
+    | RubricDimensionScored
+    | EvaluationComplete
     # META
-    | ObservationRecorded | PatternPromoted | ConstraintEncoded
+    | ObservationRecorded
+    | PatternPromoted
+    | ConstraintEncoded
     # HITL
-    | ReviewGateCreated | ReviewDecisionSubmitted
-    | ReviewGateApproved | ReviewGateModified | ReviewGateRejected
+    | ReviewGateCreated
+    | ReviewDecisionSubmitted
+    | ReviewGateApproved
+    | ReviewGateModified
+    | ReviewGateRejected
 )
