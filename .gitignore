@@ -37,3 +37,16 @@ Thumbs.db
 
 # pyenv
 .python-version
+
+# Local-only agent state
+.claude/
+.codex/
+
+# Generated graphify artifacts
+graphify-out/
+
+# Generated and archived run artifacts
+output/*
+!output/first_real_run/
+output/first_real_run/*
+!output/first_real_run/README.md

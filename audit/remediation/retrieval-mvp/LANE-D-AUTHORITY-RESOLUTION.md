@@ -1,5 +1,10 @@
 # Lane D Authority Resolution
 
+Status: historical/provenance packet material retained for lineage only.
+Use this file to understand the blocked Lane D authority decision for candidate `f1af7df`.
+Do not use this file as live current truth or as the next-action authority for the current repo state.
+For live truth, start with `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, the control-plane pair, and the promoted Lane E packet under `audit/remediation/retrieval-parse/`.
+
 Date: 2026-04-13  
 Controller mode: docs-only authority resolution  
 Worktree under review: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch` at candidate `f1af7dfafa2e66b831810d70006ab8295411c61b`

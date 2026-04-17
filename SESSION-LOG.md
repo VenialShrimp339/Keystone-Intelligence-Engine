@@ -1931,3 +1931,78 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 1. Commit this one-file residual preservation on `codex/residual-track-preserve`.
 2. Use that new clean baseline for the agreed owner-triage normalization session over `retrieval-mvp`, future-state docs, graphify policy/artifacts, archived evidence, scripts, and local-tooling boundaries.
 3. After owner-triage decisions are recorded and normalized, prune the 19 stale `/private/tmp/...` worktrees.
+
+---
+
+## Session 29: Owner-Triage Normalization Pass
+- **Timestamp:** `2026-04-16T20:18:07-0400`
+- **Agent:** `Codex (GPT-5.4 xhigh)`
+- **Task:** Normalize the agreed owner-triage surfaces from dirty main into the clean `79cc921` worktree, demoting historical/support material correctly while keeping generated and local-only content out of tracked canon.
+- **Authority docs read:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/AUTHORITY-INDEX.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/SESSION-STANDARD.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/remediation/control-plane/ACTIVE-HANDOFF.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/FOUNDER-INTENT-DOCTRINE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/remediation/control-plane/FRESH-ORCHESTRATOR-BOOTSTRAP.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/remediation/control-plane/FRESH-ORCHESTRATOR-SESSION-PROMPT.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/CURRENT-STATE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/SESSION-LOG.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/remediation/retrieval-parse/PROMOTION-DECISION.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/graphify-out/GRAPH_REPORT.md`
+- **Evidence source workspace:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine`
+- **Branch:** `codex/owner-triage-normalization`
+- **Worktree:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`
+- **Start commit:** `79cc921a9e8cfdf1e5f87964fbb78f34f70c29d2`
+- **End commit:** `pending session commit; exact hash reported in closeout`
+
+### Files changed
+- `AUTHORITY-INDEX.md`
+- `.gitignore`
+- `.graphifyignore`
+- `audit/remediation/retrieval-mvp/LANE-D-AUTHORITY-RESOLUTION.md`
+- `audit/remediation/retrieval-mvp/NEXT-CONTROLLER-ACTION.md`
+- `audit/remediation/retrieval-mvp/RUNTIME-LANE-UNLOCK-MEMO.md`
+- `audit/remediation/retrieval-mvp/SETUP-ARTIFACT-CHECKLIST.md`
+- `audit/remediation/retrieval-mvp/WORKTREE-AND-REVIEW-GATE-CHECKLIST.md`
+- `audit/remediation/project-state-reconcile/CURRENT-VS-FUTURE-STATE.md`
+- `audit/remediation/project-state-reconcile/DOCS-CONTRADICTIONS-AND-SOURCE-OF-TRUTH.md`
+- `docs/system-diagram.md`
+- `docs/roadmap/full-product-vision.md`
+- `research/README.md`
+- `output/first_real_run/README.md`
+- `SESSION-LOG.md`
+
+### Files reviewed only
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-mvp/**`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/system-diagram.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/roadmap/full-product-vision.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/research/README.md`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/.graphifyignore`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/output/first_real_run/**`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/scripts/setup.sh`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/scripts/run_demo.sh`
+
+### Summary of work
+- Imported the agreed support surfaces from dirty main as tracked docs: `docs/system-diagram.md`, `docs/roadmap/full-product-vision.md`, `research/README.md`, and `.graphifyignore`.
+- Added explicit role banners so the imported docs read as support/architecture, roadmap/intent, and research index layers rather than live current truth.
+- Demoted the tracked `audit/remediation/retrieval-mvp/**` packet family by adding historical/provenance banners to the surviving tracked files without reopening missing subordinate docs or rewriting the control plane.
+- Added Git-facing fences in `.gitignore` so `graphify-out/**`, `output/**`, and local `.claude/**` / `.codex/**` state stay out of tracked canon by default, while allowing only `output/first_real_run/README.md` to remain tracked.
+- Added a minimal `output/first_real_run/README.md` fence so the first real-run family is classified as archived evidence without importing the generated artifact bundle.
+- Updated `AUTHORITY-INDEX.md` and the two active project-state reconcile docs so the newly tracked docs are classified correctly and no longer described as local-only.
+
+### Decisions / contradictions resolved
+- Treated `audit/remediation/retrieval-mvp/**` as historical/provenance packet material only, not as live authority or current next-action truth.
+- Tracked `docs/system-diagram.md` as a support/architecture snapshot, not current truth.
+- Tracked `docs/roadmap/full-product-vision.md` as roadmap/intent, not current truth.
+- Tracked `research/README.md` as the landing index for the already-relocated research tree.
+- Tracked `.graphifyignore` as repo-level graphify policy.
+- Classified `output/first_real_run/**` as archived evidence while intentionally keeping the generated payload files untracked.
+- Did not import `scripts/setup.sh` or `scripts/run_demo.sh`; they remain outside tracked canon for this pass rather than being modernized or implicitly promoted.
+- Treated `.claude/**` and `.codex/**` as local-only surfaces and fenced them out of tracked canon in `.gitignore`.
+
+### Evidence / verification
+- Dirty-main `graphify-out/GRAPH_REPORT.md` was used as orientation evidence only and was not promoted into tracked canon.
+- Fresh read-only `gpt-5.4 xhigh` subagents reviewed: retrieval-mvp demotion scope, future-state doc normalization, graphify/output policy, archive/evidence demotion, and red-team scope-widening risks.
+- The graphify/output policy review confirmed that `.graphifyignore` alone does not prevent staging and that Git-facing fences were required to keep generated bulk out of tracked canon by default.
+- No code files were changed, so the required graphify rebuild is not applicable to this session.
+- Final repo checks for this pass are: `git diff --check`, changed-file scope review, and confirmation that no `graphify-out/**` or generated `output/**` payload files were accidentally tracked.
+
+### Blockers / residual risks
+- The stale helper scripts from dirty main were intentionally not imported; if the repo later wants durable archival copies of them, that should be a separate narrow documentation pass.
+- The archived first-real-run payload files remain outside tracked canon in this worktree by design, so any future review of those exact generated files still requires the dirty-main evidence workspace or a later explicit archival capture.
+- Local-only `.agents/` remains present as untracked workspace state and was intentionally left outside repo canon.
+
+### What comes next
+1. Run the required verification for this normalization pass and confirm the changed-file set stayed inside the agreed scope.
+2. Commit the normalization pass on `codex/owner-triage-normalization` if the delta is coherent.
+3. After this normalization is safely committed, prune the 19 stale `/private/tmp/...` worktrees in a separate follow-up session.

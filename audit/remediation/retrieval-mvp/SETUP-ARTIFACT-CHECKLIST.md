@@ -1,5 +1,10 @@
 # Setup-Artifact Checklist
 
+Status: historical/provenance packet material retained for lineage only.
+This checklist belongs to the older Retrieval MVP lane-setup packet family.
+It remains useful for provenance and design review, but it does not authorize current work or set live truth.
+For current authority, use the control plane and the promoted Lane E retrieval-parse packet.
+
 Date: 2026-04-13  
 Purpose: define the exact contents required in the next controller-approved setup artifact before the first Retrieval MVP runtime lane may open
 

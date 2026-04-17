@@ -1,0 +1,6 @@
+tests/
+reference/nano-claude-code/
+output/
+docs/archive/
+graphify-out/
+AGENTS.md

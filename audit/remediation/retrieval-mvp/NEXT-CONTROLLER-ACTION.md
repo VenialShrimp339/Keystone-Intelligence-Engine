@@ -1,5 +1,10 @@
 # Next Controller Action
 
+Status: historical/provenance packet material retained for lineage only.
+This file records the superseded post-Lane-D controller action from the blocked Retrieval MVP fetch line.
+Do not use it as the current next-action authority for the repo.
+For the current next action, use the live control plane and the promoted Lane E retrieval-parse packet.
+
 Date: 2026-04-13
 
 ## Decision To Carry Forward

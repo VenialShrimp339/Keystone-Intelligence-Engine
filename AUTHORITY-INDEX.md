@@ -82,6 +82,9 @@ They do not set live truth.
 - `AGENTS.md`
 - `docs/ARCHITECTURE.md`
 - `docs/architecture-and-evolution.md`
+- `docs/system-diagram.md`
+- `docs/roadmap/full-product-vision.md`
+- `research/README.md`
 - `audit/remediation/README.md`
 
 ### `archive`
@@ -116,6 +119,9 @@ Use these as history, not as live authority.
 | `AGENTS.md` | `derived_narrative` | Codex wrapper around shared standards |
 | `docs/ARCHITECTURE.md` | `derived_narrative` | older code-structure snapshot |
 | `docs/architecture-and-evolution.md` | `derived_narrative` | derived historical/professor narrative |
+| `docs/system-diagram.md` | `derived_narrative` | support architecture diagram, not live authority |
+| `docs/roadmap/full-product-vision.md` | `derived_narrative` | future roadmap / intent draft, not live authority |
+| `research/README.md` | `derived_narrative` | research tree index / navigation layer |
 | `audit/remediation/README.md` | `derived_narrative` | historical remediation-process narrative |
 
 ## Stale-Doc Demotions

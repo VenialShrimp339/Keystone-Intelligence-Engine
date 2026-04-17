@@ -1,5 +1,10 @@
 # Runtime-Lane Unlock Memo
 
+Status: historical/provenance packet material retained for lineage only.
+This memo records the pre-promotion Retrieval MVP lane-opening logic rooted at `65a612d`.
+It is no longer the live controller answer for current repo state or next action.
+For live truth, defer to the control plane and the promoted Lane E retrieval-parse materials.
+
 Date: 2026-04-13  
 Session mode: controller-only planning  
 Runtime truth anchor: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-wave-4b` at commit `65a612d`

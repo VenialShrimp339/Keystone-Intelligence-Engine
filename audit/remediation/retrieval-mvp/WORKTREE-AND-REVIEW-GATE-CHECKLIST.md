@@ -1,5 +1,10 @@
 # Worktree And Review-Gate Checklist
 
+Status: historical/provenance packet material retained for lineage only.
+This checklist records the older Retrieval MVP worktree/review gate expectations.
+It is preserved for provenance, not as the live worktree-opening authority for the current repo.
+Use the control plane and the promoted Lane E retrieval-parse packet for the current authorized path.
+
 Date: 2026-04-13  
 Purpose: define the required worktree provenance, review packet, and gate sequence for the first Retrieval MVP runtime lane
 
