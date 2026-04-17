@@ -2,13 +2,13 @@
 
 import pytest
 
+from keystone.gateway.servers import TOOL_CONFIGS, register_all_tools
 from keystone.gateway.tool_registry import (
     HealthStatus,
     ToolEntry,
     ToolRegistry,
     TransportType,
 )
-from keystone.gateway.servers import TOOL_CONFIGS, register_all_tools
 
 
 def _make_entry(name: str = "test_tool", **kwargs) -> ToolEntry:
@@ -89,21 +89,15 @@ class TestHealthCheck:
     @pytest.mark.asyncio
     async def test_health_check_returns_stored_status(self):
         registry = ToolRegistry()
-        registry.register(
-            _make_entry("tool_a", health_status=HealthStatus.HEALTHY)
-        )
+        registry.register(_make_entry("tool_a", health_status=HealthStatus.HEALTHY))
         status = await registry.health_check("tool_a")
         assert status == HealthStatus.HEALTHY
 
     @pytest.mark.asyncio
     async def test_health_check_all(self):
         registry = ToolRegistry()
-        registry.register(
-            _make_entry("tool_a", health_status=HealthStatus.HEALTHY)
-        )
-        registry.register(
-            _make_entry("tool_b", health_status=HealthStatus.DEGRADED)
-        )
+        registry.register(_make_entry("tool_a", health_status=HealthStatus.HEALTHY))
+        registry.register(_make_entry("tool_b", health_status=HealthStatus.DEGRADED))
 
         statuses = await registry.health_check_all()
         assert statuses["tool_a"] == HealthStatus.HEALTHY
@@ -126,9 +120,7 @@ class TestDescriptionBudget:
         register_all_tools(registry)
 
         budget = registry.get_description_budget()
-        assert budget < 10_000, (
-            f"Description budget {budget} tokens exceeds 10,000 limit"
-        )
+        assert budget < 10_000, f"Description budget {budget} tokens exceeds 10,000 limit"
 
     def test_budget_is_zero_when_empty(self):
         registry = ToolRegistry()
@@ -136,14 +128,22 @@ class TestDescriptionBudget:
 
 
 class TestServerConfigs:
-    def test_all_7_servers_registered(self):
-        """TOOL_CONFIGS must contain exactly 7 entries."""
-        assert len(TOOL_CONFIGS) == 7
+    def test_tool_count_matches_configured_entries(self):
+        """TOOL_CONFIGS tracks every tool the spec engine can assign."""
+        # Exa, Brave, three EDGAR sub-tools (filings / financials / company
+        # facts all speak to edgartools-mcp), FRED, paper search, DOI,
+        # Finnhub => 9 tool names across 7 unique upstream servers.
+        assert len(TOOL_CONFIGS) == 9
+
+    def test_unique_server_count(self):
+        """Exactly 7 distinct upstream MCP servers back the registered tools."""
+        server_names = {entry.server_name for entry in TOOL_CONFIGS.values()}
+        assert len(server_names) == 7
 
     def test_register_all_tools_populates_registry(self):
         registry = ToolRegistry()
         register_all_tools(registry)
-        assert len(registry) == 7
+        assert len(registry) == len(TOOL_CONFIGS)
 
     def test_transport_types_mixed(self):
         """Must have both HTTP and stdio servers."""

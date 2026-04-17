@@ -2,18 +2,18 @@
 
 import pytest
 
+from keystone.gateway.servers import TOOL_CONFIGS, register_all_tools
 from keystone.gateway.tool_registry import (
     HealthStatus,
     ToolEntry,
     ToolRegistry,
     TransportType,
 )
-from keystone.gateway.servers import TOOL_CONFIGS, register_all_tools
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 def _make_entry(name: str = "test_tool", **overrides) -> ToolEntry:
     defaults = {
@@ -34,6 +34,7 @@ def registry() -> ToolRegistry:
 # ---------------------------------------------------------------------------
 # Registration and retrieval
 # ---------------------------------------------------------------------------
+
 
 class TestRegistration:
     def test_register_and_get(self, registry: ToolRegistry) -> None:
@@ -86,6 +87,7 @@ class TestRegistration:
 # Health checks
 # ---------------------------------------------------------------------------
 
+
 class TestHealthCheck:
     @pytest.mark.asyncio
     async def test_health_check_unknown_tool(self, registry: ToolRegistry) -> None:
@@ -119,6 +121,7 @@ class TestHealthCheck:
 # Description budget
 # ---------------------------------------------------------------------------
 
+
 class TestDescriptionBudget:
     def test_budget_with_all_servers(self) -> None:
         """All 7 server configs should total under 10,000 tokens."""
@@ -135,14 +138,22 @@ class TestDescriptionBudget:
 # Server configurations
 # ---------------------------------------------------------------------------
 
+
 class TestServerConfigs:
-    def test_all_seven_servers_present(self) -> None:
-        assert len(TOOL_CONFIGS) == 7
+    def test_tool_count_matches_configured_entries(self) -> None:
+        # Exa, Brave, three EDGAR sub-tools, FRED, paper search, DOI, Finnhub.
+        assert len(TOOL_CONFIGS) == 9
+
+    def test_unique_server_count(self) -> None:
+        # Multiple tool names can share a server_name (e.g. all EDGAR tools
+        # speak to edgartools-mcp). The distinct upstream-server count is 7.
+        server_names = {entry.server_name for entry in TOOL_CONFIGS.values()}
+        assert len(server_names) == 7
 
     def test_register_all_tools(self) -> None:
         registry = ToolRegistry()
         register_all_tools(registry)
-        assert len(registry) == 7
+        assert len(registry) == len(TOOL_CONFIGS)
 
     def test_transport_types_correct(self) -> None:
         # HTTP servers

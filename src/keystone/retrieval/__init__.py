@@ -17,6 +17,10 @@ from keystone.retrieval.artifact_loader import (
     ArtifactLoadError,
     ArtifactNotFoundError,
 )
+from keystone.retrieval.docling_backend import (
+    DOCLING_PIPELINE_TAG,
+    DoclingBackend,
+)
 from keystone.retrieval.evidence_normalizer import EvidenceNormalizer
 from keystone.retrieval.parse_models import (
     Coverage,
@@ -49,6 +53,8 @@ __all__ = [
     "BasicPDFTextBackend",
     "Coverage",
     "CoverageStatus",
+    "DOCLING_PIPELINE_TAG",
+    "DoclingBackend",
     "EvidenceNormalizer",
     "EvidencePrepRecord",
     "FetchedArtifact",

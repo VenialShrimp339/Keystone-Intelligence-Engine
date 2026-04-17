@@ -37,6 +37,10 @@ dependencies = [
     # LLM provider
     "openai>=1.60.0",
     "pydantic-ai>=1.77.0",
+
+    # Retrieval
+    "edgartools>=5.0.0",     # SEC EDGAR filings + XBRL + MCP server
+    "docling>=2.0.0",        # Granite-Docling PDF parsing
 ]
 
 # Dependencies to add back when the corresponding components are built:
@@ -46,7 +50,6 @@ dependencies = [
 # "pgvector>=0.3.0"         -- Component #3a (vector search)
 # "asyncpg>=0.29.0"         -- Component #3a (PostgreSQL driver)
 # "redis[hiredis]>=5.0.0"   -- Phase 2 (rate limiter backend)
-# "docling>=2.0.0"          -- Component #3a (PDF parsing)
 # "cohere>=5.0.0"           -- Component #3a (reranking)
 # "alembic>=1.13.0"         -- Component #3a (migrations)
 
@@ -89,6 +92,9 @@ module = [
     "mcp.*",
     "cohere.*",
     "docling.*",
+    "docling_core.*",
+    "edgartools.*",
+    "edgar.*",
 ]
 ignore_missing_imports = true
 # These overrides are pre-configured for packages that will be added

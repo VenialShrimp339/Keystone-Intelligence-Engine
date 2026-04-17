@@ -27,6 +27,8 @@ class ToolName(StrEnum):
 
     # Financial
     EDGAR_FILINGS = "edgar_filings"
+    EDGAR_FINANCIALS = "edgar_financials"
+    EDGAR_COMPANY_FACTS = "edgar_company_facts"
     FRED_DATA = "fred_data"
     FINNHUB_MARKET = "finnhub_market"
 
@@ -45,8 +47,17 @@ SEARCH_TOOLS: list[str] = [ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH]
 
 FINANCIAL_TOOLS: list[str] = [
     ToolName.EDGAR_FILINGS,
+    ToolName.EDGAR_FINANCIALS,
+    ToolName.EDGAR_COMPANY_FACTS,
     ToolName.FRED_DATA,
     ToolName.FINNHUB_MARKET,
+]
+
+# Tools exposed by the edgartools MCP server (share one server_name)
+EDGAR_TOOLS: list[str] = [
+    ToolName.EDGAR_FILINGS,
+    ToolName.EDGAR_FINANCIALS,
+    ToolName.EDGAR_COMPANY_FACTS,
 ]
 
 ACADEMIC_TOOLS: list[str] = [ToolName.PAPER_SEARCH, ToolName.DOI_VERIFY]
