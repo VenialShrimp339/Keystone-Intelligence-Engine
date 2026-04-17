@@ -12,11 +12,34 @@
     "Bash(cat *)": "allow",
     "Bash(head *)": "allow",
     "Bash(find *)": "allow",
-    "Bash(mkdir *)": "allow"
+    "Bash(mkdir *)": "allow",
+    "Bash(.venv/bin/pytest *)": "allow",
+    "Bash(.venv/bin/ruff *)": "allow",
+    "Bash(.venv/bin/mypy *)": "allow",
+    "Bash(python3 *)": "allow",
+    "Bash(git *)": "allow",
+    "Bash(source *)": "allow",
+    "Bash(diff *)": "allow",
+    "Bash(du *)": "allow"
   },
   "env": {
     "ANTHROPIC_DEFAULT_HAIKU_MODEL": "claude-sonnet-4-6",
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
     "DEFAULT_LLM_MODEL": "claude-opus-4-6[1m]"
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "f=$(jq -r '.tool_input.file_path // .tool_response.filePath // empty'); if [ -n \"$f\" ] && echo \"$f\" | grep -qE '\\.py$'; then .venv/bin/ruff format \"$f\" 2>/dev/null; fi; true",
+            "timeout": 10,
+            "statusMessage": "Formatting with ruff..."
+          }
+        ]
+      }
+    ]
   }
 }
