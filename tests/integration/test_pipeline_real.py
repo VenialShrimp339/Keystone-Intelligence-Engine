@@ -114,6 +114,7 @@ async def test_full_pipeline_real():
         llm_factory=llm_factory,
         gateway=gateway,
         db_session_factory=None,  # Skip HITL gates
+        max_eval_tasks=3,  # Cap evaluation to first 3 tasks (Codex OAuth is slow)
     )
 
     question = (
@@ -195,10 +196,10 @@ async def test_full_pipeline_real():
     succeeded_agents = sum(1 for f in result.findings if f.claims)
 
     live_citations = sum(
-        1 for c in result.manifest.citations if c.status.value == "live"
+        1 for c in result.manifest.citations if c.url_live is True
     ) if result.manifest.citations else 0
     dead_citations = sum(
-        1 for c in result.manifest.citations if c.status.value == "dead"
+        1 for c in result.manifest.citations if c.url_live is False
     ) if result.manifest.citations else 0
 
     metrics = {

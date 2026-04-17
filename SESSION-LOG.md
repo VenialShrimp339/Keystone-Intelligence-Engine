@@ -1885,3 +1885,49 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 1. Commit this preserved implementation bundle on `codex/wip-bundle-capture`.
 2. In a separate follow-up review, decide whether adjacent but explicitly excluded files such as `.gitignore`, `.claude/settings.json`, or `tests/integration/test_pipeline_real.py` deserve their own preservation pass.
 3. If stronger verification is needed later, install `aiosqlite` into the pytest environment and rerun the four deliberation HITL tests plus the deep-research integration tests under real credentials.
+
+---
+
+## Session 28: Residual Tracked Test Preservation
+- **Timestamp:** `2026-04-16T20:03:06-0400`
+- **Agent:** `Codex (GPT-5.4 xhigh)`
+- **Task:** Preserve the last product-facing tracked residual from dirty main by transplanting the `tests/integration/test_pipeline_real.py` fix onto the clean `d43f45c` baseline without widening scope into local tooling, archive surfaces, or `reference/nano-claude-code`.
+- **Authority docs read:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-residual-track-preserve/AUTHORITY-INDEX.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-residual-track-preserve/SESSION-STANDARD.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-residual-track-preserve/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-residual-track-preserve/audit/remediation/control-plane/ACTIVE-HANDOFF.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-residual-track-preserve/FOUNDER-INTENT-DOCTRINE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-residual-track-preserve/CURRENT-STATE.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-residual-track-preserve/SESSION-LOG.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-residual-track-preserve/audit/remediation/retrieval-parse/PROMOTION-DECISION.md`; `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/graphify-out/GRAPH_REPORT.md`
+- **Evidence source workspace:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine`
+- **Branch:** `codex/residual-track-preserve`
+- **Worktree:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-residual-track-preserve`
+- **Start commit:** `d43f45ce8a62`
+- **End commit:** `pending session commit; exact hash reported in closeout`
+
+### Files changed
+- `tests/integration/test_pipeline_real.py`
+- `SESSION-LOG.md`
+
+### Files reviewed only
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/.claude/settings.json`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/.gitignore`
+- `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine/reference/nano-claude-code`
+
+### Summary of work
+- Compared dirty main against clean baseline `d43f45c` and confirmed only one product-facing tracked residual remained after subtracting the already-preserved WIP bundle and the settled deleted-doc relocation surface.
+- Transplanted the residual integration-test fix only: `Pipeline(..., max_eval_tasks=3)` plus `Citation.status` to `url_live` assertions in the real-pipeline test metrics block.
+- Kept all untracked doc/archive/tooling surfaces out of scope so this branch remains a narrow clean engineering descendant of `d43f45c`.
+
+### Decisions / contradictions resolved
+- Preserved `tests/integration/test_pipeline_real.py` because it matches the already-preserved orchestrator capability and avoids reintroducing a known stale-field failure against the current citation model.
+- Did not preserve `.claude/settings.json`, `.gitignore`, or `reference/nano-claude-code` because they remain repo-hygiene policy items rather than required engineering dependencies for this test fix.
+
+### Evidence / verification
+- Dirty-main diff for `tests/integration/test_pipeline_real.py` contained exactly three semantic edits: one `max_eval_tasks=3` constructor argument and two `status.value` to `url_live` assertion updates.
+- `git diff --check` returned clean after transplant.
+- `PYTHONPATH=src pytest --collect-only -q tests/integration/test_pipeline_real.py` collected the single integration test successfully, with warnings that `integration` and `timeout` markers are not registered in this environment.
+- `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` failed with `ModuleNotFoundError: No module named 'graphify'`, so the required graphify rebuild could not run in this environment.
+
+### Blockers / residual risks
+- Full execution of `tests/integration/test_pipeline_real.py` still depends on live model/search credentials and a suitable runtime environment; this preservation pass does not claim runtime success.
+- Residual repo-hygiene work remains in dirty main, but it is now policy/classification work rather than tracked engineering salvage.
+
+### What comes next
+1. Commit this one-file residual preservation on `codex/residual-track-preserve`.
+2. Use that new clean baseline for the agreed owner-triage normalization session over `retrieval-mvp`, future-state docs, graphify policy/artifacts, archived evidence, scripts, and local-tooling boundaries.
+3. After owner-triage decisions are recorded and normalized, prune the 19 stale `/private/tmp/...` worktrees.
