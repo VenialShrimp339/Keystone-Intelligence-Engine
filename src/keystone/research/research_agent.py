@@ -40,7 +40,12 @@ from keystone.models.research import EngagementSpec, StructuredFinding
 from keystone.models.tasks import ResearchTask
 from keystone.research.context_loader import ContextLoader
 from keystone.research.error_recovery import ErrorRecovery
+from keystone.research.evidence_context import (
+    EvidenceContextProvider,
+    evidence_to_citation,
+)
 from keystone.research.finding_writer import FindingWriter
+from keystone.retrieval.parse_models import EvidencePrepRecord
 
 logger = logging.getLogger(__name__)
 
@@ -69,6 +74,7 @@ def _infer_source_type(url: str) -> SourceType:
         if pattern in lower:
             return stype
     return SourceType.REPORT
+
 
 DEFAULT_ROUNDS = 3
 MAX_ROUNDS = 5
@@ -123,6 +129,7 @@ class ResearchAgent:
         finding_writer: FindingWriter | None = None,
         context_loader: ContextLoader | None = None,
         error_recovery: ErrorRecovery | None = None,
+        evidence_provider: EvidenceContextProvider | None = None,
         max_rounds: int = DEFAULT_ROUNDS,
     ) -> None:
         self._llm = llm
@@ -131,6 +138,7 @@ class ResearchAgent:
         self._finding_writer = finding_writer or FindingWriter()
         self._context_loader = context_loader
         self._error_recovery = error_recovery or ErrorRecovery()
+        self._evidence_provider = evidence_provider
         self._max_rounds = min(max_rounds, MAX_ROUNDS)
         self._finding: StructuredFinding | None = None
         # Per-round accumulators
@@ -139,6 +147,11 @@ class ResearchAgent:
         self._round_citations: dict[int, list[Citation]] = {}
         self._tokens_consumed: int = 0
         self._citation_counter: int = 0
+        # Per-task evidence state (populated when evidence_provider is present)
+        self._evidence_records: list[EvidencePrepRecord] = []
+        self._evidence_table: dict[str, EvidencePrepRecord] = {}
+        self._evidence_block: str = ""
+        self._evidence_citations: dict[str, Citation] = {}
 
     async def execute(
         self,
@@ -151,6 +164,8 @@ class ResearchAgent:
         Dispatches to deep mode (multi-turn web research) when deep_llm
         is available. Falls back to shallow mode on deep research failure.
         """
+        self._prepare_evidence_context(task)
+
         if self._deep_llm is not None:
             try:
                 async for event in self._execute_deep(task, spec, agent):
@@ -171,9 +186,35 @@ class ResearchAgent:
                 self._tokens_consumed = 0
                 self._citation_counter = 0
                 self._finding = None
+                self._evidence_citations = {}
 
         async for event in self._execute_shallow(task, spec, agent):
             yield event
+
+    def _prepare_evidence_context(self, task: ResearchTask) -> None:
+        """Build the per-task EV-NNN table before any round runs.
+
+        Noop when no evidence_provider was injected. Caches the rendered
+        prompt block so each round reuses it without re-formatting.
+        """
+
+        self._evidence_records = []
+        self._evidence_table = {}
+        self._evidence_block = ""
+        self._evidence_citations = {}
+
+        if self._evidence_provider is None:
+            return
+
+        records = self._evidence_provider.records_for_task(task)
+        if not records:
+            return
+
+        self._evidence_records = records
+        self._evidence_table = self._evidence_provider.build_reference_table(records)
+        self._evidence_block = self._evidence_provider.render_passages_for_prompt(
+            self._evidence_table
+        )
 
     async def _execute_deep(
         self,
@@ -235,9 +276,7 @@ class ResearchAgent:
         absence_data = parsed.get("absence_report", [])
 
         if not claims_data:
-            raise RuntimeError(
-                f"Deep research for task {task.id} returned 0 claims"
-            )
+            raise RuntimeError(f"Deep research for task {task.id} returned 0 claims")
 
         # --- Convert claims + sources -> Citation objects + raw_claims ---
         # Deep mode does NOT use the citation_refs pattern from shallow mode.
@@ -254,7 +293,9 @@ class ResearchAgent:
                 self._citation_counter += 1
                 url = src.get("url", "")
                 citation = Citation(
-                    citation_id=_make_source_instance_id(eid, agent.agent_id, self._citation_counter),
+                    citation_id=_make_source_instance_id(
+                        eid, agent.agent_id, self._citation_counter
+                    ),
                     engagement_id=eid,
                     client_id=cid,
                     url=url,
@@ -295,14 +336,8 @@ class ResearchAgent:
             self._all_claims.append(claim_dict)
 
         # --- Emit synthesis event ---
-        conf_values = [
-            c["confidence"] for c in self._all_claims if "confidence" in c
-        ]
-        conf_range = (
-            f"{min(conf_values):.2f}-{max(conf_values):.2f}"
-            if conf_values
-            else "N/A"
-        )
+        conf_values = [c["confidence"] for c in self._all_claims if "confidence" in c]
+        conf_range = f"{min(conf_values):.2f}-{max(conf_values):.2f}" if conf_values else "N/A"
         yield FindingSynthesized(
             event_id=_make_event_id(),
             engagement_id=eid,
@@ -410,7 +445,9 @@ class ResearchAgent:
                     for cit_dict in result.citations:
                         self._citation_counter += 1
                         citation = Citation(
-                            citation_id=_make_source_instance_id(eid, agent.agent_id, self._citation_counter),
+                            citation_id=_make_source_instance_id(
+                                eid, agent.agent_id, self._citation_counter
+                            ),
                             engagement_id=eid,
                             client_id=cid,
                             url=cit_dict.get("url", f"tool://{tool_name}"),
@@ -449,6 +486,7 @@ class ResearchAgent:
             synthesis_prompt = self._build_synthesis_prompt(
                 task, spec, agent, round_num, wiki_context, round_citation_table
             )
+            newly_minted_ev: list[Citation] = []
             try:
                 raw_response = await retry_llm_call(
                     self._llm,
@@ -459,9 +497,14 @@ class ResearchAgent:
                 )
                 round_claims = self._parse_synthesis(raw_response)
 
-                # Attach only explicitly referenced citations -- no round-broadcast
-                round_claims = self._attach_citations_from_refs(
-                    round_claims, round_citation_table
+                # Attach only explicitly referenced citations -- no round-broadcast.
+                # Resolves both SRC-NNN (tool results) and EV-NNN (parsed evidence).
+                round_claims, newly_minted_ev = self._attach_citations_from_refs(
+                    round_claims,
+                    round_citation_table,
+                    engagement_id=eid,
+                    client_id=cid,
+                    agent_id=agent.agent_id,
                 )
 
                 self._all_claims.extend(round_claims)
@@ -474,16 +517,38 @@ class ResearchAgent:
                     agent.agent_id,
                 )
 
+            # --- Emit events + source counts for newly-cited parsed evidence ---
+            for ev_citation in newly_minted_ev:
+                self._all_sources.append(
+                    {
+                        "tool": "lane_e_evidence",
+                        "round": round_num,
+                        "citation_id": ev_citation.citation_id,
+                        "url": ev_citation.url,
+                    }
+                )
+                yield SourceFound(
+                    event_id=_make_event_id(),
+                    engagement_id=eid,
+                    client_id=cid,
+                    agent_id=agent.agent_id,
+                    url=ev_citation.url,
+                    source_type="lane_e_evidence",
+                    quality_score=ev_citation.quality_score,
+                )
+                yield CitationExtracted(
+                    event_id=_make_event_id(),
+                    engagement_id=eid,
+                    client_id=cid,
+                    agent_id=agent.agent_id,
+                    citation_id=ev_citation.citation_id,
+                    title=ev_citation.title,
+                )
+
             # --- Emit synthesis event ---
             new_claim_count = len(self._all_claims)
-            conf_values = [
-                c["confidence"] for c in self._all_claims if "confidence" in c
-            ]
-            conf_range = (
-                f"{min(conf_values):.2f}-{max(conf_values):.2f}"
-                if conf_values
-                else "N/A"
-            )
+            conf_values = [c["confidence"] for c in self._all_claims if "confidence" in c]
+            conf_range = f"{min(conf_values):.2f}-{max(conf_values):.2f}" if conf_values else "N/A"
 
             yield FindingSynthesized(
                 event_id=_make_event_id(),
@@ -567,9 +632,19 @@ class ResearchAgent:
 
         # Collect research questions for context
         questions = "\n".join(
-            f"  - {'[PRIMARY] ' if q.is_primary else ''}{q.question}"
-            for q in rs.questions
+            f"  - {'[PRIMARY] ' if q.is_primary else ''}{q.question}" for q in rs.questions
         )
+
+        # Inject parsed evidence as background context. Deep mode still
+        # expects `sources` arrays with URLs in the output JSON, so these
+        # are read-only reference material -- no EV-NNN ref format.
+        evidence_block = ""
+        if self._evidence_block:
+            evidence_block = (
+                "\nPARSED EVIDENCE ALREADY FETCHED (use as background; "
+                "cite via their URLs in your sources arrays when relevant):\n"
+                f"{self._evidence_block}\n"
+            )
 
         return f"""You are a senior research analyst conducting deep web research for a consulting engagement.
 
@@ -592,7 +667,7 @@ ANTI-CONFIRMATORY FRAMING (you MUST find evidence both for AND against):
 
 EXPECTED OUTPUT:
 {task.end_product}
-
+{evidence_block}
 RESEARCH INSTRUCTIONS:
 1. Search the web thoroughly for information related to this task.
 2. For each promising result, read the full page to extract detailed information.
@@ -653,14 +728,11 @@ OUTPUT THE JSON AND NOTHING ELSE."""
                 return {"claims": data, "absence_report": []}
             except ParseError:
                 logger.error(
-                    "Failed to parse deep research JSON (%d chars). "
-                    "First 500 chars: %s",
+                    "Failed to parse deep research JSON (%d chars). First 500 chars: %s",
                     len(response),
                     response[:500],
                 )
-                raise RuntimeError(
-                    "Deep research output was not parseable JSON"
-                ) from None
+                raise RuntimeError("Deep research output was not parseable JSON") from None
 
     # ------------------------------------------------------------------
     # Shallow mode prompt builders
@@ -694,22 +766,27 @@ OUTPUT THE JSON AND NOTHING ELSE."""
             )
             sources_section = f"Sources this round:\n{sources_text}"
 
+        evidence_section = ""
+        ref_guidance = "the SRC-NNN refs"
+        if self._evidence_block:
+            evidence_section = "\n\n" + self._evidence_block
+            ref_guidance = "SRC-NNN tool-search refs and EV-NNN parsed-passage refs"
+
         return (
             f"Task: {task.description}\n"
             f"Round: {round_num}\n"
             f"Anti-confirmatory framing: {task.anti_confirmatory_framing}\n"
             f"{sources_section}"
+            f"{evidence_section}"
             f"{ctx_section}\n\n"
             "Synthesize findings as JSON array of claims. Each claim MUST include "
-            "citation_refs listing the SRC-NNN refs that support it:\n"
-            '{"text": "...", "evidence": "...", "citation_refs": ["SRC-001"], '
+            f"citation_refs listing {ref_guidance} that support it:\n"
+            '{"text": "...", "evidence": "...", "citation_refs": ["SRC-001", "EV-002"], '
             '"confidence": 0.0-1.0, "caveats": ["..."]}\n'
             "Claims without citation_refs will be dropped.\n"
         )
 
-    def _build_round_citation_table(
-        self, round_cits: list[Citation]
-    ) -> dict[str, Citation]:
+    def _build_round_citation_table(self, round_cits: list[Citation]) -> dict[str, Citation]:
         """Build SRC-NNN -> Citation table for explicit per-claim attribution."""
         return {f"SRC-{i + 1:03d}": cit for i, cit in enumerate(round_cits)}
 
@@ -717,25 +794,58 @@ OUTPUT THE JSON AND NOTHING ELSE."""
         self,
         raw_claims: list[dict],
         round_citation_table: dict[str, Citation],
-    ) -> list[dict]:
+        *,
+        engagement_id: str,
+        client_id: str,
+        agent_id: str,
+    ) -> tuple[list[dict], list[Citation]]:
         """Attach only explicitly referenced citations to each claim.
 
-        Claims with no valid citation_refs are dropped. This replaces the
-        round-broadcast pattern (claim["citations"] = round_cits).
+        Resolves both SRC-NNN refs (round tool-search citations) and
+        EV-NNN refs (parsed-evidence passages). EV refs are lazily
+        converted to ``Citation`` objects on first use and cached in
+        ``self._evidence_citations`` so the same EV-NNN stays mapped to
+        the same Citation for the rest of the task.
+
+        Returns the filtered claim list plus the list of evidence-backed
+        citations minted during this call, so the caller can emit
+        ``CitationExtracted`` events and bump ``sources_consulted`` by
+        the number of newly-resolved parsed passages.
+
+        Claims with no valid citation_refs are dropped -- no
+        round-broadcast fallback.
         """
         result: list[dict] = []
+        newly_minted: list[Citation] = []
         for claim in raw_claims:
             refs = claim.get("citation_refs", [])
             if not refs:
-                logger.debug(
-                    "Dropping claim (no citation_refs): %.80s", claim.get("text", "")
-                )
+                logger.debug("Dropping claim (no citation_refs): %.80s", claim.get("text", ""))
                 continue
-            resolved = [
-                round_citation_table[ref]
-                for ref in refs
-                if ref in round_citation_table
-            ]
+
+            resolved: list[Citation] = []
+            for ref in refs:
+                if ref in round_citation_table:
+                    resolved.append(round_citation_table[ref])
+                    continue
+                if ref in self._evidence_citations:
+                    resolved.append(self._evidence_citations[ref])
+                    continue
+                if ref in self._evidence_table:
+                    self._citation_counter += 1
+                    citation = evidence_to_citation(
+                        self._evidence_table[ref],
+                        citation_id=_make_source_instance_id(
+                            engagement_id, agent_id, self._citation_counter
+                        ),
+                        engagement_id=engagement_id,
+                        client_id=client_id,
+                        agent_id=agent_id,
+                    )
+                    self._evidence_citations[ref] = citation
+                    newly_minted.append(citation)
+                    resolved.append(citation)
+
             if not resolved:
                 logger.debug(
                     "Dropping claim (no valid citation_refs resolved): %.80s",
@@ -744,7 +854,7 @@ OUTPUT THE JSON AND NOTHING ELSE."""
                 continue
             claim["citations"] = resolved
             result.append(claim)
-        return result
+        return result, newly_minted
 
     async def _generate_absence_report(
         self,

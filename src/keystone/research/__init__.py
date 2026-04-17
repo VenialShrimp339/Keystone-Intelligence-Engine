@@ -12,6 +12,12 @@ from keystone.research.error_recovery import (
     ErrorRecovery,
     classify_error,
 )
+from keystone.research.evidence_context import (
+    EvidenceContextProvider,
+    TaskFilter,
+    evidence_to_citation,
+    infer_source_type,
+)
 from keystone.research.finding_writer import FindingValidationError, FindingWriter
 from keystone.research.isolation import AgentWorkspace, IsolationManager
 from keystone.research.research_agent import ResearchAgent
@@ -24,11 +30,15 @@ __all__ = [
     "ContextLoader",
     "ErrorCategory",
     "ErrorRecovery",
+    "EvidenceContextProvider",
     "FindingValidationError",
     "FindingWriter",
     "IsolationManager",
     "ResearchAgent",
     "TaskClaimError",
     "TaskClaimer",
+    "TaskFilter",
     "classify_error",
+    "evidence_to_citation",
+    "infer_source_type",
 ]

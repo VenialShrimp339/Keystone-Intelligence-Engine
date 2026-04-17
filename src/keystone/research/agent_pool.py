@@ -18,6 +18,7 @@ from keystone.models.research import EngagementSpec, StructuredFinding
 from keystone.models.tasks import ResearchTask
 from keystone.research.context_loader import ContextLoader
 from keystone.research.error_recovery import ErrorRecovery
+from keystone.research.evidence_context import EvidenceContextProvider
 from keystone.research.finding_writer import FindingWriter
 from keystone.research.research_agent import ResearchAgent
 
@@ -59,6 +60,7 @@ class AgentPool:
         finding_writer: FindingWriter | None = None,
         context_loader: ContextLoader | None = None,
         error_recovery: ErrorRecovery | None = None,
+        evidence_provider: EvidenceContextProvider | None = None,
         max_retries: int = 1,
     ) -> None:
         self._llm = llm
@@ -67,6 +69,7 @@ class AgentPool:
         self._finding_writer = finding_writer or FindingWriter()
         self._context_loader = context_loader
         self._error_recovery = error_recovery
+        self._evidence_provider = evidence_provider
         self._max_retries = max_retries
 
     async def execute_all(
@@ -81,11 +84,7 @@ class AgentPool:
         results = await self._run_batch(assignments)
 
         for retry_num in range(self._max_retries):
-            failed = [
-                (i, assignments[i])
-                for i, r in enumerate(results)
-                if not r.success
-            ]
+            failed = [(i, assignments[i]) for i, r in enumerate(results) if not r.success]
             if not failed:
                 break
 
@@ -110,10 +109,7 @@ class AgentPool:
         assignments: list[tuple[ResearchTask, EngagementSpec, AgentInstance]],
     ) -> list[AgentResult]:
         """Run a batch of agent assignments concurrently."""
-        coros = [
-            self._run_single(task, spec, agent)
-            for task, spec, agent in assignments
-        ]
+        coros = [self._run_single(task, spec, agent) for task, spec, agent in assignments]
         return list(await asyncio.gather(*coros))
 
     async def _run_single(
@@ -130,6 +126,7 @@ class AgentPool:
             finding_writer=self._finding_writer,
             context_loader=self._context_loader,
             error_recovery=self._error_recovery,
+            evidence_provider=self._evidence_provider,
         )
 
         events: list = []
@@ -158,9 +155,7 @@ class AgentPool:
                 events=events,
             )
 
-    def get_successful_findings(
-        self, results: list[AgentResult]
-    ) -> list[StructuredFinding]:
+    def get_successful_findings(self, results: list[AgentResult]) -> list[StructuredFinding]:
         """Extract findings from successful results."""
         return [r.finding for r in results if r.success and r.finding is not None]
 

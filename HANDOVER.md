@@ -1,58 +1,79 @@
 # Handover
 
 Last updated: 2026-04-17
-Session: Lane E build (article/PDF parse + evidence normalization)
+Session: Lane E -> research pipeline bridge
 
 ## What Changed
 
-- Built Lane E end-to-end under `src/keystone/retrieval/` (6 source files) and `tests/unit/retrieval/` (4 test files + fixtures).
-- 82 new unit tests, all passing. No regressions: full suite 882/882 passes in ~7s.
-- `ruff check` and `mypy strict` are clean for the retrieval module (pre-existing errors elsewhere untouched).
+- Added the Lane E -> L1 research bridge under `src/keystone/research/evidence_context.py` (1 new file, 277 lines) and `tests/unit/research/test_evidence_context.py` (31 new tests).
+- Extended `ResearchAgent` (shallow + deep modes) and `AgentPool` to accept an optional `EvidenceContextProvider`.
+- 913 unit tests pass (was 882; +31 new). Full suite runs in ~7.5s. No regressions.
+- `ruff check` / `mypy --strict` are clean on the new `evidence_context.py`; pre-existing ruff (30) / mypy (14) counts in `src/keystone/research/` are unchanged.
 
-## Lane E Components
+## Bridge Components
 
 | File | Role |
 |---|---|
-| `parse_models.py` | All Pydantic v2 models: `SourceFamily`, `CoverageStatus`, `PassageKind`, `ParseConfidenceTier`, `ParserIdentity`, `Coverage`, `Locator`, `ParseConfidence`, `ParseWarning`, `ParsedPassage`, `ParsedDocument`, `FetchedArtifact`, `EvidencePrepRecord`. Helpers: `tier_for_score`, `confidence`. |
-| `artifact_loader.py` | `ArtifactLoader(root)` loads `<root>/<artifact_id>.json` into `FetchedArtifact`. Raises `ArtifactNotFoundError` / `ArtifactLoadError`. `iter_all()` skips non-json, raises on malformed. |
-| `article_parser.py` | `ArticleParser` → `ParsedDocument`. Stdlib `html.parser.HTMLParser`. Parser identity `keystone.article.v1`. Maintains `_section_stack` (heading chain), `_block_stack` (live blocks), `_tag_stack` (tag balance, emits `HTML_TAG_MISMATCH`). Skips script/style/noscript/template/svg. Scoring: `LOW_TEXT_VOLUME` (<40 chars → cap 0.5), `LOW_TEXT_TO_MARKUP_RATIO` (<2% → 0.6), `HTML_MALFORMED` (0.55), `UTF8_DECODE_LOSSY` (0.6), `UTF8_DECODE_FALLBACK` (0.85). |
-| `pdf_parser.py` | `PDFParser` + pluggable `PDFTextBackend` Protocol + `BasicPDFTextBackend` fallback. Parser identity `keystone.pdf.v1`. Pre-extracted text path splits on `\f` (form feed). Binary path: `_scan_indirect_objects`, `_find_page_objects` (walks /Pages/Kids), `_decode_stream` (FlateDecode), `_extract_text_from_stream` (Tj/TJ/'/"/hex/octal). Emits `ENCRYPTED`, `NOT_A_PDF`, `EMPTY_BYTES`, `BASE64_DECODE_FAILED`, `EMPTY_PDF`, `EMPTY_PAGE`, `PARTIAL_PAGE_COVERAGE`, `UNKNOWN_FILTER`, `FLATE_DECOMPRESS_FAILED`, `SCANNED_IMAGE_PAGE`. |
-| `evidence_normalizer.py` | `EvidenceNormalizer.normalize(artifact, parsed) → list[EvidencePrepRecord]`. `record_id = "ev:" + passage_id`. Falls back to `artifact.url` when `canonical_url` missing. Raises `ValueError` on artifact_id mismatch. |
-| `__init__.py` | Re-exports all public symbols. |
+| `src/keystone/research/evidence_context.py` | `EvidenceContextProvider` (holds records, `records_for_task`, `build_reference_table`, `render_passages_for_prompt`). `evidence_to_citation()` free function maps `EvidencePrepRecord` -> `Citation`. `infer_source_type()` URL-first + `SourceFamily` fallback. |
+| `src/keystone/research/research_agent.py` | New `evidence_provider` kwarg. `_prepare_evidence_context` builds the task EV table once; shallow rounds render `EV-NNN` alongside `SRC-NNN`; `_attach_citations_from_refs` lazy-mints Citations from evidence table (shared agent citation counter). New `SourceFound`/`CitationExtracted` events fire per newly-resolved EV ref. Deep-mode prompt gets a read-only "parsed evidence" block. |
+| `src/keystone/research/agent_pool.py` | New `evidence_provider` kwarg, propagated into each `ResearchAgent`. |
+| `src/keystone/research/__init__.py` | Exports `EvidenceContextProvider`, `evidence_to_citation`, `infer_source_type`, `TaskFilter`. |
 
 ## Design Choices
 
-- **Stdlib-only parsing.** No bs4 / pypdf / pdfminer / docling installed in venv; keeps Lane E dependency-free. Pluggable `PDFTextBackend` Protocol lets production swap in a richer backend without changing the parser.
-- **Never fabricate text.** Every passage's chars come from the input. Malformed input → explicit `ParseWarning` + degraded confidence, never silent success and never an exception that fails a batch.
-- **Provenance preserved end-to-end.** `EvidencePrepRecord` carries `artifact_id`, `canonical_url`, `content_hash`, `coverage`, `source_family`, `parser identity`, `locator`, `parse_confidence`, and `fetched_at`.
-- **Per-page + document-level confidence** on PDFs so one bad page doesn't poison the doc.
-- **FetchedArtifact uses `extra="allow"`** to preserve any Lane H audit fields we haven't modeled.
+- **Bridge, not a new stage.** No new pipeline component, no orchestrator changes, no gateway changes. Evidence records are an additional context source for existing agents; the citation/dedup/evaluator layers handle everything else.
+- **EV-NNN references in shallow mode.** Parallel to the existing SRC-NNN table. LLM cites by ref; agent resolves to `Citation` with full Lane E provenance (`content_hash`, `canonical_url`, `source_family`, `parse_confidence.tier` -> quality_score, `fetched_at` -> access_date).
+- **Lazy Citation minting + caching.** First `EV-NNN` reference mints a `Citation`; subsequent references return the same cached instance so two claims citing the same record share one citation and one `SourceFound` event.
+- **Deep-mode: read-only background.** Deep mode uses a single `claude -p` call with its own JSON output format (`sources` arrays with URLs). Evidence passages appear as a background section so the LLM can cite them via URL, but we do not enforce EV-NNN in deep output.
+- **Selection stays pluggable.** Default provider returns all records for every task. `task_filter` predicate + `max_passages_per_task` cap give topic-match / context-budget control without the bridge growing a DSL.
+- **Provenance carried forward.** Citation minted from a record preserves SHA-256, canonical URL, fetched_at, and source family so CitationProcessor's dedup/corroboration still works on Lane E-sourced citations.
+- **Source-type inference is URL-first, family fallback.** Mirrors the existing `_SOURCE_TYPE_PATTERNS` in `research_agent.py` so parsed evidence and search-tool citations classify the same URL the same way.
 
 ## Key Commands
 
 ```bash
 source .venv/bin/activate
-pytest tests/unit/retrieval/ -q                  # 82 pass in 0.05s
-pytest tests/unit/ -q                            # 882 pass in ~7s
-ruff check src/keystone/retrieval/ tests/unit/retrieval/
-mypy src/keystone/retrieval/                     # clean
+pytest tests/unit/research/test_evidence_context.py -q   # 31 new bridge tests
+pytest tests/unit/research/ -q                           # 113 tests (was 82)
+pytest tests/unit/ -q                                    # 913 tests (was 882)
+ruff check src/keystone/research/evidence_context.py tests/unit/research/test_evidence_context.py
+mypy src/keystone/research/evidence_context.py           # clean
 ```
 
-## Gotchas Encountered
+## Integration Shape (how to use this)
 
-- Python 3.14.3 in `.venv` even though `pyproject.toml` pins 3.11+. Works fine but keep in mind.
-- Lane H is **not** in this branch (merge-base predates commit `93a5ca8`). `FetchedArtifact` is Lane E's inferred contract for Lane H's output; any changes to Lane H's actual output schema must keep these fields valid.
-- Pre-existing ruff errors (500+) and mypy errors (129) live in other modules. Not Lane E's scope.
+```python
+from keystone.research import AgentPool, EvidenceContextProvider
+from keystone.retrieval import ArtifactLoader, ArticleParser, EvidenceNormalizer
+
+# After Lane E runs:
+records = normalizer.normalize_many([(art, parsed) for art, parsed in pairs])
+provider = EvidenceContextProvider(records, max_passages_per_task=20)
+
+pool = AgentPool(
+    llm=llm,
+    gateway=gateway,
+    evidence_provider=provider,
+)
+results = await pool.execute_all(assignments)
+```
+
+## Gotchas
+
+- `_attach_citations_from_refs` signature changed: now returns `(claims, newly_minted_ev_citations)` and takes `engagement_id`/`client_id`/`agent_id` kwargs. Only called from within `_execute_shallow`; no public API break.
+- Shared citation counter between SRC and EV refs. `_citation_counter` increments for every EV that actually gets cited (not for every record in the table). Uncited records do not produce Citations.
+- `sources_consulted` now includes one entry per distinct Lane E record a claim cites (`tool: "lane_e_evidence"` source entries). Numbers will rise when Lane E output is piped in.
+- Lane E tests and Lane H are untouched.
 
 ## Next Steps
 
-- Wire Lane E into the pipeline: load fetched artifacts, parse, normalize, hand off to research agents.
-- Consider if the article parser should emit `data-` attribute extraction for structured data (currently ignored).
-- If richer PDF extraction is needed, implement a `PDFTextBackend` wrapping `pdfminer.six` or `pypdf`.
-- Stale integration test `test_evaluator_live.py` (pre-existing) still needs fixing.
+- Orchestrator wiring: have the pipeline pass a provider into `AgentPool` (needs decisions about when Lane E runs relative to task dispatch).
+- Task-aware selection: replace the default "all records" behavior with topic or category filtering once a signal is available (e.g. `ResearchTask.required_sources` intersect with `source_family`).
+- Deep-mode EV-ref enforcement: only useful if we want deep-mode Citations to include the Lane E SHA-256 and locator. Requires output-format migration.
+- Still open from prior session: fix stale import in `tests/integration/test_evaluator_live.py`. Not blocking.
 
 ## What Did Not Change
 
-- No modifications to pipeline / research / deliberation / evaluator / renderer.
-- No new dependencies added.
-- Lane H code untouched (still not in this branch's history).
+- No modifications to Lane E (`src/keystone/retrieval/`).
+- No changes to orchestrator, deliberation, evaluator, citation processor, gateway, or renderer.
+- No new dependencies.
