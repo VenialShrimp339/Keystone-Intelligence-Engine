@@ -238,6 +238,7 @@ def _manifest() -> CitationManifest:
 # Tests
 # ---------------------------------------------------------------------------
 
+
 class TestBasicRendering:
     def test_render_produces_non_empty_string(self) -> None:
         renderer = MarkdownRenderer()
@@ -287,12 +288,8 @@ class TestCitationFormatting:
             findings[0].model_copy(
                 update={
                     "claims": [
-                        findings[0].claims[0].model_copy(
-                            update={"citation_ids": ["CAN-001"]}
-                        ),
-                        findings[0].claims[1].model_copy(
-                            update={"citation_ids": ["CAN-002"]}
-                        ),
+                        findings[0].claims[0].model_copy(update={"citation_ids": ["CAN-001"]}),
+                        findings[0].claims[1].model_copy(update={"citation_ids": ["CAN-002"]}),
                     ]
                 }
             )
@@ -332,9 +329,7 @@ class TestEmptyFindings:
             [],  # no findings
             ConfidenceMap(engagement_id="eng_test", client_id="c1"),
             [],  # no evals
-            CitationManifest(
-                manifest_id="MAN-empty", engagement_id="eng_test", client_id="c1"
-            ),
+            CitationManifest(manifest_id="MAN-empty", engagement_id="eng_test", client_id="c1"),
         )
 
         assert "## Executive Summary" in output
@@ -414,3 +409,69 @@ class TestQualityAssessment:
         )
         assert "task_001" in output
         assert "PASS" in output
+
+
+class TestOutlineIntegration:
+    def test_render_without_outline_is_unchanged(self) -> None:
+        """Back-compat: an outline-less render call still produces a full brief."""
+        renderer = MarkdownRenderer()
+        output = renderer.render(
+            _spec(), _findings(), _confidence_map(), _eval_results(), _manifest()
+        )
+        assert "## Analytical Framework" not in output
+        assert "## Executive Summary" in output
+
+    def test_render_with_outline_injects_framework_section(self) -> None:
+        from keystone.models.structuring import (
+            AnalyticalFramework,
+            FrameworkHint,
+            StructuredOutline,
+        )
+
+        outline = StructuredOutline(
+            engagement_id="eng_test",
+            client_id="c1",
+            engagement_type="sizing",
+            frameworks=[
+                FrameworkHint(
+                    framework=AnalyticalFramework.ESTIMATION,
+                    rationale="Sizing requires top-down and bottom-up.",
+                    mandatory=True,
+                )
+            ],
+        )
+        renderer = MarkdownRenderer()
+        output = renderer.render(
+            _spec(),
+            _findings(),
+            _confidence_map(),
+            _eval_results(),
+            _manifest(),
+            outline,
+        )
+        assert "## Analytical Framework" in output
+        assert "Estimation" in output
+        assert "primary" in output
+        assert "top-down and bottom-up" in output
+
+    def test_render_with_empty_outline_frameworks_omits_framework_section(
+        self,
+    ) -> None:
+        from keystone.models.structuring import StructuredOutline
+
+        outline = StructuredOutline(
+            engagement_id="eng_test",
+            client_id="c1",
+            engagement_type="sizing",
+            frameworks=[],
+        )
+        renderer = MarkdownRenderer()
+        output = renderer.render(
+            _spec(),
+            _findings(),
+            _confidence_map(),
+            _eval_results(),
+            _manifest(),
+            outline,
+        )
+        assert "## Analytical Framework" not in output

@@ -27,12 +27,14 @@ if TYPE_CHECKING:
     from keystone.models.evaluation import EvaluationResult, SprintContract
     from keystone.models.observations import ObservationEntry
     from keystone.models.research import EngagementSpec, StructuredFinding
+    from keystone.models.structuring import StructuredOutline
     from keystone.models.tasks import ResearchTask
 
 
 # ---------------------------------------------------------------------------
 # Post-synthesis verification (Wave 2A addition)
 # ---------------------------------------------------------------------------
+
 
 @runtime_checkable
 class PostSynthesisVerifierContract(Protocol):
@@ -66,9 +68,11 @@ class PostSynthesisVerifierContract(Protocol):
         """
         ...
 
+
 # ---------------------------------------------------------------------------
 # L0: Specification Engine -> Research Agents
 # ---------------------------------------------------------------------------
+
 
 @runtime_checkable
 class SpecificationEngineContract(Protocol):
@@ -102,6 +106,7 @@ class SpecificationEngineContract(Protocol):
 # L1: Research Agents -> CitationProcessor
 # ---------------------------------------------------------------------------
 
+
 @runtime_checkable
 class ResearchAgentContract(Protocol):
     """Contract for a single L1 Research Agent.
@@ -132,6 +137,7 @@ class ResearchAgentContract(Protocol):
 # ---------------------------------------------------------------------------
 # CitationProcessor: Research Agents -> Deliberation
 # ---------------------------------------------------------------------------
+
 
 @runtime_checkable
 class CitationProcessorContract(Protocol):
@@ -168,6 +174,7 @@ class CitationProcessorContract(Protocol):
 # L1.5: Deliberation -> Content Structuring
 # ---------------------------------------------------------------------------
 
+
 @runtime_checkable
 class DeliberationContract(Protocol):
     """Contract for the Deliberation phase (L1.5).
@@ -203,24 +210,43 @@ class DeliberationContract(Protocol):
 # L2: Content Structuring -> Evaluator
 # ---------------------------------------------------------------------------
 
+
 @runtime_checkable
 class ContentStructuringContract(Protocol):
     """Contract for Content Structuring (L2).
 
-    Input:  ConfidenceMap + claims (from L1.5)
-    Output: Section drafts + sprint contracts
+    Input:  ConfidenceMap + corroborated findings + renderable tasks + spec
+    Output: StructuredOutline, per-task section text, per-task SprintContracts
     Gate:   Sprint contracts negotiated for each section.
     """
 
     async def structure(
         self,
         confidence_map: ConfidenceMap,
+        findings: list[StructuredFinding],
         spec: EngagementSpec,
+        tasks: list[ResearchTask],
+        engagement_id: str,
+        client_id: str,
     ) -> AsyncIterator[AnyPipelineEvent]:
         """Structure findings into deliverable outline and sections.
 
-        Yields OutlineGenerated, SectionDrafted, SprintContractNegotiated events.
+        Yields SectionDrafted (one per task), SprintContractNegotiated
+        (one per task when a generator is wired in), and OutlineGenerated
+        (once at the end).
         """
+        ...
+
+    async def get_outline(self) -> StructuredOutline:
+        """Return the built StructuredOutline."""
+        ...
+
+    async def get_task_section_text(self, task_id: str) -> str:
+        """Return the per-task section text the Evaluator scores."""
+        ...
+
+    async def get_sprint_contract(self, task_id: str) -> SprintContract | None:
+        """Return the negotiated contract for a task, or None if not negotiated."""
         ...
 
     async def get_sprint_contracts(self) -> list[SprintContract]:
@@ -231,6 +257,7 @@ class ContentStructuringContract(Protocol):
 # ---------------------------------------------------------------------------
 # L3: Generation -> Evaluator
 # ---------------------------------------------------------------------------
+
 
 @runtime_checkable
 class GenerationContract(Protocol):
@@ -261,6 +288,7 @@ class GenerationContract(Protocol):
 # ---------------------------------------------------------------------------
 # L4: Evaluator -> Self-Improvement
 # ---------------------------------------------------------------------------
+
 
 @runtime_checkable
 class EvaluatorContract(Protocol):
@@ -295,6 +323,7 @@ class EvaluatorContract(Protocol):
 # META: Self-Improvement
 # ---------------------------------------------------------------------------
 
+
 @runtime_checkable
 class ObservationLibraryContract(Protocol):
     """Contract for the Observation Library (META).
@@ -325,6 +354,7 @@ class ObservationLibraryContract(Protocol):
 # ---------------------------------------------------------------------------
 # HITL: Human-in-the-Loop Gate
 # ---------------------------------------------------------------------------
+
 
 @runtime_checkable
 class HITLGateContract(Protocol):

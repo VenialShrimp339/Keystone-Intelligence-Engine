@@ -4,7 +4,6 @@ Catches signature drift: if a component's method signature doesn't
 match its Protocol contract, isinstance() returns False.
 
 Skipped contracts:
-- ContentStructuringContract: not implemented (Phase 2)
 - GenerationContract: not implemented (Phase 2)
 - ObservationLibraryContract: not implemented (Phase 2)
 - HITLGateContract: no wrapping class yet (hitl/ provides functions, not a class)
@@ -18,6 +17,7 @@ import pytest
 
 from keystone.contracts import (
     CitationProcessorContract,
+    ContentStructuringContract,
     DeliberationContract,
     EvaluatorContract,
     ResearchAgentContract,
@@ -88,3 +88,11 @@ class TestEvaluatorContract:
 
         evaluator = Evaluator(llm=_mock_llm())
         assert isinstance(evaluator, EvaluatorContract)
+
+
+class TestContentStructuringContract:
+    def test_isinstance(self) -> None:
+        from keystone.structuring import ContentStructurer
+
+        structurer = ContentStructurer()
+        assert isinstance(structurer, ContentStructuringContract)

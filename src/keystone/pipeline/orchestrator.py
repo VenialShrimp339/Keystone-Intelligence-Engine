@@ -41,6 +41,10 @@ from keystone.research.evidence_context import EvidenceContextProvider
 from keystone.retrieval.parse_models import EvidencePrepRecord
 from keystone.specification.spec_engine import SpecificationEngine
 from keystone.specification.template_registry import TemplateRegistry
+from keystone.structuring.content_structuring import (
+    ContentStructurer,
+    filter_outline_by_passed_tasks,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -58,6 +62,7 @@ class PipelineComponents:
     agent_pool: AgentPool
     citation_processor: CitationProcessor
     deliberation: Deliberation
+    content_structurer: ContentStructurer
     renderer: MarkdownRenderer
     sprint_contract_generator: SprintContractGenerator
     template_registry: TemplateRegistry
@@ -127,6 +132,9 @@ class Pipeline:
         if self._evidence_records:
             evidence_provider = EvidenceContextProvider(self._evidence_records)
 
+        sprint_contract_generator = SprintContractGenerator(
+            llm=self._llm_factory(ModelTier.FLAGSHIP),
+        )
         return PipelineComponents(
             spec_engine=SpecificationEngine(
                 llm=self._llm_factory(ModelTier.FLAGSHIP),
@@ -146,10 +154,11 @@ class Pipeline:
                 judge_llm=self._llm_factory(ModelTier.FLAGSHIP),
                 db_session_factory=self._db_session_factory,
             ),
-            renderer=MarkdownRenderer(),
-            sprint_contract_generator=SprintContractGenerator(
-                llm=self._llm_factory(ModelTier.FLAGSHIP),
+            content_structurer=ContentStructurer(
+                sprint_contract_generator=sprint_contract_generator,
             ),
+            renderer=MarkdownRenderer(),
+            sprint_contract_generator=sprint_contract_generator,
             template_registry=TemplateRegistry(),
         )
 
@@ -260,7 +269,7 @@ class Pipeline:
             confidence_map.tiers_populated,
         )
 
-        # --- Stage 5: L4 Evaluation ---
+        # --- Stage 5: L2 Content Structuring ---
         eval_tasks = [
             task
             for task in spec.task_decomposition.tasks
@@ -268,6 +277,20 @@ class Pipeline:
         ]
         if self._max_eval_tasks is not None:
             eval_tasks = eval_tasks[: self._max_eval_tasks]
+        logger.info("L2: Structuring content for %d renderable tasks", len(eval_tasks))
+        async for event in c.content_structurer.structure(
+            confidence_map,
+            findings,
+            spec,
+            eval_tasks,
+            eid,
+            client_id,
+        ):
+            yield event
+        outline = await c.content_structurer.get_outline()
+        logger.info("L2 complete: %d outline sections", len(outline.sections))
+
+        # --- Stage 6: L4 Evaluation ---
         logger.info(
             "L4: Evaluating %d/%d renderable tasks",
             len(eval_tasks),
@@ -277,9 +300,18 @@ class Pipeline:
         for task in eval_tasks:
             # Find the finding for this task (if any)
             task_finding = next((f for f in findings if f.task_id == task.id), None)
-            output_text = _finding_to_text(task_finding) if task_finding else ""
 
-            contract = await c.sprint_contract_generator.generate(task, spec)
+            # L2 produces the per-task output_text; fall back to raw
+            # finding text only if L2 produced nothing (defensive).
+            output_text = await c.content_structurer.get_task_section_text(task.id)
+            if not output_text and task_finding is not None:
+                output_text = _finding_to_text(task_finding)
+
+            # L2 negotiates the sprint contract per task; fall back to
+            # direct generator call if L2 did not produce one.
+            contract = await c.content_structurer.get_sprint_contract(task.id)
+            if contract is None:
+                contract = await c.sprint_contract_generator.generate(task, spec)
 
             # Build task-scoped sub-manifest so citation gating only checks
             # citations this task actually used (not the full engagement)
@@ -339,14 +371,16 @@ class Pipeline:
         render_evaluation_results = [
             result for result in evaluation_results if result.task_id in passed_task_ids
         ]
+        filtered_outline = filter_outline_by_passed_tasks(outline, passed_task_ids)
 
-        # --- Stage 6: Render (only passed findings + filtered confidence map) ---
+        # --- Stage 7: Render (only passed findings + filtered confidence map + outline) ---
         markdown_output = c.renderer.render(
             spec,
             passed_findings,
             filtered_confidence_map,
             render_evaluation_results,
             render_manifest,
+            filtered_outline,
         )
 
         self._result = PipelineResult(

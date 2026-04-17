@@ -10,19 +10,21 @@ from keystone.models.citations import CitationManifest
 from keystone.models.confidence import ConfidenceMap
 from keystone.models.evaluation import EvaluationResult
 from keystone.models.research import EngagementSpec, StructuredFinding
+from keystone.models.structuring import StructuredOutline
 
 
 class MarkdownRenderer:
     """Renders pipeline outputs into structured Markdown.
 
-    Sections:
+    Sections (in render order):
     1. Title + metadata
-    2. Executive Summary (high-confidence claims)
-    3. Key Findings (per-task, with confidence tiers)
-    4. Areas of Uncertainty (weak + contested claims)
-    5. Research Gaps (gaps + absence reports)
-    6. Sources (all citations from manifest)
-    7. Quality Assessment (evaluation scores)
+    2. Analytical Framework (when L2 outline provided)
+    3. Executive Summary (high-confidence claims)
+    4. Key Findings (per-task, with confidence tiers)
+    5. Areas of Uncertainty (weak + contested claims)
+    6. Research Gaps (gaps + absence reports)
+    7. Sources (all citations from manifest)
+    8. Quality Assessment (evaluation scores)
     """
 
     def render(
@@ -32,9 +34,11 @@ class MarkdownRenderer:
         confidence_map: ConfidenceMap,
         evaluation_results: list[EvaluationResult],
         manifest: CitationManifest,
+        outline: StructuredOutline | None = None,
     ) -> str:
         sections = [
             self._render_title(spec),
+            self._render_framework(outline),
             self._render_executive_summary(confidence_map),
             self._render_key_findings(findings, confidence_map),
             self._render_uncertainty(confidence_map),
@@ -43,6 +47,16 @@ class MarkdownRenderer:
             self._render_quality(evaluation_results),
         ]
         return "\n\n".join(s for s in sections if s) + "\n"
+
+    def _render_framework(self, outline: StructuredOutline | None) -> str:
+        if outline is None or not outline.frameworks:
+            return ""
+        lines = ["## Analytical Framework", ""]
+        for hint in outline.frameworks:
+            label = hint.framework.value.replace("_", " ").title()
+            marker = "primary" if hint.mandatory else "augmenting"
+            lines.append(f"- **{label}** ({marker}): {hint.rationale}")
+        return "\n".join(lines)
 
     # ------------------------------------------------------------------
     # Section renderers
@@ -65,9 +79,7 @@ class MarkdownRenderer:
     def _render_executive_summary(self, cm: ConfidenceMap) -> str:
         lines = ["## Executive Summary"]
         if not cm.high_confidence_above_80pct:
-            lines.append(
-                "\n*No claims reached high confidence (>80% methodological agreement).*"
-            )
+            lines.append("\n*No claims reached high confidence (>80% methodological agreement).*")
             return "\n".join(lines)
 
         lines.append("")
@@ -99,9 +111,7 @@ class MarkdownRenderer:
 
             for claim in finding.claims:
                 tier_label = claim.confidence_tier.value.replace("_", " ").title()
-                lines.append(
-                    f"- **{claim.text}** [{tier_label}, {claim.confidence:.0%}]"
-                )
+                lines.append(f"- **{claim.text}** [{tier_label}, {claim.confidence:.0%}]")
                 cite_ids = self._claim_citation_labels(claim)
                 if cite_ids:
                     lines.append(f"  - Sources: {cite_ids}")
@@ -141,18 +151,14 @@ class MarkdownRenderer:
             for claim in cm.contested_below_50pct:
                 lines.append(f"- **{claim.claim}** ({claim.methodological_agreement})")
                 lines.append(f"  - Key disagreement: {claim.key_disagreement}")
-                lines.append(
-                    f"  - Opposing view: {claim.steelmanned_opposing_view}"
-                )
+                lines.append(f"  - Opposing view: {claim.steelmanned_opposing_view}")
 
         if not has_content:
             lines.append("\n*No weak or contested claims identified.*")
 
         return "\n".join(lines)
 
-    def _render_gaps(
-        self, cm: ConfidenceMap, findings: list[StructuredFinding]
-    ) -> str:
+    def _render_gaps(self, cm: ConfidenceMap, findings: list[StructuredFinding]) -> str:
         lines = ["## Research Gaps"]
         has_content = False
 
@@ -206,14 +212,14 @@ class MarkdownRenderer:
             if citation.quality_score is not None:
                 status_parts.append(f"quality: {citation.quality_score:.2f}")
             if citation.found_by_agents:
-                status_parts.append(
-                    f"found by: {', '.join(citation.found_by_agents)}"
-                )
+                status_parts.append(f"found by: {', '.join(citation.found_by_agents)}")
             if status_parts:
                 lines.append(f"   *({'; '.join(status_parts)})*")
 
         if manifest.dead_urls:
-            lines.append(f"\n**Dead URLs:** {len(manifest.dead_urls)} citation(s) with unreachable URLs.")
+            lines.append(
+                f"\n**Dead URLs:** {len(manifest.dead_urls)} citation(s) with unreachable URLs."
+            )
 
         return "\n".join(lines)
 
@@ -238,8 +244,7 @@ class MarkdownRenderer:
         for r in results:
             status = "PASS" if r.passed else "FAIL"
             lines.append(
-                f"- **{r.task_id}**: {status} ({r.overall_score:.1f}/100) -- "
-                f"{r.feedback[:120]}"
+                f"- **{r.task_id}**: {status} ({r.overall_score:.1f}/100) -- {r.feedback[:120]}"
             )
 
         return "\n".join(lines)

@@ -71,6 +71,7 @@ from keystone.research.agent_pool import AgentResult
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 def _make_citation(cid: str = "CIT-001", eid: str = "eng_test", client: str = "c1") -> Citation:
     return Citation(
         citation_id=cid,
@@ -277,9 +278,7 @@ def _make_eval_result(
         passed=True,
         overall_score=72.0,
         layer1_results=Layer1Result(facts_verified=5, facts_failed=0),
-        layer2_results=Layer2Result(
-            citations_checked=3, citations_verified=3, gate_passed=True
-        ),
+        layer2_results=Layer2Result(citations_checked=3, citations_verified=3, gate_passed=True),
         feedback="PASSED with score 72.0/100.",
     )
 
@@ -310,6 +309,7 @@ def _mock_llm_factory() -> MagicMock:
 # ---------------------------------------------------------------------------
 # Tests: Pipeline instantiation
 # ---------------------------------------------------------------------------
+
 
 class TestPipelineInstantiation:
     def test_creates_with_mock_factory(self) -> None:
@@ -345,6 +345,7 @@ class TestPipelineInstantiation:
 # ---------------------------------------------------------------------------
 # Tests: Pipeline stages called in order
 # ---------------------------------------------------------------------------
+
 
 class TestPipelineStageOrder:
     @pytest.mark.asyncio
@@ -396,7 +397,11 @@ class TestPipelineStageOrder:
             yield
 
         c.citation_processor.process = mock_citproc_process
-        c.citation_processor.get_result = AsyncMock(return_value=CitationProcessorResult(manifest=manifest, canonicalized_findings=[finding]))
+        c.citation_processor.get_result = AsyncMock(
+            return_value=CitationProcessorResult(
+                manifest=manifest, canonicalized_findings=[finding]
+            )
+        )
 
         # Patch L1.5
         async def mock_deliberate(*args, **kwargs):
@@ -407,12 +412,29 @@ class TestPipelineStageOrder:
         c.deliberation.deliberate = mock_deliberate
         c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
 
+        # Patch L2
+        async def mock_structure(*args, **kwargs):
+            call_order.append("L2")
+            return
+            yield
+
+        c.content_structurer.structure = mock_structure
+        from keystone.models.structuring import StructuredOutline
+
+        c.content_structurer.get_outline = AsyncMock(
+            return_value=StructuredOutline(
+                engagement_id="eng_test",
+                client_id="c1",
+                engagement_type="sizing",
+            )
+        )
+        c.content_structurer.get_task_section_text = AsyncMock(return_value="")
+        c.content_structurer.get_sprint_contract = AsyncMock(return_value=None)
+
         pipeline._pending_components = c
 
         # Patch L4 -- evaluator is created per-task in the loop, so patch the class
-        with patch(
-            "keystone.pipeline.orchestrator.Evaluator"
-        ) as MockEvaluator:
+        with patch("keystone.pipeline.orchestrator.Evaluator") as MockEvaluator:
             mock_eval_instance = MagicMock()
 
             async def mock_evaluate(*args, **kwargs):
@@ -426,7 +448,7 @@ class TestPipelineStageOrder:
 
             result = await pipeline.run("Test question", "c1")
 
-        assert call_order == ["L0", "L1", "CitProc", "L1.5", "L4"]
+        assert call_order == ["L0", "L1", "CitProc", "L1.5", "L2", "L4"]
 
     @pytest.mark.asyncio
     async def test_pipeline_result_has_all_fields(self) -> None:
@@ -453,7 +475,11 @@ class TestPipelineStageOrder:
         )
         c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
         c.citation_processor.process = noop_gen
-        c.citation_processor.get_result = AsyncMock(return_value=CitationProcessorResult(manifest=manifest, canonicalized_findings=[finding]))
+        c.citation_processor.get_result = AsyncMock(
+            return_value=CitationProcessorResult(
+                manifest=manifest, canonicalized_findings=[finding]
+            )
+        )
         c.deliberation.deliberate = noop_gen
         c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
         pipeline._pending_components = c
@@ -476,12 +502,15 @@ class TestPipelineStageOrder:
         assert len(result.evaluation_results) == 1
         assert len(result.markdown_output) > 0
         assert result.total_tokens == 1200
-        assert result.total_events == 0  # no events emitted from mock generators
+        # L2 emits 3 events for the single renderable task:
+        # SectionDrafted, SprintContractNegotiated, OutlineGenerated.
+        assert result.total_events == 3
 
 
 # ---------------------------------------------------------------------------
 # Tests: Event collection
 # ---------------------------------------------------------------------------
+
 
 class TestEventCollection:
     @pytest.mark.asyncio
@@ -536,7 +565,11 @@ class TestEventCollection:
         )
         c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
         c.citation_processor.process = citproc_gen
-        c.citation_processor.get_result = AsyncMock(return_value=CitationProcessorResult(manifest=manifest, canonicalized_findings=[finding]))
+        c.citation_processor.get_result = AsyncMock(
+            return_value=CitationProcessorResult(
+                manifest=manifest, canonicalized_findings=[finding]
+            )
+        )
         c.deliberation.deliberate = noop_gen
         c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
         pipeline._pending_components = c
@@ -551,14 +584,23 @@ class TestEventCollection:
             async for event in pipeline.run_with_events("Q", "c1"):
                 events.append(event)
 
-        assert len(events) == 2
+        # Two injected events (L0 spec + CitProc manifest) plus three L2
+        # events emitted by the real ContentStructurer for the single task.
+        assert len(events) == 5
         assert events[0] is spec_event
         assert events[1] is manifest_event
+        l2_events = [e for e in events if e.layer == "L2"]
+        assert {type(e).__name__ for e in l2_events} == {
+            "SectionDrafted",
+            "SprintContractNegotiated",
+            "OutlineGenerated",
+        }
 
 
 # ---------------------------------------------------------------------------
 # Tests: HITL gates
 # ---------------------------------------------------------------------------
+
 
 class TestHITLGates:
     def test_hitl_skipped_when_no_db(self) -> None:
@@ -585,6 +627,7 @@ class TestHITLGates:
 # ---------------------------------------------------------------------------
 # Tests: Partial pipeline (no findings)
 # ---------------------------------------------------------------------------
+
 
 class TestPartialPipeline:
     @pytest.mark.asyncio
@@ -615,7 +658,9 @@ class TestPartialPipeline:
         )
         c.agent_pool.get_successful_findings = MagicMock(return_value=[])
         c.citation_processor.process = noop_gen
-        c.citation_processor.get_result = AsyncMock(return_value=CitationProcessorResult(manifest=empty_manifest, canonicalized_findings=[]))
+        c.citation_processor.get_result = AsyncMock(
+            return_value=CitationProcessorResult(manifest=empty_manifest, canonicalized_findings=[])
+        )
         c.deliberation.deliberate = noop_gen
         c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
         pipeline._pending_components = c
@@ -812,8 +857,7 @@ class TestRendererGating:
         assert rendered_manifest.fabrication_flags == []
         assert rendered_manifest.corroboration_pairs == []
         assert [
-            (alias.task_id, alias.canonical_citation_id)
-            for alias in rendered_manifest.aliases
+            (alias.task_id, alias.canonical_citation_id) for alias in rendered_manifest.aliases
         ] == [
             ("task_001", "CAN-001"),
             ("task_003", "CAN-003"),
@@ -1160,14 +1204,13 @@ class TestRendererGating:
 # Tests: Helper functions
 # ---------------------------------------------------------------------------
 
+
 class TestHelpers:
     def test_finding_to_text(self) -> None:
         finding = _make_finding().model_copy(
             update={
                 "claims": [
-                    _make_finding().claims[0].model_copy(
-                        update={"citation_ids": ["CAN-001"]}
-                    )
+                    _make_finding().claims[0].model_copy(update={"citation_ids": ["CAN-001"]})
                 ]
             }
         )
@@ -1179,6 +1222,7 @@ class TestHelpers:
         assert "CAN-001" in text
         assert "Citations: CIT-001" not in text
         assert "Chinese OEM" in text
+
 
 class TestBuildAssignments:
     def test_assignments_created_for_each_task(self) -> None:
@@ -1289,13 +1333,8 @@ class TestConfidenceMapFiltering:
             {"task_pass"},
         )
 
-        assert [claim.claim for claim in filtered.high_confidence_above_80pct] == [
-            "Passed claim"
-        ]
-        assert all(
-            claim.claim != "Failed claim"
-            for claim in filtered.high_confidence_above_80pct
-        )
+        assert [claim.claim for claim in filtered.high_confidence_above_80pct] == ["Passed claim"]
+        assert all(claim.claim != "Failed claim" for claim in filtered.high_confidence_above_80pct)
         assert filtered.high_confidence_above_80pct[0].corroboration_count == 1
         assert filtered.provenance_index == {
             filtered.high_confidence_above_80pct[0].aggregated_claim_id: ["task_pass"]
@@ -1457,7 +1496,9 @@ class TestWave2BWiring:
         c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
         c.citation_processor.process = noop_gen
         c.citation_processor.get_result = AsyncMock(
-            return_value=CitationProcessorResult(manifest=manifest, canonicalized_findings=[finding])
+            return_value=CitationProcessorResult(
+                manifest=manifest, canonicalized_findings=[finding]
+            )
         )
         c.deliberation.deliberate = noop_gen
         c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
@@ -1466,7 +1507,7 @@ class TestWave2BWiring:
 
         with patch("keystone.pipeline.orchestrator.Evaluator") as MockEval:
             inst = MagicMock()
-            
+
             async def noop_gen_eval(*a, **kw):
                 return
                 yield
@@ -1519,18 +1560,22 @@ class TestWave2BWiring:
         c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
         c.citation_processor.process = noop_gen
         c.citation_processor.get_result = AsyncMock(
-            return_value=CitationProcessorResult(manifest=manifest, canonicalized_findings=[finding])
+            return_value=CitationProcessorResult(
+                manifest=manifest, canonicalized_findings=[finding]
+            )
         )
         c.deliberation.deliberate = noop_gen
         c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
-        c.sprint_contract_generator.generate = AsyncMock(return_value=SprintContract(
-            section_id="generated_task_001",
-            engagement_id="eng_test",
-            client_id="c1",
-            task_id="task_001",
-            section_title="Generated Section",
-            acceptance_criteria=["Generated criterion"],
-        ))
+        c.sprint_contract_generator.generate = AsyncMock(
+            return_value=SprintContract(
+                section_id="generated_task_001",
+                engagement_id="eng_test",
+                client_id="c1",
+                task_id="task_001",
+                section_title="Generated Section",
+                acceptance_criteria=["Generated criterion"],
+            )
+        )
         pipeline._pending_components = c
 
         with patch("keystone.pipeline.orchestrator.Evaluator") as MockEval:
@@ -1578,7 +1623,9 @@ class TestWave2BWiring:
         c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
         c.citation_processor.process = noop_gen
         c.citation_processor.get_result = AsyncMock(
-            return_value=CitationProcessorResult(manifest=manifest, canonicalized_findings=[finding])
+            return_value=CitationProcessorResult(
+                manifest=manifest, canonicalized_findings=[finding]
+            )
         )
         c.deliberation.deliberate = noop_gen
         c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
