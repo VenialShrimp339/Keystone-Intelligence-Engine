@@ -21,8 +21,8 @@ from pydantic import BaseModel, Field
 from keystone.citation.processor import CitationProcessor
 from keystone.deliberation.deliberation import Deliberation
 from keystone.evaluator.evaluator import Evaluator
-from keystone.evaluator.rubric_config import EvaluationProfile
 from keystone.evaluator.retry import LLMCallable
+from keystone.evaluator.rubric_config import EvaluationProfile
 from keystone.evaluator.sprint_contract import SprintContractGenerator
 from keystone.events import AnyPipelineEvent
 from keystone.gateway.mcp_gateway import MCPGateway
@@ -37,6 +37,8 @@ from keystone.models.tasks import ModelTier, ResearchTask
 from keystone.pipeline.markdown_renderer import MarkdownRenderer
 from keystone.research.agent_pool import AgentPool
 from keystone.research.error_recovery import ErrorRecovery
+from keystone.research.evidence_context import EvidenceContextProvider
+from keystone.retrieval.parse_models import EvidencePrepRecord
 from keystone.specification.spec_engine import SpecificationEngine
 from keystone.specification.template_registry import TemplateRegistry
 
@@ -94,11 +96,13 @@ class Pipeline:
         gateway: MCPGateway,
         db_session_factory: Callable | None = None,
         max_eval_tasks: int | None = None,
+        evidence_records: list[EvidencePrepRecord] | None = None,
     ) -> None:
         self._llm_factory = llm_factory
         self._gateway = gateway
         self._db_session_factory = db_session_factory
         self._max_eval_tasks = max_eval_tasks
+        self._evidence_records = evidence_records
         # Internal run state (overwritten on each run).
         self._result: PipelineResult | None = None
         # Tests may call _build_components(), mutate fields, then assign here
@@ -119,6 +123,10 @@ class Pipeline:
             logger.info("DEEP_RESEARCH=1: L1 agents will use multi-turn web research")
             deep_llm = get_deep_research_callable()
 
+        evidence_provider: EvidenceContextProvider | None = None
+        if self._evidence_records:
+            evidence_provider = EvidenceContextProvider(self._evidence_records)
+
         return PipelineComponents(
             spec_engine=SpecificationEngine(
                 llm=self._llm_factory(ModelTier.FLAGSHIP),
@@ -130,6 +138,7 @@ class Pipeline:
                 gateway=self._gateway,
                 deep_llm=deep_llm,
                 error_recovery=ErrorRecovery(llm_factory=self._llm_factory),
+                evidence_provider=evidence_provider,
             ),
             citation_processor=CitationProcessor(),
             deliberation=Deliberation(
@@ -195,9 +204,7 @@ class Pipeline:
         eid = spec.research_spec.engagement_id
         # Deliberation is built before L0 runs, so propagate the classified
         # pipeline profile once the finalized spec is available.
-        c.deliberation._effective_pipeline_profile = (
-            spec.research_spec.effective_pipeline_profile
-        )
+        c.deliberation._effective_pipeline_profile = spec.research_spec.effective_pipeline_profile
         policy = ProfileExecutionPolicy(spec.research_spec.effective_pipeline_profile)
         governance = policy.new_state(spec.task_decomposition.tasks)
         logger.info("L0 complete: %d tasks", len(spec.task_decomposition.tasks))
@@ -243,9 +250,7 @@ class Pipeline:
 
         # --- Stage 4: L1.5 Deliberation ---
         logger.info("L1.5: Deliberating over %d findings", len(findings))
-        async for event in c.deliberation.deliberate(
-            manifest, findings, eid, client_id
-        ):
+        async for event in c.deliberation.deliberate(manifest, findings, eid, client_id):
             yield event
 
         confidence_map = await c.deliberation.get_confidence_map()
@@ -263,13 +268,15 @@ class Pipeline:
         ]
         if self._max_eval_tasks is not None:
             eval_tasks = eval_tasks[: self._max_eval_tasks]
-        logger.info("L4: Evaluating %d/%d renderable tasks", len(eval_tasks), len(spec.task_decomposition.tasks))
+        logger.info(
+            "L4: Evaluating %d/%d renderable tasks",
+            len(eval_tasks),
+            len(spec.task_decomposition.tasks),
+        )
         evaluation_results: list[EvaluationResult] = []
         for task in eval_tasks:
             # Find the finding for this task (if any)
-            task_finding = next(
-                (f for f in findings if f.task_id == task.id), None
-            )
+            task_finding = next((f for f in findings if f.task_id == task.id), None)
             output_text = _finding_to_text(task_finding) if task_finding else ""
 
             contract = await c.sprint_contract_generator.generate(task, spec)
@@ -284,9 +291,7 @@ class Pipeline:
                 profile=_resolve_evaluation_profile(spec),
                 intensity=_resolve_evaluation_intensity(spec),
             )
-            async for event in evaluator.evaluate(
-                output_text, contract, task, task_manifest, spec
-            ):
+            async for event in evaluator.evaluate(output_text, contract, task, task_manifest, spec):
                 yield event
 
             result = await evaluator.get_result()
@@ -331,7 +336,9 @@ class Pipeline:
             confidence_map, passed_task_ids
         )
         render_manifest = _filter_manifest_by_findings(passed_findings, manifest)
-        render_evaluation_results = [result for result in evaluation_results if result.task_id in passed_task_ids]
+        render_evaluation_results = [
+            result for result in evaluation_results if result.task_id in passed_task_ids
+        ]
 
         # --- Stage 6: Render (only passed findings + filtered confidence map) ---
         markdown_output = c.renderer.render(
@@ -400,9 +407,7 @@ def _finding_to_text(finding: StructuredFinding) -> str:
         parts.append(f"\nClaim {i}: {claim.text}")
         parts.append(f"  Evidence: {claim.evidence}")
         parts.append(f"  Confidence: {claim.confidence:.0%} ({claim.confidence_tier.value})")
-        cite_ids = ", ".join(
-            claim.citation_ids or [c.citation_id for c in claim.citations]
-        )
+        cite_ids = ", ".join(claim.citation_ids or [c.citation_id for c in claim.citations])
         if cite_ids:
             parts.append(f"  Citations: {cite_ids}")
         if claim.caveats:
@@ -448,9 +453,7 @@ def _build_task_manifest(
                 task_citation_ids.add(cit.citation_id)
 
     # Filter manifest to only this task's citations
-    task_citations = [
-        c for c in full_manifest.citations if c.citation_id in task_citation_ids
-    ]
+    task_citations = [c for c in full_manifest.citations if c.citation_id in task_citation_ids]
 
     return CitationManifest(
         manifest_id=f"{full_manifest.manifest_id}_{finding.task_id}",
@@ -466,8 +469,7 @@ def _filter_manifest_by_findings(
 ) -> CitationManifest:
     """Keep only manifest data referenced by the findings that remain renderable."""
     source_to_canonical = {
-        alias.source_instance_id: alias.canonical_citation_id
-        for alias in full_manifest.aliases
+        alias.source_instance_id: alias.canonical_citation_id for alias in full_manifest.aliases
     }
 
     citation_ids: set[str] = set()
@@ -481,9 +483,7 @@ def _filter_manifest_by_findings(
                 citation_ids.add(source_to_canonical.get(citation_id, citation_id))
 
     filtered_citations = [
-        citation
-        for citation in full_manifest.citations
-        if citation.citation_id in citation_ids
+        citation for citation in full_manifest.citations if citation.citation_id in citation_ids
     ]
     filtered_corroboration_pairs = [
         pair
@@ -501,16 +501,13 @@ def _filter_manifest_by_findings(
     filtered_aliases = [
         alias
         for alias in full_manifest.aliases
-        if alias.canonical_citation_id in citation_ids
-        and alias.task_id in surviving_task_ids
+        if alias.canonical_citation_id in citation_ids and alias.task_id in surviving_task_ids
     ]
     surviving_agents_by_citation: dict[str, list[str]] = {}
     for alias in filtered_aliases:
         if not alias.agent_id:
             continue
-        agent_ids = surviving_agents_by_citation.setdefault(
-            alias.canonical_citation_id, []
-        )
+        agent_ids = surviving_agents_by_citation.setdefault(alias.canonical_citation_id, [])
         if alias.agent_id not in agent_ids:
             agent_ids.append(alias.agent_id)
 
@@ -584,8 +581,11 @@ def _filter_confidence_map_by_passed_tasks(
 
     # Rebuild provenance_index for surviving claims only
     all_surviving = (
-        filtered_high + filtered_moderate + filtered_weak
-        + filtered_contested + filtered_insufficient
+        filtered_high
+        + filtered_moderate
+        + filtered_weak
+        + filtered_contested
+        + filtered_insufficient
     )
     filtered_provenance = {
         c.aggregated_claim_id: list(c.task_ids)
@@ -638,9 +638,7 @@ def _raise_if_halted(governance) -> None:
     if not governance.halted:
         return
 
-    critical_flags = [
-        flag for flag in governance.flags if flag.action in {"halt", "escalate"}
-    ]
+    critical_flags = [flag for flag in governance.flags if flag.action in {"halt", "escalate"}]
     if critical_flags:
         raise RuntimeError(critical_flags[-1].message)
     raise RuntimeError("Pipeline halted by governance policy.")
