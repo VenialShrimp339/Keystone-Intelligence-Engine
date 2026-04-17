@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sample Article: Lane E in Action</title>
+    <script>window.analytics = {};</script>
+    <style>.noise { color: red; }</style>
+  </head>
+  <body>
+    <header>
+      <h1>How Lane E Parses HTML</h1>
+      <p class="byline">By A Keystone Contributor &mdash; 2026-04-17</p>
+    </header>
+    <article>
+      <p>Lane E takes fetched HTML and turns it into <em>structured</em>
+         passages. Every passage keeps a locator pointing at its section.</p>
+      <h2>Sections With Headings</h2>
+      <p>Headings build a chain so downstream evidence can be attributed
+         to a sub-topic. Example: &ldquo;Risks &amp; Mitigations&rdquo;.</p>
+      <h3>Lists And Quotes</h3>
+      <ul>
+        <li>Lists become list_item passages.</li>
+        <li>Nested <strong>inline</strong> markup is flattened.</li>
+      </ul>
+      <blockquote>
+        &ldquo;Deterministic parsing is the floor, not the ceiling.&rdquo;
+      </blockquote>
+      <h2>Closing</h2>
+      <p>No scripts or styles leak into the passage set.</p>
+      <p>Entities like &amp; and &copy; round-trip correctly.</p>
+    </article>
+    <footer>
+      <noscript>JavaScript is off; article still reads.</noscript>
+    </footer>
+  </body>
+</html>
