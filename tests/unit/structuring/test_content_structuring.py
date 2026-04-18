@@ -878,6 +878,123 @@ class TestOutlineFiltering:
 # ---------------------------------------------------------------------------
 
 
+class TestCollectLeafTitlesNested:
+    """Pin ``_collect_leaf_titles`` behaviour on deep / irregular trees.
+
+    The structurer consumes the MECE issue tree whole. When Spec Engine
+    produces a tree with branches that are themselves decomposed into
+    sub-branches (depth 3 and beyond), only the terminal leaves must
+    surface as rendering targets -- interior nodes should NOT produce
+    their own ``BRANCH`` section.
+    """
+
+    def test_depth_three_tree_returns_only_leaves(self) -> None:
+        from keystone.structuring.content_structuring import _collect_leaf_titles
+
+        tree = {
+            "root": {
+                "id": "root",
+                "name": "Root",
+                "children": [
+                    {
+                        "id": "branch_A",
+                        "name": "A",
+                        "children": [
+                            {
+                                "id": "branch_A1",
+                                "name": "A1",
+                                "children": [
+                                    {"id": "leaf_A1a", "name": "A1 leaf alpha"},
+                                    {"id": "leaf_A1b", "name": "A1 leaf beta"},
+                                ],
+                            },
+                            {"id": "leaf_A2", "name": "A leaf two"},
+                        ],
+                    },
+                    {"id": "leaf_B", "name": "B leaf"},
+                ],
+            }
+        }
+        leaves = _collect_leaf_titles(tree)
+        assert leaves == {
+            "leaf_A1a": "A1 leaf alpha",
+            "leaf_A1b": "A1 leaf beta",
+            "leaf_A2": "A leaf two",
+            "leaf_B": "B leaf",
+        }
+        # Interior node IDs must NOT appear.
+        assert "branch_A" not in leaves
+        assert "branch_A1" not in leaves
+        assert "root" not in leaves
+
+    def test_depth_four_tree_returns_only_leaves(self) -> None:
+        from keystone.structuring.content_structuring import _collect_leaf_titles
+
+        tree = {
+            "root": {
+                "id": "root",
+                "name": "Root",
+                "children": [
+                    {
+                        "id": "l1",
+                        "name": "Level 1",
+                        "children": [
+                            {
+                                "id": "l2",
+                                "name": "Level 2",
+                                "children": [
+                                    {
+                                        "id": "l3",
+                                        "name": "Level 3",
+                                        "children": [{"id": "leaf_deep", "name": "Deep leaf"}],
+                                    }
+                                ],
+                            }
+                        ],
+                    }
+                ],
+            }
+        }
+        leaves = _collect_leaf_titles(tree)
+        assert leaves == {"leaf_deep": "Deep leaf"}
+
+    def test_non_dict_children_are_ignored(self) -> None:
+        from keystone.structuring.content_structuring import _collect_leaf_titles
+
+        # Malformed child entries (strings, None) should not trip the walk.
+        tree = {
+            "root": {
+                "id": "root",
+                "name": "Root",
+                "children": [
+                    "not_a_dict",  # type: ignore[list-item]
+                    None,  # type: ignore[list-item]
+                    {"id": "leaf_only", "name": "Only leaf"},
+                ],
+            }
+        }
+        leaves = _collect_leaf_titles(tree)
+        assert leaves == {"leaf_only": "Only leaf"}
+
+    def test_label_alias_used_when_name_missing(self) -> None:
+        from keystone.structuring.content_structuring import _collect_leaf_titles
+
+        tree = {
+            "id": "root",
+            "name": "Root",
+            "children": [
+                {"id": "leaf_x", "label": "Label alias"},
+                {
+                    "id": "mid",
+                    "label": "Mid",
+                    "children": [{"id": "leaf_y", "label": "Deeper alias"}],
+                },
+            ],
+        }
+        leaves = _collect_leaf_titles(tree)
+        assert leaves == {"leaf_x": "Label alias", "leaf_y": "Deeper alias"}
+
+
 class TestGetterSafety:
     @pytest.mark.asyncio
     async def test_get_outline_before_structure_raises(self) -> None:

@@ -38,6 +38,10 @@ class ToolName(StrEnum):
     # Citation verification
     DOI_VERIFY = "doi_verify"
 
+    # Retrieval (system-owned, not task-assignable)
+    SEMANTIC_SEARCH = "semantic_search"
+    HYBRID_SEARCH = "hybrid_search"
+
 
 # ---------------------------------------------------------------------------
 # Semantic groupings for template tool assignment
@@ -64,6 +68,17 @@ ACADEMIC_TOOLS: list[str] = [ToolName.PAPER_SEARCH, ToolName.DOI_VERIFY]
 
 # Tools available to every agent as a baseline
 DEFAULT_TOOLS: list[str] = [ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH]
+
+# Retrieval tools served in-process by the RetrievalService. The spec
+# engine MUST NOT hand these out in template tool assignments -- they
+# are invoked by the gateway directly in response to agent queries and
+# by the orchestrator during context assembly.
+RETRIEVAL_TOOLS: list[str] = [ToolName.SEMANTIC_SEARCH, ToolName.HYBRID_SEARCH]
+
+# System-owned tools: never appear in agent-assignable groupings above.
+# Kept as its own list so the Specification Engine can import one name
+# to know what to exclude.
+SYSTEM_OWNED_TOOLS: list[str] = list(RETRIEVAL_TOOLS)
 
 # Full set of all registered tools
 ALL_TOOLS: list[str] = list(ToolName)

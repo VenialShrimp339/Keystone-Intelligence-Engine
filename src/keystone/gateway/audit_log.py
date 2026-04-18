@@ -21,7 +21,14 @@ import structlog
 
 @dataclass
 class AuditEntry:
-    """A single audit log entry for a tool call."""
+    """A single audit log entry for a tool call.
+
+    ``latency_ms`` may be ``None`` when the latency is genuinely
+    unknown (for example deep-mode per-source entries that describe a
+    URL observed inside a single ``claude -p`` session — the session
+    has an overall latency but individual fetches do not). Callers
+    that do have a measurement should still pass a float.
+    """
 
     timestamp: float
     agent_id: str
@@ -30,7 +37,7 @@ class AuditEntry:
     tool_name: str
     input_hash: str
     output_hash: str | None
-    latency_ms: float
+    latency_ms: float | None
     success: bool
     error_type: str | None = None
     error_message: str | None = None
@@ -66,7 +73,7 @@ class AuditLogger:
         parameters: dict[str, Any],
         result: Any | None = None,
         error: Exception | None = None,
-        latency_ms: float = 0.0,
+        latency_ms: float | None = 0.0,
         retry_attempt: int = 0,
         dead_lettered: bool = False,
     ) -> AuditEntry:
@@ -102,7 +109,7 @@ class AuditLogger:
             "tool_name": tool_name,
             "input_hash": input_hash,
             "output_hash": output_hash,
-            "latency_ms": round(latency_ms, 2),
+            "latency_ms": round(latency_ms, 2) if latency_ms is not None else None,
             "success": entry.success,
             "retry_attempt": retry_attempt,
         }

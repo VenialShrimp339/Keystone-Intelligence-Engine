@@ -47,6 +47,17 @@ EDGAR_MAX_REQ_PER_SEC = 10
 # logging aggregate per-server.
 EDGAR_SERVER_NAME = "edgartools-mcp"
 
+# System-owned retrieval server. ``semantic_search`` and
+# ``hybrid_search`` are both served by the in-process RetrievalService;
+# they share this server name so the gateway rate-limits them as a
+# single logical upstream.
+RETRIEVAL_SERVER_NAME = "keystone-retrieval"
+
+# Retrieval calls are in-process (no outbound network), so the ceiling
+# is CPU-bound rather than provider-imposed. Keep it generous; concurrency
+# is already bounded by max_parallel_agents in AppConfig.
+RETRIEVAL_MAX_REQ_PER_SEC = 50
+
 # ---------------------------------------------------------------------------
 # Tool registry
 # ---------------------------------------------------------------------------
@@ -163,6 +174,37 @@ TOOL_CONFIGS: dict[str, ToolEntry] = {
             "base_url": "https://finnhub.io/api/v1",
         },
     ),
+    ToolName.SEMANTIC_SEARCH: ToolEntry(
+        name=ToolName.SEMANTIC_SEARCH,
+        server_name=RETRIEVAL_SERVER_NAME,
+        description=(
+            "Dense vector search over Keystone's internal document store "
+            "(pgvector + Voyage embeddings). Returns top-k chunks by cosine "
+            "similarity to the query meaning. System-owned: invoked by the "
+            "gateway and orchestrator, never assigned to agents directly."
+        ),
+        transport_type=TransportType.IN_PROCESS,
+        config={
+            "system_owned": True,
+            "rate_limit_per_second": RETRIEVAL_MAX_REQ_PER_SEC,
+        },
+    ),
+    ToolName.HYBRID_SEARCH: ToolEntry(
+        name=ToolName.HYBRID_SEARCH,
+        server_name=RETRIEVAL_SERVER_NAME,
+        description=(
+            "Hybrid retrieval across the internal document store: vector "
+            "search + BM25 fused via Reciprocal Rank Fusion, then reranked "
+            "by Cohere Rerank v3.5. Returns top-k passages with full "
+            "provenance (artifact_id, canonical_url, content_hash, locator). "
+            "System-owned: invoked by the gateway and orchestrator."
+        ),
+        transport_type=TransportType.IN_PROCESS,
+        config={
+            "system_owned": True,
+            "rate_limit_per_second": RETRIEVAL_MAX_REQ_PER_SEC,
+        },
+    ),
 }
 
 
@@ -187,6 +229,10 @@ SERVER_RATE_LIMITS: dict[str, RateLimit] = {
     "paper-search-mcp": RateLimit(max_tokens=10, refill_rate=5.0),
     "doi-mcp": RateLimit(max_tokens=10, refill_rate=5.0),
     "finnhub-mcp": RateLimit(max_tokens=30, refill_rate=10.0),
+    RETRIEVAL_SERVER_NAME: RateLimit(
+        max_tokens=RETRIEVAL_MAX_REQ_PER_SEC,
+        refill_rate=float(RETRIEVAL_MAX_REQ_PER_SEC),
+    ),
 }
 
 

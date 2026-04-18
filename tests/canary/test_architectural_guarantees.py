@@ -400,19 +400,17 @@ async def _unused_llm(prompt: str) -> str:
 async def _evaluator_llm(prompt: str) -> str:
     lower = prompt.lower()
 
-    if (
-        "fact decomposition" in lower
-        or "fact-checking analyst" in lower
-        or "factscore" in lower
-    ):
-        return json.dumps([
-            {
-                "claim": "Test claim",
-                "status": "SUPPORTED",
-                "citation_id": "CIT-001",
-                "reasoning": "Supported by the cited source.",
-            },
-        ])
+    if "fact decomposition" in lower or "fact-checking analyst" in lower or "factscore" in lower:
+        return json.dumps(
+            [
+                {
+                    "claim": "Test claim",
+                    "status": "SUPPORTED",
+                    "citation_id": "CIT-001",
+                    "reasoning": "Supported by the cited source.",
+                },
+            ]
+        )
 
     if "numerical consistency" in lower:
         return json.dumps({"numerical_claims": [], "inconsistencies": []})
@@ -422,14 +420,14 @@ async def _evaluator_llm(prompt: str) -> str:
 
     for dimension in RubricDimension:
         header = f"{dimension.value.replace('_', ' ')} evaluation"
-        if header in lower or (
-            dimension.value in lower and "evaluation" in lower
-        ):
-            return json.dumps({
-                "score": 75,
-                "feedback": f"Strong {dimension.value}.",
-                "sub_criteria_notes": [],
-            })
+        if header in lower or (dimension.value in lower and "evaluation" in lower):
+            return json.dumps(
+                {
+                    "score": 75,
+                    "feedback": f"Strong {dimension.value}.",
+                    "sub_criteria_notes": [],
+                }
+            )
 
     return json.dumps({"score": 75, "feedback": "Fallback evaluator response."})
 
@@ -438,20 +436,24 @@ async def _deliberation_llm(prompt: str) -> str:
     lower = prompt.lower()
 
     if "evaluate each claim" in lower:
-        return json.dumps([
-            {
-                "index": 0,
-                "confidence": 0.82,
-                "source_count": 2,
-                "reasoning": "Supported by multiple sources.",
-            },
-        ])
+        return json.dumps(
+            [
+                {
+                    "index": 0,
+                    "confidence": 0.82,
+                    "source_count": 2,
+                    "reasoning": "Supported by multiple sources.",
+                },
+            ]
+        )
 
     if "select the analyst" in lower:
-        return json.dumps({
-            "selected_analyst": "quantitative",
-            "reasoning": "Quantitative view is best supported.",
-        })
+        return json.dumps(
+            {
+                "selected_analyst": "quantitative",
+                "reasoning": "Quantitative view is best supported.",
+            }
+        )
 
     if "logical contradictions" in lower or "contradictions" in lower:
         return json.dumps({"contradictions": []})
@@ -472,15 +474,17 @@ async def _two_round_shallow_llm(prompt: str) -> str:
         # one of the round's citations (not all of them).
         src_match = re.search(r"(SRC-\d+)", prompt)
         first_ref = src_match.group(1) if src_match else "SRC-001"
-        return json.dumps([
-            {
-                "text": f"Round {round_num} claim",
-                "evidence": f"Evidence synthesized in round {round_num}",
-                "citation_refs": [first_ref],
-                "confidence": 0.55,
-                "caveats": [],
-            },
-        ])
+        return json.dumps(
+            [
+                {
+                    "text": f"Round {round_num} claim",
+                    "evidence": f"Evidence synthesized in round {round_num}",
+                    "citation_refs": [first_ref],
+                    "confidence": 0.55,
+                    "caveats": [],
+                },
+            ]
+        )
 
     if "not found" in lower and "absence" in lower:
         return json.dumps(["No proprietary pricing dataset was publicly available."])
@@ -957,9 +961,7 @@ async def test_source_instance_ids_unique_across_parallel_agents() -> None:
     ids_b = {cit.citation_id for cits in agent_b._round_citations.values() for cit in cits}
 
     # No ID collisions between two parallel agents
-    assert ids_a.isdisjoint(ids_b), (
-        f"Citation ID collision between agents: {ids_a & ids_b}"
-    )
+    assert ids_a.isdisjoint(ids_b), f"Citation ID collision between agents: {ids_a & ids_b}"
 
     # All IDs satisfy the CIT- prefix required by Citation.citation_id validator
     for cit_id in ids_a | ids_b:
@@ -993,25 +995,27 @@ async def test_deep_research_emits_audit_equivalent_events() -> None:
 
     async def deep_llm(prompt: str) -> str:
         del prompt
-        return json.dumps({
-            "claims": [
-                {
-                    "text": "Deep mode claim A",
-                    "evidence": "Deep evidence A",
-                    "confidence": 0.86,
-                    "caveats": [],
-                    "sources": expected_sources[:2],
-                },
-                {
-                    "text": "Deep mode claim B",
-                    "evidence": "Deep evidence B",
-                    "confidence": 0.78,
-                    "caveats": [],
-                    "sources": expected_sources[2:],
-                },
-            ],
-            "absence_report": ["No proprietary benchmarking dataset located."],
-        })
+        return json.dumps(
+            {
+                "claims": [
+                    {
+                        "text": "Deep mode claim A",
+                        "evidence": "Deep evidence A",
+                        "confidence": 0.86,
+                        "caveats": [],
+                        "sources": expected_sources[:2],
+                    },
+                    {
+                        "text": "Deep mode claim B",
+                        "evidence": "Deep evidence B",
+                        "confidence": 0.78,
+                        "caveats": [],
+                        "sources": expected_sources[2:],
+                    },
+                ],
+                "absence_report": ["No proprietary benchmarking dataset located."],
+            }
+        )
 
     research_agent = ResearchAgent(
         llm=_unused_llm,
@@ -1029,16 +1033,8 @@ async def test_deep_research_emits_audit_equivalent_events() -> None:
 
     expected_urls = {source["url"] for source in expected_sources}
     expected_titles = {source["title"] for source in expected_sources}
-    finding_urls = {
-        citation.url
-        for claim in finding.claims
-        for citation in claim.citations
-    }
-    finding_titles = {
-        citation.title
-        for claim in finding.claims
-        for citation in claim.citations
-    }
+    finding_urls = {citation.url for claim in finding.claims for citation in claim.citations}
+    finding_titles = {citation.title for claim in finding.claims for citation in claim.citations}
 
     assert source_events
     assert citation_events
@@ -1141,9 +1137,7 @@ async def test_pipeline_fresh_components_per_run() -> None:
     assert first.deliberation is not second.deliberation, (
         "deliberation must be a fresh instance on each run"
     )
-    assert first.renderer is not second.renderer, (
-        "renderer must be a fresh instance on each run"
-    )
+    assert first.renderer is not second.renderer, "renderer must be a fresh instance on each run"
 
 
 async def test_spec_engine_no_agent_config_leak() -> None:
@@ -1258,15 +1252,15 @@ async def test_one_analyst_failure_does_not_kill_others() -> None:
     assert confidence_map is not None
     # ConfidenceMapProduced event must have been emitted.
     from keystone.events import ConfidenceMapProduced
+
     assert any(isinstance(e, ConfidenceMapProduced) for e in events), (
         "ConfidenceMapProduced must be emitted even when one analyst fails"
     )
     # Three of the four analysts should have succeeded (one failed).
     from keystone.events import IndependentAnalysisComplete
+
     completed = [e for e in events if isinstance(e, IndependentAnalysisComplete)]
-    assert len(completed) == 3, (
-        f"Expected 3 analyst completions (1 failed), got {len(completed)}"
-    )
+    assert len(completed) == 3, f"Expected 3 analyst completions (1 failed), got {len(completed)}"
 
 
 async def test_subprocess_killed_on_cancellation() -> None:
@@ -1375,3 +1369,45 @@ async def test_circuit_breaker_single_probe_in_half_open() -> None:
     # Total calls = 5 (1 probe + 4 CLOSED). All must return "ok".
     unexpected = [r for r in results if r != "ok"]
     assert not unexpected, f"Unexpected results: {unexpected}"
+
+
+# ---------------------------------------------------------------------------
+# System-owned tools never leak into agent-assignable templates
+# ---------------------------------------------------------------------------
+
+
+def test_system_owned_tools_never_appear_in_templates() -> None:
+    """Agents must never receive the gateway-only retrieval tools.
+
+    ``semantic_search`` and ``hybrid_search`` are system-owned tools
+    invoked by the gateway / orchestrator through the in-process
+    ``RetrievalService``. The Specification Engine's template registry
+    must never hand them out as agent-callable tools. A regression
+    would quietly turn a Lane H / Lane E / RetrievalService guarantee
+    into a prompt-driven property.
+    """
+
+    from keystone.specification.template_registry import (
+        _SEED_TEMPLATES,
+        TemplateRegistry,
+    )
+    from keystone.tool_names import SYSTEM_OWNED_TOOLS
+
+    system_owned = set(SYSTEM_OWNED_TOOLS)
+    assert system_owned, "SYSTEM_OWNED_TOOLS should not be empty"
+
+    for template in _SEED_TEMPLATES:
+        template_tools = set(template.tools)
+        leaked = template_tools & system_owned
+        assert not leaked, f"template {template.name!r} leaks system-owned tools: {sorted(leaked)}"
+
+    # Defense-in-depth: the registry's public get_seed_templates() view
+    # must not expose system-owned tools either. Any future template
+    # loaded through the registry is checked here.
+    registry = TemplateRegistry()
+    for template in registry.get_seed_templates():
+        template_tools = set(template.tools)
+        leaked = template_tools & system_owned
+        assert not leaked, (
+            f"registry template {template.name!r} leaks system-owned tools: {sorted(leaked)}"
+        )

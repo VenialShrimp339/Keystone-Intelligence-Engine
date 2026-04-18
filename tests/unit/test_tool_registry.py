@@ -141,14 +141,16 @@ class TestDescriptionBudget:
 
 class TestServerConfigs:
     def test_tool_count_matches_configured_entries(self) -> None:
-        # Exa, Brave, three EDGAR sub-tools, FRED, paper search, DOI, Finnhub.
-        assert len(TOOL_CONFIGS) == 9
+        # Exa, Brave, three EDGAR sub-tools, FRED, paper search, DOI,
+        # Finnhub, plus semantic_search and hybrid_search (retrieval).
+        assert len(TOOL_CONFIGS) == 11
 
     def test_unique_server_count(self) -> None:
         # Multiple tool names can share a server_name (e.g. all EDGAR tools
-        # speak to edgartools-mcp). The distinct upstream-server count is 7.
+        # speak to edgartools-mcp; both retrieval tools speak to
+        # keystone-retrieval). The distinct upstream-server count is 8.
         server_names = {entry.server_name for entry in TOOL_CONFIGS.values()}
-        assert len(server_names) == 7
+        assert len(server_names) == 8
 
     def test_register_all_tools(self) -> None:
         registry = ToolRegistry()

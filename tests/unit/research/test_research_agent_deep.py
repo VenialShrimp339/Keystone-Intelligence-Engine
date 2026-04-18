@@ -682,3 +682,113 @@ class TestDeepEventMetadata:
         # Canned claims have confidence 0.82 and 0.71 -> range "0.71-0.82".
         assert synth.confidence_range == "0.71-0.82"
         assert synth.claim_count == 2
+
+    async def test_deep_execute_writes_audit_log_per_source(self) -> None:
+        """Deep mode must restore audit parity: one entry per observed source.
+
+        The claude -p subprocess bypasses ``MCPGateway.call_tool``, so
+        without this wiring the audit log would silently miss every
+        WebSearch / WebFetch the agent performed. Regression guard.
+        Per-source entries have ``latency_ms=None`` (can't disaggregate
+        per-fetch timing from a single ``claude -p`` session); the
+        wrapping ``deep_research:session`` entry carries the real
+        session-level latency and summary counts.
+        """
+
+        gw, _ = _build_gateway()
+        # Capture the audit logger before calling execute so we can
+        # count entries afterwards (the helper shares one AuditLogger
+        # across the gateway instance).
+        audit_logger = gw.audit_logger
+        agent = ResearchAgent(llm=_shallow_fallback_llm, gateway=gw, deep_llm=_deep_llm)
+
+        async for _ in agent.execute(_make_task(), _make_spec(), _make_agent()):
+            pass
+
+        entries = audit_logger.get_entries(
+            agent_id="agent_deep",
+            engagement_id="eng_deep",
+        )
+        per_source = [
+            e
+            for e in entries
+            if e.tool_name in {"deep_research:WebSearch", "deep_research:WebFetch"}
+        ]
+        session_entries = [e for e in entries if e.tool_name == "deep_research:session"]
+
+        # 3 canned sources => 3 per-source audit entries.
+        assert len(per_source) == 3
+        # Exactly one session entry per execute() call.
+        assert len(session_entries) == 1
+
+        for entry in per_source:
+            assert entry.success is True
+            assert entry.client_id == "client_deep"
+            assert entry.input_hash  # hashed parameters recorded
+            assert entry.output_hash  # hashed result recorded
+            assert entry.latency_ms is None, "per-source latency should be None"
+
+        session = session_entries[0]
+        assert session.success is True
+        assert session.latency_ms is not None
+        assert session.latency_ms >= 0.0
+
+    async def test_deep_audit_tool_name_differentiates_fetch_vs_search(self) -> None:
+        gw, _ = _build_gateway()
+        agent = ResearchAgent(llm=_shallow_fallback_llm, gateway=gw, deep_llm=_deep_llm)
+
+        async for _ in agent.execute(_make_task(), _make_spec(), _make_agent()):
+            pass
+
+        entries = gw.audit_logger.get_entries(agent_id="agent_deep")
+        tool_names = {e.tool_name for e in entries if e.tool_name.startswith("deep_research:")}
+        # Canned deep responses include https:// URLs, so WebFetch must
+        # be represented. (WebSearch shows up for non-http URLs, which
+        # the canned fixture does not include -- either is acceptable as
+        # long as at least one WebFetch name is recorded.)
+        assert "deep_research:WebFetch" in tool_names
+
+    async def test_deep_session_audit_records_summary_counts(self) -> None:
+        gw, _ = _build_gateway()
+        agent = ResearchAgent(llm=_shallow_fallback_llm, gateway=gw, deep_llm=_deep_llm)
+
+        async for _ in agent.execute(_make_task(), _make_spec(), _make_agent()):
+            pass
+
+        entries = gw.audit_logger.get_entries(agent_id="agent_deep")
+        session = next(e for e in entries if e.tool_name == "deep_research:session")
+        assert session.success is True
+        # latency_ms must be a real measurement (non-None, non-zero for
+        # a non-instantaneous canned fixture).
+        assert session.latency_ms is not None
+        assert session.latency_ms >= 0.0
+        # output_hash encodes n_sources/n_claims on success.
+        assert session.output_hash
+
+    async def test_deep_session_audit_records_failure_when_deep_llm_raises(self) -> None:
+        async def broken_deep(prompt: str) -> str:
+            raise RuntimeError("deep research timed out")
+
+        gw, _ = _build_gateway()
+        agent = ResearchAgent(
+            llm=_shallow_fallback_llm,
+            gateway=gw,
+            deep_llm=broken_deep,
+        )
+
+        async for _ in agent.execute(_make_task(), _make_spec(), _make_agent()):
+            pass
+
+        entries = gw.audit_logger.get_entries(agent_id="agent_deep")
+        session_entries = [e for e in entries if e.tool_name == "deep_research:session"]
+        # Exactly one failure-session entry, even though execute() fell
+        # back to shallow mode.
+        assert len(session_entries) == 1
+        session = session_entries[0]
+        assert session.success is False
+        assert session.error_type == "RuntimeError"
+        assert session.error_message is not None
+        assert "deep research timed out" in session.error_message
+        # Failure latency is still measured.
+        assert session.latency_ms is not None
+        assert session.latency_ms >= 0.0

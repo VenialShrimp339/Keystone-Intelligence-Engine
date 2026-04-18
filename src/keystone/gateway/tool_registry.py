@@ -19,11 +19,20 @@ from pydantic import BaseModel, Field
 
 
 class TransportType(StrEnum):
-    """MCP server transport mechanism."""
+    """MCP server transport mechanism.
+
+    ``IN_PROCESS`` covers system-owned tools (like the retrieval
+    service's ``semantic_search`` / ``hybrid_search``) that are
+    served inside the Keystone process itself rather than through a
+    separate MCP server binary. The gateway still routes through the
+    usual authorization/rate-limit/audit path but the underlying
+    client delegates to an in-process handler.
+    """
 
     HTTP = "http"
     STDIO = "stdio"
     DOCKER = "docker"
+    IN_PROCESS = "in_process"
 
 
 class HealthStatus(StrEnum):
@@ -97,9 +106,7 @@ class ToolRegistry:
         Uses a simple word-count heuristic (1 token ~ 0.75 words).
         Target: < 10,000 tokens with all servers registered.
         """
-        total_chars = sum(
-            len(t.name) + len(t.description) for t in self._tools.values()
-        )
+        total_chars = sum(len(t.name) + len(t.description) for t in self._tools.values())
         # ~4 chars per token is a reasonable estimate for English text
         return total_chars // 4
 
@@ -127,9 +134,7 @@ class ToolRegistry:
         async with self._lock:
             entry = self._tools.get(tool_name)
             if entry is not None:
-                self._tools[tool_name] = entry.model_copy(
-                    update={"health_status": status}
-                )
+                self._tools[tool_name] = entry.model_copy(update={"health_status": status})
 
     def __len__(self) -> int:
         return len(self._tools)

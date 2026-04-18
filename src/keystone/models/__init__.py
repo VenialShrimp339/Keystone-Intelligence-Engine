@@ -37,6 +37,7 @@ from keystone.models.config import (
     EvaluationConfig,
     ModelMixingConfig,
     RateLimitConfig,
+    RetrievalConfig,
 )
 from keystone.models.evaluation import (
     CalibrationReport,
@@ -144,4 +145,5 @@ __all__ = [
     "EvaluationConfig",
     "ModelMixingConfig",
     "RateLimitConfig",
+    "RetrievalConfig",
 ]

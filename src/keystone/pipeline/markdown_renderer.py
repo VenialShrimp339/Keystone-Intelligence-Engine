@@ -416,6 +416,9 @@ class MarkdownRenderer:
             status = "PASS" if r.passed else "FAIL"
             feedback = r.feedback[:120]
             lines.append(f"- **{r.task_id}**: {status} ({r.overall_score:.1f}/100) -- {feedback}")
+            process_line = _render_process_assessment(r)
+            if process_line:
+                lines.append(f"  - {process_line}")
         return "\n".join(lines)
 
     # ------------------------------------------------------------------
@@ -606,6 +609,9 @@ class MarkdownRenderer:
             lines.append(
                 f"- **{r.task_id}**: {status} ({r.overall_score:.1f}/100) -- {r.feedback[:120]}"
             )
+            process_line = _render_process_assessment(r)
+            if process_line:
+                lines.append(f"  - {process_line}")
 
         return "\n".join(lines)
 
@@ -613,6 +619,32 @@ class MarkdownRenderer:
 # ----------------------------------------------------------------------
 # Module-private helpers
 # ----------------------------------------------------------------------
+
+
+def _render_process_assessment(result: EvaluationResult) -> str:
+    """One-line Layer 4 process summary for a task, or empty when L4 did not run.
+
+    Output shape::
+
+        "Process Assessment: 72/100 -- Flags: LOW_SOURCE_DIVERSITY, NO_MULTI_ROUND"
+
+    Empty string is returned when ``layer4_results`` is ``None`` so the
+    renderer can skip the bullet entirely without scattering conditionals
+    through both the outline and legacy code paths.
+    """
+
+    layer4 = result.layer4_results
+    if layer4 is None:
+        return ""
+    score = layer4.process_quality_score
+    raw_flags = list(layer4.process_flags) if layer4.process_flags else []
+    # ``process_flags`` is typed ``list[str]`` but historical emitters
+    # have used the ``ProcessFlag`` StrEnum directly, so handle both.
+    flags = [getattr(f, "value", f).upper() for f in raw_flags]
+    prefix = f"Process Assessment: {score:.0f}/100"
+    if flags:
+        return f"{prefix} -- Flags: {', '.join(flags)}"
+    return f"{prefix} -- no process flags raised"
 
 
 def _sections_of_type(

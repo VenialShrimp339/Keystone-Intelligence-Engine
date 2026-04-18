@@ -31,6 +31,7 @@ from keystone.gateway.tool_registry import HealthStatus, ToolRegistry
 # Data classes for tool call I/O
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class ToolCall:
     """A request to execute a tool via the gateway."""
@@ -58,6 +59,7 @@ class ToolResult:
 # MCP Client Protocol + Implementations
 # ---------------------------------------------------------------------------
 
+
 @runtime_checkable
 class MCPClient(Protocol):
     """Protocol for MCP server communication.
@@ -66,9 +68,7 @@ class MCPClient(Protocol):
     Phase 1B: RealMCPClient uses FastMCP client to talk to real servers.
     """
 
-    async def call_tool(
-        self, server: str, tool: str, params: dict[str, Any]
-    ) -> Any: ...
+    async def call_tool(self, server: str, tool: str, params: dict[str, Any]) -> Any: ...
 
 
 class MockMCPClient:
@@ -94,9 +94,7 @@ class MockMCPClient:
         """Remove a configured failure for a tool."""
         self._should_fail.pop(tool, None)
 
-    async def call_tool(
-        self, server: str, tool: str, params: dict[str, Any]
-    ) -> Any:
+    async def call_tool(self, server: str, tool: str, params: dict[str, Any]) -> Any:
         self.call_count += 1
 
         if tool in self._should_fail:
@@ -206,6 +204,7 @@ def _extract_structured_citations(
 # Dead-letter record
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class DeadLetter:
     """Record of a tool call that exhausted all retries."""
@@ -219,6 +218,7 @@ class DeadLetter:
 # ---------------------------------------------------------------------------
 # MCPGateway: central router
 # ---------------------------------------------------------------------------
+
 
 class MCPGateway:
     """Central router for all MCP tool calls.
@@ -252,9 +252,7 @@ class MCPGateway:
     def _get_circuit_breaker(self, server_name: str) -> CircuitBreaker:
         """Get or create a circuit breaker for a server."""
         if server_name not in self._circuit_breakers:
-            self._circuit_breakers[server_name] = CircuitBreaker(
-                provider=server_name
-            )
+            self._circuit_breakers[server_name] = CircuitBreaker(provider=server_name)
         return self._circuit_breakers[server_name]
 
     async def execute(self, call: ToolCall) -> ToolResult:
@@ -273,9 +271,7 @@ class MCPGateway:
 
         # 1. Authorize
         try:
-            self._authorizer.check(
-                call.agent_id, call.assigned_tools, call.tool_name
-            )
+            self._authorizer.check(call.agent_id, call.assigned_tools, call.tool_name)
         except AuthorizationError as exc:
             self._audit_logger.log_call(
                 agent_id=call.agent_id,
@@ -376,7 +372,7 @@ class MCPGateway:
 
                 # Exponential backoff before retry (skip on last attempt)
                 if attempt < self.MAX_RETRIES - 1:
-                    backoff = self.BACKOFF_BASE * (2 ** attempt)
+                    backoff = self.BACKOFF_BASE * (2**attempt)
                     await asyncio.sleep(backoff)
 
         # All retries exhausted: dead-letter
@@ -410,6 +406,17 @@ class MCPGateway:
     def dead_letters(self) -> list[DeadLetter]:
         """Return all dead-lettered tool calls."""
         return list(self._dead_letters)
+
+    @property
+    def audit_logger(self) -> AuditLogger:
+        """Expose the gateway's :class:`AuditLogger`.
+
+        Callers that bypass ``call_tool`` (for example deep-mode
+        research that calls ``claude -p`` directly) still need to emit
+        audit-log entries so the observability surface matches the
+        gateway-mediated path.
+        """
+        return self._audit_logger
 
     def get_circuit_state(self, server_name: str) -> CircuitState:
         """Return circuit breaker state for a server."""

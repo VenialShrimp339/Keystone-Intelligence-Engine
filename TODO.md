@@ -2,17 +2,25 @@
 
 ## Active
 
-- [ ] Wire `build_default_rate_limits()` into the production gateway init so EDGAR traffic is clamped at SEC's 10 req/sec without per-caller configuration
+- [ ] Wire `build_default_rate_limits()` into the production gateway init so EDGAR + retrieval traffic is clamped without per-caller configuration
 - [ ] Orchestrator: pipe Lane E normalizer output into `AgentPool(evidence_provider=...)`
+- [ ] Orchestrator / gateway: wire `RetrievalService.search` into the `semantic_search` + `hybrid_search` tool dispatch paths (tools are registered but the gateway currently has no in-process handler for them)
+- [ ] Orchestrator: call `RetrievalService.ingest(..., engagement_id=<current>)` with the normalized Lane E records so the pgvector store is populated as engagements run (ingest now requires the kwarg; orchestrator must supply the active engagement)
+- [ ] Orchestrator: construct per-engagement `RetrievalService(..., engagement_context=<current>)` so string-form agent queries inherit the exclusion automatically (scoping plumbing + default-on semantic are built; orchestrator wiring is pending)
+- [ ] Phase 2: route deep-mode tool calls through `MCPGateway.call_tool` (not just the audit log) once provider-native WebSearch/WebFetch have gateway-owned wrappers
 - [ ] Fix stale import in `tests/integration/test_evaluator_live.py` (`_parse_score_json` removed from `layer3_rubric.py`)
 
 ## Up Next
 
-- [ ] Real-MCP phase: FastMCP-based client replacing `MockMCPClient` so `edgartools-mcp` (and the other stdio servers) actually launch
+- [ ] Real-MCP phase: FastMCP-based client replacing `MockMCPClient` so `edgartools-mcp` (and the other stdio servers) actually launch; the `IN_PROCESS` transport path for retrieval tools also needs a handler
+- [ ] Retrieval observability: emit `ChunkIngested`/`SearchCompleted` pipeline events with hit counts, scores, and rerank latency so the evaluator's Layer 4 trajectory metrics pick up internal-retrieval usage
+- [ ] Retrieval integration smoke test: end-to-end ingest → search → cite flow against the live PostgreSQL instance (currently unit tests use the in-memory stores; only `TestPgVectorStoreLive` hits real PG)
+- [ ] Retrieval: LLM-backed query router replacing `RuleBasedQueryRouter` for the cases where regex signals miss (calibrate against ground truth)
+- [ ] Retrieval: benchmark voyage-finance-2 vs voyage-3 on the internal corpus once we have 1000+ chunks; swap `VOYAGE_FINANCE_MODEL` if needed
 - [ ] DoclingBackend integration smoke test against a real SEC filing PDF once docling is installed
 - [ ] L2 Phase 2: LLM-augmented framework execution (Five Forces matrix, scenario shocks, Value Chain stage analysis)
 - [ ] L2 Phase 2: bidirectional sprint-contract negotiation (Generator proposes, Evaluator counter-proposes) — schema already supports via `SprintContractProposed` event and negotiation-ready data structure
-- [ ] L4 Layer 4 follow-ups: calibrate `layer3_weight` against human-scored samples; add integration test that runs full pipeline and verifies a narrow-research run shows up with non-empty `process_flags`; surface `Layer4Result.process_flags` in `MarkdownRenderer` so reviewers see them alongside the evaluator summary
+- [ ] L4 Layer 4 follow-ups: calibrate `layer3_weight` against human-scored samples; add integration test that runs full pipeline and verifies a narrow-research run shows up with non-empty `process_flags`
 - [ ] L4 Layer 4: capture `tokens_consumed` from the process-trajectory LLM call so total tokens stay accurate when Layer 4 is enabled
 - [ ] Extend canary `test_pipeline_fresh_components_per_run` to assert `content_structurer` freshness across runs
 - [ ] Task-aware evidence selection (replace default "all records" with filter keyed off `ResearchTask.required_sources` / category / source_family)
@@ -22,6 +30,24 @@
 
 ## Done
 
+- [x] **Isolation + audit hardening (fresh-eyes review follow-up)** — 1257 / 1257 unit tests pass (+11 new). Zero new ruff or mypy errors.
+  - Retrieval: `SemanticChunker.chunk(..., engagement_id=...)` and `RetrievalService.ingest(..., engagement_id=...)` now require the kwarg explicitly (no implicit `= None` default). New `RetrievalService.ingest_institutional(records)` names the cross-engagement path. New `RetrievalService(..., engagement_context=<eid>)` auto-applies exclude_engagement_id on every string-form `search()` call so inter-agent isolation is default-on for agents operating under an active engagement.
+  - Deep-mode audit: `latency_ms` is `None` on per-source entries (per-fetch timing cannot be reconstructed from a single claude -p session); new session-level audit entry (`tool_name="deep_research:session"`) emitted at the end of every deep attempt, carrying real elapsed latency plus `n_sources`/`n_claims` summary; failure path in `execute()`'s except block now records a failed-session entry with the exception before shallow fallback; dead `except AttributeError` branch dropped.
+  - `AuditEntry.latency_ms` widened to `float | None`; structlog kwargs preserve None rather than rounding.
+- [x] **Comprehensive audit remediation (all 11 deferred findings)** — 1246 / 1246 unit tests pass (+34 new). Zero new ruff or mypy errors on any touched file. Fixes span the retrieval stack audit (7), Streams A+B deferred items (2), and renderer + Layer 4 deferred items (2).
+  - Retrieval: asyncpg errors wrapped as `VectorStoreError`; `PgVectorStore` docstring drift cleaned up; PG-unavailable degradation covered by test; canary test guards `SYSTEM_OWNED_TOOLS` exclusion from templates; `search()` pool-rewrite behavior documented; new `factory.py` with dimension cross-checks; inter-agent isolation filter (`engagement_id` on chunks, `exclude_engagement_id` on queries) wired through chunker, ingest, both vector stores, hybrid searcher.
+  - Research: deep-mode `_audit_deep_source` restores AuditLogger parity; `MCPGateway.audit_logger` exposed.
+  - Structuring: `_collect_leaf_titles` regression coverage at depth 3/4 + malformed-child resilience.
+  - Renderer + L4: `_render_process_assessment` surfaces process_quality_score + flags under each task's PASS/FAIL line; `ProcessTrajectoryScored` integration test verifies the event is emitted end-to-end when a `ProcessContext` is supplied.
+- [x] **Retrieval stack: pgvector + Voyage + hybrid search + Cohere rerank** — 1212 / 1212 unit tests pass (+123 new, including 3 live-DB tests against the local PostgreSQL 17 + pgvector 0.8.2 instance). Zero new ruff errors on touched files; mypy strict clean on all 14 new source files.
+  - Infrastructure: `brew services start postgresql@17`, pgvector built from source against PG 17 headers (`/tmp/pgvector && make PG_CONFIG=.../pg_config install`), `CREATE EXTENSION vector` in the `keystone` database.
+  - New package: `src/keystone/retrieval/search/` (9 modules: `models.py`, `embeddings.py`, `chunker.py`, `vector_store.py`, `bm25_index.py`, `hybrid_search.py`, `reranker.py`, `query_router.py`, `retrieval_service.py` + `__init__.py`). Every surface behind a Protocol with an in-memory test double plus a production implementation.
+  - Pipeline: `SemanticChunker` (passage-aware, contextual preamble) → `VoyageEmbeddingClient` (voyage-finance-2, 1024-dim, batched) → `PgVectorStore` (asyncpg pool, HNSW index on cosine_ops, JSONB metadata) + `InMemoryBM25Index` (rank_bm25) → `HybridSearcher` (RRF with k=60) → `CohereReranker` (rerank-v3.5) with `PassthroughReranker` fallback.
+  - `RetrievalService` is the top-level orchestrator: `ingest(records)` wipes-then-upserts atomically; `search(query)` runs hybrid + reranker with graceful degradation when upstream services are down.
+  - Gateway registration: `semantic_search` + `hybrid_search` as system-owned tools on the shared `keystone-retrieval` server (new `TransportType.IN_PROCESS`). `RETRIEVAL_TOOLS` / `SYSTEM_OWNED_TOOLS` lists in `tool_names.py` keep the Specification Engine from handing these out. Tool count now 11 across 8 unique upstream servers.
+  - Config: `RetrievalConfig` in `src/keystone/models/config.py`; `AppConfig` exposes `keystone_database_url`, `voyage_api_key`, `cohere_api_key`.
+  - Dependencies: `pyproject.toml` gained `retrieval-search` optional extra (asyncpg, pgvector, voyageai, cohere, rank-bm25) and the combined `retrieval` extra pulls all three retrieval groups.
+  - Tests: `tests/unit/retrieval/search/` (8 files + conftest.py, 123 tests). Live-DB tests skip gracefully when no Postgres is reachable.
 - [x] **Evaluator Layer 4: Process Trajectory** — 1089 / 1089 unit tests pass (+62 new, includes the 31-test Layer 4 suite and the regression tests that were already counting). Zero new ruff errors on touched files; mypy strict clean on new source. Evaluator now runs L4 after L3 passes (when a `ProcessContext` is supplied), and the overall score is the weighted geometric mean of L3 and L4 (default 80% L3 / 20% L4).
   - New code: `src/keystone/evaluator/layer4_trajectory.py` (`Layer4Evaluator`, `ProcessContext`, deterministic metric extractor, flag computation), `src/keystone/evaluator/prompts/process_trajectory.md` (LLM strategy-assessment prompt), `src/keystone/models/evaluation.py` (`Layer4Result`, `ProcessFlag` enum, `layer4_results` on `EvaluationResult`), `src/keystone/events.py` (`ProcessTrajectoryScored` event + union entry)
   - Orchestrator plumbing: `src/keystone/pipeline/orchestrator.py` accumulates per-agent event trails during L1 and builds a `ProcessContext` per task before calling `evaluator.evaluate(..., process_context=ctx)`. When a task has no agent/events, context is None and L4 is skipped.

@@ -43,10 +43,7 @@ dependencies = [
 # "mcp>=1.0.0"              -- Component #4 Phase 1B (real MCP server connections)
 # "exa-py>=1.0.0"           -- Component #3a or #7 (Exa search API)
 # "temporalio>=1.7.0"       -- Phase 2 (workflow orchestration)
-# "pgvector>=0.3.0"         -- Component #3a (vector search)
-# "asyncpg>=0.29.0"         -- Component #3a (PostgreSQL driver)
 # "redis[hiredis]>=5.0.0"   -- Phase 2 (rate limiter backend)
-# "cohere>=5.0.0"           -- Component #3a (reranking)
 # "alembic>=1.13.0"         -- Component #3a (migrations)
 
 [project.optional-dependencies]
@@ -60,8 +57,19 @@ retrieval-edgar = [
 retrieval-docling = [
     "docling>=2.0.0",        # Granite-Docling PDF parsing
 ]
+retrieval-search = [
+    # Full retrieval stack: pgvector + Voyage embeddings + hybrid search +
+    # Cohere reranking. Optional so minimal installs don't pull numpy /
+    # asyncpg / the Cohere SDK; RetrievalService components degrade
+    # gracefully when the relevant client is absent.
+    "asyncpg>=0.29.0",       # PostgreSQL async driver
+    "pgvector>=0.3.0",       # pgvector Python bindings
+    "voyageai>=0.2.0",       # Voyage AI embeddings (voyage-finance-2)
+    "cohere>=5.0.0",         # Cohere Rerank v3.5 cross-encoder
+    "rank-bm25>=0.2.2",      # Lexical BM25 scoring for hybrid fusion
+]
 retrieval = [
-    "keystone-intelligence-engine[retrieval-edgar,retrieval-docling]",
+    "keystone-intelligence-engine[retrieval-edgar,retrieval-docling,retrieval-search]",
 ]
 dev = [
     "pytest>=8.0",
@@ -104,6 +112,9 @@ module = [
     "docling_core.*",
     "edgartools.*",
     "edgar.*",
+    "voyageai.*",
+    "asyncpg.*",
+    "rank_bm25.*",
 ]
 ignore_missing_imports = true
 # These overrides are pre-configured for packages that will be added

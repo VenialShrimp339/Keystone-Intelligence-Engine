@@ -147,9 +147,16 @@ def _make_mock_llm(
             return json.dumps({"adjustment": gestalt, "rationale": "test"})
         # Fact decomposition
         if "fact decomposition" in lower:
-            return json.dumps([
-                {"claim": "test fact", "status": "SUPPORTED", "citation_id": "CIT-001", "reasoning": "ok"},
-            ])
+            return json.dumps(
+                [
+                    {
+                        "claim": "test fact",
+                        "status": "SUPPORTED",
+                        "citation_id": "CIT-001",
+                        "reasoning": "ok",
+                    },
+                ]
+            )
         # Numerical consistency
         if "numerical consistency" in lower:
             return json.dumps({"numerical_claims": [], "inconsistencies": []})
@@ -157,13 +164,15 @@ def _make_mock_llm(
         for dim in RubricDimension:
             header = f"# {dim.value.replace('_', ' ')} evaluation"
             if header in lower:
-                return json.dumps({
-                    "score": all_scores.get(dim, 60),
-                    "feedback": f"Feedback for {dim.value}",
-                    "sub_criteria_notes": [f"note for {dim.value}"],
-                    "slop_detected": False,
-                    "slop_details": None,
-                })
+                return json.dumps(
+                    {
+                        "score": all_scores.get(dim, 60),
+                        "feedback": f"Feedback for {dim.value}",
+                        "sub_criteria_notes": [f"note for {dim.value}"],
+                        "slop_detected": False,
+                        "slop_details": None,
+                    }
+                )
         return json.dumps({"score": 60, "feedback": "fallback"})
 
     return mock_llm
@@ -285,6 +294,142 @@ class TestFullPipeline:
 
 
 # ---------------------------------------------------------------------------
+# Layer 4 integration
+# ---------------------------------------------------------------------------
+
+
+class TestProcessTrajectoryIntegration:
+    """``ProcessTrajectoryScored`` must fire when a ProcessContext is supplied
+    and Layers 1-3 pass. Regression guard against L4 silently dropping out.
+    """
+
+    @pytest.mark.asyncio
+    async def test_process_trajectory_scored_event_emitted(self) -> None:
+        from keystone.evaluator.layer4_trajectory import ProcessContext
+        from keystone.events import ProcessTrajectoryScored
+        from keystone.models.agents import (
+            AgentDefinition,
+            AgentInstance,
+            AgentRole,
+            ResearchAgentType,
+        )
+        from keystone.models.tasks import ModelTier
+
+        # Reuse the Layer4 test helpers' event shape to build a
+        # realistic process trail.
+        from tests.unit.evaluator.test_layer4_trajectory import (  # type: ignore[import-not-found]
+            _good_process_events,
+        )
+
+        llm = _make_mock_llm()  # includes a rubric + L4 LLM response
+        verifier = MockDOIVerifier({})
+        evaluator = Evaluator(llm=llm, doi_verifier=verifier)
+        manifest = _manifest(_cit("CIT-001"))
+
+        agent = AgentInstance(
+            agent_id="agent_eval_l4",
+            engagement_id="ENG-001",
+            client_id="CLT-001",
+            definition=AgentDefinition(
+                name="integration_agent",
+                description="Integration agent for L4 test",
+                role=AgentRole.RESEARCH,
+                model=ModelTier.STANDARD,
+                tools=["web_search", "sec_filings", "news_api"],
+                research_type=ResearchAgentType.QUANTITATIVE,
+            ),
+            working_dir="/tmp/keystone/integration",
+            task_ids=["task_001"],
+        )
+        context = ProcessContext(
+            agent_id=agent.agent_id,
+            task=_task(),
+            agent=agent,
+            events=_good_process_events(agent.agent_id),
+            issue_tree={
+                "root": {
+                    "id": "root",
+                    "name": "Root",
+                    "children": [
+                        {"id": "leaf_1", "name": "Leaf 1"},
+                    ],
+                }
+            },
+        )
+
+        with patch(
+            "keystone.evaluator.layer1_deterministic.batch_check_urls",
+            new_callable=AsyncMock,
+            return_value={"CIT-001": True},
+        ):
+            events = []
+            async for event in evaluator.evaluate(
+                "Clean research text.",
+                _contract(),
+                _task(),
+                manifest,
+                _spec(),
+                process_context=context,
+            ):
+                events.append(event)
+
+        l4_events = [e for e in events if isinstance(e, ProcessTrajectoryScored)]
+        assert len(l4_events) == 1, (
+            "ProcessTrajectoryScored must be emitted when L4 runs; "
+            f"saw event types: {[type(e).__name__ for e in events]}"
+        )
+        l4 = l4_events[0]
+        assert l4.layer == "L4"
+        assert l4.task_id == "task_001"
+        assert 0.0 <= l4.process_quality_score <= 100.0
+        assert 0.0 <= l4.qualitative_score <= 100.0
+        assert l4.source_count >= 1
+        assert l4.round_count >= 1
+        assert 0.0 <= l4.tool_utilization <= 1.0
+        assert l4.flag_count >= 0
+
+        # The overall EvaluationComplete must carry a composite score
+        # that incorporates L4 (strictly <= L3 alone).
+        result = await evaluator.get_result()
+        assert result.layer4_results is not None
+        # L4 never lifts the score above L3 alone (per docstring
+        # guarantee). With matching scores the geometric mean equals
+        # the L3 score; with divergent scores it drops below.
+        if result.layer3_results is not None:
+            assert result.overall_score <= result.layer3_results.final_score + 0.01
+
+    @pytest.mark.asyncio
+    async def test_process_trajectory_event_omitted_without_process_context(self) -> None:
+        from keystone.events import ProcessTrajectoryScored
+
+        llm = _make_mock_llm()
+        verifier = MockDOIVerifier({})
+        evaluator = Evaluator(llm=llm, doi_verifier=verifier)
+        manifest = _manifest(_cit("CIT-001"))
+
+        with patch(
+            "keystone.evaluator.layer1_deterministic.batch_check_urls",
+            new_callable=AsyncMock,
+            return_value={"CIT-001": True},
+        ):
+            events = []
+            async for event in evaluator.evaluate(
+                "Clean research text.",
+                _contract(),
+                _task(),
+                manifest,
+                _spec(),
+                # process_context omitted -> L4 must be skipped entirely
+            ):
+                events.append(event)
+
+        l4_events = [e for e in events if isinstance(e, ProcessTrajectoryScored)]
+        assert l4_events == []
+        result = await evaluator.get_result()
+        assert result.layer4_results is None
+
+
+# ---------------------------------------------------------------------------
 # Intensity tests
 # ---------------------------------------------------------------------------
 
@@ -295,7 +440,8 @@ class TestIntensity:
         llm = _make_mock_llm()
         verifier = MockDOIVerifier({})
         evaluator = Evaluator(
-            llm=llm, doi_verifier=verifier,
+            llm=llm,
+            doi_verifier=verifier,
             intensity=EvaluationIntensity.LIGHT_TOUCH,
         )
         manifest = _manifest(_cit("CIT-001"))
@@ -322,7 +468,8 @@ class TestIntensity:
         llm = _make_mock_llm()
         verifier = MockDOIVerifier({})
         evaluator = Evaluator(
-            llm=llm, doi_verifier=verifier,
+            llm=llm,
+            doi_verifier=verifier,
             intensity=EvaluationIntensity.DEEP,
         )
         manifest = _manifest(_cit("CIT-001"))
@@ -379,9 +526,7 @@ class TestFeedbackQuality:
             new_callable=AsyncMock,
             return_value={},
         ):
-            async for _ in evaluator.evaluate(
-                "Text.", _contract(), _task(), manifest, _spec()
-            ):
+            async for _ in evaluator.evaluate("Text.", _contract(), _task(), manifest, _spec()):
                 pass
             result = await evaluator.get_result()
             assert "CIT-001" in result.feedback
@@ -399,9 +544,7 @@ class TestFeedbackQuality:
             new_callable=AsyncMock,
             return_value={"CIT-001": True},
         ):
-            async for _ in evaluator.evaluate(
-                "Test.", _contract(), _task(), manifest, _spec()
-            ):
+            async for _ in evaluator.evaluate("Test.", _contract(), _task(), manifest, _spec()):
                 pass
             result = await evaluator.get_result()
             assert result.feedback
@@ -422,10 +565,7 @@ class TestProfileVariance:
         default_w = get_profile_weights(EvaluationProfile.DEFAULT)
         est_w = get_profile_weights(EvaluationProfile.ESTIMATIVE)
         # At least one dimension differs
-        diffs = [
-            dim for dim in RubricDimension
-            if abs(default_w[dim] - est_w[dim]) > 0.001
-        ]
+        diffs = [dim for dim in RubricDimension if abs(default_w[dim] - est_w[dim]) > 0.001]
         assert len(diffs) >= 1
 
     @pytest.mark.asyncio

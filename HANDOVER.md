@@ -1,9 +1,584 @@
 # Handover
 
-Last updated: 2026-04-17
-Session: Evaluator Layer 4 — Process Trajectory Evaluation
+Last updated: 2026-04-18
+Session: Isolation + audit hardening (fresh-eyes review follow-up)
 
-## What Changed (Layer 4)
+## What Changed (Isolation + audit hardening)
+
+A fresh-eyes review concluded that the inter-agent isolation filter was
+mechanically correct but architecturally weak (opt-in rather than
+opt-out), and flagged three deep-mode audit cleanups. Three fixes
+landed. Baseline was 1246 passing; final is **1257 passing (+11)**.
+Zero new ruff or mypy errors on any touched file (pre-existing warnings
+on legacy files unchanged).
+
+### Fix 1 — Make ingest engagement_id required (structure over intent)
+
+- `SemanticChunker.chunk(records, *, engagement_id)` is now a required
+  keyword-only parameter. The former `= None` default is gone; callers
+  must explicitly declare which engagement produced the chunks
+  (``None`` is still accepted but must be named, making the
+  institutional-memory path deliberate).
+- `RetrievalService.ingest(records, *, engagement_id)` mirrors the
+  same contract.
+- New `RetrievalService.ingest_institutional(records)` wraps
+  `ingest(..., engagement_id=None)` so cross-engagement ingest reads
+  as an intent-named call instead of a naked `None`.
+- Every test-suite caller was updated to pass `engagement_id=None`
+  (institutional-memory semantics) or a real engagement id; three new
+  regression tests pin the required-kwarg behaviour.
+
+### Fix 2 — Make search isolation default-on via engagement_context
+
+- `RetrievalService.__init__` gained an optional
+  `engagement_context: str | None` parameter. When set, every
+  string-form `search()` call auto-applies it as
+  `exclude_engagement_id` so current-engagement chunks from sibling
+  agents stay hidden by default. Aggregator / system callers that
+  need full-corpus access construct the service without an
+  `engagement_context`.
+- `RetrievalService.engagement_context` is exposed as a read-only
+  property for observability.
+- A raw `SearchQuery` instance is honored literally: the service does
+  **not** rewrite the caller's `exclude_engagement_id=None` into the
+  service-level context. The docstring on `SearchQuery.exclude_
+  engagement_id` records this: raw-None is read as an explicit
+  opt-out, because a caller that builds their own query object is
+  trusted to name their intent. This differs from the orchestrator's
+  prompt, which described raw-None as opt-out without carving out the
+  string-form-inherits semantic; in practice the distinction matters
+  only when someone mixes SearchQuery-building with a context-bound
+  service, and the safer default (string-form inherits, SearchQuery
+  doesn't) preserves the "structure over intent" win without
+  surprising callers who explicitly hand-built a query.
+- Six new tests cover: property exposure, string-form inheritance,
+  explicit kwarg override, raw SearchQuery opt-out, raw SearchQuery
+  with explicit exclude, and the "no context = full corpus" path.
+
+### Fix 3 — Deep-mode audit cleanup
+
+- `AuditEntry.latency_ms` + `AuditLogger.log_call(..., latency_ms)`
+  are now `float | None`. Structlog kwargs preserve `None` rather
+  than rounding it. Deep-mode per-source entries set `latency_ms=None`
+  (a single `claude -p` session cannot be disaggregated into
+  per-fetch timings).
+- New `ResearchAgent._audit_deep_session` emits one session-level
+  audit entry per deep call:
+  - **Success path** (end of `_execute_deep`): real elapsed
+    `latency_ms`, `tool_name="deep_research:session"`, result =
+    `{n_sources, n_claims}`.
+  - **Failure path** (`execute()`'s except block before shallow
+    fallback): real elapsed `latency_ms`, same `tool_name`, the
+    original exception attached so compliance can see the failed
+    attempt.
+- `_audit_deep_source` dropped its dead `except AttributeError`
+  branch — `MCPGateway.audit_logger` is a concrete property.
+- Two new tests cover the success + failure session audit paths;
+  existing per-source parity test updated to pin `latency_ms is None`
+  on per-source entries and `>= 0.0` on the wrapping session entry.
+
+### Files Touched
+
+| File | Change |
+|---|---|
+| `src/keystone/retrieval/search/chunker.py` | `chunk(..., engagement_id=...)` required. |
+| `src/keystone/retrieval/search/retrieval_service.py` | `ingest(..., engagement_id=...)` required; new `ingest_institutional()`; `__init__(..., engagement_context=...)` + `engagement_context` property; string-form search auto-applies context. |
+| `src/keystone/retrieval/search/models.py` | `SearchQuery.exclude_engagement_id` docstring documents auto-apply + raw-None opt-out semantics. |
+| `src/keystone/gateway/audit_log.py` | `AuditEntry.latency_ms` + `log_call` accept `float \| None`; structlog kwarg preserves None. |
+| `src/keystone/research/research_agent.py` | `_audit_deep_source` passes `latency_ms=None`, dead `except AttributeError` dropped; new `_audit_deep_session` emits success + failure session entries; `execute()` captures `deep_start` and records the failed-session entry before shallow fallback. |
+| `tests/unit/retrieval/search/test_chunker.py` | Updated every `chunker.chunk(records)` to pass `engagement_id=None`. |
+| `tests/unit/retrieval/search/test_bm25_index.py` | Same propagation. |
+| `tests/unit/retrieval/search/test_vector_store.py` | Same propagation. |
+| `tests/unit/retrieval/search/test_hybrid_search.py` | Same propagation. |
+| `tests/unit/retrieval/search/test_retrieval_service.py` | `service.ingest(records, engagement_id=None)` everywhere. |
+| `tests/unit/retrieval/search/test_engagement_isolation.py` | Added `TestRequiredEngagementId` (3 tests) + `TestEngagementContext` (6 tests); renamed the former "defaults engagement_id to None" test to reflect the explicit-None semantic. |
+| `tests/unit/research/test_research_agent_deep.py` | Updated per-source audit test to account for the new session entry; added success + failure session-audit tests. |
+
+### Test delta
+
+- 1246 → **1257** unit tests pass (+11). Breakdown:
+  - +3 tests for required-engagement-id (chunker, ingest, institutional alias)
+  - +6 tests for engagement_context behaviour
+  - +2 tests for deep-session audit (success + failure)
+- Zero new ruff errors on touched files; baseline count held at 14
+  (pre-existing E501 on deep-research prompt text, TC001/TC003 on
+  runtime-needed Pydantic model imports, F401 `dataclasses.field` in
+  audit_log, I001 import ordering). Mypy strict clean on the retrieval
+  package; `research_agent.py` retains its 12 pre-existing errors (all
+  in legacy shallow-mode helpers, unrelated to this session).
+
+### Design choices that differ from the orchestrator prompt
+
+- **SearchQuery with raw-None is opt-out, but string-form inherits.**
+  The prompt described only the opt-out semantic. I carved out the
+  string-form-inherits case because otherwise the common path
+  (`service.search("text")`) would still miss isolation when the
+  service has a context. Callers that build their own `SearchQuery`
+  are treated as naming their intent explicitly; string callers get
+  the safe default. Net: the structure-over-intent win is actually
+  achieved for the path agents will use.
+- **`engagement_id` stayed `str | None` (not `str`).** The prompt
+  did not mandate a type change. Keeping `None` as a legal value
+  preserves the institutional-memory semantic; the "opt-in" problem
+  the prompt targeted was the implicit `= None` *default*, which is
+  now gone.
+
+---
+
+## Previous session: Comprehensive remediation — all deferred audit findings
+
+## What Changed (Comprehensive remediation)
+
+Eleven fixes from three separate audits landed in one pass. No item
+was deferred. Baseline was 1212 unit tests passing; final is **1246
+unit tests passing (+34)**. Zero new ruff or mypy errors on any
+touched file (pre-existing warnings on legacy files unchanged).
+
+### Retrieval-stack audit (7 fixes)
+
+1. **PG connection errors wrapped as `VectorStoreError`.** Every
+   asyncpg transport failure inside `PgVectorStore._get_pool`,
+   `ensure_schema`, `upsert_chunks`, `search_similar`,
+   `delete_by_artifact_id`, and `count` now surfaces as
+   `VectorStoreError`, so `HybridSearcher`'s graceful-degradation
+   catch block fires when PostgreSQL is unreachable. The
+   store-docstring claim about `keystone_schema_version` was
+   simultaneously removed (no such row exists).
+2. **Docstring drift removed.** `vector_store.py` module docstring
+   no longer references the fictional `keystone_schema_version` row.
+3. **PG-unavailable degradation test.** Two new tests in
+   `test_hybrid_search.py` point a live `PgVectorStore` at
+   `postgresql://nobody@127.0.0.1:1/...`: one asserts
+   `HybridSearcher.search` returns BM25-only results (no exception);
+   the other pins that the raw asyncpg failure becomes a
+   `VectorStoreError` so future refactors cannot regress.
+4. **Canary test for system-owned exclusion.** New
+   `test_system_owned_tools_never_appear_in_templates` in
+   `tests/canary/test_architectural_guarantees.py` walks every seed
+   template + every registry-loaded template and asserts the
+   intersection with `SYSTEM_OWNED_TOOLS` is empty.
+5. **`RetrievalService.search` docstring.** Explicitly documents the
+   hybrid-stage `candidate_pool` / `top_k` rewrite so callers
+   understand why the shape they pass in is internally cloned.
+6. **Factory with dimension validation.** New
+   `src/keystone/retrieval/search/factory.py` exposes
+   `build_retrieval_service(app_config, retrieval_config)` with
+   startup cross-checks:
+   - `RetrievalConfig.embedding_dimension` must match the embedder's
+     `dimension` attribute.
+   - Vector store's `dimension` attribute must match the config.
+   - When the embedder defaults to `voyage-finance-2`, the dimension
+     must equal `VOYAGE_FINANCE_DIM` (1024).
+   - Missing Voyage key raises `RetrievalFactoryError`; missing
+     Cohere key falls back to `PassthroughReranker` instead of
+     hard-failing.
+   12 new tests cover every branch, including dimension mismatch.
+7. **Inter-agent isolation scoping.** Implements the Founder Intent
+   Doctrine "Inter-Agent Isolation" invariant + AgentLeak finding.
+   - New `ChunkMetadata.engagement_id: str | None`.
+   - New `SearchQuery.exclude_engagement_id: str | None`.
+   - `PgVectorStore._build_filters` pushes the exclusion into a
+     SQL `WHERE` clause (`engagement_id IS NULL OR <> $N`) so
+     institutional memory always passes.
+   - `InMemoryVectorStore._matches_filters` applies the same rule.
+   - `HybridSearcher` threads the filter into the vector path AND
+     post-filters the BM25 path (BM25 has no metadata filter).
+   - `SemanticChunker.chunk(records, engagement_id=...)` tags every
+     emitted chunk.
+   - `RetrievalService.ingest(records, engagement_id=...)` and
+     `RetrievalService.search(query, exclude_engagement_id=...)`
+     expose the plumbing to callers.
+   9 new tests covering chunker tagging, ingest propagation, PG
+   filter-clause construction, and end-to-end exclusion semantics.
+
+### Streams A + B deferred (2 fixes)
+
+8. **Deep-mode audit-log parity.** `ResearchAgent._execute_deep`
+   now writes an `AuditLogger.log_call` entry for every observed
+   web source. `MCPGateway.audit_logger` was exposed as a public
+   property so the research agent can reuse the gateway's logger
+   without threading a new constructor argument. Tool names are
+   tagged `deep_research:WebFetch` / `deep_research:WebSearch` so
+   Layer 4 tool-utilization metrics and compliance review both see
+   deep-mode activity. 2 new tests in
+   `test_research_agent_deep.py`.
+9. **Nested issue tree test.** `_collect_leaf_titles` now has
+   regression coverage at depth 3 and depth 4, plus malformed-child
+   resilience and `label`-alias fallback. 4 new tests in
+   `test_content_structuring.py::TestCollectLeafTitlesNested`.
+
+### Renderer + Layer 4 deferred (2 fixes)
+
+10. **L4 process flags surfaced in rendered brief.** New
+    `_render_process_assessment` helper in `markdown_renderer.py`
+    produces a one-line bullet under each task's PASS/FAIL line:
+    `Process Assessment: 72/100 -- Flags: LOW_DOMAIN_DIVERSITY,
+    NO_MULTI_ROUND`. No flags -> `no process flags raised`. L4
+    absent -> no bullet at all. Wired into both the outline and
+    legacy rendering paths. 3 new tests.
+11. **`ProcessTrajectoryScored` integration test.** New
+    `TestProcessTrajectoryIntegration` in `test_evaluator.py` runs
+    `Evaluator.evaluate(..., process_context=ctx)` end-to-end and
+    asserts the event is emitted with the expected fields
+    (`layer`, `task_id`, `process_quality_score`,
+    `qualitative_score`, `source_count`, `round_count`,
+    `tool_utilization`, `flag_count`) plus the negative case
+    (no `process_context` -> no event, no `layer4_results`).
+
+## Files Touched (Comprehensive remediation)
+
+| File | Change |
+|---|---|
+| `src/keystone/retrieval/search/vector_store.py` | asyncpg error wrapping in every public method + `_get_pool`; docstring cleanup; `_build_filters` exclusion clause; `_matches_filters` exclusion rule; `_metadata_from_dict` rehydrates `engagement_id`. |
+| `src/keystone/retrieval/search/retrieval_service.py` | `ingest(..., engagement_id=...)`, `search(..., exclude_engagement_id=...)`, expanded docstring for hybrid pool rewrite + isolation semantics, `_coerce_query` threads the exclusion. |
+| `src/keystone/retrieval/search/hybrid_search.py` | Threads `exclude_engagement_id` into vector-store filters AND post-filters BM25 output. |
+| `src/keystone/retrieval/search/chunker.py` | `chunk(..., engagement_id=...)` + stamps each `ChunkMetadata`. |
+| `src/keystone/retrieval/search/models.py` | `ChunkMetadata.engagement_id` + `SearchQuery.exclude_engagement_id`. |
+| `src/keystone/retrieval/search/factory.py` | **NEW** — `build_retrieval_service` with dimension cross-checks + `RetrievalFactoryError`. |
+| `src/keystone/retrieval/search/__init__.py` | Export factory + error. |
+| `src/keystone/gateway/mcp_gateway.py` | `audit_logger` property exposed. |
+| `src/keystone/research/research_agent.py` | `_audit_deep_source` + `_deep_tool_name_for_url` so deep-mode fetches hit the gateway's AuditLogger. Docstring updated. |
+| `src/keystone/pipeline/markdown_renderer.py` | `_render_process_assessment` helper wired into outline + legacy evaluation summary. |
+| `tests/unit/retrieval/search/test_hybrid_search.py` | +2 PG-unavailable tests. |
+| `tests/unit/retrieval/search/test_factory.py` | **NEW** — 12 factory tests. |
+| `tests/unit/retrieval/search/test_engagement_isolation.py` | **NEW** — 9 isolation tests. |
+| `tests/canary/test_architectural_guarantees.py` | +1 canary test for system-owned tool exclusion. |
+| `tests/unit/research/test_research_agent_deep.py` | +2 deep-mode audit-log tests. |
+| `tests/unit/structuring/test_content_structuring.py` | +4 `_collect_leaf_titles` nested-tree tests. |
+| `tests/unit/pipeline/test_markdown_renderer.py` | +3 L4 render tests. |
+| `tests/unit/evaluator/test_evaluator.py` | +2 `ProcessTrajectoryScored` integration tests. |
+
+## Design Choices (Comprehensive remediation)
+
+- **Isolation is a `None`-default scoping filter, not a new layer.**
+  Existing institutional-memory ingest keeps working unchanged
+  (both `ingest()` and `chunk()` default `engagement_id=None`).
+  Callers opt in by passing the engagement ID explicitly; stored
+  `None` values always pass the exclusion filter. No flag flip
+  changes historical query behavior.
+- **BM25 exclusion post-filter, not index-level filter.** rank_bm25
+  has no metadata. Rather than rebuild the index per agent, we
+  post-filter the BM25 top-k in `HybridSearcher.search`. BM25
+  candidate pools are small (≤150), so the cost is negligible.
+- **Factory injects over constructs.** `build_retrieval_service`
+  accepts `embedder=`, `vector_store=`, `reranker=` overrides so
+  tests and custom deployments reuse the cross-check guarantee
+  without a separate test-mode factory.
+- **Deep-mode audit parity, not deep-mode gateway routing.** We
+  chose to restore observability (AuditLogger entries) instead of
+  rerouting deep-mode tool calls through `MCPGateway.call_tool`
+  — the latter requires wrapping provider-native tools and is
+  still deferred to Phase 2. L4 process-trajectory can now count
+  deep-mode tool utilization accurately because every web fetch
+  registers as a tool call in the audit log.
+- **Process-flag rendering is one line per task, not a subsection.**
+  Reviewers see the flag list alongside the PASS/FAIL verdict,
+  not buried under a separate heading. Mirrors the per-task
+  feedback formatting already in place.
+
+## Test delta
+
+- 1212 → **1246** unit tests pass (+34).
+- New tests: 12 factory + 9 engagement isolation + 2 hybrid PG-
+  unreachable + 2 deep-mode audit + 4 nested-leaf-title + 3 L4-
+  render + 2 L4 integration = 34 net new.
+- Pre-existing canary failures (noted in TODO) remain as-is;
+  the new canary test for system-owned tool exclusion is clean.
+
+---
+
+## What Changed (Retrieval stack)
+
+Built the full retrieval search sub-package under
+`src/keystone/retrieval/search/`. This is the system's long-term memory:
+Lane E produces `EvidencePrepRecord` instances, this package ingests
+them (chunk → embed → dual-index), and agents query it through the
+gateway via `semantic_search` / `hybrid_search`.
+
+Architecture is the standard modern-RAG pipeline:
+
+    chunker → embedder → pgvector + BM25 → RRF fusion → Cohere rerank
+
+Every stage is split behind a Protocol so tests use in-memory test
+doubles and production wires real clients. Graceful degradation is
+wired in: if Voyage or Cohere is down, the service still serves
+results (BM25-only, or unranked RRF) rather than failing hard.
+
+- **Infrastructure bring-up.** PostgreSQL 17 (`brew services start
+  postgresql@17`) + pgvector 0.8.2 built from source against the
+  homebrew PG 17 headers + `keystone` database with `CREATE
+  EXTENSION vector`. The live test
+  (`tests/unit/retrieval/search/test_vector_store.py::TestPgVectorStoreLive`)
+  round-trips ingest → search → delete against the real DB; it skips
+  gracefully when no DB is reachable.
+- **Package layout.** `src/keystone/retrieval/search/` holds nine
+  modules (`models.py`, `embeddings.py`, `chunker.py`,
+  `vector_store.py`, `bm25_index.py`, `hybrid_search.py`,
+  `reranker.py`, `query_router.py`, `retrieval_service.py`) plus
+  `__init__.py` re-exports. Tests live under
+  `tests/unit/retrieval/search/` (eight test files, 123 tests).
+- **Pydantic v2 models.** `DocumentChunk`, `ChunkMetadata`,
+  `SearchQuery`, `RetrievalResult`, `IngestResult`, `QueryRoute`,
+  plus the `RetrievalSource` and `QueryClassification` enums.
+  Metadata is frozen and carries the full provenance chain
+  (artifact_id, canonical_url, content_hash, locator, source_family,
+  parse_confidence) preserved from Lane E.
+- **Embeddings.** `EmbeddingClient` Protocol + `VoyageEmbeddingClient`
+  (voyage-finance-2, 1024-dim, batched at 128/call, `query` vs
+  `document` input_type) + `InMemoryEmbeddingClient` for tests
+  (SHA-256 derived, unit-normed, deterministic). Errors wrap into
+  `EmbeddingError`/`EmbeddingDimensionError` so callers can decide
+  between retry and fallback.
+- **Chunker.** `SemanticChunker` groups `EvidencePrepRecord` by
+  artifact, respects passage boundaries (never splits a passage
+  mid-sentence unless it exceeds `max_tokens`), and applies the
+  Anthropic contextual-retrieval preamble (`Source: ... | Section:
+  A > B | Page N`) to each chunk's `content` while preserving the
+  unprefixed text in `raw_text`. Chunk IDs are deterministic
+  `{artifact_id}:{seq:04d}` so re-ingest is idempotent.
+- **Vector store.** `VectorStore` Protocol + `PgVectorStore` (asyncpg
+  pool, HNSW index on `vector_cosine_ops`, JSONB metadata column,
+  cosine-distance search with `<=>`) + `InMemoryVectorStore` for
+  tests. Schema bootstrap is idempotent; filters support
+  `artifact_id` and `source_family`.
+- **BM25.** `BM25Index` Protocol + `InMemoryBM25Index` (rank_bm25
+  BM25Okapi, lowercased-word tokenizer). Rebuilt on each ingest so
+  it stays in sync with the vector store.
+- **Hybrid search.** `HybridSearcher` runs both retrievers in parallel
+  via `asyncio.gather`, then applies Reciprocal Rank Fusion with the
+  standard `k=60` constant: `score(d) = Σ 1/(k + rank_i(d))`.
+  Weights per retriever are configurable via `HybridSearchConfig`;
+  zero-weighting either side skips its fetch entirely. A dead vector
+  store or embedder drops the vector path without crashing the
+  search.
+- **Reranker.** `RerankerClient` Protocol + `CohereReranker`
+  (rerank-v3.5 via `cohere.AsyncClientV2`, preserves chunk identity)
+  + `PassthroughReranker` for tests and the graceful-degradation
+  path. The retrieval service catches `RerankerError` and falls back
+  to the pre-rerank RRF list.
+- **Query router.** `RuleBasedQueryRouter` classifies queries as
+  `QUANTITATIVE` / `QUALITATIVE` / `HYBRID` from regex signals
+  (currency, percent, fiscal year, metric term, explanatory verbs,
+  qualitative terms). Confidence scales 0.5 / 0.6 / 0.9 with signal
+  count. LLM-backed router can replace this without touching
+  callers.
+- **RetrievalService.** Top-level orchestrator. `ingest()` wipes the
+  artifact from both indexes first, then writes the embedded chunks
+  atomically. `search()` runs hybrid + reranker; a reranker failure
+  or empty result falls back to the hybrid list. `classify()`
+  delegates to the router.
+- **Gateway registration.** Added `TransportType.IN_PROCESS` to
+  `ToolEntry`; registered `semantic_search` and `hybrid_search` in
+  `TOOL_CONFIGS` with `server_name="keystone-retrieval"`, shared
+  server-level rate limit (50 req/sec default),
+  `config["system_owned"]=True`. Both tools live in a new
+  `RETRIEVAL_TOOLS` / `SYSTEM_OWNED_TOOLS` list in `tool_names.py`
+  and are intentionally absent from `SEARCH_TOOLS`, `DEFAULT_TOOLS`,
+  and `FINANCIAL_TOOLS` — the Specification Engine must not
+  auto-assign them. Tool count is now **11** across **8** unique
+  upstream servers; `tests/unit/test_tool_registry.py` and
+  `tests/unit/gateway/test_tool_registry.py` assertions updated.
+- **Config.** New `RetrievalConfig` model in
+  `src/keystone/models/config.py` (database_url,
+  embedding_dimension, voyage_model, cohere_rerank_model,
+  chunk_size_tokens, chunk_overlap_tokens, hybrid_top_k_candidates,
+  rerank_top_k, rrf_k). `AppConfig` gained `keystone_database_url`,
+  `voyage_api_key`, `cohere_api_key` fields for env-loaded
+  settings.
+- **pyproject.toml.** New `retrieval-search` optional extra
+  (asyncpg + pgvector + voyageai + cohere + rank-bm25) and combined
+  `retrieval` extra now pulls in all three retrieval groups.
+  Added `voyageai.*`, `asyncpg.*`, `rank_bm25.*` to the mypy
+  `ignore_missing_imports` override list.
+
+Test delta: **1212 passed** (was 1089). +123 new search tests
+distributed across `test_models.py` (13), `test_chunker.py` (13),
+`test_embeddings.py` (13), `test_vector_store.py` (16 — including
+3 live-DB tests), `test_bm25_index.py` (12),
+`test_hybrid_search.py` (10), `test_reranker.py` (11),
+`test_query_router.py` (11), `test_retrieval_service.py` (12),
+`test_gateway_registration.py` (9). Plus 4 updated assertions in
+the two tool-registry test files (11 tools / 8 servers). Zero new
+ruff errors on touched files; `mypy` strict clean on every new
+source file (14 source files, 0 errors under strict). 3 live
+pgvector tests run against the real DB and pass.
+
+## New files (Retrieval stack)
+
+| File | Purpose |
+|---|---|
+| `src/keystone/retrieval/search/__init__.py` | Package re-exports. |
+| `src/keystone/retrieval/search/models.py` | `DocumentChunk`, `ChunkMetadata`, `SearchQuery`, `RetrievalResult`, `IngestResult`, `QueryRoute`, `RetrievalSource`/`QueryClassification` enums. |
+| `src/keystone/retrieval/search/embeddings.py` | `EmbeddingClient` Protocol, `VoyageEmbeddingClient`, `InMemoryEmbeddingClient`, `EmbeddingError`/`EmbeddingDimensionError`. |
+| `src/keystone/retrieval/search/chunker.py` | `SemanticChunker`, `count_tokens`. Passage-aware chunking + contextual preamble. |
+| `src/keystone/retrieval/search/vector_store.py` | `VectorStore` Protocol, `PgVectorStore` (asyncpg + HNSW + JSONB), `InMemoryVectorStore`, `VectorStoreError`. |
+| `src/keystone/retrieval/search/bm25_index.py` | `BM25Index` Protocol, `InMemoryBM25Index` (rank_bm25), `tokenize`. |
+| `src/keystone/retrieval/search/hybrid_search.py` | `HybridSearcher`, `HybridSearchConfig`, `DEFAULT_RRF_K=60`. |
+| `src/keystone/retrieval/search/reranker.py` | `RerankerClient` Protocol, `CohereReranker` (rerank-v3.5), `PassthroughReranker`, `RerankerError`. |
+| `src/keystone/retrieval/search/query_router.py` | `QueryRouter` Protocol, `RuleBasedQueryRouter`. |
+| `src/keystone/retrieval/search/retrieval_service.py` | `RetrievalService` orchestration entry point. |
+| `tests/unit/retrieval/search/` | 8 test files + conftest.py + 123 tests. |
+
+## Changed files (Retrieval stack)
+
+| File | Change |
+|---|---|
+| `pyproject.toml` | New `retrieval-search` optional extra (asyncpg + pgvector + voyageai + cohere + rank-bm25). Combined `retrieval` extra now pulls all three retrieval groups. Added voyageai/asyncpg/rank_bm25 to mypy override list. Removed stale "add back later" comments for deps that just got added. |
+| `src/keystone/models/config.py` | Added `RetrievalConfig` (database_url, embedding_dimension, voyage_model, cohere_rerank_model, chunk_size_tokens, chunk_overlap_tokens, hybrid_top_k_candidates, rerank_top_k, rrf_k). Extended `AppConfig` with `keystone_database_url`, `voyage_api_key`, `cohere_api_key`. |
+| `src/keystone/models/__init__.py` | Exports `RetrievalConfig`. |
+| `src/keystone/tool_names.py` | Added `SEMANTIC_SEARCH`/`HYBRID_SEARCH` enum members + `RETRIEVAL_TOOLS`/`SYSTEM_OWNED_TOOLS` semantic groupings. |
+| `src/keystone/gateway/tool_registry.py` | New `TransportType.IN_PROCESS` variant for system-owned tools. |
+| `src/keystone/gateway/servers.py` | `RETRIEVAL_SERVER_NAME`/`RETRIEVAL_MAX_REQ_PER_SEC` constants, two new `TOOL_CONFIGS` entries, shared server-level rate limit (50/sec). |
+| `tests/unit/test_tool_registry.py`, `tests/unit/gateway/test_tool_registry.py` | Updated assertions: `len(TOOL_CONFIGS)==11`, `unique_server_count==8`. |
+
+## Design Choices (Retrieval stack)
+
+- **pgvector over a dedicated vector DB.** The retrieval engine sits
+  inside the Keystone process and already requires PostgreSQL for
+  HITL gates. A second service (Pinecone / Weaviate / Qdrant)
+  doubles the deployment surface and the failure modes. pgvector is
+  native to PG, supports HNSW indexes, and `<=>` is just another
+  index type — one DB to back up, one connection pool to manage.
+- **voyage-finance-2 as default embedder.** FinMTEB shows ~49%
+  improvement over general-purpose embeddings on finance corpora.
+  The dimension (1024) matches the pgvector default schema so the
+  index can be rebuilt in place if a future model shares the
+  dimension. Swapping to another provider only requires a new
+  `EmbeddingClient` implementation.
+- **Hybrid + RRF, not linear fusion.** Cosine similarity lives on
+  [-1, 1] and BM25 is unbounded, so linear combinations drift as
+  the corpus grows. Reciprocal Rank Fusion only looks at ranks,
+  which makes it robust across heterogeneous retrievers. `k=60` is
+  the literature's canonical choice.
+- **Chunks carry full provenance, not just text.** Every retrieval
+  result traces back to `(artifact_id, content_hash, locator)` so
+  citations can be verified against Lane H's stored bytes without
+  re-parsing. `record_ids` on `ChunkMetadata` preserves the link to
+  Lane E's `EvidencePrepRecord.record_id` when multiple passages
+  fold into one chunk.
+- **Contextual retrieval preamble baked into `content`, original
+  text preserved in `raw_text`.** Citations quote `raw_text`
+  verbatim; embedding and BM25 both index `content` which includes
+  the preamble. Anthropic's benchmark showed a 67% reduction in
+  retrieval failures from this single change.
+- **Reranker is a soft dependency.** When Cohere is unavailable the
+  retrieval service logs and falls back to the RRF-ordered list.
+  Search traffic stays alive at degraded quality instead of
+  hard-failing.
+- **System-owned tools, not task-assignable.** `semantic_search` and
+  `hybrid_search` never appear in `DEFAULT_TOOLS`/`SEARCH_TOOLS`/
+  `FINANCIAL_TOOLS`. They're invoked by the gateway / orchestrator
+  through the retrieval service; the Specification Engine must not
+  hand them out as agent tools. `SYSTEM_OWNED_TOOLS` in
+  `tool_names.py` is the single source of truth for the exclusion
+  list.
+- **Delete-then-upsert on re-ingest.** The ingest path wipes the
+  artifact's chunks from both indexes before inserting the new
+  ones, so the vector store and BM25 index never disagree about
+  what chunks exist for an artifact. This also keeps chunk_ids
+  stable: `{artifact_id}:{seq:04d}` is deterministic, so repeat
+  ingests produce the same IDs and idempotent overwrites.
+
+## Key Commands
+
+```bash
+# One-time infrastructure (PostgreSQL + pgvector):
+brew services start postgresql@17
+export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
+# pgvector was built + installed from /tmp/pgvector against PG 17
+createdb keystone
+psql keystone -c 'CREATE EXTENSION IF NOT EXISTS vector;'
+
+# Install Python deps:
+source .venv/bin/activate
+pip install -e ".[dev,retrieval-search]"
+
+# Test matrix:
+pytest tests/unit/ -q                                        # 1212 tests
+pytest tests/unit/retrieval/search/ -q                       # 123 search tests
+pytest tests/unit/retrieval/search/test_vector_store.py \
+    ::TestPgVectorStoreLive -v                              # 3 live-DB tests
+
+# Lint + type:
+ruff check src/keystone/retrieval/search/ tests/unit/retrieval/search/
+mypy src/keystone/retrieval/search/                          # 0 errors
+```
+
+## Environment
+
+- `KEYSTONE_DATABASE_URL` (default `postgresql://localhost/keystone`)
+- `VOYAGE_API_KEY` — for VoyageEmbeddingClient
+- `COHERE_API_KEY` — for CohereReranker
+- `KEYSTONE_TEST_DATABASE_URL` — optional override for live-DB tests
+
+## Integration Shape (Retrieval stack)
+
+```python
+from keystone.retrieval.search import (
+    RetrievalService, SemanticChunker, VoyageEmbeddingClient,
+    PgVectorStore, InMemoryBM25Index, CohereReranker,
+    RuleBasedQueryRouter,
+)
+
+service = RetrievalService(
+    chunker=SemanticChunker(target_tokens=384, max_tokens=512),
+    embedder=VoyageEmbeddingClient(api_key=cfg.voyage_api_key),
+    vector_store=PgVectorStore(dsn=cfg.database_url, dimension=1024),
+    bm25_index=InMemoryBM25Index(),
+    reranker=CohereReranker(api_key=cfg.cohere_api_key),
+    router=RuleBasedQueryRouter(),
+)
+await service.ensure_ready()
+await service.ingest(evidence_records)
+results = await service.search("How did cloud revenue grow in FY2024?", top_k=20)
+```
+
+## Gotchas (Retrieval stack)
+
+- **pgvector requires native compilation.** The extension binary was
+  built from source against PostgreSQL 17's dev headers (`make
+  PG_CONFIG=/opt/homebrew/opt/postgresql@17/bin/pg_config install`).
+  Upgrading PG will require rebuilding pgvector.
+- **BM25 scores drop to zero on tiny corpora.** rank_bm25's IDF
+  formula `log(N - n + 0.5) - log(n + 0.5)` is negative when
+  N=1 or 2 and the term appears in every document. Our
+  implementation drops non-positive scores so hybrid search doesn't
+  get polluted by noise, but this means standalone BM25 tests need
+  multi-document corpora to behave sensibly. See
+  `test_bm25_index.py::test_add_chunks_replaces_same_id` for the
+  padding pattern.
+- **Voyage SDK's `Client` isn't in `__all__`.** Mypy with
+  `implicit_reexport=False` flags `voyageai.Client`. The
+  `VoyageEmbeddingClient._build_default_client` casts through
+  `Any` to silence it without blanket `type: ignore`.
+- **SearchQuery enforces `candidate_pool >= top_k`.** Callers that
+  want just 5 results still need to pass `candidate_pool>=5`. The
+  retrieval service transparently bumps the pool up to the hybrid
+  minimum before running the search.
+- **Reranker failures are silent (logged + fallback).** Downstream
+  callers cannot tell whether they got the reranked top-k or the
+  pre-rerank hybrid list. If a caller needs to know, inspect
+  `result.source` — `RERANKED` vs `HYBRID`.
+
+## What Did Not Change (Retrieval stack)
+
+- No modifications to Lane E parsers, the orchestrator, the
+  evaluator, deliberation, content structurer, or renderer. The
+  retrieval service is standalone; orchestrator integration
+  (pipe normalizer output into `service.ingest(...)` and expose
+  `service.search(...)` to agents via the gateway) is a follow-up
+  session.
+- No changes to the MCP gateway's client dispatch layer. The
+  `IN_PROCESS` transport type is declarative only — wiring the
+  retrieval service to actually handle `call_tool("semantic_search",
+  ...)` dispatch is a follow-up, once the real MCP client phase
+  lands.
+
+---
+
+## Previous session: Evaluator Layer 4 — Process Trajectory Evaluation
+
+### What Changed (Layer 4)
 
 Added a fourth evaluation layer that scores the RESEARCH PROCESS, not
 the output text. Layers 1-3 can be fooled by a lazy or narrow research

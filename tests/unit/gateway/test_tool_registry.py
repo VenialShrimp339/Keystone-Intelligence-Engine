@@ -129,16 +129,17 @@ class TestDescriptionBudget:
 
 class TestServerConfigs:
     def test_tool_count_matches_configured_entries(self):
-        """TOOL_CONFIGS tracks every tool the spec engine can assign."""
-        # Exa, Brave, three EDGAR sub-tools (filings / financials / company
-        # facts all speak to edgartools-mcp), FRED, paper search, DOI,
-        # Finnhub => 9 tool names across 7 unique upstream servers.
-        assert len(TOOL_CONFIGS) == 9
+        """TOOL_CONFIGS tracks every registered tool (assignable + system-owned)."""
+        # Exa, Brave, three EDGAR sub-tools (all on edgartools-mcp), FRED,
+        # paper search, DOI, Finnhub, plus semantic_search / hybrid_search
+        # (both on keystone-retrieval) => 11 tool names across 8 unique
+        # upstream servers.
+        assert len(TOOL_CONFIGS) == 11
 
     def test_unique_server_count(self):
-        """Exactly 7 distinct upstream MCP servers back the registered tools."""
+        """Exactly 8 distinct upstream servers back the registered tools."""
         server_names = {entry.server_name for entry in TOOL_CONFIGS.values()}
-        assert len(server_names) == 7
+        assert len(server_names) == 8
 
     def test_register_all_tools_populates_registry(self):
         registry = ToolRegistry()

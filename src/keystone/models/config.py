@@ -40,15 +40,9 @@ class SearchAPIConfig(BaseModel):
 
     exa_api_key: str = Field(default="", description="Exa search API key")
     brave_api_key: str = Field(default="", description="Brave Search API key")
-    crossref_mailto: str = Field(
-        default="", description="Polite pool email for CrossRef API"
-    )
-    semantic_scholar_api_key: str = Field(
-        default="", description="Semantic Scholar API key"
-    )
-    openalex_mailto: str = Field(
-        default="", description="Polite pool email for OpenAlex API"
-    )
+    crossref_mailto: str = Field(default="", description="Polite pool email for CrossRef API")
+    semantic_scholar_api_key: str = Field(default="", description="Semantic Scholar API key")
+    openalex_mailto: str = Field(default="", description="Polite pool email for OpenAlex API")
 
 
 class InfraConfig(BaseModel):
@@ -72,6 +66,69 @@ class InfraConfig(BaseModel):
     )
 
 
+class RetrievalConfig(BaseModel):
+    """Retrieval service configuration.
+
+    Holds connection parameters for the pgvector-backed document store
+    and the minimum viable knobs for the hybrid-search pipeline. The
+    default ``database_url`` targets a locally installed PostgreSQL 17
+    without credentials; production deployments override via the
+    ``KEYSTONE_DATABASE_URL`` env var on :class:`AppConfig`.
+    """
+
+    database_url: str = Field(
+        default="postgresql://localhost/keystone",
+        description=(
+            "asyncpg DSN for the pgvector-backed retrieval store. Must use "
+            "the plain postgresql:// scheme (asyncpg does not accept the "
+            "+asyncpg suffix used by SQLAlchemy)."
+        ),
+    )
+    embedding_dimension: int = Field(
+        default=1024,
+        ge=64,
+        le=4096,
+        description="Dimensionality of the embedding vectors stored in pgvector.",
+    )
+    voyage_model: str = Field(
+        default="voyage-finance-2",
+        description="Voyage embedding model. Finance-tuned by default.",
+    )
+    cohere_rerank_model: str = Field(
+        default="rerank-v3.5",
+        description="Cohere reranker model (cross-encoder).",
+    )
+    chunk_size_tokens: int = Field(
+        default=384,
+        ge=64,
+        le=2048,
+        description="Target chunk size in tokens (word-count proxy).",
+    )
+    chunk_overlap_tokens: int = Field(
+        default=64,
+        ge=0,
+        le=512,
+        description="Token overlap between adjacent chunks when a passage is split.",
+    )
+    hybrid_top_k_candidates: int = Field(
+        default=150,
+        ge=10,
+        le=1000,
+        description="Per-branch candidate pool size before RRF fusion.",
+    )
+    rerank_top_k: int = Field(
+        default=20,
+        ge=1,
+        le=200,
+        description="Final top-k returned after reranking.",
+    )
+    rrf_k: int = Field(
+        default=60,
+        ge=1,
+        description="Reciprocal Rank Fusion damping constant (standard value is 60).",
+    )
+
+
 class RateLimitConfig(BaseModel):
     """Rate limiting configuration per provider."""
 
@@ -81,13 +138,9 @@ class RateLimitConfig(BaseModel):
         le=50,
         description="Maximum concurrent research agents. Start at 3-5, tier up organically.",
     )
-    provider_rpm: int = Field(
-        default=60, description="LLM provider API requests per minute"
-    )
+    provider_rpm: int = Field(default=60, description="LLM provider API requests per minute")
     exa_rpm: int = Field(default=100, description="Exa API requests per minute")
-    brave_rpm: int = Field(
-        default=100, description="Brave Search API requests per minute"
-    )
+    brave_rpm: int = Field(default=100, description="Brave Search API requests per minute")
 
 
 class ModelMixingConfig(BaseModel):
@@ -98,30 +151,16 @@ class ModelMixingConfig(BaseModel):
     multi-agent research system (90.2% improvement).
     """
 
-    l0_specification: str = Field(
-        default="flagship", description="Specification Engine model tier"
-    )
-    l1_research: str = Field(
-        default="standard", description="Research Agent model tier"
-    )
-    l1_5_analysts: str = Field(
-        default="standard", description="Deliberation analyst model tier"
-    )
+    l0_specification: str = Field(default="flagship", description="Specification Engine model tier")
+    l1_research: str = Field(default="standard", description="Research Agent model tier")
+    l1_5_analysts: str = Field(default="standard", description="Deliberation analyst model tier")
     l1_5_aggregator: str = Field(
         default="flagship", description="Deliberation aggregator model tier"
     )
-    l2_structuring: str = Field(
-        default="standard", description="Content structuring model tier"
-    )
-    l3_generation: str = Field(
-        default="standard", description="Deliverable generation model tier"
-    )
-    l4_evaluator: str = Field(
-        default="flagship", description="Evaluator model tier"
-    )
-    extraction: str = Field(
-        default="fast", description="Extraction/classification model tier"
-    )
+    l2_structuring: str = Field(default="standard", description="Content structuring model tier")
+    l3_generation: str = Field(default="standard", description="Deliverable generation model tier")
+    l4_evaluator: str = Field(default="flagship", description="Evaluator model tier")
+    extraction: str = Field(default="fast", description="Extraction/classification model tier")
 
 
 class EvaluationConfig(BaseModel):
@@ -195,6 +234,14 @@ class AppConfig(BaseSettings):
     # Evaluation
     prometheus_model_path: str | None = Field(default=None)
 
+    # Retrieval stack
+    keystone_database_url: str = Field(
+        default="postgresql://localhost/keystone",
+        description="asyncpg DSN for the pgvector-backed retrieval store.",
+    )
+    voyage_api_key: str = Field(default="", description="Voyage AI API key")
+    cohere_api_key: str = Field(default="", description="Cohere API key")
+
 
 class EngagementConfig(BaseModel):
     """Per-engagement configuration, loaded from YAML.
@@ -213,9 +260,7 @@ class EngagementConfig(BaseModel):
     max_agents: int = Field(
         default=5, ge=1, le=50, description="Max concurrent agents for this engagement"
     )
-    max_tasks: int = Field(
-        default=50, ge=5, le=100, description="Max tasks for decomposition"
-    )
+    max_tasks: int = Field(default=50, ge=5, le=100, description="Max tasks for decomposition")
     evaluation_intensity: str = Field(
         default="standard",
         description="Default evaluation intensity: light_touch, standard, deep",

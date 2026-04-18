@@ -19,6 +19,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 import uuid
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
@@ -74,6 +75,22 @@ def _infer_source_type(url: str) -> SourceType:
         if pattern in lower:
             return stype
     return SourceType.REPORT
+
+
+def _deep_tool_name_for_url(url: str) -> str:
+    """Name the deep-research 'tool' that surfaced this URL.
+
+    Deep mode invokes ``WebSearch`` and ``WebFetch`` via ``claude -p``.
+    Audit log entries tag the source with a ``deep_research:`` prefix
+    so they are distinguishable from shallow gateway-mediated calls
+    (and so Layer 4 tool-utilization metrics can count deep mode as
+    a real tool path).
+    """
+
+    lower = url.lower()
+    if lower.startswith(("http://", "https://")):
+        return "deep_research:WebFetch"
+    return "deep_research:WebSearch"
 
 
 DEFAULT_ROUNDS = 3
@@ -167,6 +184,7 @@ class ResearchAgent:
         self._prepare_evidence_context(task)
 
         if self._deep_llm is not None:
+            deep_start = time.monotonic()
             try:
                 async for event in self._execute_deep(task, spec, agent):
                     yield event
@@ -178,6 +196,18 @@ class ResearchAgent:
                     agent.agent_id,
                     task.id,
                     exc,
+                )
+                # Record the failed session so compliance and L4
+                # process-trajectory metrics can see that an attempt
+                # was made (per-source audits never got a chance to
+                # fire).
+                self._audit_deep_session(
+                    agent=agent,
+                    task_id=task.id,
+                    latency_ms=(time.monotonic() - deep_start) * 1000,
+                    n_sources=len(self._all_sources),
+                    n_claims=len(self._all_claims),
+                    error=exc,
                 )
                 # Reset state for shallow fallback
                 self._all_claims = []
@@ -228,17 +258,24 @@ class ResearchAgent:
         searches the web, reads pages, follows citations, and outputs
         structured JSON. Parses results through FindingWriter.
 
-        ARCHITECTURE NOTE: Deep mode bypasses MCPGateway. The claude -p
-        subprocess uses --allowedTools WebSearch,WebFetch directly, so
-        gateway-level auth, rate limiting, circuit breaking, and audit
-        logging do not apply. This is a known trade-off: deep mode gets
-        multi-turn web research capability at the cost of gateway governance.
-        Audit events (SourceFound, CitationExtracted) are still emitted
-        from this path for observability. Full gateway integration for deep
-        mode is a Phase 2 item -- requires wrapping provider-native tools
-        in gateway-owned abstractions.
+        ARCHITECTURE NOTE: Deep mode bypasses MCPGateway for the tool
+        calls themselves -- the ``claude -p`` subprocess uses
+        ``--allowedTools WebSearch,WebFetch`` directly, so gateway-level
+        auth, rate limiting, and circuit breaking do not apply. Audit
+        logging IS restored here: each web source observed during deep
+        research writes an entry through the gateway's ``AuditLogger``
+        with ``tool_name="deep_research:WebSearch"`` (or WebFetch when
+        we can infer it). A single wrapping ``deep_research:session``
+        entry with the real session latency + ``n_sources``/``n_claims``
+        summary is emitted after the session finishes so compliance
+        and L4 process-trajectory metrics can count session attempts
+        (failed sessions are recorded by :meth:`execute`'s fallback
+        path with the exception attached). Full gateway mediation for
+        the tool calls themselves is a Phase 2 item -- it requires
+        wrapping provider-native tools in gateway-owned abstractions.
         """
         assert self._deep_llm is not None
+        session_start = time.monotonic()
         eid = agent.engagement_id
         cid = agent.client_id
 
@@ -328,6 +365,17 @@ class ResearchAgent:
                     title=citation.title,
                 )
 
+                # Deep-mode audit parity: the claude -p subprocess made
+                # this fetch outside the gateway's call_tool path, but we
+                # still record it through the gateway AuditLogger so
+                # tool-utilization metrics and compliance review see it.
+                self._audit_deep_source(
+                    agent=agent,
+                    url=url,
+                    title=citation.title,
+                    task_id=task.id,
+                )
+
             claim_dict["citations"] = citations
             # Ensure required fields have defaults
             claim_dict.setdefault("evidence", claim_dict.get("text", ""))
@@ -379,6 +427,18 @@ class ResearchAgent:
             sources_consulted=len(self._all_sources),
             tokens_consumed=self._tokens_consumed,
             absence_count=len(absence_data),
+        )
+
+        # One session-level audit entry with the real measured latency.
+        # Per-source entries have latency_ms=None because we cannot
+        # disaggregate them from a single claude -p call; the session
+        # entry is where the total elapsed time lives.
+        self._audit_deep_session(
+            agent=agent,
+            task_id=task.id,
+            latency_ms=(time.monotonic() - session_start) * 1000,
+            n_sources=len(self._all_sources),
+            n_claims=len(self._all_claims),
         )
 
     async def _execute_shallow(
@@ -616,6 +676,77 @@ class ResearchAgent:
             msg = "No finding available. Call execute() first."
             raise RuntimeError(msg)
         return self._finding
+
+    def _audit_deep_source(
+        self,
+        *,
+        agent: AgentInstance,
+        url: str,
+        title: str,
+        task_id: str,
+    ) -> None:
+        """Record a deep-research web fetch through the gateway audit log.
+
+        Deep mode bypasses ``MCPGateway.call_tool`` for the fetch itself,
+        so this helper is the only path that produces an audit entry for
+        that traffic. ``latency_ms`` is ``None`` because a single
+        ``claude -p`` session produces many URLs and per-fetch timing
+        cannot be reconstructed; the wrapping ``deep_research:session``
+        audit entry carries the total elapsed time. Failure to record
+        must never interrupt research.
+        """
+
+        audit_logger = self._gateway.audit_logger
+        tool_name = _deep_tool_name_for_url(url)
+        try:
+            audit_logger.log_call(
+                agent_id=agent.agent_id,
+                engagement_id=agent.engagement_id,
+                client_id=agent.client_id,
+                tool_name=tool_name,
+                parameters={"url": url, "task_id": task_id, "mode": "deep_research"},
+                result={"title": title, "url": url},
+                latency_ms=None,
+            )
+        except Exception:  # noqa: BLE001
+            # Audit logging is observability; never let it abort research.
+            logger.exception("deep-mode audit log write failed (url=%s)", url)
+
+    def _audit_deep_session(
+        self,
+        *,
+        agent: AgentInstance,
+        task_id: str,
+        latency_ms: float,
+        n_sources: int,
+        n_claims: int,
+        error: Exception | None = None,
+    ) -> None:
+        """Record a session-level audit entry for one deep-research call.
+
+        One entry per ``claude -p`` invocation. Unlike per-source entries
+        (which have ``latency_ms=None``), this entry carries the real
+        measured latency of the whole session. ``error`` is set by the
+        outer fallback path when the deep session fails before any
+        per-source entries could fire; in that case the entry captures
+        whatever sources + claims we had managed to accumulate before
+        the failure.
+        """
+
+        audit_logger = self._gateway.audit_logger
+        try:
+            audit_logger.log_call(
+                agent_id=agent.agent_id,
+                engagement_id=agent.engagement_id,
+                client_id=agent.client_id,
+                tool_name="deep_research:session",
+                parameters={"task_id": task_id, "mode": "deep_research"},
+                result={"n_sources": n_sources, "n_claims": n_claims} if error is None else None,
+                error=error,
+                latency_ms=latency_ms,
+            )
+        except Exception:  # noqa: BLE001
+            logger.exception("deep-mode session audit log write failed (task=%s)", task_id)
 
     # ------------------------------------------------------------------
     # Deep research prompt + parser

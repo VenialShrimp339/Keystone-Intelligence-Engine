@@ -26,6 +26,8 @@ from keystone.models.evaluation import (
     Layer1Result,
     Layer2Result,
     Layer3Result,
+    Layer4Result,
+    ProcessFlag,
     RubricDimension,
 )
 from keystone.models.research import (
@@ -1206,6 +1208,94 @@ class TestOutlineEvaluationSummary:
         )
         assert "## Evaluation Summary" in output
         assert "No evaluations performed" in output
+
+    def test_layer4_process_flags_surface_in_per_task_line(self) -> None:
+        renderer = MarkdownRenderer()
+        result = _eval_result_with_layer3()
+        result = result.model_copy(
+            update={
+                "layer4_results": Layer4Result(
+                    source_count=3,
+                    unique_domains=1,
+                    source_type_diversity=1,
+                    assigned_tools=["exa_search", "brave_search", "edgar_filings"],
+                    tools_used=["exa_search"],
+                    tool_utilization=1 / 3,
+                    round_count=1,
+                    issue_tree_branches_covered=["leaf_1"],
+                    issue_tree_branches_missed=[],
+                    citation_quality_distribution={"high": 0, "medium": 1, "low": 1},
+                    qualitative_score=65.0,
+                    rationale="Narrow research; single domain.",
+                    missed_inquiries=["Competitor pricing"],
+                    skepticism_assessment="Limited.",
+                    process_quality_score=72.0,
+                    process_flags=[
+                        ProcessFlag.LOW_DOMAIN_DIVERSITY,
+                        ProcessFlag.NO_MULTI_ROUND,
+                    ],
+                ),
+            }
+        )
+        output = renderer.render(
+            _spec(),
+            _findings(),
+            _confidence_map(),
+            [result],
+            _manifest(),
+            _full_outline(),
+        )
+        assert "Process Assessment: 72/100" in output
+        assert "LOW_DOMAIN_DIVERSITY" in output
+        assert "NO_MULTI_ROUND" in output
+
+    def test_layer4_absent_does_not_add_process_line(self) -> None:
+        renderer = MarkdownRenderer()
+        output = renderer.render(
+            _spec(),
+            _findings(),
+            _confidence_map(),
+            [_eval_result_with_layer3()],  # layer4_results is None here
+            _manifest(),
+            _full_outline(),
+        )
+        assert "Process Assessment" not in output
+
+    def test_layer4_no_flags_renders_clean_line(self) -> None:
+        renderer = MarkdownRenderer()
+        result = _eval_result_with_layer3()
+        result = result.model_copy(
+            update={
+                "layer4_results": Layer4Result(
+                    source_count=10,
+                    unique_domains=5,
+                    source_type_diversity=3,
+                    assigned_tools=["exa_search", "edgar_filings", "fred_data"],
+                    tools_used=["exa_search", "edgar_filings"],
+                    tool_utilization=2 / 3,
+                    round_count=3,
+                    issue_tree_branches_covered=["leaf_1"],
+                    issue_tree_branches_missed=[],
+                    citation_quality_distribution={"high": 8, "medium": 2, "low": 0},
+                    qualitative_score=90.0,
+                    rationale="Thorough process.",
+                    missed_inquiries=[],
+                    skepticism_assessment="Strong.",
+                    process_quality_score=91.0,
+                    process_flags=[],
+                ),
+            }
+        )
+        output = renderer.render(
+            _spec(),
+            _findings(),
+            _confidence_map(),
+            [result],
+            _manifest(),
+            _full_outline(),
+        )
+        assert "Process Assessment: 91/100" in output
+        assert "no process flags raised" in output
 
 
 # ---------------------------------------------------------------------------
