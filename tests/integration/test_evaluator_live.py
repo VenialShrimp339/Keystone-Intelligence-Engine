@@ -30,7 +30,6 @@ from keystone.evaluator.layer2_citation_gate import (
 )
 from keystone.evaluator.layer3_rubric import (
     Layer3RubricScorer,
-    _parse_score_json,
     weighted_geometric_mean,
 )
 from keystone.evaluator.rubric_config import (
@@ -47,6 +46,7 @@ from keystone.events import (
     EvaluationComplete,
     RubricDimensionScored,
 )
+from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.llm_client import _client_cache, get_llm_for_tier
 from keystone.models.citations import Citation, CitationManifest, SourceType
 from keystone.models.config import AppConfig
@@ -85,11 +85,13 @@ def _wrap_llm_with_tracking(llm_callable):
         start = time.monotonic()
         result = await llm_callable(prompt)
         elapsed = time.monotonic() - start
-        _call_log.append({
-            "prompt_len": len(prompt),
-            "response_len": len(result),
-            "elapsed": elapsed,
-        })
+        _call_log.append(
+            {
+                "prompt_len": len(prompt),
+                "response_len": len(result),
+                "elapsed": elapsed,
+            }
+        )
         return result
 
     return _tracked
@@ -407,7 +409,9 @@ In conclusion, the autonomous vehicle sensor market presents a compelling opport
 
 VERY_SHORT_INPUT = """Market is $4.2B in 2024, growing to $18.7B by 2030. LiDAR leads."""
 
-VERY_LONG_INPUT = GOOD_INPUT + """
+VERY_LONG_INPUT = (
+    GOOD_INPUT
+    + """
 
 ### Appendix A: Detailed Competitive Profiles
 
@@ -465,6 +469,7 @@ MEMS-based LiDAR, used by Luminar and Innoviz, currently offers the best balance
 | H2 2025 (expected) | NHTSA AV Framework final rule | Major market catalyst if sensor-agnostic |
 | 2026 (estimated) | Federal AV preemption legislation | Could simplify or complicate state-by-state approvals |
 """
+)
 
 
 # ---------------------------------------------------------------------------
@@ -535,9 +540,11 @@ class TestGoodInputScoring:
         # Layer 1 passes
         l1_events = [e for e in events if isinstance(e, DeterministicCheckPassed)]
         assert len(l1_events) == 1
-        print(f"\n  Layer 1: {l1_events[0].facts_verified} verified, "
-              f"{l1_events[0].facts_failed} failed, "
-              f"{l1_events[0].numerical_issues} numerical issues")
+        print(
+            f"\n  Layer 1: {l1_events[0].facts_verified} verified, "
+            f"{l1_events[0].facts_failed} failed, "
+            f"{l1_events[0].numerical_issues} numerical issues"
+        )
 
         # Layer 2 passes
         l2_events = [e for e in events if isinstance(e, CitationGateResult)]
@@ -604,18 +611,16 @@ class TestBadInputScoring:
 
         if result.layer3_results:
             # Bad input should score below 55 on most dimensions
-            low_dims = [
-                ds for ds in result.layer3_results.dimension_scores if ds.score < 55
-            ]
+            low_dims = [ds for ds in result.layer3_results.dimension_scores if ds.score < 55]
             print(f"\n  Dimensions scoring < 55: {len(low_dims)}/10")
             for ds in result.layer3_results.dimension_scores:
                 if ds.score < 55:
                     print(f"    {ds.dimension.value}: {ds.score:.0f}")
 
             # Feedback should be specific, not generic
-            assert "further research" not in result.feedback.lower() or len(result.feedback) > 100, (
-                "Feedback is too generic"
-            )
+            assert (
+                "further research" not in result.feedback.lower() or len(result.feedback) > 100
+            ), "Feedback is too generic"
 
             # Overall score should be low
             print(f"\n  Overall score: {result.overall_score:.1f}")
@@ -673,9 +678,7 @@ class TestFabricatedCitationRejection:
 class TestJsonParsing:
     """Baseline Test 4: Verify _parse_score_json handles LLM output variants."""
 
-    async def test_dimension_prompts_produce_parseable_json(
-        self, llm, sprint_contract
-    ):
+    async def test_dimension_prompts_produce_parseable_json(self, llm, sprint_contract):
         """Score a single dimension and verify JSON parsing succeeds."""
         scorer = Layer3RubricScorer(llm=llm, profile=EvaluationProfile.DEFAULT)
         criteria_text = "\n".join(f"- {c}" for c in sprint_contract.acceptance_criteria)
@@ -717,27 +720,27 @@ class TestJsonParsing:
         _print_call_stats()
 
     def test_parse_score_json_handles_markdown_fences(self):
-        """_parse_score_json should strip markdown code fences."""
+        """safe_llm_json should strip markdown code fences."""
         raw = '```json\n{"score": 75, "feedback": "test"}\n```'
-        parsed = _parse_score_json(raw)
+        parsed = safe_llm_json(raw, required_keys=("score",))
         assert parsed["score"] == 75
 
     def test_parse_score_json_handles_plain_json(self):
-        """_parse_score_json should handle plain JSON."""
+        """safe_llm_json should handle plain JSON."""
         raw = '{"score": 80, "feedback": "test", "sub_criteria_notes": []}'
-        parsed = _parse_score_json(raw)
+        parsed = safe_llm_json(raw, required_keys=("score",))
         assert parsed["score"] == 80
 
     def test_parse_score_json_handles_trailing_text(self):
-        """_parse_score_json should handle JSON with trailing text."""
+        """safe_llm_json should handle JSON with trailing text."""
         raw = '{"score": 60, "feedback": "test"}\n\nHere is some commentary.'
-        parsed = _parse_score_json(raw)
+        parsed = safe_llm_json(raw, required_keys=("score",))
         assert parsed["score"] == 60, "Parser should extract JSON despite trailing text"
 
     def test_parse_score_json_handles_garbage(self):
-        """_parse_score_json should return empty dict on garbage input."""
-        parsed = _parse_score_json("This is not JSON at all")
-        assert parsed == {}
+        """safe_llm_json should raise ParseError on garbage input."""
+        with pytest.raises(ParseError):
+            safe_llm_json("This is not JSON at all")
 
 
 # ---------------------------------------------------------------------------
@@ -762,8 +765,7 @@ class TestScoreConsistency:
             )
             if result.layer3_results:
                 dim_scores = {
-                    ds.dimension.value: ds.score
-                    for ds in result.layer3_results.dimension_scores
+                    ds.dimension.value: ds.score for ds in result.layer3_results.dimension_scores
                 }
                 dim_scores["_final"] = result.overall_score
                 scores_per_run.append(dim_scores)
@@ -808,9 +810,7 @@ class TestScoreConsistency:
 class TestTierGating:
     """Baseline Test 6: Off-topic input should fail Tier 1 and skip Tier 2."""
 
-    async def test_offtopic_fails_tier1(
-        self, llm, sprint_contract, research_task, good_manifest
-    ):
+    async def test_offtopic_fails_tier1(self, llm, sprint_contract, research_task, good_manifest):
         """Completely off-topic input should fail Tier 1 floor gates."""
         evaluator = Evaluator(llm=llm, profile=EvaluationProfile.DEFAULT)
         events, result = await _collect_events(
@@ -821,13 +821,9 @@ class TestTierGating:
 
         if result.layer3_results:
             l3 = result.layer3_results
-            tier1_scores = [
-                ds for ds in l3.dimension_scores
-                if ds.dimension in TIER_1_DIMENSIONS
-            ]
+            tier1_scores = [ds for ds in l3.dimension_scores if ds.dimension in TIER_1_DIMENSIONS]
             tier2_scores = [
-                ds for ds in l3.dimension_scores
-                if ds.dimension not in TIER_1_DIMENSIONS
+                ds for ds in l3.dimension_scores if ds.dimension not in TIER_1_DIMENSIONS
             ]
 
             print("\n  === TIER 1 GATE CHECK ===")
@@ -862,9 +858,7 @@ class TestTierGating:
 class TestProfileVariation:
     """Baseline Test 7: ESTIMATIVE profile should shift weights."""
 
-    async def test_estimative_vs_default(
-        self, llm, sprint_contract, research_task, good_manifest
-    ):
+    async def test_estimative_vs_default(self, llm, sprint_contract, research_task, good_manifest):
         """ESTIMATIVE profile should weight calibrated_confidence higher."""
         default_weights = get_profile_weights(EvaluationProfile.DEFAULT)
         estimative_weights = get_profile_weights(EvaluationProfile.ESTIMATIVE)
@@ -872,14 +866,16 @@ class TestProfileVariation:
         # Verify weight differences
         cc_default = default_weights[RubricDimension.CALIBRATED_CONFIDENCE]
         cc_estimative = estimative_weights[RubricDimension.CALIBRATED_CONFIDENCE]
-        print(f"\n  Calibrated Confidence weight: default={cc_default:.2f}, estimative={cc_estimative:.2f}")
-        assert cc_estimative > cc_default, (
-            "ESTIMATIVE should weight calibrated_confidence higher"
+        print(
+            f"\n  Calibrated Confidence weight: default={cc_default:.2f}, estimative={cc_estimative:.2f}"
         )
+        assert cc_estimative > cc_default, "ESTIMATIVE should weight calibrated_confidence higher"
 
         qr_default = default_weights[RubricDimension.QUANTITATIVE_RIGOR]
         qr_estimative = estimative_weights[RubricDimension.QUANTITATIVE_RIGOR]
-        print(f"  Quantitative Rigor weight: default={qr_default:.2f}, estimative={qr_estimative:.2f}")
+        print(
+            f"  Quantitative Rigor weight: default={qr_default:.2f}, estimative={qr_estimative:.2f}"
+        )
         assert qr_estimative > qr_default
 
         # Run with ESTIMATIVE profile
@@ -1032,7 +1028,9 @@ class TestFeedbackActionability:
             for ds in result.layer3_results.dimension_scores:
                 is_generic = any(p in ds.feedback.lower() for p in generic_phrases)
                 if is_generic and len(ds.feedback) < 50:
-                    print(f"  WARNING: Generic feedback on {ds.dimension.value}: {ds.feedback[:80]}")
+                    print(
+                        f"  WARNING: Generic feedback on {ds.dimension.value}: {ds.feedback[:80]}"
+                    )
 
 
 class TestLayer2IsolatedFromLayer3:
@@ -1106,4 +1104,7 @@ class TestStrategicProfile:
     def test_strategic_quant_rigor_lower(self):
         default_w = get_profile_weights(EvaluationProfile.DEFAULT)
         strategic_w = get_profile_weights(EvaluationProfile.STRATEGIC)
-        assert strategic_w[RubricDimension.QUANTITATIVE_RIGOR] < default_w[RubricDimension.QUANTITATIVE_RIGOR]
+        assert (
+            strategic_w[RubricDimension.QUANTITATIVE_RIGOR]
+            < default_w[RubricDimension.QUANTITATIVE_RIGOR]
+        )

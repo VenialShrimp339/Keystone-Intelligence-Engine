@@ -11,6 +11,7 @@ ResearchTask.assigned_tools. The gateway enforces this structurally.
 from __future__ import annotations
 
 from keystone.gateway.tool_registry import ToolEntry, ToolRegistry
+from keystone.tool_names import SYSTEM_OWNED_TOOLS
 
 
 class AuthorizationError(Exception):
@@ -29,9 +30,20 @@ class AuthorizationError(Exception):
 class ToolAuthorizer:
     """Per-agent tool authorization.
 
-    Checks that an agent's requested tool is in its assigned_tools list
-    AND exists in the registry. Both conditions must be true.
+    Enforces two invariants on every :meth:`check` call:
+
+    1. ``tool_name`` must not be in :data:`SYSTEM_OWNED_TOOLS` -- those
+       are invoked by the gateway / orchestrator directly (via the
+       in-process handler registry) and must never be reachable through
+       ``gateway.execute()``. This is defense-in-depth behind the
+       template-level canary that already prevents system-owned tools
+       from appearing in agent templates; a template regression cannot
+       slip past this gate.
+    2. ``tool_name`` must be in the agent's ``assigned_tools`` list and
+       must also be registered in the :class:`ToolRegistry`.
     """
+
+    _SYSTEM_OWNED: frozenset[str] = frozenset(SYSTEM_OWNED_TOOLS)
 
     def __init__(self, registry: ToolRegistry) -> None:
         self._registry = registry
@@ -40,9 +52,14 @@ class ToolAuthorizer:
         """Verify agent is authorized to call tool_name.
 
         Raises AuthorizationError if:
+        - tool_name is in :data:`SYSTEM_OWNED_TOOLS` (regardless of
+          what ``assigned_tools`` contains)
         - tool_name is not in the agent's assigned_tools list
         - tool_name is not registered in the registry
         """
+        if tool_name in self._SYSTEM_OWNED:
+            raise AuthorizationError(agent_id, tool_name, assigned_tools)
+
         if tool_name not in assigned_tools:
             raise AuthorizationError(agent_id, tool_name, assigned_tools)
 

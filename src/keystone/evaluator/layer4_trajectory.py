@@ -24,6 +24,7 @@ from keystone.events import (
     AnyPipelineEvent,
     FindingSynthesized,
     ResearchComplete,
+    SearchCompleted,
     SourceFound,
 )
 from keystone.llm.parsing import ParseError, safe_llm_json
@@ -57,6 +58,14 @@ _CRITICAL_FLAGS: frozenset[ProcessFlag] = frozenset(
         ProcessFlag.NO_HIGH_CONFIDENCE_CITATIONS,
     }
 )
+
+# Synthetic source type label for internal-corpus retrieval hits. The
+# retrieval bridge does not emit SourceFound events (those are from
+# external MCP tool results), so when SearchCompleted events are
+# present we fold a distinct label into the source-type diversity set
+# so agents that exercised the internal corpus register as having
+# broadened their source base.
+_INTERNAL_CORPUS_SOURCE_TYPE = "internal_corpus"
 
 
 @dataclass(frozen=True)
@@ -225,6 +234,7 @@ def _compute_deterministic_metrics(
     source_events = [e for e in events if isinstance(e, SourceFound)]
     synthesis_events = [e for e in events if isinstance(e, FindingSynthesized)]
     complete_events = [e for e in events if isinstance(e, ResearchComplete)]
+    search_events = [e for e in events if isinstance(e, SearchCompleted)]
 
     # source_count: prefer ResearchComplete's authoritative count, fall back
     # to the SourceFound event count. The ResearchComplete count includes
@@ -237,6 +247,13 @@ def _compute_deterministic_metrics(
     unique_domains = len({_extract_domain(e.url) for e in source_events if e.url})
 
     source_types = {e.source_type for e in source_events if e.source_type}
+    # A SearchCompleted event represents a successful retrieval against
+    # the internal corpus. Count it as a distinct source type so agents
+    # that exercised internal retrieval register as having broader
+    # source diversity than agents that only used external MCP tools.
+    retrieval_tools_used = {e.tool_name for e in search_events}
+    if retrieval_tools_used:
+        source_types = source_types | {_INTERNAL_CORPUS_SOURCE_TYPE}
     source_type_diversity = len(source_types)
 
     tools_used_set: set[str] = set()
@@ -254,8 +271,18 @@ def _compute_deterministic_metrics(
             host = parsed.netloc or parsed.path.lstrip("/").split("/", 1)[0]
             if host in assigned_tools:
                 tools_used_set.add(host)
+
+    # Internal retrieval is a system-owned capability available to every
+    # agent (not surfaced through assigned_tools). When an agent emits a
+    # SearchCompleted event it has used one of the retrieval tools; fold
+    # those into both numerator and denominator so tool_utilization
+    # reflects the broadened capability surface without exceeding 1.0.
+    utilization_assigned = list(assigned_tools) + sorted(retrieval_tools_used)
+    utilization_used = sorted(tools_used_set | retrieval_tools_used)
+    tool_utilization = (
+        len(utilization_used) / len(utilization_assigned) if utilization_assigned else 0.0
+    )
     tools_used = sorted(tools_used_set)
-    tool_utilization = len(tools_used) / len(assigned_tools) if assigned_tools else 0.0
 
     round_count = len(synthesis_events)
 
@@ -276,6 +303,8 @@ def _compute_deterministic_metrics(
         "branches_missed": branches_missed,
         "citation_quality": citation_quality,
         "source_events": source_events,
+        "retrieval_calls": len(search_events),
+        "retrieval_tools_used": sorted(retrieval_tools_used),
     }
 
 

@@ -2,34 +2,44 @@
 
 ## Active
 
-- [ ] Wire `build_default_rate_limits()` into the production gateway init so EDGAR + retrieval traffic is clamped without per-caller configuration
-- [ ] Orchestrator: pipe Lane E normalizer output into `AgentPool(evidence_provider=...)`
-- [ ] Orchestrator / gateway: wire `RetrievalService.search` into the `semantic_search` + `hybrid_search` tool dispatch paths (tools are registered but the gateway currently has no in-process handler for them)
-- [ ] Orchestrator: call `RetrievalService.ingest(..., engagement_id=<current>)` with the normalized Lane E records so the pgvector store is populated as engagements run (ingest now requires the kwarg; orchestrator must supply the active engagement)
-- [ ] Orchestrator: construct per-engagement `RetrievalService(..., engagement_context=<current>)` so string-form agent queries inherit the exclusion automatically (scoping plumbing + default-on semantic are built; orchestrator wiring is pending)
 - [ ] Phase 2: route deep-mode tool calls through `MCPGateway.call_tool` (not just the audit log) once provider-native WebSearch/WebFetch have gateway-owned wrappers
-- [ ] Fix stale import in `tests/integration/test_evaluator_live.py` (`_parse_score_json` removed from `layer3_rubric.py`)
 
 ## Up Next
 
-- [ ] Real-MCP phase: FastMCP-based client replacing `MockMCPClient` so `edgartools-mcp` (and the other stdio servers) actually launch; the `IN_PROCESS` transport path for retrieval tools also needs a handler
-- [ ] Retrieval observability: emit `ChunkIngested`/`SearchCompleted` pipeline events with hit counts, scores, and rerank latency so the evaluator's Layer 4 trajectory metrics pick up internal-retrieval usage
+- [ ] Real-MCP phase: FastMCP-based client replacing `MockMCPClient` so `edgartools-mcp` (and the other stdio servers) actually launch
 - [ ] Retrieval integration smoke test: end-to-end ingest → search → cite flow against the live PostgreSQL instance (currently unit tests use the in-memory stores; only `TestPgVectorStoreLive` hits real PG)
 - [ ] Retrieval: LLM-backed query router replacing `RuleBasedQueryRouter` for the cases where regex signals miss (calibrate against ground truth)
 - [ ] Retrieval: benchmark voyage-finance-2 vs voyage-3 on the internal corpus once we have 1000+ chunks; swap `VOYAGE_FINANCE_MODEL` if needed
+- [ ] Agents: teach shallow-mode `ResearchAgent` to actually call `semantic_search` / `hybrid_search` via a system-invoked path (the gateway now structurally blocks agent calls to system-owned tools — the plumbing needs an orchestrator-side retrieval helper that invokes the bridge handler directly)
 - [ ] DoclingBackend integration smoke test against a real SEC filing PDF once docling is installed
 - [ ] L2 Phase 2: LLM-augmented framework execution (Five Forces matrix, scenario shocks, Value Chain stage analysis)
 - [ ] L2 Phase 2: bidirectional sprint-contract negotiation (Generator proposes, Evaluator counter-proposes) — schema already supports via `SprintContractProposed` event and negotiation-ready data structure
 - [ ] L4 Layer 4 follow-ups: calibrate `layer3_weight` against human-scored samples; add integration test that runs full pipeline and verifies a narrow-research run shows up with non-empty `process_flags`
 - [ ] L4 Layer 4: capture `tokens_consumed` from the process-trajectory LLM call so total tokens stay accurate when Layer 4 is enabled
-- [ ] Extend canary `test_pipeline_fresh_components_per_run` to assert `content_structurer` freshness across runs
 - [ ] Task-aware evidence selection (replace default "all records" with filter keyed off `ResearchTask.required_sources` / category / source_family)
 - [ ] Deep-mode EV-ref enforcement (so deep-mode Citations keep Lane E SHA-256 + locator)
-- [ ] Pre-existing canary failures in `tests/canary/test_architectural_guarantees.py` (unrelated to L2 or Lane E)
 - [ ] Branch/worktree consolidation (cosmetic, not blocking)
 
 ## Done
 
+- [x] **Audit remediation: 7 fixes from the integration-session audit** — 1311 / 1311 unit+canary tests pass (+12 new). Net-reduced ruff (18→13) and mypy (18→15) errors on touched files; no new errors introduced.
+  - Fix 1: bridge now injects `exclude_engagement_id = call.engagement_id` when unspecified; Lane E ingested via `ingest_institutional` (engagement_id=None). Structural inter-agent isolation on the bridge path + institutional Lane E visibility.
+  - Fix 2: orchestrator + retrieval_service docstrings now match runtime behavior (bridge enforces isolation; `engagement_context` mainly protects string-form callers).
+  - Fix 3: `register_in_process_handler` docstring corrected — handlers receive the full `ToolCall`, not a parameters dict.
+  - Fix 4: new `TestMultiRunRetrievalWiring::test_second_run_reregisters_fresh_service_and_events` verifies handler re-registration with fresh service and fresh `search_events` list across two Pipeline.run() calls.
+  - Fix 5: `ToolAuthorizer` rejects tool names in `SYSTEM_OWNED_TOOLS` regardless of `assigned_tools`. Defense-in-depth behind the template canary. Generic IN_PROCESS dispatch tests migrated to a new `FAKE_IN_PROCESS_TOOL` so they don't collide with the new gate; `TestSystemOwnedToolGating` covers the block explicitly.
+  - Fix 6: `layer4_trajectory._compute_deterministic_metrics` now reads `SearchCompleted` events — `tool_utilization` formula extends both numerator and denominator with retrieval tool names used (bounded ≤ 1.0), `source_type_diversity` gains a synthetic `internal_corpus` label when any SearchCompleted events are present. `retrieval_calls` and `retrieval_tools_used` surfaced in the metrics dict.
+  - Fix 7: new canary tests for evidence_records-without-factory silent drop, institutional Lane E visibility through the bridge, and second-run handler freshness.
+  - Code hygiene on touched files: dropped unused `HealthStatus` import in `mcp_gateway.py`, added `from None` to `raise exc` after CircuitOpen, dropped unused `failed_count` variable in `orchestrator.py`.
+- [x] **Integration session: retrieval wiring + gateway factory + canary remediation** — 1299 / 1299 unit+canary tests pass (+42 new). Zero new ruff or mypy errors on touched files (in fact, lint/mypy debt on touched files decreased).
+  - Gateway: new `InProcessHandler` transport path + `register_in_process_handler` on `MCPGateway` so IN_PROCESS tools dispatch through the full auth/rate-limit/circuit-breaker/retry/audit envelope. Handler signature widened to `Callable[[ToolCall], Awaitable[Any]]` so handlers have agent / engagement / client context. Unregistered IN_PROCESS tools raise a clear `RuntimeError` at call time (no silent fall-through to the MCP client).
+  - Gateway factory: new `src/keystone/gateway/factory.py::build_mcp_gateway` wires `register_all_tools` + `InMemoryRateLimiter(build_default_rate_limits())` + `ToolAuthorizer` + `AuditLogger` by default; every component injectable for tests. Exported through `keystone.gateway`.
+  - Retrieval bridge: new `src/keystone/gateway/retrieval_bridge.py` maps `semantic_search` / `hybrid_search` tool names to `RetrievalService.search`. Handlers emit `SearchCompleted` via an optional event sink so every retrieval-tool call shows up in the pipeline event stream with agent-id / engagement-id / latency / result-count.
+  - Orchestrator: `Pipeline(..., retrieval_service_factory=...)` builds a per-engagement `RetrievalService` (with `engagement_context=<eid>`), ingests Lane E records under that engagement, registers handlers on the gateway, emits `ChunkIngested`, and folds collected `SearchCompleted` events into each agent's event trail for Layer 4.
+  - Events: new `ChunkIngested` (per-batch ingest summary) and `SearchCompleted` (per-search metadata) under `layer="Retrieval"`; added to `AnyPipelineEvent` union.
+  - Canary: `test_failed_evaluation_blocks_rendering` now asserts governance-halt semantics (citation fabrication or coverage halt) rather than post-render filtering; `test_pipeline_fresh_components_per_run` and `test_spec_engine_no_agent_config_leak` tolerate governance halt since component freshness is the invariant under test; `test_pipeline_fresh_components_per_run` now also asserts `content_structurer` freshness.
+  - Integration test: `tests/integration/test_evaluator_live.py` now imports `safe_llm_json` / `ParseError` from `keystone.llm.parsing` (the stale `_parse_score_json` import was removed in an earlier session).
+  - New tests: `tests/unit/gateway/test_in_process_dispatch.py` (13), `tests/unit/gateway/test_factory.py` (12), `tests/unit/pipeline/test_orchestrator_retrieval.py` (5).
 - [x] **Isolation + audit hardening (fresh-eyes review follow-up)** — 1257 / 1257 unit tests pass (+11 new). Zero new ruff or mypy errors.
   - Retrieval: `SemanticChunker.chunk(..., engagement_id=...)` and `RetrievalService.ingest(..., engagement_id=...)` now require the kwarg explicitly (no implicit `= None` default). New `RetrievalService.ingest_institutional(records)` names the cross-engagement path. New `RetrievalService(..., engagement_context=<eid>)` auto-applies exclude_engagement_id on every string-form `search()` call so inter-agent isolation is default-on for agents operating under an active engagement.
   - Deep-mode audit: `latency_ms` is `None` on per-source entries (per-fetch timing cannot be reconstructed from a single claude -p session); new session-level audit entry (`tool_name="deep_research:session"`) emitted at the end of every deep attempt, carrying real elapsed latency plus `n_sources`/`n_claims` summary; failure path in `execute()`'s except block now records a failed-session entry with the exception before shallow fallback; dead `except AttributeError` branch dropped.

@@ -73,17 +73,26 @@ class RetrievalService:
         """Construct a retrieval service.
 
         ``engagement_context`` binds the service to a specific
-        engagement. When set, string-form :meth:`search` calls
-        automatically apply it as ``exclude_engagement_id`` so current-
-        engagement chunks from sibling agents are hidden by default
-        (founder-intent inter-agent isolation invariant). System-level
-        or aggregator callers that need full corpus access construct
-        the service without an ``engagement_context``. A :class:`
-        SearchQuery` passed to :meth:`search` is treated as a
-        caller-authored object — its ``exclude_engagement_id`` field
-        is honored literally (including ``None``, which is then read as
-        an explicit opt-out) so callers that build their own query
-        state are never second-guessed.
+        engagement for callers that use the string-form
+        :meth:`search` path: those calls automatically apply the
+        context as ``exclude_engagement_id`` so current-engagement
+        chunks from sibling agents are hidden. System-level or
+        aggregator callers that need full corpus access construct
+        the service without an ``engagement_context``.
+
+        A :class:`SearchQuery` passed to :meth:`search` is treated as
+        a caller-authored object — its ``exclude_engagement_id`` field
+        is honored literally (including ``None``, which is read as an
+        explicit opt-out). The production path for agent traffic is
+        the :mod:`keystone.gateway.retrieval_bridge`, which constructs
+        :class:`SearchQuery` objects and therefore bypasses the
+        ``engagement_context`` auto-apply; that bridge enforces the
+        founder-intent inter-agent isolation invariant structurally by
+        injecting ``exclude_engagement_id=<caller ToolCall's
+        engagement_id>`` whenever the caller did not already specify
+        one. ``engagement_context`` therefore mainly protects string-
+        form callers and serves as a belt-and-braces default for
+        non-bridge code paths.
         """
 
         self.chunker = chunker

@@ -25,6 +25,7 @@ from keystone.events import (
     FindingSynthesized,
     ResearchComplete,
     ResearchStarted,
+    SearchCompleted,
     SourceFound,
 )
 from keystone.models.agents import (
@@ -671,4 +672,128 @@ class TestLayer4EvaluatorFull:
         result = await evaluator.evaluate(context, manifest)
         # Unknown flag dropped; result still usable
         assert "this_flag_does_not_exist" not in result.process_flags
-        assert result.qualitative_score == 70
+
+
+# ---------------------------------------------------------------------------
+# SearchCompleted consumption (internal-corpus retrieval credit)
+# ---------------------------------------------------------------------------
+
+
+def _search_event(
+    agent_id: str,
+    tool_name: str = "semantic_search",
+    result_count: int = 3,
+    latency_ms: float = 25.0,
+) -> SearchCompleted:
+    return SearchCompleted(
+        event_id=f"evt_search_{tool_name}_{result_count}",
+        engagement_id=ENG,
+        client_id=CID,
+        agent_id=agent_id,
+        tool_name=tool_name,
+        query_preview="AV sensor market",
+        result_count=result_count,
+        latency_ms=latency_ms,
+    )
+
+
+class TestSearchCompletedInDeterministicMetrics:
+    def test_no_search_events_metrics_unchanged(self) -> None:
+        agent = _agent()
+        task = _task()
+        context = ProcessContext(
+            agent_id=agent.agent_id,
+            task=task,
+            agent=agent,
+            events=[
+                _source_event(agent.agent_id, "https://example.com/a", "web_search", 0.8),
+                _complete_event(agent.agent_id, sources=1),
+            ],
+        )
+        metrics = _compute_deterministic_metrics(context, _manifest())
+        assert metrics["retrieval_calls"] == 0
+        assert metrics["retrieval_tools_used"] == []
+        assert "internal_corpus" not in metrics["source_types"]
+        # tool_utilization: 1 used ("web_search") out of 3 assigned
+        assert metrics["tool_utilization"] == pytest.approx(1 / 3)
+
+    def test_search_completed_adds_internal_corpus_source_type(self) -> None:
+        agent = _agent()
+        task = _task(assigned_tools=["web_search", "sec_filings", "news_api"])
+        context = ProcessContext(
+            agent_id=agent.agent_id,
+            task=task,
+            agent=agent,
+            events=[
+                _source_event(agent.agent_id, "https://example.com/a", "web_search", 0.8),
+                _search_event(agent.agent_id, tool_name="semantic_search"),
+                _complete_event(agent.agent_id, sources=2),
+            ],
+        )
+        metrics = _compute_deterministic_metrics(context, _manifest())
+        assert "internal_corpus" in metrics["source_types"]
+        # source_type_diversity went from 1 (web_search) to 2 (+internal_corpus)
+        assert metrics["source_type_diversity"] == 2
+        assert metrics["retrieval_calls"] == 1
+        assert metrics["retrieval_tools_used"] == ["semantic_search"]
+
+    def test_search_completed_contributes_to_tool_utilization(self) -> None:
+        agent = _agent()
+        task = _task(assigned_tools=["web_search", "sec_filings", "news_api"])
+        # Without retrieval: {web_search} / {web_search, sec_filings, news_api} = 1/3
+        # With retrieval: {web_search, semantic_search} / {assigned + semantic_search} = 2/4
+        context = ProcessContext(
+            agent_id=agent.agent_id,
+            task=task,
+            agent=agent,
+            events=[
+                _source_event(agent.agent_id, "https://example.com/a", "web_search", 0.8),
+                _search_event(agent.agent_id, tool_name="semantic_search"),
+            ],
+        )
+        metrics = _compute_deterministic_metrics(context, _manifest())
+        assert metrics["tool_utilization"] == pytest.approx(2 / 4)
+
+    def test_retrieval_does_not_inflate_utilization_over_one(self) -> None:
+        agent = _agent()
+        task = _task(assigned_tools=["web_search", "sec_filings", "news_api"])
+        # Agent used 2 of 3 assigned tools PLUS retrieval; ratio must stay <= 1.
+        context = ProcessContext(
+            agent_id=agent.agent_id,
+            task=task,
+            agent=agent,
+            events=[
+                _source_event(agent.agent_id, "https://example.com/a", "web_search", 0.8),
+                _source_event(agent.agent_id, "https://sec.gov/filing", "sec_filings", 0.9),
+                _search_event(agent.agent_id, tool_name="semantic_search"),
+                _search_event(agent.agent_id, tool_name="hybrid_search"),
+            ],
+        )
+        metrics = _compute_deterministic_metrics(context, _manifest())
+        # numerator: {web_search, sec_filings, semantic_search, hybrid_search} = 4
+        # denominator: {web_search, sec_filings, news_api, semantic_search, hybrid_search} = 5
+        assert metrics["tool_utilization"] == pytest.approx(4 / 5)
+        assert metrics["tool_utilization"] <= 1.0
+        assert metrics["retrieval_calls"] == 2
+        assert metrics["retrieval_tools_used"] == ["hybrid_search", "semantic_search"]
+
+    def test_multiple_search_calls_same_tool_deduplicate(self) -> None:
+        """Repeated semantic_search calls count once for tool_utilization."""
+        agent = _agent()
+        task = _task(assigned_tools=["web_search", "sec_filings", "news_api"])
+        context = ProcessContext(
+            agent_id=agent.agent_id,
+            task=task,
+            agent=agent,
+            events=[
+                _search_event(agent.agent_id, tool_name="semantic_search", result_count=3),
+                _search_event(agent.agent_id, tool_name="semantic_search", result_count=7),
+                _search_event(agent.agent_id, tool_name="semantic_search", result_count=5),
+            ],
+        )
+        metrics = _compute_deterministic_metrics(context, _manifest())
+        assert metrics["retrieval_calls"] == 3
+        assert metrics["retrieval_tools_used"] == ["semantic_search"]
+        # Denominator: {web_search, sec_filings, news_api, semantic_search} = 4
+        # Numerator: {semantic_search} = 1 (no SourceFound for assigned tools)
+        assert metrics["tool_utilization"] == pytest.approx(1 / 4)

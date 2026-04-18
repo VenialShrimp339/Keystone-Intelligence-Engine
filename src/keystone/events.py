@@ -166,6 +166,43 @@ class ManifestProduced(PipelineEvent):
 
 
 # ---------------------------------------------------------------------------
+# Retrieval events (internal pgvector/BM25 store)
+# ---------------------------------------------------------------------------
+
+
+class ChunkIngested(PipelineEvent):
+    """RetrievalService has ingested a batch of chunks into the corpus.
+
+    Emitted once per ingest call (one batch, not per chunk) so
+    observability consumers get a summary at a stable cadence.
+    """
+
+    layer: str = "Retrieval"
+    artifact_count: int = Field(description="Distinct artifacts represented in the batch")
+    chunk_count: int = Field(description="Chunks_created + chunks_updated")
+    chunks_created: int = Field(description="New chunks added to the store")
+    chunks_updated: int = Field(description="Existing chunks overwritten")
+    chunks_skipped: int = Field(description="Chunks that failed validation or were empty")
+
+
+class SearchCompleted(PipelineEvent):
+    """A retrieval-tool call returned its result.
+
+    Fires from the gateway's IN_PROCESS dispatch path on every
+    ``semantic_search`` / ``hybrid_search`` invocation so Layer 4's
+    process-trajectory metrics can distinguish internal-corpus usage
+    from external MCP tool calls.
+    """
+
+    layer: str = "Retrieval"
+    agent_id: str = Field(description="Agent that issued the search")
+    tool_name: str = Field(description="'semantic_search' or 'hybrid_search'")
+    query_preview: str = Field(description="First ~120 characters of the query")
+    result_count: int = Field(description="Number of results returned")
+    latency_ms: float = Field(description="Wall-clock latency of the handler")
+
+
+# ---------------------------------------------------------------------------
 # L1.5: Deliberation events
 # ---------------------------------------------------------------------------
 
@@ -434,6 +471,9 @@ AnyPipelineEvent = (
     | CorroborationScored
     | URLVerified
     | ManifestProduced
+    # Retrieval
+    | ChunkIngested
+    | SearchCompleted
     # L1.5
     | AnalystSpawned
     | IndependentAnalysisComplete

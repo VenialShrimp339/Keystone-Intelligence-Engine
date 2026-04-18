@@ -17,6 +17,7 @@ from __future__ import annotations
 import asyncio
 import re
 import time
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from typing import Any, Protocol, runtime_checkable
 
@@ -24,7 +25,14 @@ from keystone.gateway.audit_log import AuditLogger
 from keystone.gateway.auth import AuthorizationError, ToolAuthorizer
 from keystone.gateway.circuit_breaker import CircuitBreaker, CircuitOpenError, CircuitState
 from keystone.gateway.rate_limiter import InMemoryRateLimiter, RateLimitExceeded
-from keystone.gateway.tool_registry import HealthStatus, ToolRegistry
+from keystone.gateway.tool_registry import ToolRegistry, TransportType
+
+InProcessHandler = Callable[["ToolCall"], Awaitable[Any]]
+"""Handler for an IN_PROCESS tool. Receives the full :class:`ToolCall`
+(so the handler can access ``agent_id``, ``engagement_id``, and
+``parameters``) and returns a JSON-serializable result. Invoked inside
+the gateway's authorization / rate-limit / circuit-breaker / audit
+envelope exactly like an MCP server call, just without the client hop."""
 
 
 # ---------------------------------------------------------------------------
@@ -248,12 +256,60 @@ class MCPGateway:
         self._client: MCPClient = client or MockMCPClient()
         self._circuit_breakers: dict[str, CircuitBreaker] = {}
         self._dead_letters: list[DeadLetter] = []
+        self._in_process_handlers: dict[str, InProcessHandler] = {}
+
+    def register_in_process_handler(
+        self,
+        tool_name: str,
+        handler: InProcessHandler,
+    ) -> None:
+        """Register an in-process handler for ``tool_name``.
+
+        When :meth:`execute` routes a call to ``tool_name`` and the
+        registry entry declares ``TransportType.IN_PROCESS``, the
+        gateway invokes ``handler`` instead of dispatching through
+        :attr:`_client`. The full gateway envelope still applies:
+        authorization, rate limiting, circuit breaking, retry, and
+        audit logging all behave exactly as they do for an MCP server
+        call. ``handler`` receives the full :class:`ToolCall` (so it
+        can read ``agent_id``, ``engagement_id``, ``client_id``, and
+        ``parameters``) and must return a JSON-serializable value;
+        citation extraction runs over the return.
+        """
+
+        self._in_process_handlers[tool_name] = handler
 
     def _get_circuit_breaker(self, server_name: str) -> CircuitBreaker:
         """Get or create a circuit breaker for a server."""
         if server_name not in self._circuit_breakers:
             self._circuit_breakers[server_name] = CircuitBreaker(provider=server_name)
         return self._circuit_breakers[server_name]
+
+    def _resolve_in_process_handler(
+        self,
+        transport_type: TransportType | None,
+        tool_name: str,
+    ) -> InProcessHandler | None:
+        """Return the handler for an IN_PROCESS tool, or None to use the MCP client.
+
+        Raises :class:`RuntimeError` when a tool is declared
+        ``IN_PROCESS`` in the registry but no handler has been
+        registered -- falling through to the MCP client in that case
+        would route to a non-existent server and fail with an obscure
+        error. Failing loudly here surfaces the misconfiguration at the
+        first call.
+        """
+
+        if transport_type is not TransportType.IN_PROCESS:
+            return None
+        handler = self._in_process_handlers.get(tool_name)
+        if handler is None:
+            raise RuntimeError(
+                f"Tool '{tool_name}' is registered as IN_PROCESS but no "
+                "in-process handler has been attached to the gateway. "
+                "Call MCPGateway.register_in_process_handler() during setup."
+            )
+        return handler
 
     async def execute(self, call: ToolCall) -> ToolResult:
         """Execute a tool call through the full pipeline.
@@ -305,16 +361,24 @@ class MCPGateway:
         # 3. Circuit break + 4. Execute with retry
         cb = self._get_circuit_breaker(server_name)
 
+        in_process_handler = self._resolve_in_process_handler(
+            tool_entry.transport_type if tool_entry else None,
+            call.tool_name,
+        )
+
         last_error: Exception | None = None
         for attempt in range(self.MAX_RETRIES):
             attempt_start = time.monotonic()
             try:
-                raw_result = await cb.call(
-                    self._client.call_tool,
-                    server_name,
-                    call.tool_name,
-                    call.parameters,
-                )
+                if in_process_handler is not None:
+                    raw_result = await cb.call(in_process_handler, call)
+                else:
+                    raw_result = await cb.call(
+                        self._client.call_tool,
+                        server_name,
+                        call.tool_name,
+                        call.parameters,
+                    )
 
                 # 5. Extract citations
                 citations = extract_citations(raw_result)
@@ -353,7 +417,7 @@ class MCPGateway:
                     error=exc,
                     latency_ms=_elapsed_ms(start_time),
                 )
-                raise exc
+                raise exc from None
 
             except Exception as exc:
                 last_error = exc

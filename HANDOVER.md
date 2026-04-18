@@ -1,7 +1,297 @@
 # Handover
 
 Last updated: 2026-04-18
-Session: Isolation + audit hardening (fresh-eyes review follow-up)
+Session: Audit remediation — integration-session findings fixed end to end
+
+## What Changed (Audit remediation session)
+
+An orchestrator audit of the prior integration session produced 7
+recommended fixes and test-coverage gaps. All 7 are now landed.
+Baseline was 1299 unit+canary passing; final is **1311 passing (+12
+new tests)**. 3 xfailed unchanged. Lint and mypy debt on touched
+files net-reduced (ruff 18→13 errors, mypy 18→15 errors); no new
+errors introduced.
+
+### Fix 1 — Bridge inter-agent isolation + Lane E as institutional memory
+
+- `src/keystone/gateway/retrieval_bridge.py`: `_run_search` now
+  injects `exclude_engagement_id = call.engagement_id` when the
+  caller did not specify one. Inter-agent isolation is enforced
+  structurally on the bridge path instead of relying on per-service
+  `engagement_context` (which a `SearchQuery` object bypasses).
+- `src/keystone/pipeline/orchestrator.py`: Lane E records are now
+  ingested via `service.ingest_institutional(records)` (engagement_id
+  =None). Lane E is pre-fetched reference material, not mid-research
+  agent output, so it's meant to be visible everywhere. Institutional
+  chunks pass the bridge's exclude filter; any future mid-research
+  chunk tagged with the active engagement_id gets hidden from sibling
+  agents automatically.
+- New test `test_bridge_isolates_caller_engagement_by_default`: Lane E
+  institutional passages remain visible while sibling-agent chunks
+  tagged with the caller's engagement_id are hidden.
+
+### Fix 2 — Docstring alignment for engagement_context semantics
+
+- `src/keystone/pipeline/orchestrator.py`: Pipeline constructor
+  docstring now describes what actually happens — Lane E ingested as
+  institutional memory, inter-agent isolation enforced by the bridge.
+- `src/keystone/retrieval/search/retrieval_service.py`:
+  `engagement_context` docstring now spells out that the bridge
+  bypasses the auto-apply by passing a `SearchQuery` object and
+  enforces isolation itself, and that `engagement_context` mainly
+  protects string-form callers.
+
+### Fix 3 — `register_in_process_handler` docstring correction
+
+- `src/keystone/gateway/mcp_gateway.py`: docstring previously claimed
+  handlers receive "the raw parameters dict from the ToolCall" but
+  the type and implementation pass the full `ToolCall`. Updated to
+  match reality so readers don't design handlers that throw away
+  `agent_id` / `engagement_id` / `client_id`.
+
+### Fix 4 — Multi-run regression test
+
+- `tests/unit/pipeline/test_orchestrator_retrieval.py`:
+  `test_second_run_reregisters_fresh_service_and_events` runs
+  `Pipeline.run()` twice on the same Pipeline instance with a
+  retrieval factory. Asserts (a) a fresh `RetrievalService` is built
+  per run, (b) handler objects registered on the gateway differ
+  between runs (fresh closures), and (c) `SearchCompleted` /
+  `ChunkIngested` events from run 1 don't leak into run 2.
+
+### Fix 5 — Gateway authorizer rejects system-owned tools
+
+- `src/keystone/gateway/auth.py`: `ToolAuthorizer.check` now rejects
+  any `tool_name` in `SYSTEM_OWNED_TOOLS` regardless of
+  `assigned_tools`. Defense-in-depth behind the template-level canary
+  — if a template regression ever slipped `semantic_search` into an
+  agent's assigned tools, this second gate still blocks the call.
+- `tests/unit/gateway/test_in_process_dispatch.py`:
+  - New `FAKE_IN_PROCESS_TOOL` for generic IN_PROCESS dispatch tests
+    (so the system-owned gate doesn't interfere).
+  - New `TestSystemOwnedToolGating` class: three tests proving
+    `semantic_search` and `hybrid_search` are blocked at the
+    authorizer even with `assigned_tools=[system_owned_tool]`, and a
+    direct unit call on `ToolAuthorizer.check` confirming the rule.
+  - Existing `TestInProcessDispatch` tests migrated off
+    `semantic_search` onto `FAKE_IN_PROCESS_TOOL` — the generic
+    dispatch mechanism is unchanged; only the tool used to exercise
+    it differs.
+  - `test_register_bridge_on_gateway` now invokes the handler
+    directly (not through `gateway.execute`) because the gateway path
+    is correctly blocked for system-owned tools.
+- `tests/unit/pipeline/test_orchestrator_retrieval.py`:
+  `test_search_events_are_yielded` mock now calls the handler
+  directly, simulating the orchestrator's internal retrieval path
+  rather than an agent path (the agent path is structurally
+  impossible after Fix 5).
+
+### Fix 6 — Layer 4 consumes SearchCompleted
+
+- `src/keystone/evaluator/layer4_trajectory.py`:
+  `_compute_deterministic_metrics` now reads `SearchCompleted` events
+  from the trajectory. When present, the agent's
+  `tool_utilization` formula extends both numerator and denominator
+  with the retrieval tool names used (so the ratio stays ≤ 1.0 and
+  agents that used internal retrieval register as using a tool). A
+  synthetic `internal_corpus` label is added to the source-type set
+  so `source_type_diversity` increases by one when any
+  `SearchCompleted` events are present.
+- The metrics dict now also surfaces `retrieval_calls` (integer count
+  of SearchCompleted events) and `retrieval_tools_used` (sorted list
+  of tool names) for observability.
+- New `TestSearchCompletedInDeterministicMetrics` class in
+  `tests/unit/evaluator/test_layer4_trajectory.py` — five tests
+  covering: no search events → metrics unchanged; internal_corpus
+  added to source types; tool_utilization shifts with retrieval;
+  ratio cannot exceed 1.0; multiple repeats of the same retrieval
+  tool deduplicate for utilization purposes.
+
+### Fix 7 — Remaining coverage gaps
+
+- `test_evidence_records_without_factory_are_silently_dropped`:
+  canary for the documented behavior. Records present + factory
+  absent → no `ChunkIngested`, no `SearchCompleted`, no handlers on
+  the gateway. Would catch a future regression that tries to ingest
+  without wiring a service.
+- `test_lane_e_institutional_is_visible_to_agent_search`: end-to-end
+  orchestrator test ingesting Lane E via the institutional path and
+  verifying the passage is reachable through the bridge handler with
+  the caller's engagement_id threaded as `exclude_engagement_id`.
+
+### Files touched
+
+**Modified source:**
+- `src/keystone/gateway/retrieval_bridge.py` (structural isolation)
+- `src/keystone/gateway/auth.py` (system-owned rejection)
+- `src/keystone/gateway/mcp_gateway.py` (docstring + drop unused
+  import + `raise ... from None` on the CircuitOpen propagation)
+- `src/keystone/pipeline/orchestrator.py` (institutional Lane E
+  ingest + docstring + drop unused `failed_count`)
+- `src/keystone/retrieval/search/retrieval_service.py` (docstring)
+- `src/keystone/evaluator/layer4_trajectory.py` (SearchCompleted
+  consumption)
+
+**Modified tests:**
+- `tests/unit/gateway/test_in_process_dispatch.py` (FAKE_IN_PROCESS
+  tool refactor + new TestSystemOwnedToolGating +
+  test_bridge_isolates_caller_engagement_by_default +
+  test_register_bridge_on_gateway updated for direct handler call)
+- `tests/unit/pipeline/test_orchestrator_retrieval.py` (mock path
+  migrated to handler + TestMultiRunRetrievalWiring class with three
+  tests)
+- `tests/unit/evaluator/test_layer4_trajectory.py` (new
+  TestSearchCompletedInDeterministicMetrics class, 5 tests)
+
+---
+
+## Previous Session (kept for continuity)
+
+Session: Pipeline integration — gateway IN_PROCESS dispatch + retrieval wiring + canary remediation
+
+## What Changed (Integration session)
+
+This session connected the retrieval stack to the orchestrator so the
+pipeline actually uses what prior sessions built, added an
+IN_PROCESS tool-dispatch path to the gateway, introduced a
+production-wired gateway factory, and cleaned up the three
+pre-existing canary failures. Baseline was 1257 unit passing; final
+is **1299 unit+canary passing (+42 new tests)** with 3 xfailed
+pre-existing (unchanged). Lint and mypy debt on touched files
+decreased; no new errors introduced.
+
+### Fix 1 — Gateway IN_PROCESS dispatch
+
+- `MCPGateway.register_in_process_handler(tool_name, handler)` attaches
+  a `Callable[[ToolCall], Awaitable[Any]]` handler for tools whose
+  registry entry declares `TransportType.IN_PROCESS`. The handler
+  receives the full `ToolCall` (agent_id, engagement_id, client_id,
+  parameters) and returns a JSON-serializable payload.
+- `MCPGateway.execute` now checks the registry's transport type; for
+  IN_PROCESS it routes through the handler, otherwise through the
+  MCP client. Authorization, rate-limiting, circuit-breaker, retry,
+  and audit logging wrap both paths identically.
+- An IN_PROCESS tool without a registered handler raises a clear
+  `RuntimeError` at the first call so misconfigurations are visible
+  immediately instead of falling through to a non-existent MCP server.
+
+### Fix 2 — Production-wired gateway factory
+
+- New `src/keystone/gateway/factory.py::build_mcp_gateway` assembles an
+  `MCPGateway` with every component pre-wired:
+  - `ToolRegistry` populated via `register_all_tools`
+  - `InMemoryRateLimiter(build_default_rate_limits())` so EDGAR stays
+    under SEC's 10 req/sec ceiling and retrieval gets its 50 req/sec
+    budget without per-caller configuration
+  - `ToolAuthorizer` bound to the populated registry
+  - `AuditLogger()` with defaults
+- Every component remains injectable for tests / alternate deployments.
+- Exported as `keystone.gateway.build_mcp_gateway`.
+
+### Fix 3 — Retrieval bridge
+
+- New `src/keystone/gateway/retrieval_bridge.py` maps `semantic_search`
+  and `hybrid_search` tool names to `RetrievalService.search`. It
+  translates gateway parameter dicts into `SearchQuery` instances
+  (including `exclude_engagement_id`) and serializes `RetrievalResult`
+  back to a plain dict shaped so the gateway's citation extractor
+  picks up URLs and titles.
+- Handlers emit `SearchCompleted` via an optional event sink so every
+  retrieval-tool call shows up in the pipeline event stream with
+  `agent_id`, `engagement_id`, `tool_name`, query preview, result
+  count, and latency.
+
+### Fix 4 — Orchestrator retrieval wiring
+
+- `Pipeline` constructor now accepts `retrieval_service_factory:
+  Callable[[str], RetrievalService] | None`. The factory takes the
+  freshly-assigned engagement_id and returns a service; the canonical
+  use is `factory = lambda eid: build_retrieval_service(...,
+  engagement_context=eid)` so agent searches auto-exclude current-
+  engagement chunks.
+- After L0 produces the engagement_id, the orchestrator:
+  1. Calls the factory to build a per-run service.
+  2. Registers `register_retrieval_handlers(gateway, service,
+     event_sink=search_events.append)`.
+  3. If `evidence_records` is non-empty, calls
+     `service.ingest(records, engagement_id=eid)` and emits
+     `ChunkIngested` summarizing the batch.
+  4. After agents complete, folds collected `SearchCompleted` events
+     into each agent's event trail (keyed on `agent_id`) so Layer 4
+     sees internal-retrieval usage per agent.
+- When no factory is injected, the pipeline runs exactly as before —
+  retrieval wiring is opt-in so existing callers are unaffected.
+
+### Fix 5 — Events
+
+- `ChunkIngested` (layer `Retrieval`): per-batch summary with
+  `artifact_count`, `chunk_count`, `chunks_created`, `chunks_updated`,
+  `chunks_skipped`.
+- `SearchCompleted` (layer `Retrieval`): per-call metadata with
+  `agent_id`, `tool_name`, `query_preview` (truncated to 120 chars),
+  `result_count`, `latency_ms`.
+- Both added to `AnyPipelineEvent` union.
+
+### Fix 6 — Pre-existing canary failures
+
+Three canary tests were listed as pre-existing failures in TODO.md.
+All three now pass:
+
+- `test_failed_evaluation_blocks_rendering`: reworked to assert the
+  governance-halt behaviour (fabricated citation triggers
+  `l4_citation_fabrication` or `evaluation_coverage` halt flag with
+  `EnforcementAction.HALT`). The renderer is never reached, so the
+  fabricated content is trivially excluded — satisfying the original
+  architectural claim more strongly than post-hoc filtering.
+- `test_pipeline_fresh_components_per_run`: wraps `pipeline.run(...)`
+  in `try/except RuntimeError` because zero findings trip the
+  STANDARD-profile coverage gate (pass_ratio=0). Component freshness
+  is captured before `run()` returns, so halt behaviour does not
+  compromise the invariant under test.
+- `test_spec_engine_no_agent_config_leak`: same halt-tolerant pattern
+  as above; the `_agent_configs` assertion is about the fresh
+  engine's initial state, which is set at `__init__` regardless of
+  pipeline outcome.
+- Same test now also asserts `first.content_structurer is not
+  second.content_structurer`, covering the freshness-per-run invariant
+  for the L2 component (TODO item #8).
+
+### Fix 7 — Stale `_parse_score_json` import
+
+`tests/integration/test_evaluator_live.py` imported `_parse_score_json`
+from `keystone.evaluator.layer3_rubric`, which had been removed in
+favour of the unified `safe_llm_json` / `ParseError` API in
+`keystone.llm.parsing`. Import and all four test cases updated
+accordingly; the garbage-input test now asserts `ParseError` instead
+of the old empty-dict return value.
+
+### Files touched
+
+**New source:**
+- `src/keystone/gateway/factory.py`
+- `src/keystone/gateway/retrieval_bridge.py`
+
+**Modified source:**
+- `src/keystone/events.py` (added `ChunkIngested`, `SearchCompleted`,
+  union entries)
+- `src/keystone/gateway/__init__.py` (new re-exports)
+- `src/keystone/gateway/mcp_gateway.py` (IN_PROCESS dispatch + handler
+  registration)
+- `src/keystone/pipeline/orchestrator.py` (retrieval wiring +
+  `ChunkIngested` emission + `SearchCompleted` event fold-in)
+
+**New tests:**
+- `tests/unit/gateway/test_factory.py` (12 tests)
+- `tests/unit/gateway/test_in_process_dispatch.py` (13 tests, split
+  across dispatch / bridge / search-completed event groups)
+- `tests/unit/pipeline/test_orchestrator_retrieval.py` (5 tests)
+
+**Updated tests:**
+- `tests/canary/test_architectural_guarantees.py` (three
+  pre-existing failures fixed + content_structurer freshness assertion)
+- `tests/integration/test_evaluator_live.py` (stale import)
+
+## Previous Session (kept for continuity)
 
 ## What Changed (Isolation + audit hardening)
 

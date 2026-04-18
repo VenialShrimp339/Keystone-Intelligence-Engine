@@ -14,6 +14,7 @@ import os
 import uuid
 from collections.abc import AsyncIterator, Callable
 from dataclasses import dataclass
+from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
@@ -24,8 +25,9 @@ from keystone.evaluator.layer4_trajectory import ProcessContext
 from keystone.evaluator.retry import LLMCallable
 from keystone.evaluator.rubric_config import EvaluationProfile
 from keystone.evaluator.sprint_contract import SprintContractGenerator
-from keystone.events import AnyPipelineEvent
+from keystone.events import AnyPipelineEvent, ChunkIngested, SearchCompleted
 from keystone.gateway.mcp_gateway import MCPGateway
+from keystone.gateway.retrieval_bridge import register_retrieval_handlers
 from keystone.governance.policy import ProfileExecutionPolicy
 from keystone.llm_client import get_deep_research_callable
 from keystone.models.agents import AgentInstance
@@ -39,6 +41,7 @@ from keystone.research.agent_pool import AgentPool
 from keystone.research.error_recovery import ErrorRecovery
 from keystone.research.evidence_context import EvidenceContextProvider
 from keystone.retrieval.parse_models import EvidencePrepRecord
+from keystone.retrieval.search.retrieval_service import RetrievalService
 from keystone.specification.spec_engine import SpecificationEngine
 from keystone.specification.template_registry import TemplateRegistry
 from keystone.structuring.content_structuring import (
@@ -102,12 +105,43 @@ class Pipeline:
         db_session_factory: Callable | None = None,
         max_eval_tasks: int | None = None,
         evidence_records: list[EvidencePrepRecord] | None = None,
+        retrieval_service_factory: Callable[[str], RetrievalService] | None = None,
     ) -> None:
+        """Construct a pipeline.
+
+        ``retrieval_service_factory`` takes the active engagement_id and
+        returns a :class:`RetrievalService`. When supplied, the
+        orchestrator builds a fresh service per run, ingests Lane E
+        records (``evidence_records``) into it as institutional memory
+        (``engagement_id=None``), and registers the retrieval tool
+        handlers on ``gateway`` so agents calling ``semantic_search`` or
+        ``hybrid_search`` hit the live service. Pass ``None`` to skip
+        retrieval wiring entirely -- the pipeline runs exactly as it did
+        before retrieval existed.
+
+        Lane E is treated as institutional memory because the records
+        are pre-fetched reference material (PDFs, articles, EDGAR
+        filings), not mid-research agent output. They are meant to be
+        visible to every engagement. Inter-agent isolation is enforced
+        structurally one level down: the
+        :mod:`keystone.gateway.retrieval_bridge` handlers inject
+        ``exclude_engagement_id=<caller-agent's engagement_id>`` into
+        every :class:`SearchQuery`, so any future chunk ingested with
+        ``engagement_id=<active>`` (a sibling agent's work-in-progress)
+        is automatically hidden from other agents in the same
+        engagement while institutional chunks pass through.
+
+        Passing ``engagement_context=<eid>`` when constructing the
+        service remains useful for system callers that bypass the
+        bridge (e.g. string-form :meth:`RetrievalService.search`
+        calls) -- those paths still inherit the context automatically.
+        """
         self._llm_factory = llm_factory
         self._gateway = gateway
         self._db_session_factory = db_session_factory
         self._max_eval_tasks = max_eval_tasks
         self._evidence_records = evidence_records
+        self._retrieval_service_factory = retrieval_service_factory
         # Internal run state (overwritten on each run).
         self._result: PipelineResult | None = None
         # Tests may call _build_components(), mutate fields, then assign here
@@ -218,6 +252,18 @@ class Pipeline:
         governance = policy.new_state(spec.task_decomposition.tasks)
         logger.info("L0 complete: %d tasks", len(spec.task_decomposition.tasks))
 
+        # --- Stage 1b: Retrieval wiring ---
+        # Build an engagement-scoped RetrievalService, ingest Lane E
+        # records into it, and register the retrieval tool handlers on
+        # the gateway so any agent call to semantic_search / hybrid_search
+        # hits the live service. SearchCompleted events emitted by the
+        # handlers are collected into ``search_events`` and yielded
+        # after agent execution so they show up alongside agent event
+        # trails for Layer 4's trajectory scoring.
+        search_events: list[SearchCompleted] = []
+        async for event in self._wire_retrieval(eid, client_id, search_events):
+            yield event
+
         # --- Stage 2: L1 Research Agents ---
         logger.info("L1: Dispatching %d agents", len(spec.task_decomposition.tasks))
         assignments = self._build_assignments(spec, c.template_registry)
@@ -233,6 +279,13 @@ class Pipeline:
             events_by_agent.setdefault(ar.agent_id, []).extend(ar.events)
             for event in ar.events:
                 yield event
+
+        # Layer 4 inspects retrieval usage per agent; fold the search
+        # events collected during agent execution into each agent's
+        # trail and yield them to the top-level event stream.
+        for search_event in search_events:
+            events_by_agent.setdefault(search_event.agent_id, []).append(search_event)
+            yield search_event
 
         findings = c.agent_pool.get_successful_findings(agent_results)
         for f in findings:
@@ -347,7 +400,6 @@ class Pipeline:
             policy.record_evaluation_outcome(governance, task, result)
 
         passed_count = sum(1 for r in evaluation_results if r.passed)
-        failed_count = len(evaluation_results) - passed_count
         logger.info("L4 complete: %d/%d passed", passed_count, len(evaluation_results))
 
         coverage_flag = policy.evaluate_coverage(governance)
@@ -417,6 +469,49 @@ class Pipeline:
         if self._result is None:
             raise RuntimeError("run() or run_with_events() must complete first")
         return self._result
+
+    async def _wire_retrieval(
+        self,
+        engagement_id: str,
+        client_id: str,
+        search_events: list[SearchCompleted],
+    ) -> AsyncIterator[AnyPipelineEvent]:
+        """Build the per-engagement retrieval service and register it on the gateway.
+
+        Yields a :class:`ChunkIngested` event summarizing the ingest
+        batch. ``search_events`` is the shared list the registered
+        handlers append to whenever an agent calls a retrieval tool;
+        the orchestrator drains it into the main event stream after
+        agent execution completes.
+        """
+
+        factory = self._retrieval_service_factory
+        if factory is None:
+            return
+        service = factory(engagement_id)
+        register_retrieval_handlers(self._gateway, service, event_sink=search_events.append)
+        records = self._evidence_records or []
+        if not records:
+            return
+        logger.info("Retrieval: ingesting %d Lane E records", len(records))
+        # Lane E records are pre-fetched reference material (PDFs, articles,
+        # EDGAR filings), not mid-research agent output. They are ingested
+        # as institutional memory (engagement_id=None) so they remain
+        # visible to every engagement and pass through the bridge's
+        # inter-agent isolation filter, while any future mid-research
+        # ingest tagged with engagement_id=<active> is hidden from sibling
+        # agents in the same engagement.
+        ingest_result = await service.ingest_institutional(records)
+        yield ChunkIngested(
+            event_id=f"evt-{uuid4().hex[:12]}",
+            engagement_id=engagement_id,
+            client_id=client_id,
+            artifact_count=ingest_result.artifacts_ingested,
+            chunk_count=ingest_result.chunks_created + ingest_result.chunks_updated,
+            chunks_created=ingest_result.chunks_created,
+            chunks_updated=ingest_result.chunks_updated,
+            chunks_skipped=ingest_result.chunks_skipped,
+        )
 
     # ------------------------------------------------------------------
     # Internal helpers
