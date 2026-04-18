@@ -1,7 +1,74 @@
 # Handover
 
 Last updated: 2026-04-18
-Session: Pipeline configuration + audit-driven quality fixes
+Session: Pipeline configuration + audit-driven quality fixes +
+audit-remediation pass
+
+## What Changed (Audit remediation pass, 2026-04-18 follow-up)
+
+A second session audited the pipeline-config changes and implemented
+every follow-up fix the audit identified. Four source fixes + six test
+coverage gaps, zero deferrals.
+
+**Fix 1 — Research agent ``current_tier`` from config.**
+:class:`ResearchAgent` and :class:`AgentPool` gained a
+``current_tier: ModelTier`` kwarg (default ``STANDARD`` for
+back-compat). The orchestrator resolves it from
+``PipelineConfig.model_mixing.l1_research`` via
+``_resolve_layer_tier_or``. ``ErrorRecovery`` now walks the fallback
+chain from the correct baseline when operators retune
+``l1_research`` (pre-fix, recovery always thought baseline was
+STANDARD regardless of the actual LLM tier).
+
+**Fix 2 — SprintContractGenerator through PipelineConfig.**
+:class:`ModelMixingConfig` gained ``sprint_contract: str = "flagship"``
+and ``_DEFAULT_LAYER_EFFORTS`` gained ``"sprint_contract": "high"``.
+The orchestrator routes generator construction through
+``_layer_llm("sprint_contract", FLAGSHIP, "high")`` so sprint-contract
+generation is now a config-driven layer like every other LLM call site.
+
+**Fix 3 — Removed dead config fields.** ``l2_structuring`` and
+``l3_generation`` are gone from :class:`ModelMixingConfig` and
+``_DEFAULT_LAYER_EFFORTS``. L2 ContentStructurer is pure Python and L3
+is the MarkdownRenderer; these fields claimed to control tiers but
+never mapped to an LLM call.
+
+**Fix 4 — ``get_deep_research_callable`` honors programmatic
+AppConfig.** Two halves: (a) the orchestrator now prefers
+``factory.deep_research_callable()`` when ``llm_factory`` is a
+:class:`LayerAwareLLMFactory`, preserving programmatic overrides that
+were constructed into the factory; (b) the module-level
+``get_deep_research_callable`` docstring now spells out that env vars
+always flow (BaseSettings re-read) but programmatic overrides require
+passing ``config`` explicitly.
+
+**Test coverage — six gaps filled, nine tests added in a new
+``tests/unit/test_remediation_coverage.py``:**
+1. Sprint-contract fallback governance flag emission end-to-end
+   (spies on ``ProfileExecutionPolicy.apply_flag`` during a full pipeline
+   run with a raising generator).
+2. ``Layer3Result.infrastructure_failure=True`` is distinguishable
+   from a genuine zero-dimension rubric result (different feedback,
+   empty vs populated dimension_scores, same pass/fail).
+3. Two tests for :func:`get_deep_research_callable` (programmatic
+   ``AppConfig`` → custom model flows; no config → default model).
+4. Two tests for Layer 4 trajectory (structural: ``Evaluator._layer4._llm``
+   is the primary llm; end-to-end: the factory's ``l4_evaluator``
+   layer resolves to FLAGSHIP model + ``reasoning.effort="high"``).
+5. Per-task :class:`Evaluator` freshness (2-task pipeline run captures
+   2 distinct Evaluator instances; mutating one does not affect the
+   other).
+6. Two tests for ``analyst_tier`` env-var end-to-end
+   (``PIPELINE__MODEL_MIXING__L1_5_ANALYSTS=flagship`` reaches
+   :attr:`Deliberation._analyst_tier`; the :class:`AnalystSpawned`
+   event reports ``model_tier="flagship"``).
+
+**Verification.** 1395 → **1404 unit+canary passing** (+9 new, 3
+xfailed unchanged). Ruff net-zero on touched files (pre-existing
+errors unchanged, zero new). Mypy net-zero on src/ (128 errors
+pre-existing, 128 post-fix). Ruff clean on the new test file after
+autofixes for unused imports, sort order, zip(strict=True), and
+contextlib.suppress.
 
 ## What Changed (Pipeline config + quality fixes session)
 

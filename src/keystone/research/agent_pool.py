@@ -15,7 +15,7 @@ from keystone.evaluator.retry import LLMCallable
 from keystone.gateway.mcp_gateway import MCPGateway
 from keystone.models.agents import AgentInstance
 from keystone.models.research import EngagementSpec, StructuredFinding
-from keystone.models.tasks import ResearchTask
+from keystone.models.tasks import ModelTier, ResearchTask
 from keystone.research.context_loader import ContextLoader
 from keystone.research.error_recovery import ErrorRecovery
 from keystone.research.evidence_context import EvidenceContextProvider
@@ -70,6 +70,7 @@ class AgentPool:
         research_default_rounds: int = DEFAULT_ROUNDS,
         research_max_rounds: int = MAX_ROUNDS,
         research_quality_threshold: float = QUALITY_THRESHOLD,
+        current_tier: ModelTier = ModelTier.STANDARD,
     ) -> None:
         self._llm = llm
         self._gateway = gateway
@@ -82,6 +83,9 @@ class AgentPool:
         self._research_default_rounds = research_default_rounds
         self._research_max_rounds = research_max_rounds
         self._research_quality_threshold = research_quality_threshold
+        # Tier that ``llm`` actually runs at. Forwarded to ResearchAgent so
+        # ErrorRecovery's fallback chain walks from the correct baseline.
+        self._current_tier = current_tier
 
     async def execute_all(
         self,
@@ -141,6 +145,7 @@ class AgentPool:
             max_rounds=self._research_default_rounds,
             max_rounds_cap=self._research_max_rounds,
             quality_threshold=self._research_quality_threshold,
+            current_tier=self._current_tier,
         )
 
         events: list = []

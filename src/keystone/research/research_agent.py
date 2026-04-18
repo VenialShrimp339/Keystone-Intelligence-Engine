@@ -156,6 +156,7 @@ class ResearchAgent:
         max_rounds: int = DEFAULT_ROUNDS,
         max_rounds_cap: int = MAX_ROUNDS,
         quality_threshold: float = QUALITY_THRESHOLD,
+        current_tier: ModelTier = ModelTier.STANDARD,
     ) -> None:
         self._llm = llm
         self._deep_llm = deep_llm
@@ -166,6 +167,12 @@ class ResearchAgent:
         self._evidence_provider = evidence_provider
         self._max_rounds = min(max_rounds, max_rounds_cap)
         self._quality_threshold = quality_threshold
+        # current_tier tells ErrorRecovery what tier ``llm`` actually is so
+        # the fallback chain walks from the correct baseline when the
+        # operator has retuned ``l1_research`` via PipelineConfig. Defaults
+        # to STANDARD for backward compat with callers that still pass a
+        # Sonnet-tier LLM directly.
+        self._current_tier = current_tier
         self._finding: StructuredFinding | None = None
         # Per-round accumulators
         self._all_claims: list[dict] = []
@@ -564,7 +571,7 @@ class ResearchAgent:
                 raw_response = await self._error_recovery.execute_with_recovery(
                     self._llm,
                     synthesis_prompt,
-                    current_tier=ModelTier.STANDARD,
+                    current_tier=self._current_tier,
                     description=f"synthesis_round_{round_num}",
                 )
                 round_claims = self._parse_synthesis(raw_response)
@@ -1015,7 +1022,7 @@ OUTPUT THE JSON AND NOTHING ELSE."""
             response = await self._error_recovery.execute_with_recovery(
                 self._llm,
                 prompt,
-                current_tier=ModelTier.STANDARD,
+                current_tier=self._current_tier,
                 description="absence_report",
             )
             result = self._parse_absence(response)

@@ -208,16 +208,29 @@ class Pipeline:
         deep_llm = None
         if os.environ.get("DEEP_RESEARCH", "").strip() == "1":
             logger.info("DEEP_RESEARCH=1: L1 agents will use multi-turn web research")
-            deep_llm = get_deep_research_callable(
-                pipeline_config=self._pipeline_config,
-            )
+            # Prefer the factory's own deep_research_callable when we have a
+            # real LayerAwareLLMFactory — it reuses the factory's AppConfig
+            # (so programmatic model-ID overrides flow through) and the
+            # factory's instance-level research_semaphore. Fall back to the
+            # module helper for test doubles that implement only the
+            # ``(tier) -> LLMCallable`` callable interface.
+            if isinstance(self._llm_factory, LayerAwareLLMFactory):
+                deep_llm = self._llm_factory.deep_research_callable()
+            else:
+                deep_llm = get_deep_research_callable(
+                    pipeline_config=self._pipeline_config,
+                )
 
         evidence_provider: EvidenceContextProvider | None = None
         if self._evidence_records:
             evidence_provider = EvidenceContextProvider(self._evidence_records)
 
         sprint_contract_generator = SprintContractGenerator(
-            llm=self._llm_factory(ModelTier.FLAGSHIP),
+            llm=self._layer_llm(
+                "sprint_contract",
+                fallback_tier=ModelTier.FLAGSHIP,
+                fallback_effort="high",
+            ),
         )
         pc = self._pipeline_config
         return PipelineComponents(
@@ -270,6 +283,11 @@ class Pipeline:
                 research_default_rounds=pc.research_default_rounds,
                 research_max_rounds=pc.research_max_rounds,
                 research_quality_threshold=pc.research_quality_threshold,
+                current_tier=_resolve_layer_tier_or(
+                    self._pipeline_config,
+                    "l1_research",
+                    ModelTier.STANDARD,
+                ),
             ),
             citation_processor=CitationProcessor(),
             deliberation=Deliberation(

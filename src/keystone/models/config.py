@@ -199,8 +199,6 @@ class ModelMixingConfig(BaseModel):
     l1_5_aggregator: str = Field(
         default="flagship", description="Deliberation aggregator model tier"
     )
-    l2_structuring: str = Field(default="standard", description="Content structuring model tier")
-    l3_generation: str = Field(default="standard", description="Deliverable generation model tier")
     # Layer 1 (Evaluator) fact decomposition and numerical extraction. Sonnet
     # reasoning is enough for extraction work; Opus is unnecessary here.
     l4_extraction: str = Field(
@@ -209,6 +207,12 @@ class ModelMixingConfig(BaseModel):
     )
     # Layer 3 rubric scoring keeps flagship. This is the judgment step.
     l4_evaluator: str = Field(default="flagship", description="Evaluator Layer 3 rubric tier")
+    # Sprint contract generation sets per-section quality criteria feeding L4.
+    # Judgment-heavy — mirror L4 evaluator tier/effort.
+    sprint_contract: str = Field(
+        default="flagship",
+        description="Sprint contract generator model tier (per-section quality criteria)",
+    )
     extraction: str = Field(default="fast", description="Extraction/classification model tier")
 
 
@@ -228,10 +232,9 @@ _DEFAULT_LAYER_EFFORTS: dict[str, str] = {
     "l1_research": "medium",
     "l1_5_analysts": "medium",
     "l1_5_aggregator": "xhigh",
-    "l2_structuring": "medium",
-    "l3_generation": "medium",
     "l4_extraction": "medium",
     "l4_evaluator": "high",
+    "sprint_contract": "high",
     "extraction": "low",
 }
 

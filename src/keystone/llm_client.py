@@ -569,9 +569,23 @@ def get_deep_research_callable(
 ) -> LLMCallable:
     """Return an LLMCallable for deep web research via Claude CLI.
 
-    Retained as a module-level helper for orchestrator paths that have
-    only an AppConfig handy. Internally constructs a short-lived factory
-    so concurrency limits and model selection come from config.
+    Retained as a module-level helper for callers that do not hold a
+    :class:`LayerAwareLLMFactory` instance. Internally constructs a
+    short-lived factory so concurrency limits and model selection come
+    from config.
+
+    Configuration channels:
+    - **Env vars** always take effect — omitting ``config`` builds a
+      fresh :class:`AppConfig`, which re-reads its ``BaseSettings``
+      sources (``.env`` + process environment). ``PIPELINE__...`` nested
+      vars also flow through this path.
+    - **Programmatic overrides** (e.g. ``AppConfig(standard_model=
+      "custom-sonnet")``) only flow through when ``config`` is passed
+      explicitly. Callers that built an AppConfig in code and want the
+      deep-research path to honor model-ID overrides MUST pass that
+      AppConfig here. The orchestrator routes through the active
+      :class:`LayerAwareLLMFactory` when it has one, which preserves
+      any programmatic overrides the factory was constructed with.
     """
     factory = LayerAwareLLMFactory(config or AppConfig(), pipeline_config)
     return factory.deep_research_callable()
