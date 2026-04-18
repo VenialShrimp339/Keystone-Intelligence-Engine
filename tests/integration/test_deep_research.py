@@ -215,14 +215,18 @@ def _build_gateway() -> MCPGateway:
     search_client = SimpleMCPClient()
     registry = ToolRegistry()
     for tool_name in [
-        "exa_search", "brave_search", "edgar_filings",
+        "exa_search",
+        "brave_search",
+        "edgar_filings",
     ]:
-        registry.register(ToolEntry(
-            name=tool_name,
-            server_name=tool_name,
-            description=f"Stub {tool_name}",
-            transport_type=TransportType.STDIO,
-        ))
+        registry.register(
+            ToolEntry(
+                name=tool_name,
+                server_name=tool_name,
+                description=f"Stub {tool_name}",
+                transport_type=TransportType.STDIO,
+            )
+        )
     return MCPGateway(
         registry=registry,
         authorizer=ToolAuthorizer(registry),
@@ -268,10 +272,10 @@ async def test_single_task_deep_research():
         finding_writer=finding_writer,
     )
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("STARTING SINGLE-TASK DEEP RESEARCH TEST")
     print(f"Task: {task.description[:80]}...")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     start_time = time.time()
     events = []
@@ -301,7 +305,9 @@ async def test_single_task_deep_research():
         "claim_count": claim_count,
         "unique_source_urls": unique_sources,
         "avg_confidence": round(avg_conf, 3),
-        "confidence_range": f"{min(conf_values):.2f}-{max(conf_values):.2f}" if conf_values else "N/A",
+        "confidence_range": f"{min(conf_values):.2f}-{max(conf_values):.2f}"
+        if conf_values
+        else "N/A",
         "absence_report_count": len(finding.absence_report),
         "tokens_consumed": finding.tokens_consumed,
         "sources_consulted": finding.sources_consulted,
@@ -324,7 +330,7 @@ async def test_single_task_deep_research():
     )
 
     # --- Print summary ---
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"SINGLE-TASK DEEP RESEARCH COMPLETE in {elapsed:.1f}s")
     print(f"Claims: {claim_count}")
     print(f"Unique source URLs: {unique_sources}")
@@ -350,7 +356,7 @@ async def test_single_task_deep_research():
         print(f"  - {item}")
 
     print(f"\nArtifacts saved to: {OUTPUT_DIR / 'single_task'}")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     # --- Assertions ---
     assert claim_count >= 5, f"Expected 5+ claims, got {claim_count}"
@@ -371,15 +377,22 @@ def _build_real_gateway() -> tuple[MCPGateway, SimpleMCPClient]:
     search_client = SimpleMCPClient()
     registry = ToolRegistry()
     for tool_name in [
-        "exa_search", "brave_search", "edgar_filings",
-        "finnhub_market", "paper_search", "fred_data", "doi_verify",
+        "exa_search",
+        "brave_search",
+        "edgar_filings",
+        "finnhub_market",
+        "paper_search",
+        "fred_data",
+        "doi_verify",
     ]:
-        registry.register(ToolEntry(
-            name=tool_name,
-            server_name=tool_name,
-            description=f"Real/stub {tool_name}",
-            transport_type=TransportType.STDIO,
-        ))
+        registry.register(
+            ToolEntry(
+                name=tool_name,
+                server_name=tool_name,
+                description=f"Real/stub {tool_name}",
+                transport_type=TransportType.STDIO,
+            )
+        )
     return MCPGateway(
         registry=registry,
         authorizer=ToolAuthorizer(registry),
@@ -395,9 +408,11 @@ def _serialize_events(events: list) -> str:
         try:
             serialized.append(json.loads(event.model_dump_json()))
         except Exception as exc:
-            serialized.append({
-                "error": f"Failed to serialize {type(event).__name__}: {exc}",
-            })
+            serialized.append(
+                {
+                    "error": f"Failed to serialize {type(event).__name__}: {exc}",
+                }
+            )
     return json.dumps(serialized, indent=2, default=str)
 
 
@@ -441,18 +456,16 @@ async def test_full_pipeline_deep_research():
         events: list = []
         stage_timings: dict[str, float] = {}
 
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print("STARTING FULL PIPELINE WITH DEEP RESEARCH")
         print(f"Question: {question[:80]}...")
-        print(f"{'='*60}\n")
+        print(f"{'=' * 60}\n")
 
         overall_start = time.time()
         stage_start = time.time()
         current_stage = "L0"
 
-        async for event in pipeline.run_with_events(
-            question, client_id, client_context
-        ):
+        async for event in pipeline.run_with_events(question, client_id, client_context):
             events.append(event)
             layer = getattr(event, "layer", "unknown")
 
@@ -473,9 +486,7 @@ async def test_full_pipeline_deep_research():
         elapsed = time.time() - overall_start
 
         # --- Metrics ---
-        event_layers = Counter(
-            getattr(e, "layer", "unknown") for e in events
-        )
+        event_layers = Counter(getattr(e, "layer", "unknown") for e in events)
 
         total_claims = sum(len(f.claims) for f in result.findings)
         all_urls = set()
@@ -488,17 +499,15 @@ async def test_full_pipeline_deep_research():
         metrics = {
             "mode": "deep_research",
             "wall_clock_seconds": round(elapsed, 1),
-            "stage_timings": {
-                k: round(v, 1) for k, v in stage_timings.items()
-            },
+            "stage_timings": {k: round(v, 1) for k, v in stage_timings.items()},
             "total_tokens": result.total_tokens,
             "total_events": len(events),
             "events_by_layer": dict(event_layers),
             "findings_count": len(result.findings),
             "total_claims": total_claims,
-            "claims_per_finding": round(
-                total_claims / len(result.findings), 1
-            ) if result.findings else 0,
+            "claims_per_finding": round(total_claims / len(result.findings), 1)
+            if result.findings
+            else 0,
             "unique_source_urls": len(all_urls),
             "citation_count": len(result.manifest.citations),
             "confidence_map": {
@@ -542,10 +551,7 @@ async def test_full_pipeline_deep_research():
         _save_artifact(
             out / "evaluation_results.json",
             json.dumps(
-                [
-                    json.loads(er.model_dump_json())
-                    for er in result.evaluation_results
-                ],
+                [json.loads(er.model_dump_json()) for er in result.evaluation_results],
                 indent=2,
             ),
         )
@@ -560,15 +566,12 @@ async def test_full_pipeline_deep_research():
         )
 
         # --- Print summary ---
-        print(f"\n{'='*60}")
+        print(f"\n{'=' * 60}")
         print(f"DEEP RESEARCH PIPELINE COMPLETE in {elapsed:.1f}s")
         print(f"Tasks: {len(result.spec.task_decomposition.tasks)}")
         print(f"Findings: {len(result.findings)}")
         print(f"Total claims: {total_claims}")
-        print(
-            f"Claims per finding: "
-            f"{metrics['claims_per_finding']}"
-        )
+        print(f"Claims per finding: {metrics['claims_per_finding']}")
         print(f"Unique source URLs: {len(all_urls)}")
         print(f"Citations in manifest: {len(result.manifest.citations)}")
         print(
@@ -577,19 +580,13 @@ async def test_full_pipeline_deep_research():
         )
         print(f"Evaluations: {len(result.evaluation_results)}")
         for er in result.evaluation_results:
-            print(
-                f"  {er.task_id}: {'PASS' if er.passed else 'FAIL'} "
-                f"({er.overall_score:.1f}/100)"
-            )
+            print(f"  {er.task_id}: {'PASS' if er.passed else 'FAIL'} ({er.overall_score:.1f}/100)")
         print(f"Markdown: {len(result.markdown_output)} chars")
         print(f"Tokens: {result.total_tokens}")
         print(f"Events: {len(events)} ({dict(event_layers)})")
-        print(
-            f"Stage timings: "
-            f"{json.dumps({k: f'{v:.1f}s' for k, v in stage_timings.items()})}"
-        )
+        print(f"Stage timings: {json.dumps({k: f'{v:.1f}s' for k, v in stage_timings.items()})}")
         print(f"Artifacts saved to: {out}")
-        print(f"{'='*60}\n")
+        print(f"{'=' * 60}\n")
 
         # --- Structural assertions ---
         assert result.engagement_id, "Empty engagement_id"

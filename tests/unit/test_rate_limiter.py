@@ -16,6 +16,7 @@ from keystone.gateway.rate_limiter import (
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def limiter() -> InMemoryRateLimiter:
     """Rate limiter with 5 tokens, 1 token/second refill for exa."""
@@ -29,6 +30,7 @@ def limiter() -> InMemoryRateLimiter:
 # ---------------------------------------------------------------------------
 # Token bucket basics
 # ---------------------------------------------------------------------------
+
 
 class TestTokenBucket:
     @pytest.mark.asyncio
@@ -73,6 +75,7 @@ class TestTokenBucket:
 # Per-provider isolation
 # ---------------------------------------------------------------------------
 
+
 class TestProviderIsolation:
     @pytest.mark.asyncio
     async def test_separate_buckets(self, limiter: InMemoryRateLimiter) -> None:
@@ -101,6 +104,7 @@ class TestProviderIsolation:
 # get_remaining and get_retry_after
 # ---------------------------------------------------------------------------
 
+
 class TestUtilities:
     @pytest.mark.asyncio
     async def test_get_remaining(self, limiter: InMemoryRateLimiter) -> None:
@@ -127,6 +131,7 @@ class TestUtilities:
 # ---------------------------------------------------------------------------
 # Protocol compliance
 # ---------------------------------------------------------------------------
+
 
 class TestProtocol:
     def test_implements_backend_protocol(self) -> None:

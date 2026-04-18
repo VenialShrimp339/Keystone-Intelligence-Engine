@@ -16,18 +16,21 @@ from keystone.specification.engagement_classifier import (
 
 def _make_llm(engagement_type: str, pipeline_profile: str = "standard", confidence: float = 0.9):
     """Create a mock LLM that returns a classification response."""
+
     async def llm(prompt: str) -> str:
-        return json.dumps({
-            "engagement_type": engagement_type,
-            "pipeline_profile": pipeline_profile,
-            "confidence": confidence,
-            "reasoning": f"Classified as {engagement_type} with {pipeline_profile} profile.",
-        })
+        return json.dumps(
+            {
+                "engagement_type": engagement_type,
+                "pipeline_profile": pipeline_profile,
+                "confidence": confidence,
+                "reasoning": f"Classified as {engagement_type} with {pipeline_profile} profile.",
+            }
+        )
+
     return llm
 
 
 class TestEngagementClassifier:
-
     async def test_evaluative_classification(self):
         llm = _make_llm("evaluative", "standard")
         classifier = EngagementClassifier(llm)
@@ -66,12 +69,16 @@ class TestEngagementClassifier:
 
     async def test_default_profile_fallback(self):
         """When LLM doesn't return a valid profile, falls back to default."""
+
         async def llm(prompt: str) -> str:
-            return json.dumps({
-                "engagement_type": "strategic",
-                "confidence": 0.85,
-                "reasoning": "Complex multi-variable question.",
-            })
+            return json.dumps(
+                {
+                    "engagement_type": "strategic",
+                    "confidence": 0.85,
+                    "reasoning": "Complex multi-variable question.",
+                }
+            )
+
         classifier = EngagementClassifier(llm)
         result = await classifier.classify("Should we enter the Japanese market?")
         assert result.engagement_type == EngagementType.STRATEGIC
@@ -86,14 +93,18 @@ class TestEngagementClassifier:
     async def test_client_context_passed_to_prompt(self):
         """Verify client_context makes it into the prompt."""
         captured_prompts: list[str] = []
+
         async def llm(prompt: str) -> str:
             captured_prompts.append(prompt)
-            return json.dumps({
-                "engagement_type": "evaluative",
-                "pipeline_profile": "standard",
-                "confidence": 0.9,
-                "reasoning": "Test.",
-            })
+            return json.dumps(
+                {
+                    "engagement_type": "evaluative",
+                    "pipeline_profile": "standard",
+                    "confidence": 0.9,
+                    "reasoning": "Test.",
+                }
+            )
+
         classifier = EngagementClassifier(llm)
         await classifier.classify("Test question", client_context="Fortune 500 client")
         assert "Fortune 500 client" in captured_prompts[0]

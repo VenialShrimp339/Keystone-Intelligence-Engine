@@ -117,15 +117,39 @@ class TestDeduplication:
     async def test_dedup_same_url_from_three_agents(self, _mock):
         """Two of three agents cite the same URL. Verify merge to 2 citations."""
         shared = "https://sec.gov/10k/filing.pdf"
-        f1 = _finding("agent-1", [_claim("Revenue grew 15%", [
-            _cit("CIT-001", shared, agents=["agent-1"]),
-        ])])
-        f2 = _finding("agent-2", [_claim("Revenue increased", [
-            _cit("CIT-002", shared, agents=["agent-2"]),
-        ])])
-        f3 = _finding("agent-3", [_claim("Costs were flat", [
-            _cit("CIT-003", "https://other.com/report", agents=["agent-3"]),
-        ])])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim(
+                    "Revenue grew 15%",
+                    [
+                        _cit("CIT-001", shared, agents=["agent-1"]),
+                    ],
+                )
+            ],
+        )
+        f2 = _finding(
+            "agent-2",
+            [
+                _claim(
+                    "Revenue increased",
+                    [
+                        _cit("CIT-002", shared, agents=["agent-2"]),
+                    ],
+                )
+            ],
+        )
+        f3 = _finding(
+            "agent-3",
+            [
+                _claim(
+                    "Costs were flat",
+                    [
+                        _cit("CIT-003", "https://other.com/report", agents=["agent-3"]),
+                    ],
+                )
+            ],
+        )
 
         processor = CitationProcessor()
         await _collect(processor, [f1, f2, f3])
@@ -139,12 +163,38 @@ class TestDeduplication:
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
     async def test_dedup_same_doi_different_urls(self, _mock):
         """Two citations with different URLs but same DOI. Verify merge."""
-        f1 = _finding("agent-1", [_claim("Market is $50B", [
-            _cit("CIT-001", "https://site-a.com/paper", doi="10.1234/test", agents=["agent-1"]),
-        ])])
-        f2 = _finding("agent-2", [_claim("Market size 50B", [
-            _cit("CIT-002", "https://site-b.com/paper", doi="10.1234/test", agents=["agent-2"]),
-        ])])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim(
+                    "Market is $50B",
+                    [
+                        _cit(
+                            "CIT-001",
+                            "https://site-a.com/paper",
+                            doi="10.1234/test",
+                            agents=["agent-1"],
+                        ),
+                    ],
+                )
+            ],
+        )
+        f2 = _finding(
+            "agent-2",
+            [
+                _claim(
+                    "Market size 50B",
+                    [
+                        _cit(
+                            "CIT-002",
+                            "https://site-b.com/paper",
+                            doi="10.1234/test",
+                            agents=["agent-2"],
+                        ),
+                    ],
+                )
+            ],
+        )
 
         processor = CitationProcessor()
         await _collect(processor, [f1, f2])
@@ -164,12 +214,28 @@ class TestCorroboration:
     async def test_canonical_self_pairs_are_dropped(self, _mock):
         """Canonical corroboration pairs never retain identical endpoints."""
         shared_url = "https://statista.com/market-size"
-        f1 = _finding("agent-1", [_claim("Market is $50B", [
-            _cit("CIT-001", shared_url, agents=["agent-1"]),
-        ])])
-        f2 = _finding("agent-2", [_claim("TAM estimate $50B", [
-            _cit("CIT-002", shared_url, agents=["agent-2"]),
-        ])])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim(
+                    "Market is $50B",
+                    [
+                        _cit("CIT-001", shared_url, agents=["agent-1"]),
+                    ],
+                )
+            ],
+        )
+        f2 = _finding(
+            "agent-2",
+            [
+                _claim(
+                    "TAM estimate $50B",
+                    [
+                        _cit("CIT-002", shared_url, agents=["agent-2"]),
+                    ],
+                )
+            ],
+        )
 
         processor = CitationProcessor()
         events = await _collect(processor, [f1, f2])
@@ -226,10 +292,13 @@ class TestURLCheck:
         httpx_mock.add_response(url=dead_url, method="HEAD", status_code=404)
         httpx_mock.add_response(url=dead_url, method="GET", status_code=404)
 
-        f1 = _finding("agent-1", [
-            _claim("Live source", [_cit("CIT-001", live_url, agents=["agent-1"])]),
-            _claim("Dead source", [_cit("CIT-002", dead_url, agents=["agent-1"])]),
-        ])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim("Live source", [_cit("CIT-001", live_url, agents=["agent-1"])]),
+                _claim("Dead source", [_cit("CIT-002", dead_url, agents=["agent-1"])]),
+            ],
+        )
 
         processor = CitationProcessor()
         events = await _collect(processor, [f1])
@@ -244,8 +313,7 @@ class TestURLCheck:
 
         manifest = await processor.get_manifest()
         alias_by_src = {
-            alias.source_instance_id: alias.canonical_citation_id
-            for alias in manifest.aliases
+            alias.source_instance_id: alias.canonical_citation_id for alias in manifest.aliases
         }
         assert alias_by_src["CIT-002"] in manifest.dead_urls
         assert alias_by_src["CIT-001"] not in manifest.dead_urls
@@ -260,10 +328,13 @@ class TestCitationHashes:
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
     async def test_all_citations_have_metadata_hash(self, _mock):
         """Every canonical citation gets a metadata_hash derived from url:title."""
-        f1 = _finding("agent-1", [
-            _claim("Claim A", [_cit("CIT-001", "https://a.com", content_hash=None)]),
-            _claim("Claim B", [_cit("CIT-002", "https://b.com", content_hash="ab" * 32)]),
-        ])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim("Claim A", [_cit("CIT-001", "https://a.com", content_hash=None)]),
+                _claim("Claim B", [_cit("CIT-002", "https://b.com", content_hash="ab" * 32)]),
+            ],
+        )
 
         processor = CitationProcessor()
         await _collect(processor, [f1])
@@ -284,27 +355,43 @@ class TestCitationHashes:
             "https://loser.example.com/paper",
             "Loser Title",
         )
-        f1 = _finding("agent-1", [_claim("Winner claim", [
-            _cit(
-                "CIT-001",
-                "https://winner.example.com/paper",
-                title="Winner Title",
-                doi="10.1234/test",
-                quality=0.9,
-                agents=["agent-1"],
-            ),
-        ])])
-        f2 = _finding("agent-2", [_claim("Loser claim", [
-            _cit(
-                "CIT-002",
-                "https://loser.example.com/paper",
-                title="Loser Title",
-                doi="10.1234/test",
-                quality=0.4,
-                agents=["agent-2"],
-                metadata_hash=stale_hash,
-            ),
-        ])])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim(
+                    "Winner claim",
+                    [
+                        _cit(
+                            "CIT-001",
+                            "https://winner.example.com/paper",
+                            title="Winner Title",
+                            doi="10.1234/test",
+                            quality=0.9,
+                            agents=["agent-1"],
+                        ),
+                    ],
+                )
+            ],
+        )
+        f2 = _finding(
+            "agent-2",
+            [
+                _claim(
+                    "Loser claim",
+                    [
+                        _cit(
+                            "CIT-002",
+                            "https://loser.example.com/paper",
+                            title="Loser Title",
+                            doi="10.1234/test",
+                            quality=0.4,
+                            agents=["agent-2"],
+                            metadata_hash=stale_hash,
+                        ),
+                    ],
+                )
+            ],
+        )
 
         processor = CitationProcessor()
         await _collect(processor, [f1, f2])
@@ -324,9 +411,12 @@ class TestCitationHashes:
     async def test_existing_content_hash_preserved(self, _mock):
         """Existing real content_hash values survive canonicalization."""
         existing_hash = "ab" * 32
-        f1 = _finding("agent-1", [
-            _claim("Claim", [_cit("CIT-001", "https://a.com", content_hash=existing_hash)]),
-        ])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim("Claim", [_cit("CIT-001", "https://a.com", content_hash=existing_hash)]),
+            ],
+        )
 
         processor = CitationProcessor()
         await _collect(processor, [f1])
@@ -346,12 +436,28 @@ class TestEventEmission:
     async def test_event_order_when_canonical_self_pairs_are_dropped(self, _mock):
         """Events stay ordered even when canonical corroboration self-pairs are removed."""
         shared_url = "https://sec.gov/filing.pdf"
-        f1 = _finding("agent-1", [_claim("Rev grew", [
-            _cit("CIT-001", shared_url, agents=["agent-1"]),
-        ])])
-        f2 = _finding("agent-2", [_claim("Rev up", [
-            _cit("CIT-002", shared_url, agents=["agent-2"]),
-        ])])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim(
+                    "Rev grew",
+                    [
+                        _cit("CIT-001", shared_url, agents=["agent-1"]),
+                    ],
+                )
+            ],
+        )
+        f2 = _finding(
+            "agent-2",
+            [
+                _claim(
+                    "Rev up",
+                    [
+                        _cit("CIT-002", shared_url, agents=["agent-2"]),
+                    ],
+                )
+            ],
+        )
 
         processor = CitationProcessor()
         events = await _collect(processor, [f1, f2])
@@ -374,9 +480,17 @@ class TestEventEmission:
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
     async def test_events_carry_engagement_context(self, _mock):
         """All events carry correct engagement_id and client_id."""
-        f1 = _finding("agent-1", [_claim("Claim", [
-            _cit("CIT-001", "https://a.com", agents=["agent-1"]),
-        ])])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim(
+                    "Claim",
+                    [
+                        _cit("CIT-001", "https://a.com", agents=["agent-1"]),
+                    ],
+                )
+            ],
+        )
 
         processor = CitationProcessor()
         events = await _collect(processor, [f1], eid="ENG-X", cid="CLIENT-Y")
@@ -417,9 +531,17 @@ class TestEdgeCases:
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
     async def test_single_agent_single_citation(self, _mock):
         """One agent, one citation. No dedup/corroboration. Manifest produced."""
-        f1 = _finding("agent-1", [_claim("Solo claim", [
-            _cit("CIT-001", "https://a.com", agents=["agent-1"]),
-        ])])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim(
+                    "Solo claim",
+                    [
+                        _cit("CIT-001", "https://a.com", agents=["agent-1"]),
+                    ],
+                )
+            ],
+        )
 
         processor = CitationProcessor()
         events = await _collect(processor, [f1])
@@ -449,12 +571,28 @@ class TestManifestSchema:
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
     async def test_output_is_citation_manifest(self, _mock):
         """Output conforms to CitationManifest Pydantic model."""
-        f1 = _finding("agent-1", [_claim("Claim A", [
-            _cit("CIT-001", "https://a.com", agents=["agent-1"]),
-        ])])
-        f2 = _finding("agent-2", [_claim("Claim B", [
-            _cit("CIT-002", "https://b.com", agents=["agent-2"]),
-        ])])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim(
+                    "Claim A",
+                    [
+                        _cit("CIT-001", "https://a.com", agents=["agent-1"]),
+                    ],
+                )
+            ],
+        )
+        f2 = _finding(
+            "agent-2",
+            [
+                _claim(
+                    "Claim B",
+                    [
+                        _cit("CIT-002", "https://b.com", agents=["agent-2"]),
+                    ],
+                )
+            ],
+        )
 
         processor = CitationProcessor()
         await _collect(processor, [f1, f2])
@@ -472,9 +610,17 @@ class TestManifestSchema:
     @patch("keystone.citation.processor.batch_check_urls", side_effect=_all_urls_live)
     async def test_manifest_serializes_to_json(self, _mock):
         """Manifest round-trips through JSON serialization."""
-        f1 = _finding("agent-1", [_claim("Claim", [
-            _cit("CIT-001", "https://a.com", agents=["agent-1"]),
-        ])])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim(
+                    "Claim",
+                    [
+                        _cit("CIT-001", "https://a.com", agents=["agent-1"]),
+                    ],
+                )
+            ],
+        )
 
         processor = CitationProcessor()
         await _collect(processor, [f1])
@@ -496,12 +642,28 @@ class TestAliasMapAndCanonicalRewriting:
     async def test_citation_processor_builds_alias_map(self, _mock):
         """Alias map in manifest covers all source-instance IDs, including the winner."""
         shared_url = "https://sec.gov/filing.pdf"
-        f1 = _finding("agent-1", [_claim("Revenue grew 15%", [
-            _cit("CIT-SRC-001", shared_url, agents=["agent-1"]),
-        ])])
-        f2 = _finding("agent-2", [_claim("Revenue increased", [
-            _cit("CIT-SRC-002", shared_url, agents=["agent-2"]),
-        ])])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim(
+                    "Revenue grew 15%",
+                    [
+                        _cit("CIT-SRC-001", shared_url, agents=["agent-1"]),
+                    ],
+                )
+            ],
+        )
+        f2 = _finding(
+            "agent-2",
+            [
+                _claim(
+                    "Revenue increased",
+                    [
+                        _cit("CIT-SRC-002", shared_url, agents=["agent-2"]),
+                    ],
+                )
+            ],
+        )
 
         processor = CitationProcessor()
         await _collect(processor, [f1, f2])
@@ -522,23 +684,35 @@ class TestAliasMapAndCanonicalRewriting:
         shared_url = "https://sec.gov/filing.pdf"
         # agent-1 cites shared URL: source ID CIT-SRC-001, will be merged into canonical
         # agent-2 cites same URL: source ID CIT-SRC-002, will be aliased to same canonical
-        f1 = _finding("agent-1", [_claim("Revenue grew", [
-            _cit("CIT-SRC-001", shared_url, agents=["agent-1"]),
-        ])])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim(
+                    "Revenue grew",
+                    [
+                        _cit("CIT-SRC-001", shared_url, agents=["agent-1"]),
+                    ],
+                )
+            ],
+        )
         # Give the finding claims citation_ids as source-instance IDs
-        f1 = f1.model_copy(update={
-            "claims": [
-                f1.claims[0].model_copy(update={"citation_ids": ["CIT-SRC-001"]})
-            ]
-        })
-        f2 = _finding("agent-2", [_claim("Revenue up", [
-            _cit("CIT-SRC-002", shared_url, agents=["agent-2"]),
-        ])])
-        f2 = f2.model_copy(update={
-            "claims": [
-                f2.claims[0].model_copy(update={"citation_ids": ["CIT-SRC-002"]})
-            ]
-        })
+        f1 = f1.model_copy(
+            update={"claims": [f1.claims[0].model_copy(update={"citation_ids": ["CIT-SRC-001"]})]}
+        )
+        f2 = _finding(
+            "agent-2",
+            [
+                _claim(
+                    "Revenue up",
+                    [
+                        _cit("CIT-SRC-002", shared_url, agents=["agent-2"]),
+                    ],
+                )
+            ],
+        )
+        f2 = f2.model_copy(
+            update={"claims": [f2.claims[0].model_copy(update={"citation_ids": ["CIT-SRC-002"]})]}
+        )
 
         processor = CitationProcessor()
         await _collect(processor, [f1, f2])
@@ -562,15 +736,39 @@ class TestAliasMapAndCanonicalRewriting:
         unique_url = "https://other.com/report.pdf"
 
         # Three agents: two cite shared_url, one cites unique_url
-        f1 = _finding("agent-1", [_claim("Market is $50B", [
-            _cit("CIT-A1", shared_url, quality=0.9, agents=["agent-1"]),
-        ])])
-        f2 = _finding("agent-2", [_claim("TAM $50B", [
-            _cit("CIT-A2", shared_url, quality=0.7, agents=["agent-2"]),
-        ])])
-        f3 = _finding("agent-3", [_claim("Unique finding", [
-            _cit("CIT-B1", unique_url, quality=0.8, agents=["agent-3"]),
-        ])])
+        f1 = _finding(
+            "agent-1",
+            [
+                _claim(
+                    "Market is $50B",
+                    [
+                        _cit("CIT-A1", shared_url, quality=0.9, agents=["agent-1"]),
+                    ],
+                )
+            ],
+        )
+        f2 = _finding(
+            "agent-2",
+            [
+                _claim(
+                    "TAM $50B",
+                    [
+                        _cit("CIT-A2", shared_url, quality=0.7, agents=["agent-2"]),
+                    ],
+                )
+            ],
+        )
+        f3 = _finding(
+            "agent-3",
+            [
+                _claim(
+                    "Unique finding",
+                    [
+                        _cit("CIT-B1", unique_url, quality=0.8, agents=["agent-3"]),
+                    ],
+                )
+            ],
+        )
 
         processor = CitationProcessor()
         await _collect(processor, [f1, f2, f3])

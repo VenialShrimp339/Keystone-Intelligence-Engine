@@ -55,15 +55,22 @@ def _build_real_gateway() -> tuple[MCPGateway, SimpleMCPClient]:
     # SimpleMCPClient handles exa_search and brave_search natively;
     # other tools return stubs (which is fine -- agents continue with partial data).
     for tool_name in [
-        "exa_search", "brave_search", "edgar_filings",
-        "finnhub_market", "paper_search", "fred_data", "doi_verify",
+        "exa_search",
+        "brave_search",
+        "edgar_filings",
+        "finnhub_market",
+        "paper_search",
+        "fred_data",
+        "doi_verify",
     ]:
-        registry.register(ToolEntry(
-            name=tool_name,
-            server_name=tool_name,
-            description=f"Real/stub {tool_name}",
-            transport_type=TransportType.STDIO,
-        ))
+        registry.register(
+            ToolEntry(
+                name=tool_name,
+                server_name=tool_name,
+                description=f"Real/stub {tool_name}",
+                transport_type=TransportType.STDIO,
+            )
+        )
 
     gateway = MCPGateway(
         registry=registry,
@@ -89,11 +96,13 @@ def _serialize_events(events: list) -> str:
         try:
             serialized.append(json.loads(event.model_dump_json()))
         except Exception as exc:
-            serialized.append({
-                "error": f"Failed to serialize {type(event).__name__}: {exc}",
-                "event_type": type(event).__name__,
-                "layer": getattr(event, "layer", "unknown"),
-            })
+            serialized.append(
+                {
+                    "error": f"Failed to serialize {type(event).__name__}: {exc}",
+                    "event_type": type(event).__name__,
+                    "layer": getattr(event, "layer", "unknown"),
+                }
+            )
     return json.dumps(serialized, indent=2, default=str)
 
 
@@ -136,10 +145,10 @@ async def test_full_pipeline_real():
     stage_timings: dict[str, float] = {}
     errors_encountered: list[dict] = []
 
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print("STARTING FULL PIPELINE RUN")
     print(f"Question: {question[:80]}...")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     overall_start = time.time()
 
@@ -148,17 +157,17 @@ async def test_full_pipeline_real():
         stage_start = time.time()
         current_stage = "L0"
 
-        async for event in pipeline.run_with_events(
-            question, client_id, client_context
-        ):
+        async for event in pipeline.run_with_events(question, client_id, client_context):
             events.append(event)
             layer = getattr(event, "layer", "unknown")
 
             # Track stage transitions for timing
             if layer != current_stage:
                 stage_timings[current_stage] = time.time() - stage_start
-                print(f"  {current_stage} complete: {stage_timings[current_stage]:.1f}s "
-                      f"({len([e for e in events if getattr(e, 'layer', '') == current_stage])} events)")
+                print(
+                    f"  {current_stage} complete: {stage_timings[current_stage]:.1f}s "
+                    f"({len([e for e in events if getattr(e, 'layer', '') == current_stage])} events)"
+                )
                 current_stage = layer
                 stage_start = time.time()
 
@@ -171,12 +180,14 @@ async def test_full_pipeline_real():
 
     except Exception as exc:
         elapsed = time.time() - overall_start
-        errors_encountered.append({
-            "stage": "pipeline_run",
-            "error_type": type(exc).__name__,
-            "error_message": str(exc),
-            "elapsed_seconds": elapsed,
-        })
+        errors_encountered.append(
+            {
+                "stage": "pipeline_run",
+                "error_type": type(exc).__name__,
+                "error_message": str(exc),
+                "elapsed_seconds": elapsed,
+            }
+        )
         # Save what we have even on failure
         _save_artifact(
             OUTPUT_DIR / "run_errors.json",
@@ -195,12 +206,16 @@ async def test_full_pipeline_real():
     agent_count = len(result.findings)
     succeeded_agents = sum(1 for f in result.findings if f.claims)
 
-    live_citations = sum(
-        1 for c in result.manifest.citations if c.url_live is True
-    ) if result.manifest.citations else 0
-    dead_citations = sum(
-        1 for c in result.manifest.citations if c.url_live is False
-    ) if result.manifest.citations else 0
+    live_citations = (
+        sum(1 for c in result.manifest.citations if c.url_live is True)
+        if result.manifest.citations
+        else 0
+    )
+    dead_citations = (
+        sum(1 for c in result.manifest.citations if c.url_live is False)
+        if result.manifest.citations
+        else 0
+    )
 
     metrics = {
         "wall_clock_seconds": round(elapsed, 1),
@@ -290,26 +305,31 @@ async def test_full_pipeline_real():
     assert "## Sources" in result.markdown_output, "Missing Sources section"
 
     # --- Print summary ---
-    print(f"\n{'='*60}")
+    print(f"\n{'=' * 60}")
     print(f"PIPELINE COMPLETE in {elapsed:.1f}s")
     print(f"Tasks: {len(result.spec.task_decomposition.tasks)}")
     print(f"Findings: {len(result.findings)}")
-    print(f"Citations: {len(result.manifest.citations)} "
-          f"(live: {live_citations}, dead: {dead_citations})")
-    print(f"Confidence map: {result.confidence_map.total_claims} claims "
-          f"across {result.confidence_map.tiers_populated} tiers")
+    print(
+        f"Citations: {len(result.manifest.citations)} "
+        f"(live: {live_citations}, dead: {dead_citations})"
+    )
+    print(
+        f"Confidence map: {result.confidence_map.total_claims} claims "
+        f"across {result.confidence_map.tiers_populated} tiers"
+    )
     print(f"Evaluations: {len(result.evaluation_results)}")
     for er in result.evaluation_results:
-        print(f"  {er.task_id}: {'PASS' if er.passed else 'FAIL'} "
-              f"({er.overall_score:.1f}/100)")
+        print(f"  {er.task_id}: {'PASS' if er.passed else 'FAIL'} ({er.overall_score:.1f}/100)")
     print(f"Markdown: {len(result.markdown_output)} chars")
     print(f"Tokens: {result.total_tokens}")
     print(f"Events: {len(events)} ({dict(event_layers)})")
-    print(f"Search calls: {search_client.call_count} "
-          f"(exa: {search_client.exa_calls}, brave: {search_client.brave_calls})")
+    print(
+        f"Search calls: {search_client.call_count} "
+        f"(exa: {search_client.exa_calls}, brave: {search_client.brave_calls})"
+    )
     print(f"Stage timings: {json.dumps({k: f'{v:.1f}s' for k, v in stage_timings.items()})}")
     print(f"Artifacts saved to: {OUTPUT_DIR}")
-    print(f"{'='*60}\n")
+    print(f"{'=' * 60}\n")
 
     # Print deliverable preview
     lines = result.markdown_output.split("\n")

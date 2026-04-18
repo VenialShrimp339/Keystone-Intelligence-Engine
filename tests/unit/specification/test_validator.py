@@ -73,7 +73,6 @@ def _make_llm(all_pass: bool = True, fail_dimensions: list[str] | None = None):
 
 
 class TestMECEValidator:
-
     async def test_valid_tree_passes_all(self):
         llm = _make_llm(all_pass=True)
         validator = MECEValidator(llm)
@@ -133,6 +132,7 @@ class TestMECEValidator:
         returns False. This test pins that the validator does not pass a dimension
         whose LLM value is the string "false".
         """
+
         async def llm_returns_string_false(prompt: str) -> str:
             # LLM returns string "false" for all dimensions instead of bool False
             dimensions = {dim.value: "false" for dim in ValidationDimension}

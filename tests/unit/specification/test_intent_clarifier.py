@@ -18,19 +18,21 @@ def _make_llm(
     surprising_finding: str = "The market is actually shrinking",
 ):
     async def llm(prompt: str) -> str:
-        return json.dumps({
-            "day_1_hypothesis": day_1_hypothesis,
-            "intent_clear": intent_clear,
-            "unstated_constraints": ["3-week timeline", "Budget under $50K"],
-            "scope_boundaries": ["No implementation planning", "North America only"],
-            "decision_context": decision_context,
-            "surprising_finding": surprising_finding,
-        })
+        return json.dumps(
+            {
+                "day_1_hypothesis": day_1_hypothesis,
+                "intent_clear": intent_clear,
+                "unstated_constraints": ["3-week timeline", "Budget under $50K"],
+                "scope_boundaries": ["No implementation planning", "North America only"],
+                "decision_context": decision_context,
+                "surprising_finding": surprising_finding,
+            }
+        )
+
     return llm
 
 
 class TestIntentClarifier:
-
     async def test_well_specified_question(self):
         llm = _make_llm(intent_clear=True)
         clarifier = IntentClarifier(llm)
@@ -70,16 +72,19 @@ class TestIntentClarifier:
 
     async def test_decision_context_from_client_context(self):
         captured: list[str] = []
+
         async def llm(prompt: str) -> str:
             captured.append(prompt)
-            return json.dumps({
-                "day_1_hypothesis": "Test hypothesis",
-                "intent_clear": True,
-                "unstated_constraints": [],
-                "scope_boundaries": [],
-                "decision_context": "Fund manager deciding on allocation",
-                "surprising_finding": "No surprise",
-            })
+            return json.dumps(
+                {
+                    "day_1_hypothesis": "Test hypothesis",
+                    "intent_clear": True,
+                    "unstated_constraints": [],
+                    "scope_boundaries": [],
+                    "decision_context": "Fund manager deciding on allocation",
+                    "surprising_finding": "No surprise",
+                }
+            )
 
         clarifier = IntentClarifier(llm)
         await clarifier.clarify(
@@ -91,16 +96,19 @@ class TestIntentClarifier:
 
     async def test_constraints_passed(self):
         captured: list[str] = []
+
         async def llm(prompt: str) -> str:
             captured.append(prompt)
-            return json.dumps({
-                "day_1_hypothesis": "Test",
-                "intent_clear": True,
-                "unstated_constraints": [],
-                "scope_boundaries": [],
-                "decision_context": "Test",
-                "surprising_finding": "Test",
-            })
+            return json.dumps(
+                {
+                    "day_1_hypothesis": "Test",
+                    "intent_clear": True,
+                    "unstated_constraints": [],
+                    "scope_boundaries": [],
+                    "decision_context": "Test",
+                    "surprising_finding": "Test",
+                }
+            )
 
         clarifier = IntentClarifier(llm)
         await clarifier.clarify(

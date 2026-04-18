@@ -94,11 +94,7 @@ class TestIndexParsing:
         """Lines that aren't markdown links are ignored."""
         index = tmp_path / "INDEX.md"
         index.write_text(
-            "# Index\n\n"
-            "Some plain text\n"
-            "- [Valid Link](file.md)\n"
-            "- Not a link\n"
-            "- [Broken\n"
+            "# Index\n\nSome plain text\n- [Valid Link](file.md)\n- Not a link\n- [Broken\n"
         )
         loader = ContextLoader(tmp_path)
         entries = loader._parse_index()
@@ -152,10 +148,7 @@ class TestFileNotFound:
         (compiled / "exists.md").write_text("# Exists\nReal content.")
 
         index = tmp_path / "INDEX.md"
-        index.write_text(
-            "- [Exists](compiled/exists.md)\n"
-            "- [Ghost](compiled/ghost.md)\n"
-        )
+        index.write_text("- [Exists](compiled/exists.md)\n- [Ghost](compiled/ghost.md)\n")
 
         loader = ContextLoader(tmp_path)
         result = await loader.load_context("ENG-001", "TASK-001", round_number=2)

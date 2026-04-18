@@ -110,9 +110,7 @@ class ResearchTask(BaseModel):
         default=False,
         description="Quality gate flag. Only the Evaluator can set this to True.",
     )
-    priority: int = Field(
-        ge=1, description="Execution priority (1 = highest)"
-    )
+    priority: int = Field(ge=1, description="Execution priority (1 = highest)")
     importance: TaskImportance = Field(
         default=TaskImportance.SUPPORTING,
         description="Task importance for governance and coverage policy.",
@@ -202,15 +200,9 @@ class TaskDecomposition(BaseModel):
     engagement_id: str = Field(description="Parent engagement for multi-tenancy isolation")
     client_id: str = Field(description="Client identifier for data sandboxing")
     research_md_path: str = Field(description="Path to the RESEARCH.md file")
-    specification_version: int = Field(
-        ge=1, description="Version number of the specification"
-    )
-    decomposition_rationale: str = Field(
-        description="Why the question was decomposed this way"
-    )
-    tasks: list[ResearchTask] = Field(
-        description="15-50 discrete research tasks"
-    )
+    specification_version: int = Field(ge=1, description="Version number of the specification")
+    decomposition_rationale: str = Field(description="Why the question was decomposed this way")
+    tasks: list[ResearchTask] = Field(description="15-50 discrete research tasks")
 
     @model_validator(mode="after")
     def validate_dag(self) -> TaskDecomposition:

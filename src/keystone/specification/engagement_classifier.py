@@ -59,9 +59,7 @@ class EngagementClassifier:
             client_context=client_context or "No additional context provided.",
         )
 
-        raw = await retry_llm_call(
-            self._llm, prompt, description="engagement_classification"
-        )
+        raw = await retry_llm_call(self._llm, prompt, description="engagement_classification")
         data = safe_llm_json(raw, required_keys=("engagement_type",))
 
         engagement_type = EngagementType(data.get("engagement_type"))

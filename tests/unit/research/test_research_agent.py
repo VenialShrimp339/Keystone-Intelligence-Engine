@@ -38,27 +38,31 @@ from keystone.research.research_agent import ResearchAgent
 
 # Standard claims the mock LLM returns.
 # citation_refs must reference SRC-001 (the first citation in the round table).
-_MOCK_CLAIMS = json.dumps([
-    {
-        "text": "Global EV battery market projected at $150B by 2030",
-        "evidence": "BloombergNEF and IEA projections converge",
-        "citation_refs": ["SRC-001"],
-        "confidence": 0.85,
-        "caveats": ["Projections vary by 20%"],
-    },
-    {
-        "text": "CATL and LG lead with 50% combined market share",
-        "evidence": "SEC filings and industry reports",
-        "citation_refs": ["SRC-001"],
-        "confidence": 0.9,
-        "caveats": [],
-    },
-])
+_MOCK_CLAIMS = json.dumps(
+    [
+        {
+            "text": "Global EV battery market projected at $150B by 2030",
+            "evidence": "BloombergNEF and IEA projections converge",
+            "citation_refs": ["SRC-001"],
+            "confidence": 0.85,
+            "caveats": ["Projections vary by 20%"],
+        },
+        {
+            "text": "CATL and LG lead with 50% combined market share",
+            "evidence": "SEC filings and industry reports",
+            "citation_refs": ["SRC-001"],
+            "confidence": 0.9,
+            "caveats": [],
+        },
+    ]
+)
 
-_MOCK_ABSENCE = json.dumps([
-    "No sub-Saharan Africa market data found",
-    "No projections beyond 2035",
-])
+_MOCK_ABSENCE = json.dumps(
+    [
+        "No sub-Saharan Africa market data found",
+        "No projections beyond 2035",
+    ]
+)
 
 
 async def _mock_llm(prompt: str) -> str:
@@ -75,15 +79,17 @@ def _build_gateway(
     registry = ToolRegistry()
     register_all_tools(registry)
     authorizer = ToolAuthorizer(registry)
-    limiter = InMemoryRateLimiter({
-        "exa-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
-        "brave-search-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
-        "edgartools-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
-        "fred-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
-        "finnhub-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
-        "paper-search-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
-        "doi-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
-    })
+    limiter = InMemoryRateLimiter(
+        {
+            "exa-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
+            "brave-search-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
+            "edgartools-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
+            "fred-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
+            "finnhub-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
+            "paper-search-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
+            "doi-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
+        }
+    )
     audit = AuditLogger()
     client = mock_client or MockMCPClient()
     gateway = MCPGateway(
@@ -194,21 +200,30 @@ async def test_execute_produces_all_event_types() -> None:
     """Verify all 5 L1 event types are emitted."""
     gateway, client = _build_gateway()
     # Set responses with URLs so citations are extracted
-    client.set_response("exa_search", {
-        "url": "https://example.com/ev-report",
-        "title": "EV Battery Market Report",
-        "data": "Market projected at $150B",
-    })
-    client.set_response("brave_search", {
-        "url": "https://example.com/av-sensors",
-        "title": "AV Sensor Landscape",
-        "data": "L4+ sensors growing 30% YoY",
-    })
-    client.set_response("edgar_filings", {
-        "url": "https://sec.gov/filing/12345",
-        "title": "CATL 10-K Filing",
-        "data": "Revenue: $35B",
-    })
+    client.set_response(
+        "exa_search",
+        {
+            "url": "https://example.com/ev-report",
+            "title": "EV Battery Market Report",
+            "data": "Market projected at $150B",
+        },
+    )
+    client.set_response(
+        "brave_search",
+        {
+            "url": "https://example.com/av-sensors",
+            "title": "AV Sensor Landscape",
+            "data": "L4+ sensors growing 30% YoY",
+        },
+    )
+    client.set_response(
+        "edgar_filings",
+        {
+            "url": "https://sec.gov/filing/12345",
+            "title": "CATL 10-K Filing",
+            "data": "Revenue: $35B",
+        },
+    )
 
     agent = ResearchAgent(
         llm=_mock_llm,
@@ -234,18 +249,27 @@ async def test_execute_produces_all_event_types() -> None:
 @pytest.mark.asyncio
 async def test_execute_produces_structured_finding() -> None:
     gateway, client = _build_gateway()
-    client.set_response("exa_search", {
-        "url": "https://example.com/report",
-        "title": "Report",
-    })
-    client.set_response("brave_search", {
-        "url": "https://example.com/report2",
-        "title": "Report 2",
-    })
-    client.set_response("edgar_filings", {
-        "url": "https://sec.gov/filing",
-        "title": "Filing",
-    })
+    client.set_response(
+        "exa_search",
+        {
+            "url": "https://example.com/report",
+            "title": "Report",
+        },
+    )
+    client.set_response(
+        "brave_search",
+        {
+            "url": "https://example.com/report2",
+            "title": "Report 2",
+        },
+    )
+    client.set_response(
+        "edgar_filings",
+        {
+            "url": "https://sec.gov/filing",
+            "title": "Filing",
+        },
+    )
 
     agent = ResearchAgent(llm=_mock_llm, gateway=gateway, max_rounds=1)
     task = _make_task()
@@ -267,18 +291,27 @@ async def test_execute_produces_structured_finding() -> None:
 async def test_claims_have_citations() -> None:
     """Every claim must have at least one citation (structural enforcement)."""
     gateway, client = _build_gateway()
-    client.set_response("exa_search", {
-        "url": "https://example.com/r1",
-        "title": "Source 1",
-    })
-    client.set_response("brave_search", {
-        "url": "https://example.com/r2",
-        "title": "Source 2",
-    })
-    client.set_response("edgar_filings", {
-        "url": "https://example.com/r3",
-        "title": "Source 3",
-    })
+    client.set_response(
+        "exa_search",
+        {
+            "url": "https://example.com/r1",
+            "title": "Source 1",
+        },
+    )
+    client.set_response(
+        "brave_search",
+        {
+            "url": "https://example.com/r2",
+            "title": "Source 2",
+        },
+    )
+    client.set_response(
+        "edgar_filings",
+        {
+            "url": "https://example.com/r3",
+            "title": "Source 3",
+        },
+    )
 
     agent = ResearchAgent(llm=_mock_llm, gateway=gateway, max_rounds=1)
 
@@ -318,15 +351,17 @@ async def test_claims_have_confidence_scores() -> None:
 @pytest.mark.asyncio
 async def test_iterative_loop_runs_multiple_rounds() -> None:
     """Use low-confidence claims so the quality threshold doesn't stop round 1."""
-    _low_conf_claims = json.dumps([
-        {
-            "text": "Preliminary market estimate around $100B",
-            "evidence": "Early industry forecasts",
-            "citation_refs": ["SRC-001"],
-            "confidence": 0.55,
-            "caveats": ["Highly uncertain"],
-        },
-    ])
+    _low_conf_claims = json.dumps(
+        [
+            {
+                "text": "Preliminary market estimate around $100B",
+                "evidence": "Early industry forecasts",
+                "citation_refs": ["SRC-001"],
+                "confidence": 0.55,
+                "caveats": ["Highly uncertain"],
+            },
+        ]
+    )
 
     async def low_conf_llm(prompt: str) -> str:
         if "NOT found" in prompt or "absence" in prompt.lower():

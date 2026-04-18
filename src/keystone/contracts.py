@@ -311,9 +311,15 @@ class EvaluatorContract(Protocol):
     ) -> AsyncIterator[AnyPipelineEvent]:
         """Run the evaluation stack (Layers 1-3, plus Layer 4 when context is given).
 
+        When the concrete evaluator is constructed with ``ensemble_llms``,
+        Layer 5 wraps Layer 3 and adds EnsembleJudgeScored /
+        DissenterVetoTriggered / EnsembleEvaluationComplete events before
+        the aggregated RubricDimensionScored events.
+
         Yields DeterministicCheckPassed, CitationGateResult,
-        RubricDimensionScored, optionally ProcessTrajectoryScored,
-        EvaluationComplete events.
+        optionally EnsembleJudgeScored / DissenterVetoTriggered,
+        RubricDimensionScored, optionally EnsembleEvaluationComplete,
+        optionally ProcessTrajectoryScored, EvaluationComplete events.
         """
         ...
 

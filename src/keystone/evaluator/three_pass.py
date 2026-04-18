@@ -33,16 +33,18 @@ class ThreePassEvaluator:
     adjustment, not a pipeline change.
     """
 
-    def __init__(self, llm: LLMCallable, profile: EvaluationProfile) -> None:
-        self._scorer = Layer3RubricScorer(llm=llm, profile=profile)
+    def __init__(
+        self,
+        llm: LLMCallable,
+        profile: EvaluationProfile,
+        judge_id: str | None = None,
+    ) -> None:
+        self._scorer = Layer3RubricScorer(llm=llm, profile=profile, judge_id=judge_id)
+        self._judge_id = judge_id
 
-    async def run(
-        self, output_text: str, contract: SprintContract
-    ) -> Layer3Result:
+    async def run(self, output_text: str, contract: SprintContract) -> Layer3Result:
         # Pass 1 + Pass 2: Dimensional scoring + gestalt overlay
-        dimensional_result = await self._scorer.score_all_dimensions(
-            output_text, contract
-        )
+        dimensional_result = await self._scorer.score_all_dimensions(output_text, contract)
 
         # Pass 3: Observation Library scan (STUB for Phase 2)
         # In Phase 2, this queries ObservationLibraryContract.query()

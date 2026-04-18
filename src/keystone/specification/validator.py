@@ -33,12 +33,8 @@ class MECEValidationResult(BaseModel):
 
     dimensions: dict[ValidationDimension, bool]
     feedback: dict[ValidationDimension, str]
-    all_passed: bool = Field(
-        description="True only if all 5 dimensions pass"
-    )
-    regeneration_needed: bool = Field(
-        description="True if the tree should be regenerated"
-    )
+    all_passed: bool = Field(description="True only if all 5 dimensions pass")
+    regeneration_needed: bool = Field(description="True if the tree should be regenerated")
 
 
 class MECEValidator:
@@ -65,9 +61,7 @@ class MECEValidator:
             depth=str(tree.metadata.depth),
         )
 
-        raw = await retry_llm_call(
-            self._llm, prompt, description="mece_validation"
-        )
+        raw = await retry_llm_call(self._llm, prompt, description="mece_validation")
         data = safe_llm_json(raw)
 
         dims_raw = data.get("dimensions", {})

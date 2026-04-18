@@ -95,9 +95,7 @@ class TestBatchCheckUrls:
 
     async def test_concurrency_respected(self, httpx_mock: HTTPXMock):
         for i in range(20):
-            httpx_mock.add_response(
-                url=f"https://site{i}.com", method="HEAD", status_code=200
-            )
+            httpx_mock.add_response(url=f"https://site{i}.com", method="HEAD", status_code=200)
         citations = [_cit(f"CIT-{i:03d}", f"https://site{i}.com") for i in range(20)]
         results = await batch_check_urls(citations, concurrency=3)
         assert len(results) == 20

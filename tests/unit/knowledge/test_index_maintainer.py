@@ -21,9 +21,7 @@ class FakeStore:
         self.index_content = content
 
 
-def _make_entry(
-    topic: str, round_added: int, engagement_id: str = "ENG-001"
-) -> WikiEntry:
+def _make_entry(topic: str, round_added: int, engagement_id: str = "ENG-001") -> WikiEntry:
     content = f"# {topic.replace('_', ' ').title()}\n\nFindings about {topic}."
     return WikiEntry(
         path=f"compiled/{topic}.md",

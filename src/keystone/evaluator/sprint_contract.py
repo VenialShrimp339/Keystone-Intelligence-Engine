@@ -30,13 +30,10 @@ class SprintContractGenerator:
     def __init__(self, llm: LLMCallable) -> None:
         self._llm = llm
 
-    async def generate(
-        self, task: ResearchTask, spec: EngagementSpec
-    ) -> SprintContract:
+    async def generate(self, task: ResearchTask, spec: EngagementSpec) -> SprintContract:
         template = (_PROMPTS_DIR / "sprint_contract_generation.md").read_text()
         prompt = (
-            template
-            .replace("{{task_id}}", task.id)
+            template.replace("{{task_id}}", task.id)
             .replace("{{task_category}}", task.effective_category)
             .replace("{{task_description}}", task.description)
             .replace("{{end_product}}", task.end_product)
@@ -47,9 +44,7 @@ class SprintContractGenerator:
             .replace("{{quality_bar}}", spec.research_spec.quality_bar)
         )
 
-        raw = await retry_llm_call(
-            self._llm, prompt, description="sprint_contract_generation"
-        )
+        raw = await retry_llm_call(self._llm, prompt, description="sprint_contract_generation")
         try:
             parsed = safe_llm_json(raw)
         except ParseError as exc:

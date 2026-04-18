@@ -16,6 +16,7 @@ from keystone.gateway.circuit_breaker import (
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 async def _succeed() -> str:
     return "ok"
 
@@ -27,6 +28,7 @@ async def _fail() -> None:
 # ---------------------------------------------------------------------------
 # State transitions
 # ---------------------------------------------------------------------------
+
 
 class TestStateTransitions:
     @pytest.mark.asyncio
@@ -123,6 +125,7 @@ class TestStateTransitions:
 # Failure counting
 # ---------------------------------------------------------------------------
 
+
 class TestFailureCounting:
     @pytest.mark.asyncio
     async def test_failure_count_increments(self) -> None:
@@ -153,6 +156,7 @@ class TestFailureCounting:
 # ---------------------------------------------------------------------------
 # Manual reset
 # ---------------------------------------------------------------------------
+
 
 class TestReset:
     @pytest.mark.asyncio

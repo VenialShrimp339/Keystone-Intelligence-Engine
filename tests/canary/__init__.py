@@ -15,6 +15,7 @@ if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
 if "structlog" not in sys.modules:
+
     class _StructlogLogger:
         def info(self, *args, **kwargs) -> None:
             return None

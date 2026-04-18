@@ -82,9 +82,7 @@ class SourceRequirement(BaseModel):
     source_type: str = Field(
         description="Category of source (academic, financial_filings, news, etc.)"
     )
-    minimum_count: int = Field(
-        ge=1, description="Minimum number of sources from this category"
-    )
+    minimum_count: int = Field(ge=1, description="Minimum number of sources from this category")
     quality_threshold: float | None = Field(
         default=None,
         ge=0.0,
@@ -112,8 +110,7 @@ class ResearchSpec(BaseModel):
 
     # Section: Client Decision Context
     decision_context: str = Field(
-        description="What decision will this research inform? "
-        "What are the client's constraints?"
+        description="What decision will this research inform? What are the client's constraints?"
     )
     surprising_finding: str = Field(
         description="What would a surprising finding look like? "
@@ -138,9 +135,7 @@ class ResearchSpec(BaseModel):
     )
 
     # Section: Output Format & Quality
-    output_format: str = Field(
-        description="Expected deliverable format (markdown, slides, etc.)"
-    )
+    output_format: str = Field(description="Expected deliverable format (markdown, slides, etc.)")
     quality_bar: str = Field(
         default="Goldman-grade: would a domain expert call this solid on its own merits?",
         description="Quality standard for this engagement",
@@ -184,12 +179,8 @@ class ResearchSpec(BaseModel):
 class ValidationReport(BaseModel):
     """Result of the Specification Engine's four-step verification."""
 
-    intent_clear: bool = Field(
-        description="Is the client's decision context unambiguous?"
-    )
-    scope_valid: bool = Field(
-        description="Is the research scope achievable within constraints?"
-    )
+    intent_clear: bool = Field(description="Is the client's decision context unambiguous?")
+    scope_valid: bool = Field(description="Is the research scope achievable within constraints?")
     within_frontier: bool = Field(
         description="Is this within the system's capability frontier (tasks, not jobs)?"
     )
@@ -219,12 +210,8 @@ class EngagementSpec(BaseModel):
     """
 
     research_spec: ResearchSpec = Field(description="The RESEARCH.md content")
-    task_decomposition: TaskDecomposition = Field(
-        description="research-tasks.json decomposition"
-    )
-    validation_report: ValidationReport = Field(
-        description="Four-step verification results"
-    )
+    task_decomposition: TaskDecomposition = Field(description="research-tasks.json decomposition")
+    validation_report: ValidationReport = Field(description="Four-step verification results")
     issue_tree: dict[str, Any] | None = Field(
         default=None,
         description="The MECE issue tree produced by Step 3 of the Spec Engine. "
@@ -259,9 +246,7 @@ class StructuredFinding(BaseModel):
         description="Agent specialization "
         "(quantitative, qualitative, contrarian, historical, internal)"
     )
-    claims: list[FindingClaim] = Field(
-        description="Structured claims with evidence and citations"
-    )
+    claims: list[FindingClaim] = Field(description="Structured claims with evidence and citations")
     status: FindingStatus = Field(
         default=FindingStatus.COMPLETE,
         description="Whether the agent completed its task fully, partially, or found a gap",
@@ -277,12 +262,8 @@ class StructuredFinding(BaseModel):
     absence_report: list[str] = Field(
         description="What was looked for but not found (analytically significant)"
     )
-    sources_consulted: int = Field(
-        ge=0, description="Total number of sources reviewed"
-    )
-    tokens_consumed: int = Field(
-        ge=0, description="Total tokens used by this agent"
-    )
+    sources_consulted: int = Field(ge=0, description="Total number of sources reviewed")
+    tokens_consumed: int = Field(ge=0, description="Total tokens used by this agent")
     dropped_claims: list[dict] = Field(
         default_factory=list,
         description="Claims that failed validation, with reasons",
@@ -297,12 +278,8 @@ class FindingClaim(BaseModel):
     citations: list[Citation] = Field(
         description="Citations backing this claim (structurally enforced, not prompt-based)"
     )
-    confidence: float = Field(
-        ge=0.0, le=1.0, description="Agent's confidence in this claim"
-    )
-    confidence_tier: ConfidenceTier = Field(
-        description="Discrete confidence tier"
-    )
+    confidence: float = Field(ge=0.0, le=1.0, description="Agent's confidence in this claim")
+    confidence_tier: ConfidenceTier = Field(description="Discrete confidence tier")
     caveats: list[str] = Field(
         default_factory=list, description="Known limitations or qualifications"
     )

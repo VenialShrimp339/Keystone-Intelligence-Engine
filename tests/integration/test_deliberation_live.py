@@ -63,6 +63,7 @@ CLIENT_ID = "CLIENT-KEYSTONE-001"
 # Token tracking wrapper
 # ---------------------------------------------------------------------------
 
+
 class TrackedLLM:
     """Wraps LLMCallable to track calls, timing, and raw output."""
 
@@ -76,12 +77,14 @@ class TrackedLLM:
         start = time.monotonic()
         response = await self._llm(prompt)
         elapsed = time.monotonic() - start
-        self.calls.append({
-            "prompt_len": len(prompt),
-            "response_len": len(response),
-            "raw_response": response,
-            "elapsed": elapsed,
-        })
+        self.calls.append(
+            {
+                "prompt_len": len(prompt),
+                "response_len": len(response),
+                "raw_response": response,
+                "elapsed": elapsed,
+            }
+        )
         self.total_time += elapsed
         return response
 
@@ -109,6 +112,7 @@ class TrackedLLM:
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _cit(
     cit_id: str,
@@ -153,32 +157,53 @@ def build_3_agent_findings() -> list[StructuredFinding]:
     """Three agents with overlapping/conflicting claims for AV sensor market."""
 
     # Agent 1: Quantitative
-    cq1 = _cit("CIT-001", "https://en.wikipedia.org/wiki/Lidar",
-                "LiDAR Overview", SourceType.ACADEMIC, 0.8, ["agent-quant-001"])
-    cq2 = _cit("CIT-002", "https://en.wikipedia.org/wiki/Autonomous_car",
-                "AV Market", SourceType.REPORT, 0.85, ["agent-quant-001"])
-    cq3 = _cit("CIT-003", "https://www.sec.gov/",
-                "SEC EDGAR", SourceType.FILING, 0.9, ["agent-quant-001"])
+    cq1 = _cit(
+        "CIT-001",
+        "https://en.wikipedia.org/wiki/Lidar",
+        "LiDAR Overview",
+        SourceType.ACADEMIC,
+        0.8,
+        ["agent-quant-001"],
+    )
+    cq2 = _cit(
+        "CIT-002",
+        "https://en.wikipedia.org/wiki/Autonomous_car",
+        "AV Market",
+        SourceType.REPORT,
+        0.85,
+        ["agent-quant-001"],
+    )
+    cq3 = _cit(
+        "CIT-003", "https://www.sec.gov/", "SEC EDGAR", SourceType.FILING, 0.9, ["agent-quant-001"]
+    )
 
     f_quant = StructuredFinding(
-        task_id="TASK-001", agent_id="agent-quant-001",
-        engagement_id=ENGAGEMENT_ID, client_id=CLIENT_ID,
+        task_id="TASK-001",
+        agent_id="agent-quant-001",
+        engagement_id=ENGAGEMENT_ID,
+        client_id=CLIENT_ID,
         agent_type="quantitative",
         claims=[
             _claim(
                 "The L4+ AV sensor market was valued at $8.2 billion in 2025",
                 "Analysis of SEC filings and industry reports from 2024-2025",
-                [cq1, cq3], 0.85, ConfidenceTier.HIGH,
+                [cq1, cq3],
+                0.85,
+                ConfidenceTier.HIGH,
             ),
             _claim(
                 "LiDAR segment accounts for 42% of the total autonomous vehicle sensor market",
                 "Market share data from multiple industry analysis reports",
-                [cq1], 0.7, ConfidenceTier.MODERATE,
+                [cq1],
+                0.7,
+                ConfidenceTier.MODERATE,
             ),
             _claim(
                 "The AV sensor market is projected to reach $50 billion by 2030, growing at 35% CAGR",
                 "Projection based on historical growth rates and planned commercial deployments",
-                [cq2, cq3], 0.65, ConfidenceTier.MODERATE,
+                [cq2, cq3],
+                0.65,
+                ConfidenceTier.MODERATE,
                 caveats=["Assumes no major regulatory setbacks"],
             ),
         ],
@@ -187,75 +212,124 @@ def build_3_agent_findings() -> list[StructuredFinding]:
             "No public data on Chinese AV sensor export volumes",
             "Insurance industry impact data not available in public sources",
         ],
-        sources_consulted=12, tokens_consumed=3500,
+        sources_consulted=12,
+        tokens_consumed=3500,
     )
 
     # Agent 2: Qualitative
-    cql1 = _cit("CIT-201", "https://en.wikipedia.org/wiki/Autonomous_car",
-                 "AV Trends", SourceType.NEWS, 0.75, ["agent-qual-002"])
-    cql2 = _cit("CIT-202", "https://www.reuters.com/",
-                 "Reuters Tech", SourceType.NEWS, 0.8, ["agent-qual-002"])
-    cql3 = _cit("CIT-203", "https://arxiv.org/",
-                 "ArXiv Papers", SourceType.ACADEMIC, 0.85, ["agent-qual-002"])
+    cql1 = _cit(
+        "CIT-201",
+        "https://en.wikipedia.org/wiki/Autonomous_car",
+        "AV Trends",
+        SourceType.NEWS,
+        0.75,
+        ["agent-qual-002"],
+    )
+    cql2 = _cit(
+        "CIT-202",
+        "https://www.reuters.com/",
+        "Reuters Tech",
+        SourceType.NEWS,
+        0.8,
+        ["agent-qual-002"],
+    )
+    cql3 = _cit(
+        "CIT-203",
+        "https://arxiv.org/",
+        "ArXiv Papers",
+        SourceType.ACADEMIC,
+        0.85,
+        ["agent-qual-002"],
+    )
 
     f_qual = StructuredFinding(
-        task_id="TASK-002", agent_id="agent-qual-002",
-        engagement_id=ENGAGEMENT_ID, client_id=CLIENT_ID,
+        task_id="TASK-002",
+        agent_id="agent-qual-002",
+        engagement_id=ENGAGEMENT_ID,
+        client_id=CLIENT_ID,
         agent_type="qualitative",
         claims=[
             _claim(
                 "Solid-state LiDAR transition is accelerating industry consolidation",
                 "Multiple 2025 acquisitions and strategic partnerships reported",
-                [cql2], 0.75, ConfidenceTier.MODERATE,
+                [cql2],
+                0.75,
+                ConfidenceTier.MODERATE,
             ),
             _claim(
                 "Market projected to reach $45-55 billion by 2030 based on analyst consensus",
                 "Consensus of 6 industry analyst firms with converging projections",
-                [cql1, cql3], 0.6, ConfidenceTier.MODERATE,
+                [cql1, cql3],
+                0.6,
+                ConfidenceTier.MODERATE,
                 caveats=["Wide range reflects regulatory timeline uncertainty"],
             ),
             _claim(
                 "Waymo and Cruise dominate L4 autonomous testing miles in North America",
                 "California DMV autonomous vehicle testing reports filed 2024-2025",
-                [cql2], 0.9, ConfidenceTier.HIGH,
+                [cql2],
+                0.9,
+                ConfidenceTier.HIGH,
             ),
         ],
         gaps=[],
         absence_report=["No insurance industry impact analysis found"],
-        sources_consulted=8, tokens_consumed=2800,
+        sources_consulted=8,
+        tokens_consumed=2800,
     )
 
     # Agent 3: Contrarian -- deliberately lower confidence, conflicting claims
-    cc1 = _cit("CIT-301", "https://en.wikipedia.org/wiki/Lidar",
-                "LiDAR Limits", SourceType.ACADEMIC, 0.6, ["agent-contra-003"])
-    cc2 = _cit("CIT-302", "https://arxiv.org/",
-                "AV Safety Papers", SourceType.ACADEMIC, 0.75, ["agent-contra-003"])
+    cc1 = _cit(
+        "CIT-301",
+        "https://en.wikipedia.org/wiki/Lidar",
+        "LiDAR Limits",
+        SourceType.ACADEMIC,
+        0.6,
+        ["agent-contra-003"],
+    )
+    cc2 = _cit(
+        "CIT-302",
+        "https://arxiv.org/",
+        "AV Safety Papers",
+        SourceType.ACADEMIC,
+        0.75,
+        ["agent-contra-003"],
+    )
 
     f_contra = StructuredFinding(
-        task_id="TASK-003", agent_id="agent-contra-003",
-        engagement_id=ENGAGEMENT_ID, client_id=CLIENT_ID,
+        task_id="TASK-003",
+        agent_id="agent-contra-003",
+        engagement_id=ENGAGEMENT_ID,
+        client_id=CLIENT_ID,
         agent_type="contrarian",
         claims=[
             _claim(
                 "Market growth is overestimated; regulatory delays will cap the AV sensor market at $20 billion by 2030",
                 "Historical analysis of automotive safety technology regulatory adoption timelines",
-                [cc1, cc2], 0.4, ConfidenceTier.CONTESTED,
+                [cc1, cc2],
+                0.4,
+                ConfidenceTier.CONTESTED,
                 caveats=["Based on historical analogies that may not apply"],
             ),
             _claim(
                 "Camera-only autonomous approaches may eliminate the LiDAR sensor requirement entirely within 5 years",
                 "Tesla FSD demonstrates camera-only viability, though limited to L2+",
-                [cc1], 0.35, ConfidenceTier.CONTESTED,
+                [cc1],
+                0.35,
+                ConfidenceTier.CONTESTED,
             ),
             _claim(
                 "Supply chain concentration in 3 major LiDAR vendors creates systemic risk for the industry",
                 "Top 3 manufacturers control ~78% of automotive-grade LiDAR production capacity",
-                [cc2], 0.7, ConfidenceTier.MODERATE,
+                [cc2],
+                0.7,
+                ConfidenceTier.MODERATE,
             ),
         ],
         gaps=["Need deeper analysis of emerging LiDAR alternatives"],
         absence_report=["No consumer willingness-to-pay data for L4 features"],
-        sources_consulted=6, tokens_consumed=2100,
+        sources_consulted=6,
+        tokens_consumed=2100,
     )
 
     return [f_quant, f_qual, f_contra]
@@ -306,15 +380,9 @@ async def _run_full_deliberation() -> dict:
     )
 
     # Create tracked LLMs
-    analyst_llm = TrackedLLM(
-        get_llm_for_tier(ModelTier.STANDARD, config), "analysts"
-    )
-    judge_llm = TrackedLLM(
-        get_llm_for_tier(ModelTier.FLAGSHIP, config), "judge"
-    )
-    wwhtb_llm = TrackedLLM(
-        get_llm_for_tier(ModelTier.STANDARD, config), "wwhtb"
-    )
+    analyst_llm = TrackedLLM(get_llm_for_tier(ModelTier.STANDARD, config), "analysts")
+    judge_llm = TrackedLLM(get_llm_for_tier(ModelTier.FLAGSHIP, config), "judge")
+    wwhtb_llm = TrackedLLM(get_llm_for_tier(ModelTier.STANDARD, config), "wwhtb")
 
     delib = Deliberation(
         analyst_llm=analyst_llm,
@@ -325,9 +393,7 @@ async def _run_full_deliberation() -> dict:
     events = []
     start = time.monotonic()
     async with asyncio.timeout(240):
-        async for event in delib.deliberate(
-            manifest, findings, ENGAGEMENT_ID, CLIENT_ID
-        ):
+        async for event in delib.deliberate(manifest, findings, ENGAGEMENT_ID, CLIENT_ID):
             events.append(event)
     elapsed = time.monotonic() - start
 
@@ -352,14 +418,13 @@ async def _run_full_deliberation() -> dict:
 # BASELINE TEST 9: JSON parsing -- single analyst (1 LLM call)
 # ============================================================
 
+
 async def test_single_analyst_json_parsing():
     """Run ONE analyst with real LLM, verify JSON output is parseable."""
     config = AppConfig()
     _client_cache.clear()
 
-    llm = TrackedLLM(
-        get_llm_for_tier(ModelTier.STANDARD, config), "single_analyst"
-    )
+    llm = TrackedLLM(get_llm_for_tier(ModelTier.STANDARD, config), "single_analyst")
     analyst = Analyst(llm=llm, analyst_type=DeliberationAnalystType.QUANTITATIVE)
 
     findings = build_3_agent_findings()
@@ -403,8 +468,10 @@ async def test_single_analyst_json_parsing():
 
     # Log all scores
     for sc in output.scored_claims:
-        print(f"  [{sc.index}] conf={sc.analyst_confidence:.2f} "
-              f"src={sc.source_count} {sc.claim_text[:50]}...")
+        print(
+            f"  [{sc.index}] conf={sc.analyst_confidence:.2f} "
+            f"src={sc.source_count} {sc.claim_text[:50]}..."
+        )
 
     print(f"\n  {llm.report()}")
     _client_cache.clear()
@@ -413,6 +480,7 @@ async def test_single_analyst_json_parsing():
 # ============================================================
 # BASELINE TEST 5: Full deliberation with real LLM
 # ============================================================
+
 
 async def test_full_deliberation_events():
     """Full deliberation emits AnalystSpawned, IndependentAnalysisComplete,
@@ -453,6 +521,7 @@ async def test_full_deliberation_events():
 # ============================================================
 # BASELINE TEST 8: Confidence map structure
 # ============================================================
+
 
 async def test_confidence_map_tier_distribution():
     """All 9 claims distributed across tiers with required attributes."""
@@ -506,6 +575,7 @@ async def test_confidence_map_tier_distribution():
 # BASELINE TEST 6: Claim-level selection (not averaging)
 # ============================================================
 
+
 async def test_claim_selection_not_averaging():
     """Conflicting claims ($50B vs $20B) should trigger judge selection,
     not be averaged to $35B."""
@@ -558,6 +628,7 @@ async def test_claim_selection_not_averaging():
 # BASELINE TEST 7: WWHTB threshold
 # ============================================================
 
+
 async def test_wwhtb_fires_for_uncertain_claims():
     """WWHTB fires for claims with mean_confidence < 0.6."""
     r = await _run_full_deliberation()
@@ -596,6 +667,7 @@ async def test_wwhtb_fires_for_uncertain_claims():
 # BASELINE TEST 10: Gap detection
 # ============================================================
 
+
 async def test_gap_detection():
     """Gaps populated from absence reports and low-confidence claims."""
     r = await _run_full_deliberation()
@@ -622,6 +694,7 @@ async def test_gap_detection():
 # ============================================================
 # JSON parsing of all raw LLM responses
 # ============================================================
+
 
 async def test_all_raw_responses_parseable():
     """Verify all LLM responses across the pipeline are valid JSON."""
@@ -662,6 +735,7 @@ async def test_all_raw_responses_parseable():
 # Token consumption report
 # ============================================================
 
+
 async def test_token_consumption_report():
     """Report total token consumption across all phases."""
     r = await _run_full_deliberation()
@@ -676,17 +750,23 @@ async def test_token_consumption_report():
     print(f"  {wwhtb_llm.report()}")
 
     total_calls = analyst_llm.call_count + judge_llm.call_count + wwhtb_llm.call_count
-    total_prompt = analyst_llm.est_prompt_tokens + judge_llm.est_prompt_tokens + wwhtb_llm.est_prompt_tokens
-    total_response = analyst_llm.est_response_tokens + judge_llm.est_response_tokens + wwhtb_llm.est_response_tokens
+    total_prompt = (
+        analyst_llm.est_prompt_tokens + judge_llm.est_prompt_tokens + wwhtb_llm.est_prompt_tokens
+    )
+    total_response = (
+        analyst_llm.est_response_tokens
+        + judge_llm.est_response_tokens
+        + wwhtb_llm.est_response_tokens
+    )
     total_time = analyst_llm.total_time + judge_llm.total_time + wwhtb_llm.total_time
 
-    print(f"\n  TOTAL: {total_calls} calls, ~{total_prompt} prompt tokens, "
-          f"~{total_response} response tokens, {total_time:.1f}s")
+    print(
+        f"\n  TOTAL: {total_calls} calls, ~{total_prompt} prompt tokens, "
+        f"~{total_response} response tokens, {total_time:.1f}s"
+    )
 
     # Sanity: analysts should have exactly 4 calls (4 analyst types)
-    assert analyst_llm.call_count == 4, (
-        f"Expected 4 analyst calls, got {analyst_llm.call_count}"
-    )
+    assert analyst_llm.call_count == 4, f"Expected 4 analyst calls, got {analyst_llm.call_count}"
     # All tests pass -- this is purely informational
     assert total_calls > 0
 
@@ -694,6 +774,7 @@ async def test_token_consumption_report():
 # ============================================================
 # ADDITIONAL TESTS: Structural / edge cases (no LLM calls)
 # ============================================================
+
 
 async def test_extract_claims_preserves_all_data():
     """extract_claims flattens all 9 claims with correct indexing."""
@@ -726,16 +807,15 @@ async def test_extract_claims_preserves_all_data():
 
 async def test_deliberation_with_empty_findings():
     """Empty findings produce empty confidence map without error."""
+
     async def mock_llm(prompt: str) -> str:
-        return '[]'
+        return "[]"
 
     delib = Deliberation(analyst_llm=mock_llm, judge_llm=mock_llm)
 
     events = []
     async for event in delib.deliberate(
-        CitationManifest(
-            manifest_id="MAN-EMPTY", engagement_id=ENGAGEMENT_ID, client_id=CLIENT_ID
-        ),
+        CitationManifest(manifest_id="MAN-EMPTY", engagement_id=ENGAGEMENT_ID, client_id=CLIENT_ID),
         [],
         ENGAGEMENT_ID,
         CLIENT_ID,
@@ -758,25 +838,27 @@ async def test_confidence_builder_tier_boundaries():
         n_agree = int(ratio * 4)
         n_dissent = 4 - n_agree
         return AggregatedClaim(
-            claim_text=text, index=index,
+            claim_text=text,
+            index=index,
             agreement_ratio=ratio,
             agreeing_analysts=[f"a{i}" for i in range(n_agree)],
             dissenting_analysts=[f"d{i}" for i in range(n_dissent)],
             total_analysts=4,
             mean_confidence=conf,
-            source_count=2, corroboration_count=1,
+            source_count=2,
+            corroboration_count=1,
             citation_ids=["CIT-001"],
             analyst_scores={f"a{i}": conf for i in range(4)},
             analyst_reasoning={f"a{i}": "test" for i in range(4)},
         )
 
     claims = [
-        _make_agg_claim(0, "High confidence claim", 0.9, 0.85),     # >0.8 -> high
-        _make_agg_claim(1, "Moderate boundary claim", 0.75, 0.7),    # 0.6-0.8 -> moderate
-        _make_agg_claim(2, "Exactly 0.6 boundary", 0.6, 0.55),      # >=0.5 -> weak (0.6 is NOT >0.6)
-        _make_agg_claim(3, "Below 0.5 contested", 0.4, 0.4),        # <0.5 -> contested
-        _make_agg_claim(4, "Exactly 0.8 boundary", 0.8, 0.75),      # NOT >0.8 -> moderate
-        _make_agg_claim(5, "Exactly 0.5 boundary", 0.5, 0.5),       # >=0.5 -> weak
+        _make_agg_claim(0, "High confidence claim", 0.9, 0.85),  # >0.8 -> high
+        _make_agg_claim(1, "Moderate boundary claim", 0.75, 0.7),  # 0.6-0.8 -> moderate
+        _make_agg_claim(2, "Exactly 0.6 boundary", 0.6, 0.55),  # >=0.5 -> weak (0.6 is NOT >0.6)
+        _make_agg_claim(3, "Below 0.5 contested", 0.4, 0.4),  # <0.5 -> contested
+        _make_agg_claim(4, "Exactly 0.8 boundary", 0.8, 0.75),  # NOT >0.8 -> moderate
+        _make_agg_claim(5, "Exactly 0.5 boundary", 0.5, 0.5),  # >=0.5 -> weak
     ]
 
     # No WWHTB results or gaps for this test
@@ -788,10 +870,10 @@ async def test_confidence_builder_tier_boundaries():
         client_id=CLIENT_ID,
     )
 
-    assert len(cm.high_confidence_above_80pct) == 1   # ratio 0.9
-    assert len(cm.moderate_confidence_60_80pct) == 2   # ratios 0.75 and 0.8
-    assert len(cm.weak_confidence_50_60pct) == 2       # ratios 0.6 and 0.5
-    assert len(cm.contested_below_50pct) == 1          # ratio 0.4
+    assert len(cm.high_confidence_above_80pct) == 1  # ratio 0.9
+    assert len(cm.moderate_confidence_60_80pct) == 2  # ratios 0.75 and 0.8
+    assert len(cm.weak_confidence_50_60pct) == 2  # ratios 0.6 and 0.5
+    assert len(cm.contested_below_50pct) == 1  # ratio 0.4
     assert cm.total_claims == 6
 
 
@@ -801,19 +883,30 @@ async def test_gap_detection_logic():
 
     claims = [
         AggregatedClaim(
-            claim_text="Low confidence claim", index=0,
-            agreement_ratio=0.25, agreeing_analysts=["a1"],
-            dissenting_analysts=["a2", "a3", "a4"], total_analysts=4,
-            mean_confidence=0.3, source_count=1, corroboration_count=0,
+            claim_text="Low confidence claim",
+            index=0,
+            agreement_ratio=0.25,
+            agreeing_analysts=["a1"],
+            dissenting_analysts=["a2", "a3", "a4"],
+            total_analysts=4,
+            mean_confidence=0.3,
+            source_count=1,
+            corroboration_count=0,
             citation_ids=["CIT-001"],
             analyst_scores={"a1": 0.3, "a2": 0.1, "a3": 0.2, "a4": 0.1},
-            analyst_reasoning={}, consistency_passed=False,
+            analyst_reasoning={},
+            consistency_passed=False,
         ),
         AggregatedClaim(
-            claim_text="OK claim", index=1,
-            agreement_ratio=0.75, agreeing_analysts=["a1", "a2", "a3"],
-            dissenting_analysts=["a4"], total_analysts=4,
-            mean_confidence=0.7, source_count=3, corroboration_count=2,
+            claim_text="OK claim",
+            index=1,
+            agreement_ratio=0.75,
+            agreeing_analysts=["a1", "a2", "a3"],
+            dissenting_analysts=["a4"],
+            total_analysts=4,
+            mean_confidence=0.7,
+            source_count=3,
+            corroboration_count=2,
             citation_ids=["CIT-002"],
             analyst_scores={"a1": 0.7, "a2": 0.8, "a3": 0.6, "a4": 0.4},
             analyst_reasoning={},
@@ -869,17 +962,21 @@ async def test_aggregator_with_unanimous_agreement():
     for at in ["ach", "quantitative", "adversarial"]:
         scored = [
             ScoredClaim(
-                index=c.index, claim_text=c.text,
-                analyst_confidence=0.8, source_count=3,
+                index=c.index,
+                claim_text=c.text,
+                analyst_confidence=0.8,
+                source_count=3,
                 reasoning="Well supported",
             )
             for c in claims
         ]
-        outputs.append(AnalystOutput(
-            analyst_id=f"analyst-{at}-test",
-            analyst_type=at,
-            scored_claims=scored,
-        ))
+        outputs.append(
+            AnalystOutput(
+                analyst_id=f"analyst-{at}-test",
+                analyst_type=at,
+                scored_claims=scored,
+            )
+        )
 
     aggregator = Aggregator(judge_llm=agreeable_llm)
     aggregated = await aggregator.aggregate(outputs, claims)

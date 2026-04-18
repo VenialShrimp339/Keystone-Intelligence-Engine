@@ -16,6 +16,9 @@ from keystone.evaluator.rubric_config import EvaluationProfile
 from keystone.events import (
     CitationGateResult,
     DeterministicCheckPassed,
+    DissenterVetoTriggered,
+    EnsembleEvaluationComplete,
+    EnsembleJudgeScored,
     EvaluationComplete,
     RubricDimensionScored,
 )
@@ -609,3 +612,269 @@ class TestProfileVariance:
             weights_by_dimension[RubricDimension.SOURCE_QUALITY]
             < base_weights[RubricDimension.SOURCE_QUALITY]
         )
+
+
+# ---------------------------------------------------------------------------
+# Layer 5 ensemble path: end-to-end behavior through Evaluator
+# ---------------------------------------------------------------------------
+
+
+class TestEnsembleEvaluatorIntegration:
+    """Tests that drive :class:`Evaluator` with ``ensemble_llms`` set, so the
+    event stream, composite score blending, and weight plumbing are exercised
+    end-to-end rather than only inside :class:`EnsembleL3Evaluator`.
+    """
+
+    @pytest.mark.asyncio
+    async def test_event_order_emits_judge_then_complete(self) -> None:
+        """Confirm the L5 event sequence: per-judge scored, then aggregate complete.
+
+        Locks in the ordering documented in contracts.py::EvaluatorContract.
+        """
+        llm = _make_mock_llm()
+        judge_a = _make_mock_llm()
+        judge_b = _make_mock_llm()
+        verifier = MockDOIVerifier({})
+        evaluator = Evaluator(
+            llm=llm,
+            doi_verifier=verifier,
+            ensemble_llms=[("flagship_a", judge_a), ("flagship_b", judge_b)],
+        )
+        manifest = _manifest(_cit("CIT-001"))
+
+        with patch(
+            "keystone.evaluator.layer1_deterministic.batch_check_urls",
+            new_callable=AsyncMock,
+            return_value={"CIT-001": True},
+        ):
+            events = []
+            async for event in evaluator.evaluate(
+                "Clean research text.", _contract(), _task(), manifest, _spec()
+            ):
+                events.append(event)
+
+        judge_events = [e for e in events if isinstance(e, EnsembleJudgeScored)]
+        complete_events = [e for e in events if isinstance(e, EnsembleEvaluationComplete)]
+        assert len(judge_events) == 2
+        assert {je.judge_id for je in judge_events} == {"flagship_a", "flagship_b"}
+        assert len(complete_events) == 1
+
+        # Judge events land before the aggregate-complete event, which in turn
+        # lands before EvaluationComplete.
+        judge_idxs = [i for i, e in enumerate(events) if isinstance(e, EnsembleJudgeScored)]
+        complete_idx = next(
+            i for i, e in enumerate(events) if isinstance(e, EnsembleEvaluationComplete)
+        )
+        eval_complete_idx = next(
+            i for i, e in enumerate(events) if isinstance(e, EvaluationComplete)
+        )
+        assert max(judge_idxs) < complete_idx < eval_complete_idx
+
+    @pytest.mark.asyncio
+    async def test_dissenter_veto_emits_event_and_rejects_output(self) -> None:
+        """A Tier 1 dissenter triggers a DissenterVetoTriggered event and a failed pass."""
+        llm = _make_mock_llm()
+        dissenter = _make_mock_llm(
+            tier1_scores={
+                RubricDimension.INTENT_ALIGNMENT: 35.0,
+                RubricDimension.INTELLECTUAL_HONESTY: 70.0,
+                RubricDimension.COMPLETENESS: 70.0,
+                RubricDimension.NARRATIVE_COHERENCE: 70.0,
+            }
+        )
+        majority = _make_mock_llm(
+            tier1_scores={d: 85.0 for d in RubricDimension if d in _tier1_dims()}
+        )
+        verifier = MockDOIVerifier({})
+        evaluator = Evaluator(
+            llm=llm,
+            doi_verifier=verifier,
+            ensemble_llms=[
+                ("flagship_a", dissenter),
+                ("flagship_b", majority),
+            ],
+        )
+        manifest = _manifest(_cit("CIT-001"))
+
+        with patch(
+            "keystone.evaluator.layer1_deterministic.batch_check_urls",
+            new_callable=AsyncMock,
+            return_value={"CIT-001": True},
+        ):
+            events = []
+            async for event in evaluator.evaluate(
+                "Output under veto.", _contract(), _task(), manifest, _spec()
+            ):
+                events.append(event)
+
+        result = await evaluator.get_result()
+        assert result.passed is False
+        assert result.overall_score == pytest.approx(0.0, abs=0.1)
+        assert result.layer5_results is not None
+        assert result.layer5_results.tier1_vetoed is True
+
+        veto_events = [e for e in events if isinstance(e, DissenterVetoTriggered)]
+        assert len(veto_events) == 1
+        assert veto_events[0].dimension == RubricDimension.INTENT_ALIGNMENT.value
+        assert "flagship_a" in veto_events[0].dissenting_judge_ids
+
+    @pytest.mark.asyncio
+    async def test_rubric_events_weights_come_from_ensemble_profile(self) -> None:
+        """RubricDimensionScored.weight must match the profile weights the
+        ensemble used to aggregate, so downstream calibration readers see the
+        same weighting as the composite score."""
+        from keystone.evaluator.rubric_config import get_profile_weights
+
+        judge_a = _make_mock_llm()
+        judge_b = _make_mock_llm()
+        verifier = MockDOIVerifier({})
+        evaluator = Evaluator(
+            llm=_make_mock_llm(),
+            doi_verifier=verifier,
+            profile=EvaluationProfile.STRATEGIC,
+            ensemble_llms=[("flagship_a", judge_a), ("flagship_b", judge_b)],
+        )
+        manifest = _manifest(_cit("CIT-001"))
+
+        with patch(
+            "keystone.evaluator.layer1_deterministic.batch_check_urls",
+            new_callable=AsyncMock,
+            return_value={"CIT-001": True},
+        ):
+            events = []
+            async for event in evaluator.evaluate(
+                "Clean output.", _contract(), _task(), manifest, _spec()
+            ):
+                events.append(event)
+
+        rubric_events = [e for e in events if isinstance(e, RubricDimensionScored)]
+        assert rubric_events, "expected at least one RubricDimensionScored event"
+        strategic_weights = get_profile_weights(EvaluationProfile.STRATEGIC)
+        for event in rubric_events:
+            dim = RubricDimension(event.dimension)
+            assert event.weight == pytest.approx(strategic_weights[dim], abs=1e-6)
+
+    @pytest.mark.asyncio
+    async def test_tier1_veto_cannot_be_lifted_by_layer4_process_quality(self) -> None:
+        """L3 tier1 veto → L3.final_score=0.0 → composite near zero even with high L4.
+
+        Validates the "process quality cannot save failed content" principle
+        when the content-side failure comes from the ensemble path rather than
+        a single-judge Tier 1 failure.
+        """
+        from keystone.evaluator.layer4_trajectory import ProcessContext
+        from keystone.events import FindingSynthesized, SourceFound
+        from keystone.models.agents import (
+            AgentDefinition,
+            AgentInstance,
+            AgentRole,
+            ResearchAgentType,
+        )
+
+        dissenter = _make_mock_llm(
+            tier1_scores={
+                RubricDimension.INTENT_ALIGNMENT: 30.0,
+                RubricDimension.INTELLECTUAL_HONESTY: 70.0,
+                RubricDimension.COMPLETENESS: 70.0,
+                RubricDimension.NARRATIVE_COHERENCE: 70.0,
+            }
+        )
+        majority = _make_mock_llm(
+            tier1_scores={d: 85.0 for d in RubricDimension if d in _tier1_dims()}
+        )
+
+        # Layer 4 LLM returns a high qualitative score — if the blend did not
+        # enforce "content failure cannot be lifted," composite would rise.
+        async def high_l4_llm(prompt: str) -> str:
+            if "process" in prompt.lower() or "trajectory" in prompt.lower():
+                return json.dumps(
+                    {
+                        "qualitative_score": 90.0,
+                        "rationale": "exhaustive research",
+                        "missed_inquiries": [],
+                        "skepticism_assessment": "strong",
+                    }
+                )
+            return json.dumps({"score": 60, "feedback": "fallback"})
+
+        verifier = MockDOIVerifier({})
+        evaluator = Evaluator(
+            llm=high_l4_llm,
+            doi_verifier=verifier,
+            ensemble_llms=[
+                ("flagship_a", dissenter),
+                ("flagship_b", majority),
+            ],
+        )
+        manifest = _manifest(_cit("CIT-001"))
+
+        # Build a minimal ProcessContext so Layer 4 runs. Agent/events are
+        # synthesized just enough to exercise the metric path.
+        agent_def = AgentDefinition(
+            name="mock",
+            description="mock research agent",
+            role=AgentRole.RESEARCH,
+            tools=["exa_search"],
+            research_type=ResearchAgentType.QUANTITATIVE,
+        )
+        agent = AgentInstance(
+            agent_id="agent_ens",
+            engagement_id="ENG-001",
+            client_id="CLT-001",
+            definition=agent_def,
+            working_dir="/tmp/mock",
+            task_ids=[_task().id],
+        )
+        events_trail = [
+            SourceFound(
+                event_id="e1",
+                engagement_id="ENG-001",
+                client_id="CLT-001",
+                agent_id=agent.agent_id,
+                url="https://example.com/a",
+                source_type="academic",
+                quality_score=0.8,
+            ),
+            FindingSynthesized(
+                event_id="e2",
+                engagement_id="ENG-001",
+                client_id="CLT-001",
+                agent_id=agent.agent_id,
+                claim_count=3,
+                confidence_range="0.6-0.9",
+            ),
+        ]
+        ctx = ProcessContext(
+            agent_id=agent.agent_id, task=_task(), agent=agent, events=events_trail
+        )
+
+        with patch(
+            "keystone.evaluator.layer1_deterministic.batch_check_urls",
+            new_callable=AsyncMock,
+            return_value={"CIT-001": True},
+        ):
+            async for _ in evaluator.evaluate(
+                "Text.",
+                _contract(),
+                _task(),
+                manifest,
+                _spec(),
+                process_context=ctx,
+            ):
+                pass
+
+        result = await evaluator.get_result()
+        # L3 vetoed to 0.0; composite = blend(L3=0.0, L4=90.0, w=0.8) ~ 0.06
+        assert result.passed is False
+        assert result.overall_score < 1.0
+        assert result.layer3_results is not None
+        assert result.layer3_results.final_score == 0.0
+        # Layer 4 still ran and produced a quality score — not a reason to lift failure
+        assert result.layer4_results is not None
+        assert result.layer4_results.qualitative_score > 50.0
+
+
+def _tier1_dims() -> set[RubricDimension]:
+    from keystone.evaluator.rubric_config import TIER_1_DIMENSIONS
+
+    return set(TIER_1_DIMENSIONS)

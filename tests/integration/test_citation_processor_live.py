@@ -55,6 +55,7 @@ DEAD_URLS = [
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _cit(
     cit_id: str,
     url: str,
@@ -107,84 +108,177 @@ def build_3_agent_findings() -> list[StructuredFinding]:
       - DEAD_URLS[1] cited by agent 3
     """
     # --- Agent 1: Quantitative ---
-    cq1 = _cit("CIT-001", "https://en.wikipedia.org/wiki/Lidar",
-                "LiDAR Overview", SourceType.ACADEMIC, 0.8, ["agent-quant-001"])
-    cq2 = _cit("CIT-002", SHARED_URL,
-                "Autonomous Car Analysis", SourceType.REPORT, 0.85, ["agent-quant-001"])
-    cq3 = _cit("CIT-003", "https://github.com/",
-                "GitHub Data", SourceType.FILING, 0.9, ["agent-quant-001"])
+    cq1 = _cit(
+        "CIT-001",
+        "https://en.wikipedia.org/wiki/Lidar",
+        "LiDAR Overview",
+        SourceType.ACADEMIC,
+        0.8,
+        ["agent-quant-001"],
+    )
+    cq2 = _cit(
+        "CIT-002",
+        SHARED_URL,
+        "Autonomous Car Analysis",
+        SourceType.REPORT,
+        0.85,
+        ["agent-quant-001"],
+    )
+    cq3 = _cit(
+        "CIT-003", "https://github.com/", "GitHub Data", SourceType.FILING, 0.9, ["agent-quant-001"]
+    )
 
     f_quant = StructuredFinding(
-        task_id="TASK-001", agent_id="agent-quant-001",
-        engagement_id=ENGAGEMENT_ID, client_id=CLIENT_ID,
+        task_id="TASK-001",
+        agent_id="agent-quant-001",
+        engagement_id=ENGAGEMENT_ID,
+        client_id=CLIENT_ID,
         agent_type="quantitative",
         claims=[
-            _claim("L4+ AV sensor market valued at $8.2B in 2025",
-                   "SEC filings and industry reports", [cq1, cq3], 0.85, ConfidenceTier.HIGH),
-            _claim("LiDAR accounts for 42% of total sensor market",
-                   "Market share analysis", [cq1], 0.7, ConfidenceTier.MODERATE),
-            _claim("Market projected to reach $50B by 2030 at 35% CAGR",
-                   "Growth rate extrapolation", [cq2, cq3], 0.65, ConfidenceTier.MODERATE),
+            _claim(
+                "L4+ AV sensor market valued at $8.2B in 2025",
+                "SEC filings and industry reports",
+                [cq1, cq3],
+                0.85,
+                ConfidenceTier.HIGH,
+            ),
+            _claim(
+                "LiDAR accounts for 42% of total sensor market",
+                "Market share analysis",
+                [cq1],
+                0.7,
+                ConfidenceTier.MODERATE,
+            ),
+            _claim(
+                "Market projected to reach $50B by 2030 at 35% CAGR",
+                "Growth rate extrapolation",
+                [cq2, cq3],
+                0.65,
+                ConfidenceTier.MODERATE,
+            ),
         ],
         gaps=["Insufficient data on Chinese AV sensor manufacturers"],
-        absence_report=["No public data on Chinese AV sensor export volumes",
-                        "Insurance industry impact data not available"],
-        sources_consulted=12, tokens_consumed=3500,
+        absence_report=[
+            "No public data on Chinese AV sensor export volumes",
+            "Insurance industry impact data not available",
+        ],
+        sources_consulted=12,
+        tokens_consumed=3500,
     )
 
     # --- Agent 2: Qualitative ---
-    cql1 = _cit("CIT-201", SHARED_URL,
-                 "AV Industry Trends", SourceType.NEWS, 0.75, ["agent-qual-002"])
-    cql2 = _cit("CIT-202", "https://httpbin.org/status/200",
-                 "HTTPBin Test", SourceType.NEWS, 0.8, ["agent-qual-002"])
-    cql3 = _cit("CIT-203", "https://arxiv.org/",
-                 "ArXiv Papers", SourceType.ACADEMIC, 0.85, ["agent-qual-002"])
-    cql_dead = _cit("CIT-204", DEAD_URLS[0],
-                     "Defunct Report", SourceType.REPORT, 0.3, ["agent-qual-002"])
+    cql1 = _cit(
+        "CIT-201", SHARED_URL, "AV Industry Trends", SourceType.NEWS, 0.75, ["agent-qual-002"]
+    )
+    cql2 = _cit(
+        "CIT-202",
+        "https://httpbin.org/status/200",
+        "HTTPBin Test",
+        SourceType.NEWS,
+        0.8,
+        ["agent-qual-002"],
+    )
+    cql3 = _cit(
+        "CIT-203",
+        "https://arxiv.org/",
+        "ArXiv Papers",
+        SourceType.ACADEMIC,
+        0.85,
+        ["agent-qual-002"],
+    )
+    cql_dead = _cit(
+        "CIT-204", DEAD_URLS[0], "Defunct Report", SourceType.REPORT, 0.3, ["agent-qual-002"]
+    )
 
     f_qual = StructuredFinding(
-        task_id="TASK-002", agent_id="agent-qual-002",
-        engagement_id=ENGAGEMENT_ID, client_id=CLIENT_ID,
+        task_id="TASK-002",
+        agent_id="agent-qual-002",
+        engagement_id=ENGAGEMENT_ID,
+        client_id=CLIENT_ID,
         agent_type="qualitative",
         claims=[
-            _claim("Solid-state LiDAR transition accelerating consolidation",
-                   "Acquisitions in 2025", [cql2], 0.75, ConfidenceTier.MODERATE),
-            _claim("Market projected to reach $45-55B by 2030",
-                   "Analyst consensus", [cql1, cql3], 0.6, ConfidenceTier.MODERATE),
-            _claim("Waymo and Cruise dominate L4 testing miles",
-                   "DMV filings", [cql2, cql_dead], 0.9, ConfidenceTier.HIGH),
+            _claim(
+                "Solid-state LiDAR transition accelerating consolidation",
+                "Acquisitions in 2025",
+                [cql2],
+                0.75,
+                ConfidenceTier.MODERATE,
+            ),
+            _claim(
+                "Market projected to reach $45-55B by 2030",
+                "Analyst consensus",
+                [cql1, cql3],
+                0.6,
+                ConfidenceTier.MODERATE,
+            ),
+            _claim(
+                "Waymo and Cruise dominate L4 testing miles",
+                "DMV filings",
+                [cql2, cql_dead],
+                0.9,
+                ConfidenceTier.HIGH,
+            ),
         ],
         gaps=[],
         absence_report=["No insurance industry impact analysis found"],
-        sources_consulted=8, tokens_consumed=2800,
+        sources_consulted=8,
+        tokens_consumed=2800,
     )
 
     # --- Agent 3: Contrarian ---
-    cc1 = _cit("CIT-301", "https://en.wikipedia.org/wiki/Lidar",
-                "LiDAR Limits", SourceType.ACADEMIC, 0.6, ["agent-contra-003"])
-    cc2 = _cit("CIT-302", DEAD_URLS[1],
-                "Expired Analysis", SourceType.REPORT, 0.2, ["agent-contra-003"])
-    cc3 = _cit("CIT-303", "https://arxiv.org/",
-                "AV Safety Papers", SourceType.ACADEMIC, 0.75, ["agent-contra-003"])
+    cc1 = _cit(
+        "CIT-301",
+        "https://en.wikipedia.org/wiki/Lidar",
+        "LiDAR Limits",
+        SourceType.ACADEMIC,
+        0.6,
+        ["agent-contra-003"],
+    )
+    cc2 = _cit(
+        "CIT-302", DEAD_URLS[1], "Expired Analysis", SourceType.REPORT, 0.2, ["agent-contra-003"]
+    )
+    cc3 = _cit(
+        "CIT-303",
+        "https://arxiv.org/",
+        "AV Safety Papers",
+        SourceType.ACADEMIC,
+        0.75,
+        ["agent-contra-003"],
+    )
 
     f_contra = StructuredFinding(
-        task_id="TASK-003", agent_id="agent-contra-003",
-        engagement_id=ENGAGEMENT_ID, client_id=CLIENT_ID,
+        task_id="TASK-003",
+        agent_id="agent-contra-003",
+        engagement_id=ENGAGEMENT_ID,
+        client_id=CLIENT_ID,
         agent_type="contrarian",
         claims=[
-            _claim("Regulatory delays will cap market at $20B by 2030",
-                   "Historical regulatory timeline analysis",
-                   [cc1, cc3], 0.4, ConfidenceTier.CONTESTED),
-            _claim("Camera-only approaches may eliminate LiDAR requirement",
-                   "Tesla FSD viability demonstration",
-                   [cc1, cc2], 0.35, ConfidenceTier.CONTESTED),
-            _claim("Supply chain concentration in 3 vendors = systemic risk",
-                   "Top 3 control 78% of automotive-grade LiDAR production",
-                   [cc3], 0.7, ConfidenceTier.MODERATE),
+            _claim(
+                "Regulatory delays will cap market at $20B by 2030",
+                "Historical regulatory timeline analysis",
+                [cc1, cc3],
+                0.4,
+                ConfidenceTier.CONTESTED,
+            ),
+            _claim(
+                "Camera-only approaches may eliminate LiDAR requirement",
+                "Tesla FSD viability demonstration",
+                [cc1, cc2],
+                0.35,
+                ConfidenceTier.CONTESTED,
+            ),
+            _claim(
+                "Supply chain concentration in 3 vendors = systemic risk",
+                "Top 3 control 78% of automotive-grade LiDAR production",
+                [cc3],
+                0.7,
+                ConfidenceTier.MODERATE,
+            ),
         ],
         gaps=["Need deeper analysis of emerging LiDAR alternatives"],
         absence_report=["No consumer willingness-to-pay data for L4 features"],
-        sources_consulted=6, tokens_consumed=2100,
+        sources_consulted=6,
+        tokens_consumed=2100,
     )
 
     return [f_quant, f_qual, f_contra]
@@ -193,6 +287,7 @@ def build_3_agent_findings() -> list[StructuredFinding]:
 # ============================================================
 # BASELINE TEST 1: Dedup with real data (shared URL)
 # ============================================================
+
 
 async def test_dedup_shared_url():
     """Two agents cite same URL; merged citation has both agent IDs."""
@@ -233,6 +328,7 @@ async def test_dedup_shared_url():
 # ============================================================
 # BASELINE TEST 2: URL liveness with real URLs
 # ============================================================
+
 
 async def test_url_liveness_individual():
     """Individual URL checks: live URLs return True, dead URLs return False."""
@@ -289,6 +385,7 @@ async def test_batch_url_check():
 # BASELINE TEST 3: Corroboration detection
 # ============================================================
 
+
 async def test_corroboration_pairs():
     """Cross-agent citations to same URL produce corroboration pairs."""
     findings = build_3_agent_findings()
@@ -312,6 +409,7 @@ async def test_corroboration_pairs():
 # ============================================================
 # BASELINE TEST 4: Content hash integrity
 # ============================================================
+
 
 async def test_content_hash_deterministic():
     """Content hashes are deterministic, 64-char hex, unique per input."""
@@ -350,6 +448,7 @@ async def test_processor_assigns_metadata_hashes():
 # Full pipeline event emission
 # ============================================================
 
+
 async def test_full_pipeline_events():
     """Full processor pipeline emits all event types with correct data."""
     findings = build_3_agent_findings()
@@ -387,10 +486,7 @@ async def test_full_pipeline_events():
 
     # Corroboration events
     assert all(e.citation_a != e.citation_b for e in corrob_events)
-    assert all(
-        pair.citation_a != pair.citation_b
-        for pair in manifest.corroboration_pairs
-    )
+    assert all(pair.citation_a != pair.citation_b for pair in manifest.corroboration_pairs)
 
     # ManifestProduced has correct counts
     assert me.total_citations == len(manifest.citations)
@@ -414,15 +510,31 @@ async def test_full_pipeline_events():
 # ADDITIONAL TESTS (beyond baseline)
 # ============================================================
 
+
 async def test_doi_based_dedup():
     """Same DOI, different URLs are merged into one citation."""
     shared_doi = "10.1234/av-sensor-test-doi"
-    c1 = _cit("CIT-D01", "https://example.com/paper-v1", "Paper V1",
-              SourceType.ACADEMIC, 0.7, ["agent-a"], doi=shared_doi)
-    c2 = _cit("CIT-D02", "https://example.org/paper-v2", "Paper V2",
-              SourceType.ACADEMIC, 0.9, ["agent-b"], doi=shared_doi)
-    c3 = _cit("CIT-D03", "https://example.net/unrelated", "Unrelated",
-              SourceType.NEWS, 0.5, ["agent-c"])
+    c1 = _cit(
+        "CIT-D01",
+        "https://example.com/paper-v1",
+        "Paper V1",
+        SourceType.ACADEMIC,
+        0.7,
+        ["agent-a"],
+        doi=shared_doi,
+    )
+    c2 = _cit(
+        "CIT-D02",
+        "https://example.org/paper-v2",
+        "Paper V2",
+        SourceType.ACADEMIC,
+        0.9,
+        ["agent-b"],
+        doi=shared_doi,
+    )
+    c3 = _cit(
+        "CIT-D03", "https://example.net/unrelated", "Unrelated", SourceType.NEWS, 0.5, ["agent-c"]
+    )
 
     deduped = deduplicate_citations([c1, c2, c3])
     assert len(deduped) == 2, f"DOI dedup should produce 2, got {len(deduped)}"
@@ -470,17 +582,17 @@ async def test_batch_concurrency():
     print(f"\n  Batch: {len(deduped)} citations in {elapsed:.2f}s")
     # Sequential with 2 dead URLs (10s timeout each) = 20s minimum.
     # Concurrent should be ~10-12s. Use 18s as generous threshold.
-    assert elapsed < 25, (
-        f"Batch took {elapsed:.2f}s; if >20s it's likely sequential not concurrent"
-    )
+    assert elapsed < 25, f"Batch took {elapsed:.2f}s; if >20s it's likely sequential not concurrent"
 
 
 async def test_dedup_preserves_highest_quality():
     """When merging citations, the highest quality_score is kept."""
-    c_low = _cit("CIT-X01", "https://example.com/same", "Same Source",
-                 SourceType.NEWS, 0.3, ["agent-x"])
-    c_high = _cit("CIT-X02", "https://example.com/same", "Same Source",
-                  SourceType.NEWS, 0.95, ["agent-y"])
+    c_low = _cit(
+        "CIT-X01", "https://example.com/same", "Same Source", SourceType.NEWS, 0.3, ["agent-x"]
+    )
+    c_high = _cit(
+        "CIT-X02", "https://example.com/same", "Same Source", SourceType.NEWS, 0.95, ["agent-y"]
+    )
 
     deduped = deduplicate_citations([c_low, c_high])
     assert len(deduped) == 1
@@ -501,9 +613,7 @@ async def test_manifest_dead_url_ids_are_citation_ids():
     manifest = await processor.get_manifest()
     all_cit_ids = {c.citation_id for c in manifest.citations}
     for dead_id in manifest.dead_urls:
-        assert dead_id in all_cit_ids, (
-            f"Dead URL ID '{dead_id}' not found in manifest citations"
-        )
+        assert dead_id in all_cit_ids, f"Dead URL ID '{dead_id}' not found in manifest citations"
 
 
 async def test_get_manifest_before_process_raises():

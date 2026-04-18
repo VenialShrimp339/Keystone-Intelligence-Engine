@@ -28,48 +28,60 @@ from keystone.gateway.tool_registry import ToolEntry, ToolRegistry, TransportTyp
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture
 def registry() -> ToolRegistry:
     reg = ToolRegistry()
-    reg.register(ToolEntry(
-        name="exa_search",
-        server_name="exa-mcp-server",
-        description="Web search",
-        transport_type=TransportType.HTTP,
-    ))
-    reg.register(ToolEntry(
-        name="brave_search",
-        server_name="brave-search-mcp-server",
-        description="Web search",
-        transport_type=TransportType.HTTP,
-    ))
-    reg.register(ToolEntry(
-        name="edgar_filings",
-        server_name="edgartools-mcp",
-        description="SEC filings",
-        transport_type=TransportType.STDIO,
-    ))
+    reg.register(
+        ToolEntry(
+            name="exa_search",
+            server_name="exa-mcp-server",
+            description="Web search",
+            transport_type=TransportType.HTTP,
+        )
+    )
+    reg.register(
+        ToolEntry(
+            name="brave_search",
+            server_name="brave-search-mcp-server",
+            description="Web search",
+            transport_type=TransportType.HTTP,
+        )
+    )
+    reg.register(
+        ToolEntry(
+            name="edgar_filings",
+            server_name="edgartools-mcp",
+            description="SEC filings",
+            transport_type=TransportType.STDIO,
+        )
+    )
     return reg
 
 
 @pytest.fixture
 def rate_limiter() -> InMemoryRateLimiter:
-    return InMemoryRateLimiter({
-        "exa-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
-        "brave-search-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
-        "edgartools-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
-    })
+    return InMemoryRateLimiter(
+        {
+            "exa-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
+            "brave-search-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
+            "edgartools-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
+        }
+    )
 
 
 @pytest.fixture
 def mock_client() -> MockMCPClient:
     client = MockMCPClient()
-    client.set_response("exa_search", {
-        "results": [
-            {"title": "Test Result", "url": "https://example.com/result1"},
-            {"title": "Another Result", "url": "https://example.com/result2"},
-        ]
-    })
+    client.set_response(
+        "exa_search",
+        {
+            "results": [
+                {"title": "Test Result", "url": "https://example.com/result1"},
+                {"title": "Another Result", "url": "https://example.com/result2"},
+            ]
+        },
+    )
     return client
 
 
@@ -103,6 +115,7 @@ def _make_call(
 # ---------------------------------------------------------------------------
 # Full flow tests
 # ---------------------------------------------------------------------------
+
 
 class TestFullFlow:
     @pytest.mark.asyncio
@@ -149,6 +162,7 @@ class TestFullFlow:
 # Authorization failure
 # ---------------------------------------------------------------------------
 
+
 class TestAuthorizationFailure:
     @pytest.mark.asyncio
     async def test_unauthorized_tool_rejected(self, gateway):
@@ -183,13 +197,16 @@ class TestAuthorizationFailure:
 # Rate limit exhaustion
 # ---------------------------------------------------------------------------
 
+
 class TestRateLimitExhaustion:
     @pytest.mark.asyncio
     async def test_rate_limit_exceeded(self, registry, mock_client):
         # Tiny bucket: 1 token, slow refill
-        rate_limiter = InMemoryRateLimiter({
-            "exa-mcp-server": RateLimit(max_tokens=1, refill_rate=0.01),
-        })
+        rate_limiter = InMemoryRateLimiter(
+            {
+                "exa-mcp-server": RateLimit(max_tokens=1, refill_rate=0.01),
+            }
+        )
         authorizer = ToolAuthorizer(registry)
         audit_logger = AuditLogger()
         gw = MCPGateway(
@@ -212,6 +229,7 @@ class TestRateLimitExhaustion:
 # ---------------------------------------------------------------------------
 # Circuit breaker
 # ---------------------------------------------------------------------------
+
 
 class TestCircuitBreaker:
     @pytest.mark.asyncio
@@ -268,6 +286,7 @@ class TestCircuitBreaker:
 # ---------------------------------------------------------------------------
 # Retry + dead-letter (Directive 9)
 # ---------------------------------------------------------------------------
+
 
 class TestRetryAndDeadLetter:
     @pytest.mark.asyncio
@@ -359,6 +378,7 @@ class TestRetryAndDeadLetter:
 # Citation extraction
 # ---------------------------------------------------------------------------
 
+
 class TestCitationExtraction:
     def test_extract_urls_from_text(self):
         result = "Check https://example.com and https://example.org/page for details"
@@ -405,6 +425,7 @@ class TestCitationExtraction:
 # ---------------------------------------------------------------------------
 # Mock client
 # ---------------------------------------------------------------------------
+
 
 class TestMockMCPClient:
     @pytest.mark.asyncio

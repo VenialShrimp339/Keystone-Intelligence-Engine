@@ -61,9 +61,7 @@ class Layer1Evaluator:
             dead_urls=dead_urls,
         )
 
-    async def _fact_check(
-        self, output_text: str, manifest: CitationManifest
-    ) -> tuple[int, int]:
+    async def _fact_check(self, output_text: str, manifest: CitationManifest) -> tuple[int, int]:
         """FActScore decomposition and verification."""
         template = _load_prompt("fact_decomposition.md")
         citation_texts = "\n".join(
@@ -71,15 +69,11 @@ class Layer1Evaluator:
             + (f"\nContent: {c.content_snippet}" if c.content_snippet else "")
             for c in manifest.citations
         )
-        prompt = (
-            template
-            .replace("{{output_text}}", output_text)
-            .replace("{{citation_texts}}", citation_texts)
+        prompt = template.replace("{{output_text}}", output_text).replace(
+            "{{citation_texts}}", citation_texts
         )
 
-        raw = await retry_llm_call(
-            self._llm, prompt, description="fact_decomposition"
-        )
+        raw = await retry_llm_call(self._llm, prompt, description="fact_decomposition")
         try:
             claims = safe_llm_json(raw, expect_list=True)
         except ParseError:
@@ -87,10 +81,7 @@ class Layer1Evaluator:
             claims = []
 
         verified = sum(1 for c in claims if c.get("status") == "SUPPORTED")
-        failed = sum(
-            1 for c in claims
-            if c.get("status") in ("NOT_SUPPORTED", "CONTRADICTED")
-        )
+        failed = sum(1 for c in claims if c.get("status") in ("NOT_SUPPORTED", "CONTRADICTED"))
         return verified, failed
 
     async def _numerical_consistency(self, output_text: str) -> list[str]:
@@ -98,9 +89,7 @@ class Layer1Evaluator:
         template = _load_prompt("numerical_consistency.md")
         prompt = template.replace("{{output_text}}", output_text)
 
-        raw = await retry_llm_call(
-            self._llm, prompt, description="numerical_consistency"
-        )
+        raw = await retry_llm_call(self._llm, prompt, description="numerical_consistency")
         try:
             parsed = safe_llm_json(raw)
         except ParseError:

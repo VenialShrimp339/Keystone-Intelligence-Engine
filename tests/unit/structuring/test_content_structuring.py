@@ -1011,3 +1011,178 @@ class TestGetterSafety:
     async def test_get_sprint_contract_for_unknown_task_returns_none(self) -> None:
         structurer = ContentStructurer()
         assert await structurer.get_sprint_contract("unknown") is None
+
+
+# ---------------------------------------------------------------------------
+# Slop detection (deterministic prose-quality filter)
+# ---------------------------------------------------------------------------
+
+
+def _sloppy_finding(task_id: str, citation_id: str = "CAN-001") -> StructuredFinding:
+    """Finding whose claim text is packed with slop patterns so the
+    rendered section text deterministically triggers the detector."""
+    return StructuredFinding(
+        task_id=task_id,
+        agent_id=f"agent_{task_id}",
+        engagement_id="eng_test",
+        client_id="client_test",
+        agent_type="quantitative",
+        claims=[
+            FindingClaim(
+                text=(
+                    "It is important to note that we leverage cutting-edge "
+                    "tooling to delve into a plethora of synergies"
+                ),
+                evidence=(
+                    "Furthermore, the landscape of tier-one suppliers "
+                    "showcases incredibly attractive unit economics."
+                ),
+                citations=[_citation(citation_id)],
+                citation_ids=[citation_id],
+                confidence=0.85,
+                confidence_tier=ConfidenceTier.HIGH,
+                claim_id=f"claim_{task_id}",
+                caveats=["Utilize primary sources where possible"],
+            )
+        ],
+        absence_report=["As previously mentioned, no counter-evidence was found"],
+        sources_consulted=3,
+        tokens_consumed=300,
+    )
+
+
+class TestSlopFiltering:
+    @pytest.mark.asyncio
+    async def test_slop_event_emitted_per_task_with_matches(self) -> None:
+        from keystone.events import SlopDetected
+
+        spec = _spec(tasks=[_task("task_001", "leaf_1")])
+        structurer = ContentStructurer()
+        events = []
+        async for event in structurer.structure(
+            _confidence_map(),
+            [_sloppy_finding("task_001")],
+            spec,
+            spec.task_decomposition.tasks,
+            "eng_test",
+            "client_test",
+        ):
+            events.append(event)
+
+        slop_events = [e for e in events if isinstance(e, SlopDetected)]
+        assert len(slop_events) == 1
+        evt = slop_events[0]
+        assert evt.task_id == "task_001"
+        assert evt.section_id == "section_task_001"
+        assert evt.total_count > 0
+        assert evt.high_count > 0
+        assert evt.cleaned is True
+        assert evt.top_categories  # non-empty
+
+    @pytest.mark.asyncio
+    async def test_section_text_is_scrubbed(self) -> None:
+        spec = _spec(tasks=[_task("task_001", "leaf_1")])
+        structurer = ContentStructurer()
+        async for _event in structurer.structure(
+            _confidence_map(),
+            [_sloppy_finding("task_001")],
+            spec,
+            spec.task_decomposition.tasks,
+            "eng_test",
+            "client_test",
+        ):
+            pass
+        section = await structurer.get_task_section_text("task_001")
+        lowered = section.lower()
+        assert "it is important to note that" not in lowered
+        assert "leverage" not in lowered
+        assert "plethora" not in lowered
+        assert "delve into" not in lowered
+
+    @pytest.mark.asyncio
+    async def test_no_slop_event_when_finding_is_clean(self) -> None:
+        from keystone.events import SlopDetected
+
+        clean_finding = StructuredFinding(
+            task_id="task_001",
+            agent_id="agent_task_001",
+            engagement_id="eng_test",
+            client_id="client_test",
+            agent_type="quantitative",
+            claims=[
+                FindingClaim(
+                    text="Revenue grew 12% year over year in 2026",
+                    evidence="Internal financials cross-checked against SEC 10-K",
+                    citations=[_citation("CAN-001")],
+                    citation_ids=["CAN-001"],
+                    confidence=0.9,
+                    confidence_tier=ConfidenceTier.HIGH,
+                    claim_id="claim_task_001",
+                    caveats=["Subject to revision on Q4 release"],
+                )
+            ],
+            absence_report=[],
+            sources_consulted=3,
+            tokens_consumed=100,
+        )
+        # Use an engagement type that won't inject framework-specific slop.
+        spec = _spec(tasks=[_task("task_001", "leaf_1")])
+        structurer = ContentStructurer()
+        events = []
+        async for event in structurer.structure(
+            _confidence_map(),
+            [clean_finding],
+            spec,
+            spec.task_decomposition.tasks,
+            "eng_test",
+            "client_test",
+        ):
+            events.append(event)
+
+        # The stock render_task_section_text template is deterministic so
+        # the emission depends only on whether the finding contents
+        # contain slop. A clean finding should produce no SlopDetected.
+        slop_events = [e for e in events if isinstance(e, SlopDetected)]
+        # The template may still emit hits for boilerplate ("various", "notably",
+        # etc.) — accept zero or one, but when one is emitted it must be LOW-only.
+        if slop_events:
+            assert slop_events[0].high_count == 0
+            assert slop_events[0].medium_count == 0
+
+    @pytest.mark.asyncio
+    async def test_injected_detector_is_used(self) -> None:
+        from keystone.events import SlopDetected
+        from keystone.quality import (
+            Category,
+            Severity,
+            SlopDetector,
+            SlopPattern,
+        )
+
+        # Custom detector with a single pattern that will definitely match
+        # the rendered section text.
+        single = SlopPattern(
+            phrase="evidence",
+            regex=r"\bEvidence\b",
+            category=Category.WEAK_OPENER,
+            severity=Severity.MEDIUM,
+        )
+        detector = SlopDetector([single])
+
+        spec = _spec(tasks=[_task("task_001", "leaf_1")])
+        structurer = ContentStructurer(slop_detector=detector)
+        events = []
+        async for event in structurer.structure(
+            _confidence_map(),
+            [_finding("task_001", "Branch one claim", "CAN-001")],
+            spec,
+            spec.task_decomposition.tasks,
+            "eng_test",
+            "client_test",
+        ):
+            events.append(event)
+
+        slop_events = [e for e in events if isinstance(e, SlopDetected)]
+        assert len(slop_events) == 1
+        assert slop_events[0].medium_count >= 1
+        assert "weak_opener" in slop_events[0].top_categories

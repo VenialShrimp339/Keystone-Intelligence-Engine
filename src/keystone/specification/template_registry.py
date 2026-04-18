@@ -35,7 +35,13 @@ _QUANTITATIVE_ANALYST = AgentDefinition(
     description="Financial data analysis, SEC filings, economic indicators, and quantitative modeling",
     role=AgentRole.RESEARCH,
     model=ModelTier.STANDARD,
-    tools=[ToolName.EDGAR_FILINGS, ToolName.FINNHUB_MARKET, ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.FRED_DATA],
+    tools=[
+        ToolName.EDGAR_FILINGS,
+        ToolName.FINNHUB_MARKET,
+        ToolName.EXA_SEARCH,
+        ToolName.BRAVE_SEARCH,
+        ToolName.FRED_DATA,
+    ],
     system_prompt=(
         "You are a quantitative research analyst. Your methodology is data-driven: "
         "start with financial filings and economic data, build quantitative models, "
@@ -54,7 +60,13 @@ _MARKET_RESEARCHER = AgentDefinition(
     model=ModelTier.STANDARD,
     # news_search and industry_reports removed: no MCP servers registered yet.
     # Add back when dedicated news/industry-report MCP servers are available.
-    tools=[ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.EDGAR_FILINGS, ToolName.FINNHUB_MARKET, ToolName.PAPER_SEARCH],
+    tools=[
+        ToolName.EXA_SEARCH,
+        ToolName.BRAVE_SEARCH,
+        ToolName.EDGAR_FILINGS,
+        ToolName.FINNHUB_MARKET,
+        ToolName.PAPER_SEARCH,
+    ],
     system_prompt=(
         "You are a market research analyst. Your methodology focuses on competitive "
         "dynamics, market structure, and strategic positioning. Map the competitive "
@@ -72,7 +84,13 @@ _ACADEMIC_RESEARCHER = AgentDefinition(
     role=AgentRole.RESEARCH,
     model=ModelTier.STANDARD,
     # patent_search removed: no MCP server registered yet.
-    tools=[ToolName.PAPER_SEARCH, ToolName.DOI_VERIFY, ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.EDGAR_FILINGS],
+    tools=[
+        ToolName.PAPER_SEARCH,
+        ToolName.DOI_VERIFY,
+        ToolName.EXA_SEARCH,
+        ToolName.BRAVE_SEARCH,
+        ToolName.EDGAR_FILINGS,
+    ],
     system_prompt=(
         "You are an academic research analyst. Your methodology prioritizes "
         "peer-reviewed sources, patent filings, and established expert consensus. "
@@ -90,7 +108,13 @@ _REGULATORY_ANALYST = AgentDefinition(
     role=AgentRole.RESEARCH,
     model=ModelTier.STANDARD,
     # government_search and news_search removed: no MCP servers registered yet.
-    tools=[ToolName.EDGAR_FILINGS, ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.PAPER_SEARCH, ToolName.FRED_DATA],
+    tools=[
+        ToolName.EDGAR_FILINGS,
+        ToolName.EXA_SEARCH,
+        ToolName.BRAVE_SEARCH,
+        ToolName.PAPER_SEARCH,
+        ToolName.FRED_DATA,
+    ],
     system_prompt=(
         "You are a regulatory research analyst. Your methodology focuses on "
         "current and pending regulations, compliance requirements, and government "
@@ -107,7 +131,13 @@ _GENERALIST = AgentDefinition(
     description="Broad research across multiple domains, trend analysis, and cross-cutting themes",
     role=AgentRole.RESEARCH,
     model=ModelTier.STANDARD,
-    tools=[ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.PAPER_SEARCH, ToolName.EDGAR_FILINGS, ToolName.FINNHUB_MARKET],
+    tools=[
+        ToolName.EXA_SEARCH,
+        ToolName.BRAVE_SEARCH,
+        ToolName.PAPER_SEARCH,
+        ToolName.EDGAR_FILINGS,
+        ToolName.FINNHUB_MARKET,
+    ],
     system_prompt=(
         "You are a generalist research analyst. Your methodology is breadth-first: "
         "survey the landscape before going deep. Identify cross-cutting themes "
@@ -123,7 +153,13 @@ _CONTRARIAN_ANALYST = AgentDefinition(
     description="Devil's advocate analysis, assumption challenging, and risk identification",
     role=AgentRole.RESEARCH,
     model=ModelTier.STANDARD,
-    tools=[ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.PAPER_SEARCH, ToolName.EDGAR_FILINGS, ToolName.FINNHUB_MARKET],
+    tools=[
+        ToolName.EXA_SEARCH,
+        ToolName.BRAVE_SEARCH,
+        ToolName.PAPER_SEARCH,
+        ToolName.EDGAR_FILINGS,
+        ToolName.FINNHUB_MARKET,
+    ],
     system_prompt=(
         "You are a contrarian research analyst. Your methodology specifically "
         "seeks evidence that challenges prevailing assumptions and consensus views. "
@@ -140,7 +176,13 @@ _HISTORICAL_ANALYST = AgentDefinition(
     description="Historical analogy analysis, pattern matching across industries and time periods",
     role=AgentRole.RESEARCH,
     model=ModelTier.STANDARD,
-    tools=[ToolName.PAPER_SEARCH, ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.FINNHUB_MARKET, ToolName.EDGAR_FILINGS],
+    tools=[
+        ToolName.PAPER_SEARCH,
+        ToolName.EXA_SEARCH,
+        ToolName.BRAVE_SEARCH,
+        ToolName.FINNHUB_MARKET,
+        ToolName.EDGAR_FILINGS,
+    ],
     system_prompt=(
         "You are a historical analogy analyst. Your methodology identifies "
         "structural parallels between the current situation and historical "

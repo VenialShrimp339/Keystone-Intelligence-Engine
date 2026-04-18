@@ -68,9 +68,7 @@ class PriorityScorer:
             leaves=leaves_json,
         )
 
-        raw = await retry_llm_call(
-            self._llm, prompt, description="priority_scoring"
-        )
+        raw = await retry_llm_call(self._llm, prompt, description="priority_scoring")
         data = safe_llm_json(raw)
 
         scores_raw = data.get("scores", data if isinstance(data, list) else [])

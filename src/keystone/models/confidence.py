@@ -46,9 +46,7 @@ class ACHMatrix(BaseModel):
     is consistent with all hypotheses.
     """
 
-    hypotheses: list[str] = Field(
-        description="Competing hypotheses under evaluation"
-    )
+    hypotheses: list[str] = Field(description="Competing hypotheses under evaluation")
     diagnostic_evidence: list[str] = Field(
         description="Evidence items that discriminate between hypotheses"
     )
@@ -65,24 +63,16 @@ class HighConfidenceClaim(BaseModel):
         description="Agreement ratio and which methods agree (e.g., '4/4 (ACH, Quant, Adv, Hist)')"
     )
     sources: int = Field(ge=0, description="Number of independent sources")
-    corroboration_count: int = Field(
-        ge=0, description="How many agents independently found this"
-    )
-    robustness: str = Field(
-        description="How the claim holds under assumption variations"
-    )
+    corroboration_count: int = Field(ge=0, description="How many agents independently found this")
+    robustness: str = Field(description="How the claim holds under assumption variations")
     curmudgeon_challenge: str = Field(
         description="Specific, non-trivial reason this could be wrong"
     )
     discouq_features: DiscoUQFeatures | None = Field(
         default=None, description="Computational confidence features"
     )
-    aggregated_claim_id: str | None = Field(
-        default=None, description="Links to provenance index"
-    )
-    task_ids: list[str] = Field(
-        default_factory=list, description="Source task IDs"
-    )
+    aggregated_claim_id: str | None = Field(default=None, description="Links to provenance index")
+    task_ids: list[str] = Field(default_factory=list, description="Source task IDs")
 
 
 class ModerateConfidenceClaim(BaseModel):
@@ -92,18 +82,12 @@ class ModerateConfidenceClaim(BaseModel):
     methodological_agreement: str = Field(description="Agreement ratio")
     dissent: str = Field(description="Who disagrees and why")
     sources: int = Field(ge=0, description="Number of independent sources")
-    sensitivity: str = Field(
-        description="What assumption change would flip the conclusion"
-    )
+    sensitivity: str = Field(description="What assumption change would flip the conclusion")
     ach_diagnosticity: ACHDiagnosticity | None = Field(
         default=None, description="How diagnostic the evidence is"
     )
-    aggregated_claim_id: str | None = Field(
-        default=None, description="Links to provenance index"
-    )
-    task_ids: list[str] = Field(
-        default_factory=list, description="Source task IDs"
-    )
+    aggregated_claim_id: str | None = Field(default=None, description="Links to provenance index")
+    task_ids: list[str] = Field(default_factory=list, description="Source task IDs")
 
 
 class WeakConfidenceClaim(BaseModel):
@@ -115,19 +99,11 @@ class WeakConfidenceClaim(BaseModel):
 
     claim: str = Field(description="The claim statement")
     methodological_agreement: str = Field(description="Agreement ratio")
-    key_issue: str = Field(
-        description="The primary source of uncertainty"
-    )
+    key_issue: str = Field(description="The primary source of uncertainty")
     sources: int = Field(ge=0, description="Number of independent sources")
-    recommendation: str = Field(
-        description="How to present this in the deliverable"
-    )
-    aggregated_claim_id: str | None = Field(
-        default=None, description="Links to provenance index"
-    )
-    task_ids: list[str] = Field(
-        default_factory=list, description="Source task IDs"
-    )
+    recommendation: str = Field(description="How to present this in the deliverable")
+    aggregated_claim_id: str | None = Field(default=None, description="Links to provenance index")
+    task_ids: list[str] = Field(default_factory=list, description="Source task IDs")
 
 
 class ContestedClaim(BaseModel):
@@ -135,9 +111,7 @@ class ContestedClaim(BaseModel):
 
     claim: str = Field(description="The claim statement")
     methodological_agreement: str = Field(description="Agreement ratio")
-    key_disagreement: str = Field(
-        description="The fundamental point of contention"
-    )
+    key_disagreement: str = Field(description="The fundamental point of contention")
     sources: int = Field(ge=0, description="Number of independent sources")
     steelmanned_opposing_view: str = Field(
         description="Strongest version of the position against this claim"
@@ -145,12 +119,8 @@ class ContestedClaim(BaseModel):
     ach_matrix: ACHMatrix | None = Field(
         default=None, description="ACH analysis of competing hypotheses"
     )
-    aggregated_claim_id: str | None = Field(
-        default=None, description="Links to provenance index"
-    )
-    task_ids: list[str] = Field(
-        default_factory=list, description="Source task IDs"
-    )
+    aggregated_claim_id: str | None = Field(default=None, description="Links to provenance index")
+    task_ids: list[str] = Field(default_factory=list, description="Source task IDs")
 
 
 class InsufficientEvidenceClaim(BaseModel):
@@ -158,15 +128,9 @@ class InsufficientEvidenceClaim(BaseModel):
 
     claim: str = Field(description="The claim or question")
     reason: str = Field(description="Why evidence is insufficient")
-    priority: str = Field(
-        description="How important it is to fill this gap (high/medium/low)"
-    )
-    aggregated_claim_id: str | None = Field(
-        default=None, description="Links to provenance index"
-    )
-    task_ids: list[str] = Field(
-        default_factory=list, description="Source task IDs"
-    )
+    priority: str = Field(description="How important it is to fill this gap (high/medium/low)")
+    aggregated_claim_id: str | None = Field(default=None, description="Links to provenance index")
+    task_ids: list[str] = Field(default_factory=list, description="Source task IDs")
 
 
 class ConfidenceMap(BaseModel):

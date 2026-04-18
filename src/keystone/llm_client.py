@@ -75,13 +75,19 @@ async def _call_claude_cli(
     async with semaphore:
         proc = await asyncio.create_subprocess_exec(
             "claude",
-            "-p", prompt,
-            "--model", model,
-            "--effort", effort,
-            "--output-format", "text",
+            "-p",
+            prompt,
+            "--model",
+            model,
+            "--effort",
+            effort,
+            "--output-format",
+            "text",
             "--no-session-persistence",
-            "--tools", "",
-            "--system-prompt", "",
+            "--tools",
+            "",
+            "--system-prompt",
+            "",
             stdin=asyncio.subprocess.DEVNULL,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
@@ -89,9 +95,7 @@ async def _call_claude_cli(
         try:
             stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=300)
         except asyncio.TimeoutError:
-            raise RuntimeError(
-                f"claude -p timed out after 300s (model={model})"
-            ) from None
+            raise RuntimeError(f"claude -p timed out after 300s (model={model})") from None
         finally:
             # Kill the subprocess if it is still running (TimeoutError,
             # CancelledError, or any other early exit).
@@ -102,9 +106,7 @@ async def _call_claude_cli(
                 await asyncio.shield(proc.wait())
 
         if proc.returncode != 0:
-            raise RuntimeError(
-                f"claude -p exited {proc.returncode}: {stderr.decode().strip()}"
-            )
+            raise RuntimeError(f"claude -p exited {proc.returncode}: {stderr.decode().strip()}")
 
         return stdout.decode()
 
@@ -132,11 +134,16 @@ async def _call_claude_cli_research(
     async with semaphore:
         proc = await asyncio.create_subprocess_exec(
             "claude",
-            "-p", prompt,
-            "--model", model,
-            "--effort", "medium",
-            "--allowedTools", "WebSearch,WebFetch",
-            "--output-format", "text",
+            "-p",
+            prompt,
+            "--model",
+            model,
+            "--effort",
+            "medium",
+            "--allowedTools",
+            "WebSearch,WebFetch",
+            "--output-format",
+            "text",
             "--no-session-persistence",
             stdin=asyncio.subprocess.DEVNULL,
             stdout=asyncio.subprocess.PIPE,
@@ -144,7 +151,8 @@ async def _call_claude_cli_research(
         )
         try:
             stdout, stderr = await asyncio.wait_for(
-                proc.communicate(), timeout=timeout,
+                proc.communicate(),
+                timeout=timeout,
             )
         except asyncio.TimeoutError:
             raise RuntimeError(
@@ -161,8 +169,7 @@ async def _call_claude_cli_research(
 
         if proc.returncode != 0:
             raise RuntimeError(
-                f"claude -p research exited {proc.returncode}: "
-                f"{stderr.decode().strip()}"
+                f"claude -p research exited {proc.returncode}: {stderr.decode().strip()}"
             )
 
         return stdout.decode()
@@ -205,8 +212,7 @@ class CodexTokenProvider:
             access_token = tokens.get("access_token")
             if not access_token:
                 raise ValueError(
-                    f"No access_token in {self._auth_file}. "
-                    "Run 'codex login' to re-authenticate."
+                    f"No access_token in {self._auth_file}. Run 'codex login' to re-authenticate."
                 )
 
             self._cached_token = access_token
@@ -277,9 +283,7 @@ def _get_cached_client(config: AppConfig) -> AsyncOpenAI:
 # ---- Implementation helpers (one per auth path) ----
 
 
-async def _call_standard_api(
-    client: AsyncOpenAI, model_id: str, effort: str, prompt: str
-) -> str:
+async def _call_standard_api(client: AsyncOpenAI, model_id: str, effort: str, prompt: str) -> str:
     """Standard OpenAI Responses API (api.openai.com).
 
     Uses the documented, clean interface: string input, non-streaming,
@@ -293,9 +297,7 @@ async def _call_standard_api(
     return response.output_text
 
 
-async def _call_codex_oauth(
-    client: AsyncOpenAI, model_id: str, effort: str, prompt: str
-) -> str:
+async def _call_codex_oauth(client: AsyncOpenAI, model_id: str, effort: str, prompt: str) -> str:
     """ChatGPT-authenticated Codex backend (chatgpt.com/backend-api/codex).
 
     This private endpoint differs from the standard API in several ways:

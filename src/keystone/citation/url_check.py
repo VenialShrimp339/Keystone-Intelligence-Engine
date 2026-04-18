@@ -56,9 +56,7 @@ async def check_url_liveness(url: str, timeout: float = 10.0) -> bool:
             return False
 
 
-async def batch_check_urls(
-    citations: list[Citation], concurrency: int = 10
-) -> dict[str, bool]:
+async def batch_check_urls(citations: list[Citation], concurrency: int = 10) -> dict[str, bool]:
     """Check URL liveness for all citations concurrently.
 
     Args:

@@ -48,9 +48,7 @@ async def run_wwhtb(
             f"Dissenting views: {', '.join(claim.dissenting_analysts) or 'none'}\n\n"
             f'Respond with JSON: {{"assumptions": ["assumption 1", "assumption 2"]}}'
         )
-        response = await retry_llm_call(
-            llm, prompt, description=f"wwhtb_claim_{claim.index}"
-        )
+        response = await retry_llm_call(llm, prompt, description=f"wwhtb_claim_{claim.index}")
         try:
             parsed = safe_llm_json(response)
             assumptions = parsed.get("assumptions", [])

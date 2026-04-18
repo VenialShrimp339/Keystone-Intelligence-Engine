@@ -167,9 +167,7 @@ class CitationProcessor:
             )
             if not is_live:
                 dead_url_ids.append(citation.citation_id)
-            updated_citations.append(
-                citation.model_copy(update={"url_live": is_live})
-            )
+            updated_citations.append(citation.model_copy(update={"url_live": is_live}))
 
         # 5. Recompute metadata hashes from each final canonical url:title.
         # This keeps metadata_hash aligned with the emitted canonical citation
@@ -194,9 +192,7 @@ class CitationProcessor:
         )
 
         # Rewrite findings so claim.citation_ids reference canonical IDs
-        self._canonicalized_findings = self._rewrite_findings_to_canonical(
-            findings, aliases
-        )
+        self._canonicalized_findings = self._rewrite_findings_to_canonical(findings, aliases)
 
         yield ManifestProduced(
             event_id=_uid(),
@@ -239,9 +235,7 @@ class CitationProcessor:
         so downstream render/text paths must prefer claim.citation_ids when
         present.
         """
-        alias_map: dict[str, str] = {
-            a.source_instance_id: a.canonical_citation_id for a in aliases
-        }
+        alias_map: dict[str, str] = {a.source_instance_id: a.canonical_citation_id for a in aliases}
 
         rewritten: list[StructuredFinding] = []
         for finding in findings:
@@ -252,12 +246,8 @@ class CitationProcessor:
                 # research agents or test helpers) populate claim.citations but
                 # leave claim.citation_ids empty. We must derive the source-instance
                 # IDs from the Citation objects before applying the alias map.
-                source_ids = claim.citation_ids or [
-                    cit.citation_id for cit in claim.citations
-                ]
-                canonical_ids = [
-                    alias_map.get(cid, cid) for cid in source_ids
-                ]
+                source_ids = claim.citation_ids or [cit.citation_id for cit in claim.citations]
+                canonical_ids = [alias_map.get(cid, cid) for cid in source_ids]
                 # Deduplicate while preserving order
                 seen: set[str] = set()
                 deduped_ids: list[str] = []
@@ -275,9 +265,7 @@ class CitationProcessor:
         aliases: list[CitationAlias],
     ) -> list[CorroborationPair]:
         """Rewrite corroboration pair IDs through the alias map to CAN-* IDs."""
-        alias_map = {
-            alias.source_instance_id: alias.canonical_citation_id for alias in aliases
-        }
+        alias_map = {alias.source_instance_id: alias.canonical_citation_id for alias in aliases}
 
         rewritten: list[CorroborationPair] = []
         seen: set[tuple[str, str]] = set()

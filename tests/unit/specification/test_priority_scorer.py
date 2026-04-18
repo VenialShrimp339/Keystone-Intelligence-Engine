@@ -32,8 +32,14 @@ def _make_tree() -> IssueTree:
                     name="Competition",
                     description="Competitive landscape",
                     children=[
-                        IssueTreeNode(id="branch_2.1", name="Chinese competitors", description="Hesai, RoboSense"),
-                        IssueTreeNode(id="branch_2.2", name="Western competitors", description="Innoviz, Aeva"),
+                        IssueTreeNode(
+                            id="branch_2.1",
+                            name="Chinese competitors",
+                            description="Hesai, RoboSense",
+                        ),
+                        IssueTreeNode(
+                            id="branch_2.2", name="Western competitors", description="Innoviz, Aeva"
+                        ),
                     ],
                 ),
             ],
@@ -49,10 +55,30 @@ def _make_tree() -> IssueTree:
 
 def _make_llm(scores: list[dict] | None = None):
     default_scores = [
-        {"branch_id": "branch_1.1", "decision_relevance": 0.9, "uncertainty_reduction": 0.8, "reasoning": "Core to TAM estimate."},
-        {"branch_id": "branch_1.2", "decision_relevance": 0.7, "uncertainty_reduction": 0.9, "reasoning": "High uncertainty in L4+ timeline."},
-        {"branch_id": "branch_2.1", "decision_relevance": 0.8, "uncertainty_reduction": 0.7, "reasoning": "Chinese competition is key risk."},
-        {"branch_id": "branch_2.2", "decision_relevance": 0.6, "uncertainty_reduction": 0.5, "reasoning": "Western competitors less threatening."},
+        {
+            "branch_id": "branch_1.1",
+            "decision_relevance": 0.9,
+            "uncertainty_reduction": 0.8,
+            "reasoning": "Core to TAM estimate.",
+        },
+        {
+            "branch_id": "branch_1.2",
+            "decision_relevance": 0.7,
+            "uncertainty_reduction": 0.9,
+            "reasoning": "High uncertainty in L4+ timeline.",
+        },
+        {
+            "branch_id": "branch_2.1",
+            "decision_relevance": 0.8,
+            "uncertainty_reduction": 0.7,
+            "reasoning": "Chinese competition is key risk.",
+        },
+        {
+            "branch_id": "branch_2.2",
+            "decision_relevance": 0.6,
+            "uncertainty_reduction": 0.5,
+            "reasoning": "Western competitors less threatening.",
+        },
     ]
 
     async def llm(prompt: str) -> str:
@@ -62,7 +88,6 @@ def _make_llm(scores: list[dict] | None = None):
 
 
 class TestPriorityScorer:
-
     async def test_returns_scores_for_all_leaves(self):
         llm = _make_llm()
         scorer = PriorityScorer(llm)

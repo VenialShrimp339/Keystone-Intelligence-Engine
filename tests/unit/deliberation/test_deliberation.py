@@ -97,11 +97,28 @@ def _mock_llm():
     async def llm(prompt: str) -> str:
         lower = prompt.lower()
         if "evaluate each claim" in lower:
-            return json.dumps([
-                {"index": 0, "confidence": 0.85, "source_count": 3, "reasoning": "Strong evidence"},
-                {"index": 1, "confidence": 0.45, "source_count": 1, "reasoning": "Weak evidence"},
-                {"index": 2, "confidence": 0.70, "source_count": 2, "reasoning": "Moderate support"},
-            ])
+            return json.dumps(
+                [
+                    {
+                        "index": 0,
+                        "confidence": 0.85,
+                        "source_count": 3,
+                        "reasoning": "Strong evidence",
+                    },
+                    {
+                        "index": 1,
+                        "confidence": 0.45,
+                        "source_count": 1,
+                        "reasoning": "Weak evidence",
+                    },
+                    {
+                        "index": 2,
+                        "confidence": 0.70,
+                        "source_count": 2,
+                        "reasoning": "Moderate support",
+                    },
+                ]
+            )
         if "select the analyst" in lower:
             return json.dumps({"selected_analyst": "ach", "reasoning": "Best evidence"})
         if "contradict" in lower:
@@ -130,11 +147,14 @@ class TestEndToEnd:
     async def test_full_pipeline(self) -> None:
         """Full deliberation produces a valid confidence map."""
         findings = [
-            _finding("agent-1", [
-                _fc("Market is $50B", 0.85),
-                _fc("Growth declining", 0.45),
-                _fc("Strong incumbents", 0.7),
-            ]),
+            _finding(
+                "agent-1",
+                [
+                    _fc("Market is $50B", 0.85),
+                    _fc("Growth declining", 0.45),
+                    _fc("Strong incumbents", 0.7),
+                ],
+            ),
         ]
         delib = Deliberation(analyst_llm=_mock_llm())
         events = await _collect_events(delib, _manifest(), findings)
@@ -155,15 +175,11 @@ class TestEndToEnd:
 
         # All AnalystSpawned before any IndependentAnalysisComplete
         last_spawned = max(i for i, t in enumerate(types) if t is AnalystSpawned)
-        first_complete = min(
-            i for i, t in enumerate(types) if t is IndependentAnalysisComplete
-        )
+        first_complete = min(i for i, t in enumerate(types) if t is IndependentAnalysisComplete)
         assert last_spawned < first_complete
 
         # All IndependentAnalysisComplete before AggregationComplete
-        last_analysis = max(
-            i for i, t in enumerate(types) if t is IndependentAnalysisComplete
-        )
+        last_analysis = max(i for i, t in enumerate(types) if t is IndependentAnalysisComplete)
         agg_idx = types.index(AggregationComplete)
         assert last_analysis < agg_idx
 
@@ -255,9 +271,7 @@ class TestHITLGate:
             db_session_factory=session_factory,
         )
 
-        with patch(
-            "keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate
-        ):
+        with patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate):
             events = await _collect_events(delib, _manifest(), findings)
 
         # Gate was called with correct gate_type
@@ -302,9 +316,7 @@ class TestHITLGate:
             db_session_factory=session_factory,
         )
 
-        with patch(
-            "keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate
-        ):
+        with patch("keystone.hitl.gate.create_and_wait_for_gate", mock_create_gate):
             with pytest.raises(
                 RuntimeError,
                 match="Modifications are not yet supported in this phase.",
@@ -424,9 +436,7 @@ class TestEventMetadata:
     async def test_events_carry_engagement_context(self) -> None:
         findings = [_finding("agent-1", [_fc("Claim", 0.8)])]
         delib = Deliberation(analyst_llm=_mock_llm())
-        events = await _collect_events(
-            delib, _manifest(), findings, "ENG-X", "CLT-Y"
-        )
+        events = await _collect_events(delib, _manifest(), findings, "ENG-X", "CLT-Y")
 
         for event in events:
             assert event.engagement_id == "ENG-X"

@@ -278,6 +278,31 @@ class SprintContractProposed(PipelineEvent):
     criteria_count: int = Field(description="Number of acceptance criteria")
 
 
+class SlopDetected(PipelineEvent):
+    """Deterministic slop-pattern matches found in an L2 section draft.
+
+    Fires once per task whose draft text contains at least one match from
+    the curated slop-pattern database (filler phrases, buzzwords, LLM tics,
+    AI tells, etc.). The Evaluator scores the cleaned text, but the raw
+    counts flow through observability so regressions in upstream agents
+    show up as an uptick in HIGH-severity matches.
+    """
+
+    layer: str = "L2"
+    task_id: str = Field(description="Task whose section text was scanned")
+    section_id: str = Field(description="Section identifier used downstream")
+    total_count: int = Field(description="Total matches across all severities")
+    high_count: int = Field(description="Matches with HIGH severity")
+    medium_count: int = Field(description="Matches with MEDIUM severity")
+    low_count: int = Field(description="Matches with LOW severity")
+    top_categories: list[str] = Field(
+        description="Category names with the highest match counts, most first",
+    )
+    cleaned: bool = Field(
+        description="True when auto-replacements changed the stored text",
+    )
+
+
 # ---------------------------------------------------------------------------
 # L3: Generation events
 # ---------------------------------------------------------------------------
@@ -364,6 +389,64 @@ class EvaluationComplete(PipelineEvent):
     overall_score: float = Field(description="Final composite score")
     layer2_gate_passed: bool = Field(description="Whether citation gate passed")
     feedback_length: int = Field(description="Length of feedback in characters")
+
+
+# ---------------------------------------------------------------------------
+# L5: Cross-Model Ensemble events
+# ---------------------------------------------------------------------------
+
+
+class EnsembleJudgeScored(PipelineEvent):
+    """Layer 5: a single judge in the cross-model ensemble finished scoring."""
+
+    layer: str = "L5"
+    task_id: str = Field(description="Task the judge scored")
+    judge_id: str = Field(description="Logical judge identifier, e.g. 'flagship'")
+    judge_tier: str = Field(description="ModelTier string value this judge ran at")
+    judge_succeeded: bool = Field(description="True when the judge produced a Layer3Result")
+    judge_final_score: float = Field(
+        description="Judge's Layer3Result.final_score (0.0 on failure)"
+    )
+    judge_weighted_total: float = Field(description="Judge's geometric-mean score before gestalt")
+    judge_gestalt: float = Field(description="Judge's gestalt adjustment in [-10, 10]")
+    error: str | None = Field(
+        default=None, description="Error description when judge_succeeded=False"
+    )
+
+
+class DissenterVetoTriggered(PipelineEvent):
+    """Layer 5: at least one judge vetoed a Tier 1 dimension.
+
+    Fires on ANY dissent below the Tier 1 floor, not only a numeric
+    minority. The ensemble's contract is "a single dissenting judge is
+    enough to force human review," so this event carries every judge
+    whose score fell below the floor regardless of how many dissented.
+    """
+
+    layer: str = "L5"
+    task_id: str = Field(description="Task where the veto triggered")
+    dimension: str = Field(description="Tier 1 RubricDimension name")
+    floor_threshold: float = Field(description="Tier 1 floor for this dimension")
+    min_judge_score: float = Field(description="Minimum judge score observed for this dimension")
+    dissenting_judge_ids: list[str] = Field(
+        description="Judge IDs whose score was strictly below the floor",
+    )
+    judge_count: int = Field(description="Total number of surviving judges consulted")
+
+
+class EnsembleEvaluationComplete(PipelineEvent):
+    """Layer 5: ensemble aggregation finished, before L4 and final EvaluationComplete."""
+
+    layer: str = "L5"
+    task_id: str = Field(description="Task the ensemble evaluated")
+    n_judges: int = Field(description="Number of judges that were asked to score")
+    n_judges_succeeded: int = Field(description="Number of judges that produced a Layer3Result")
+    aggregated_score: float = Field(
+        description="Aggregated Layer3Result.final_score on 0-100 scale"
+    )
+    agreement_level: float = Field(description="Fraction of dimensions within a 10-point range")
+    veto_count: int = Field(description="Number of Tier 1 dimensions that triggered a veto")
+    tier1_vetoed: bool = Field(description="True when at least one Tier 1 veto fired")
 
 
 # ---------------------------------------------------------------------------
@@ -483,6 +566,7 @@ AnyPipelineEvent = (
     | OutlineGenerated
     | SectionDrafted
     | SprintContractProposed
+    | SlopDetected
     # L3
     | DraftGenerated
     | CitationFormatted
@@ -493,6 +577,10 @@ AnyPipelineEvent = (
     | RubricDimensionScored
     | ProcessTrajectoryScored
     | EvaluationComplete
+    # L5
+    | EnsembleJudgeScored
+    | DissenterVetoTriggered
+    | EnsembleEvaluationComplete
     # META
     | ObservationRecorded
     | PatternPromoted

@@ -9,6 +9,7 @@ from keystone.gateway.audit_log import AuditLogger
 # Basic logging
 # ---------------------------------------------------------------------------
 
+
 class TestAuditLogging:
     def test_log_successful_call(self) -> None:
         logger = AuditLogger()
@@ -64,38 +65,54 @@ class TestAuditLogging:
 # Hashing
 # ---------------------------------------------------------------------------
 
+
 class TestHashing:
     def test_same_input_same_hash(self) -> None:
         logger = AuditLogger()
         params = {"query": "market size", "count": 10}
 
         entry1 = logger.log_call(
-            agent_id="a", engagement_id="e", client_id="c",
-            tool_name="t", parameters=params,
+            agent_id="a",
+            engagement_id="e",
+            client_id="c",
+            tool_name="t",
+            parameters=params,
         )
         entry2 = logger.log_call(
-            agent_id="a", engagement_id="e", client_id="c",
-            tool_name="t", parameters=params,
+            agent_id="a",
+            engagement_id="e",
+            client_id="c",
+            tool_name="t",
+            parameters=params,
         )
         assert entry1.input_hash == entry2.input_hash
 
     def test_different_input_different_hash(self) -> None:
         logger = AuditLogger()
         entry1 = logger.log_call(
-            agent_id="a", engagement_id="e", client_id="c",
-            tool_name="t", parameters={"query": "alpha"},
+            agent_id="a",
+            engagement_id="e",
+            client_id="c",
+            tool_name="t",
+            parameters={"query": "alpha"},
         )
         entry2 = logger.log_call(
-            agent_id="a", engagement_id="e", client_id="c",
-            tool_name="t", parameters={"query": "beta"},
+            agent_id="a",
+            engagement_id="e",
+            client_id="c",
+            tool_name="t",
+            parameters={"query": "beta"},
         )
         assert entry1.input_hash != entry2.input_hash
 
     def test_hash_is_truncated_sha256(self) -> None:
         logger = AuditLogger()
         entry = logger.log_call(
-            agent_id="a", engagement_id="e", client_id="c",
-            tool_name="t", parameters={"key": "value"},
+            agent_id="a",
+            engagement_id="e",
+            client_id="c",
+            tool_name="t",
+            parameters={"key": "value"},
         )
         # 16 hex chars (first 8 bytes of SHA-256)
         assert len(entry.input_hash) == 16
@@ -106,25 +123,35 @@ class TestHashing:
 # Querying
 # ---------------------------------------------------------------------------
 
+
 class TestQuerying:
     def test_get_entries_all(self) -> None:
         logger = AuditLogger()
         for i in range(5):
             logger.log_call(
-                agent_id=f"agent_{i}", engagement_id="eng_001", client_id="c",
-                tool_name="exa_search", parameters={},
+                agent_id=f"agent_{i}",
+                engagement_id="eng_001",
+                client_id="c",
+                tool_name="exa_search",
+                parameters={},
             )
         assert len(logger.get_entries()) == 5
 
     def test_filter_by_agent(self) -> None:
         logger = AuditLogger()
         logger.log_call(
-            agent_id="agent_a", engagement_id="eng_001", client_id="c",
-            tool_name="exa_search", parameters={},
+            agent_id="agent_a",
+            engagement_id="eng_001",
+            client_id="c",
+            tool_name="exa_search",
+            parameters={},
         )
         logger.log_call(
-            agent_id="agent_b", engagement_id="eng_001", client_id="c",
-            tool_name="exa_search", parameters={},
+            agent_id="agent_b",
+            engagement_id="eng_001",
+            client_id="c",
+            tool_name="exa_search",
+            parameters={},
         )
         results = logger.get_entries(agent_id="agent_a")
         assert len(results) == 1
@@ -133,12 +160,18 @@ class TestQuerying:
     def test_filter_by_tool(self) -> None:
         logger = AuditLogger()
         logger.log_call(
-            agent_id="a", engagement_id="e", client_id="c",
-            tool_name="exa_search", parameters={},
+            agent_id="a",
+            engagement_id="e",
+            client_id="c",
+            tool_name="exa_search",
+            parameters={},
         )
         logger.log_call(
-            agent_id="a", engagement_id="e", client_id="c",
-            tool_name="brave_search", parameters={},
+            agent_id="a",
+            engagement_id="e",
+            client_id="c",
+            tool_name="brave_search",
+            parameters={},
         )
         results = logger.get_entries(tool_name="brave_search")
         assert len(results) == 1
@@ -146,13 +179,20 @@ class TestQuerying:
     def test_get_dead_letters(self) -> None:
         logger = AuditLogger()
         logger.log_call(
-            agent_id="a", engagement_id="e", client_id="c",
-            tool_name="t", parameters={},
+            agent_id="a",
+            engagement_id="e",
+            client_id="c",
+            tool_name="t",
+            parameters={},
         )
         logger.log_call(
-            agent_id="a", engagement_id="e", client_id="c",
-            tool_name="t", parameters={},
-            error=RuntimeError("fail"), dead_lettered=True,
+            agent_id="a",
+            engagement_id="e",
+            client_id="c",
+            tool_name="t",
+            parameters={},
+            error=RuntimeError("fail"),
+            dead_lettered=True,
         )
         dead = logger.get_dead_letters()
         assert len(dead) == 1
@@ -163,13 +203,17 @@ class TestQuerying:
 # Debug mode
 # ---------------------------------------------------------------------------
 
+
 class TestDebugMode:
     def test_debug_mode_logs_full_data(self) -> None:
         """Debug mode should not crash. Full I/O is logged via structlog."""
         logger = AuditLogger(debug=True)
         entry = logger.log_call(
-            agent_id="a", engagement_id="e", client_id="c",
-            tool_name="t", parameters={"secret": "data"},
+            agent_id="a",
+            engagement_id="e",
+            client_id="c",
+            tool_name="t",
+            parameters={"secret": "data"},
             result={"full": "output"},
         )
         assert entry.success is True

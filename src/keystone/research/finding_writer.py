@@ -91,14 +91,14 @@ class FindingWriter:
         for i, raw in enumerate(raw_claims):
             claim_issues = self._validate_raw_claim(raw, i)
             if claim_issues:
-                dropped_claims.append({
-                    "index": i,
-                    "text": raw.get("text", ""),
-                    "reasons": claim_issues,
-                })
-                logger.debug(
-                    "Dropped claim %d: %s", i, "; ".join(claim_issues)
+                dropped_claims.append(
+                    {
+                        "index": i,
+                        "text": raw.get("text", ""),
+                        "reasons": claim_issues,
+                    }
                 )
+                logger.debug("Dropped claim %d: %s", i, "; ".join(claim_issues))
                 continue
 
             claim_id = f"{engagement_id}_{task_id}_{uuid.uuid4().hex[:8]}"
@@ -132,9 +132,7 @@ class FindingWriter:
 
         # When ALL claims failed validation there is nothing to salvage -- fail loudly
         if not claims:
-            reasons = "; ".join(
-                d["reasons"][0] for d in dropped_claims if d.get("reasons")
-            )
+            reasons = "; ".join(d["reasons"][0] for d in dropped_claims if d.get("reasons"))
             raise FindingValidationError(
                 [f"All {len(dropped_claims)} claims failed validation: {reasons}"]
             )
@@ -147,11 +145,7 @@ class FindingWriter:
         artifact_path = None
         if self._artifact_dir:
             artifact_path = str(
-                self._artifact_dir
-                / engagement_id
-                / "memory"
-                / "raw"
-                / f"{agent_id}_{task_id}.md"
+                self._artifact_dir / engagement_id / "memory" / "raw" / f"{agent_id}_{task_id}.md"
             )
 
         return StructuredFinding(
@@ -227,9 +221,7 @@ class FindingWriter:
             lines.append(f"\n### Claim {i}")
             lines.append(claim.text)
             lines.append(f"\n**Evidence:** {claim.evidence}")
-            lines.append(
-                f"**Confidence:** {claim.confidence} ({claim.confidence_tier.value})"
-            )
+            lines.append(f"**Confidence:** {claim.confidence} ({claim.confidence_tier.value})")
             if claim.caveats:
                 lines.append(f"**Caveats:** {', '.join(claim.caveats)}")
             lines.append(f"**Citations:** {len(claim.citations)} sources")

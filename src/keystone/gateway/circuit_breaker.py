@@ -35,8 +35,7 @@ class CircuitOpenError(Exception):
         self.provider = provider
         self.retry_after = retry_after
         super().__init__(
-            f"Circuit breaker OPEN for provider '{provider}'. "
-            f"Retry after {retry_after:.1f}s"
+            f"Circuit breaker OPEN for provider '{provider}'. Retry after {retry_after:.1f}s"
         )
 
 
@@ -98,9 +97,7 @@ class CircuitBreaker:
             current_state = self._check_state_transition()
 
             if current_state == CircuitState.OPEN:
-                retry_after = self.recovery_timeout - (
-                    time.monotonic() - self._last_failure_time
-                )
+                retry_after = self.recovery_timeout - (time.monotonic() - self._last_failure_time)
                 raise CircuitOpenError(self.provider, max(0.0, retry_after))
 
             if current_state == CircuitState.HALF_OPEN:

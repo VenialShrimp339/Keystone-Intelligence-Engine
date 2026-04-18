@@ -88,13 +88,16 @@ def _log_tokens(test_name: str, tokens: int, elapsed: float, llm_calls: int, sea
         "search_calls": search_calls,
     }
     _token_log.append(entry)
-    print(f"\n  [TOKENS] {test_name}: ~{tokens} tokens, {elapsed:.1f}s, "
-          f"{llm_calls} LLM calls, {search_calls} search calls")
+    print(
+        f"\n  [TOKENS] {test_name}: ~{tokens} tokens, {elapsed:.1f}s, "
+        f"{llm_calls} LLM calls, {search_calls} search calls"
+    )
 
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture(autouse=True)
 def _fresh_client():
@@ -128,10 +131,12 @@ def gateway_with_real_search(simple_client) -> MCPGateway:
     registry = ToolRegistry()
     register_all_tools(registry)
     authorizer = ToolAuthorizer(registry)
-    rate_limiter = InMemoryRateLimiter({
-        "exa-mcp-server": RateLimit(max_tokens=10, refill_rate=2.0),
-        "brave-search-mcp-server": RateLimit(max_tokens=10, refill_rate=2.0),
-    })
+    rate_limiter = InMemoryRateLimiter(
+        {
+            "exa-mcp-server": RateLimit(max_tokens=10, refill_rate=2.0),
+            "brave-search-mcp-server": RateLimit(max_tokens=10, refill_rate=2.0),
+        }
+    )
     audit_logger = AuditLogger(debug=True)
     return MCPGateway(
         registry=registry,
@@ -152,31 +157,40 @@ def gateway_with_mock() -> MCPGateway:
     audit_logger = AuditLogger(debug=True)
     mock_client = MockMCPClient()
     # Set canned responses with URLs so citation extraction works
-    mock_client.set_response("exa_search", {
-        "status": "ok",
-        "results": [
-            {
-                "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany",
-                "title": "SEC EDGAR Company Search",
-                "text": "The autonomous vehicle sensor market is projected to reach $15B by 2030.",
-            }
-        ],
-    })
-    mock_client.set_response("brave_search", {
-        "status": "ok",
-        "results": [
-            {
-                "url": "https://en.wikipedia.org/wiki/Lidar",
-                "title": "Lidar - Wikipedia",
-                "text": "Lidar sensors are critical components for autonomous driving.",
-            }
-        ],
-    })
-    mock_client.set_response("edgar_filings", {
-        "status": "ok",
-        "results": [],
-        "data": "No filings found for query.",
-    })
+    mock_client.set_response(
+        "exa_search",
+        {
+            "status": "ok",
+            "results": [
+                {
+                    "url": "https://www.sec.gov/cgi-bin/browse-edgar?action=getcompany",
+                    "title": "SEC EDGAR Company Search",
+                    "text": "The autonomous vehicle sensor market is projected to reach $15B by 2030.",
+                }
+            ],
+        },
+    )
+    mock_client.set_response(
+        "brave_search",
+        {
+            "status": "ok",
+            "results": [
+                {
+                    "url": "https://en.wikipedia.org/wiki/Lidar",
+                    "title": "Lidar - Wikipedia",
+                    "text": "Lidar sensors are critical components for autonomous driving.",
+                }
+            ],
+        },
+    )
+    mock_client.set_response(
+        "edgar_filings",
+        {
+            "status": "ok",
+            "results": [],
+            "data": "No filings found for query.",
+        },
+    )
     return MCPGateway(
         registry=registry,
         authorizer=authorizer,
@@ -211,7 +225,8 @@ def _make_task(
             "Evaluate the evidence for and against a large TAM for L4+ AV sensors, "
             "including technological barriers, regulatory delays, and competing approaches"
         ),
-        assigned_tools=tools or [
+        assigned_tools=tools
+        or [
             ToolName.EXA_SEARCH,
             ToolName.BRAVE_SEARCH,
             ToolName.EDGAR_FILINGS,
@@ -297,6 +312,7 @@ def _make_agent(
 # BASELINE TEST 1: Single agent, single round with REAL search
 # ===================================================================
 
+
 async def test_single_agent_real_search(llm, gateway_with_real_search, simple_client):
     """Single quantitative agent with real Exa/Brave search + real LLM synthesis."""
     start = time.monotonic()
@@ -336,23 +352,33 @@ async def test_single_agent_real_search(llm, gateway_with_real_search, simple_cl
     for i, claim in enumerate(finding.claims):
         assert claim.text, f"Claim {i} has empty text"
         assert claim.evidence, f"Claim {i} has empty evidence"
-        assert 0.0 <= claim.confidence <= 1.0, f"Claim {i} confidence out of range: {claim.confidence}"
+        assert 0.0 <= claim.confidence <= 1.0, (
+            f"Claim {i} confidence out of range: {claim.confidence}"
+        )
         assert len(claim.citations) > 0, f"Claim {i} has no citations"
 
     # --- Verify search APIs were actually called ---
     assert simple_client.call_count > 0, "No search API calls made"
-    print(f"\n  Finding: {len(finding.claims)} claims, "
-          f"{finding.sources_consulted} sources, "
-          f"{finding.tokens_consumed} tokens")
+    print(
+        f"\n  Finding: {len(finding.claims)} claims, "
+        f"{finding.sources_consulted} sources, "
+        f"{finding.tokens_consumed} tokens"
+    )
     print(f"  Search calls: exa={simple_client.exa_calls}, brave={simple_client.brave_calls}")
 
-    _log_tokens("single_agent_real_search", finding.tokens_consumed, elapsed,
-                llm_calls=2, search_calls=simple_client.call_count)
+    _log_tokens(
+        "single_agent_real_search",
+        finding.tokens_consumed,
+        elapsed,
+        llm_calls=2,
+        search_calls=simple_client.call_count,
+    )
 
 
 # ===================================================================
 # BASELINE TEST 2: Tool call verification (Exa + Brave individually)
 # ===================================================================
+
 
 async def test_exa_search_returns_results(simple_client):
     """Verify Exa search returns actual results for AV sensor query."""
@@ -479,6 +505,7 @@ async def test_gateway_auth_check(simple_client):
     )
 
     from keystone.gateway.auth import AuthorizationError
+
     with pytest.raises(AuthorizationError):
         await gateway.execute(call)
 
@@ -491,6 +518,7 @@ async def test_gateway_auth_check(simple_client):
 # ===================================================================
 # BASELINE TEST 3: Filesystem isolation
 # ===================================================================
+
 
 async def test_filesystem_isolation():
     """Verify two agents have isolated workspaces that cannot cross-read."""
@@ -533,6 +561,7 @@ async def test_filesystem_isolation():
 # BASELINE TEST 4: Iterative loop (2 rounds with mock to save quota)
 # ===================================================================
 
+
 async def test_iterative_loop_two_rounds(llm, gateway_with_mock):
     """Run agent for 2 rounds, verify context evolves between rounds."""
     start = time.monotonic()
@@ -558,7 +587,7 @@ async def test_iterative_loop_two_rounds(llm, gateway_with_mock):
     synth_events = [e for e in events if isinstance(e, FindingSynthesized)]
     print(f"\n  Synthesis events: {len(synth_events)}")
     for i, se in enumerate(synth_events):
-        print(f"    Round {i+1}: {se.claim_count} claims, confidence {se.confidence_range}")
+        print(f"    Round {i + 1}: {se.claim_count} claims, confidence {se.confidence_range}")
 
     # Verify round 2 has at least as many claims as round 1
     if len(synth_events) >= 2:
@@ -572,13 +601,15 @@ async def test_iterative_loop_two_rounds(llm, gateway_with_mock):
     assert len(complete_events) == 1
     assert complete_events[0].sources_consulted > 0
 
-    _log_tokens("iterative_two_rounds", finding.tokens_consumed, elapsed,
-                llm_calls=4, search_calls=0)  # 2 synthesis + 2 absence (approx)
+    _log_tokens(
+        "iterative_two_rounds", finding.tokens_consumed, elapsed, llm_calls=4, search_calls=0
+    )  # 2 synthesis + 2 absence (approx)
 
 
 # ===================================================================
 # BASELINE TEST 5: Error recovery
 # ===================================================================
+
 
 async def test_error_recovery_continues_after_tool_failure(llm):
     """Configure one tool to fail, verify agent continues with others."""
@@ -594,21 +625,27 @@ async def test_error_recovery_continues_after_tool_failure(llm):
     # exa_search will fail
     mock_client.set_failure("exa_search", ConnectionError("API unreachable"))
     # brave_search will succeed
-    mock_client.set_response("brave_search", {
-        "status": "ok",
-        "results": [
-            {
-                "url": "https://example.com/av-sensor-market",
-                "title": "AV Sensor Market Report",
-                "text": "The market is expected to grow significantly.",
-            }
-        ],
-    })
-    mock_client.set_response("edgar_filings", {
-        "status": "ok",
-        "results": [],
-        "data": "No filings found.",
-    })
+    mock_client.set_response(
+        "brave_search",
+        {
+            "status": "ok",
+            "results": [
+                {
+                    "url": "https://example.com/av-sensor-market",
+                    "title": "AV Sensor Market Report",
+                    "text": "The market is expected to grow significantly.",
+                }
+            ],
+        },
+    )
+    mock_client.set_response(
+        "edgar_filings",
+        {
+            "status": "ok",
+            "results": [],
+            "data": "No filings found.",
+        },
+    )
 
     gateway = MCPGateway(
         registry=registry,
@@ -653,13 +690,13 @@ async def test_error_recovery_continues_after_tool_failure(llm):
     for dl in dead_letters:
         print(f"    Tool: {dl.call.tool_name}, attempts: {dl.attempts}, error: {dl.error}")
 
-    _log_tokens("error_recovery", finding.tokens_consumed, elapsed,
-                llm_calls=2, search_calls=0)
+    _log_tokens("error_recovery", finding.tokens_consumed, elapsed, llm_calls=2, search_calls=0)
 
 
 # ===================================================================
 # BASELINE TEST 6: Citation reality check (URL liveness)
 # ===================================================================
+
 
 async def test_citation_url_liveness(llm, gateway_with_real_search, simple_client):
     """For every citation produced, HTTP HEAD the URL to check liveness."""
@@ -714,13 +751,19 @@ async def test_citation_url_liveness(llm, gateway_with_real_search, simple_clien
     if all_urls:
         assert live_count > 0, "All citation URLs are dead"
 
-    _log_tokens("citation_url_liveness", finding.tokens_consumed, elapsed,
-                llm_calls=2, search_calls=simple_client.call_count)
+    _log_tokens(
+        "citation_url_liveness",
+        finding.tokens_consumed,
+        elapsed,
+        llm_calls=2,
+        search_calls=simple_client.call_count,
+    )
 
 
 # ===================================================================
 # ADDITIONAL TEST: Zero search results handling
 # ===================================================================
+
 
 async def test_zero_search_results(llm):
     """What happens when search returns zero results?"""
@@ -787,6 +830,7 @@ async def test_zero_search_results(llm):
 # ADDITIONAL TEST: Agent synthesis quality check
 # ===================================================================
 
+
 async def test_synthesis_reflects_search_results(llm, gateway_with_real_search, simple_client):
     """Verify the agent's synthesis actually reflects search content, not hallucination."""
     start = time.monotonic()
@@ -824,13 +868,19 @@ async def test_synthesis_reflects_search_results(llm, gateway_with_real_search, 
         f"Only matched: {matched_terms} of {relevant_terms}"
     )
 
-    _log_tokens("synthesis_quality", finding.tokens_consumed, elapsed,
-                llm_calls=2, search_calls=simple_client.call_count)
+    _log_tokens(
+        "synthesis_quality",
+        finding.tokens_consumed,
+        elapsed,
+        llm_calls=2,
+        search_calls=simple_client.call_count,
+    )
 
 
 # ===================================================================
 # ADDITIONAL TEST: Search query relevance
 # ===================================================================
+
 
 async def test_search_queries_are_relevant(simple_client):
     """Verify the search queries the agent would generate are actually relevant."""
@@ -841,9 +891,7 @@ async def test_search_queries_are_relevant(simple_client):
     query = "Estimate the total addressable market for L4+ AV sensors in North America through 2030"
 
     # Test Exa
-    exa_result = await simple_client.call_tool(
-        "exa-mcp-server", "exa_search", {"query": query}
-    )
+    exa_result = await simple_client.call_tool("exa-mcp-server", "exa_search", {"query": query})
     exa_results = exa_result.get("results", [])
 
     # Test Brave
@@ -872,6 +920,7 @@ async def test_search_queries_are_relevant(simple_client):
 # ADDITIONAL TEST: Hallucinates tool name not in assigned set
 # ===================================================================
 
+
 async def test_unauthorized_tool_rejected_at_gateway(simple_client):
     """Agent tries to call a tool not in its assigned set -- gateway rejects."""
     registry = ToolRegistry()
@@ -898,6 +947,7 @@ async def test_unauthorized_tool_rejected_at_gateway(simple_client):
     )
 
     from keystone.gateway.auth import AuthorizationError
+
     with pytest.raises(AuthorizationError):
         await gateway.execute(call)
 
@@ -905,6 +955,7 @@ async def test_unauthorized_tool_rejected_at_gateway(simple_client):
 # ===================================================================
 # ADDITIONAL TEST: Parallel agents via AgentPool
 # ===================================================================
+
 
 async def test_parallel_agents_with_pool(llm, gateway_with_mock):
     """Run 2 agents in parallel via AgentPool, verify both produce findings."""
@@ -956,13 +1007,19 @@ async def test_parallel_agents_with_pool(llm, gateway_with_mock):
     # At least one should succeed
     assert len(successful) >= 1, f"All agents failed: {[str(r.error) for r in failed]}"
 
-    _log_tokens("parallel_agents", sum(f.tokens_consumed for f in successful),
-                elapsed, llm_calls=8, search_calls=0)
+    _log_tokens(
+        "parallel_agents",
+        sum(f.tokens_consumed for f in successful),
+        elapsed,
+        llm_calls=8,
+        search_calls=0,
+    )
 
 
 # ===================================================================
 # ADDITIONAL TEST: JSON parsing robustness
 # ===================================================================
+
 
 async def test_json_parsing_of_synthesis(llm):
     """Verify _parse_synthesis handles various JSON formats from the LLM."""
@@ -982,7 +1039,9 @@ async def test_json_parsing_of_synthesis(llm):
     assert result1[0]["text"] == "claim1"
 
     # Test: JSON object with "claims" key
-    result2 = ra._parse_synthesis('{"claims": [{"text": "claim2", "evidence": "ev2", "confidence": 0.7}]}')
+    result2 = ra._parse_synthesis(
+        '{"claims": [{"text": "claim2", "evidence": "ev2", "confidence": 0.7}]}'
+    )
     assert len(result2) == 1
     assert result2[0]["text"] == "claim2"
 
@@ -1003,7 +1062,9 @@ async def test_json_parsing_of_synthesis(llm):
     assert result5 == [], f"Invalid JSON should return empty list, got: {result5}"
 
     # Test: JSON with trailing commentary
-    with_commentary = '[{"text": "claim5", "confidence": 0.5, "evidence": "ev5"}]\n\nHere are my findings...'
+    with_commentary = (
+        '[{"text": "claim5", "confidence": 0.5, "evidence": "ev5"}]\n\nHere are my findings...'
+    )
     result6 = ra._parse_synthesis(with_commentary)
     print(f"  JSON with trailing text parse result: {len(result6)} claims")
     if len(result6) == 0:
@@ -1013,6 +1074,7 @@ async def test_json_parsing_of_synthesis(llm):
 # ===================================================================
 # ADDITIONAL TEST: Audit log completeness
 # ===================================================================
+
 
 async def test_audit_log_captures_all_calls(llm, simple_client):
     """Verify the audit log captures every tool call with full context."""
@@ -1051,8 +1113,10 @@ async def test_audit_log_captures_all_calls(llm, simple_client):
     entries = audit_logger.get_entries(engagement_id="ENG-TEST-001")
     print(f"\n  Audit entries: {len(entries)}")
     for entry in entries:
-        print(f"    {entry.tool_name}: success={entry.success}, "
-              f"latency={entry.latency_ms:.0f}ms, retry={entry.retry_attempt}")
+        print(
+            f"    {entry.tool_name}: success={entry.success}, "
+            f"latency={entry.latency_ms:.0f}ms, retry={entry.retry_attempt}"
+        )
 
     # Should have entries for each tool call
     assert len(entries) > 0, "No audit entries recorded"
@@ -1061,15 +1125,19 @@ async def test_audit_log_captures_all_calls(llm, simple_client):
     for entry in entries:
         assert entry.engagement_id == "ENG-TEST-001"
         assert entry.client_id == "CLIENT-TEST"
-        assert entry.tool_name in [ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH, ToolName.EDGAR_FILINGS]
+        assert entry.tool_name in [
+            ToolName.EXA_SEARCH,
+            ToolName.BRAVE_SEARCH,
+            ToolName.EDGAR_FILINGS,
+        ]
 
-    _log_tokens("audit_log", 0, elapsed, llm_calls=2,
-                search_calls=simple_client.call_count)
+    _log_tokens("audit_log", 0, elapsed, llm_calls=2, search_calls=simple_client.call_count)
 
 
 # ===================================================================
 # Summary fixture
 # ===================================================================
+
 
 def test_zz_token_summary():
     """Print token consumption summary (runs last due to name)."""
@@ -1089,11 +1157,15 @@ def test_zz_token_summary():
         total_elapsed += entry["elapsed_s"]
         total_llm += entry["llm_calls"]
         total_search += entry["search_calls"]
-        print(f"  {entry['test']:40s} {entry['tokens']:>8} tokens  "
-              f"{entry['elapsed_s']:>6.1f}s  {entry['llm_calls']:>2} LLM  "
-              f"{entry['search_calls']:>2} search")
+        print(
+            f"  {entry['test']:40s} {entry['tokens']:>8} tokens  "
+            f"{entry['elapsed_s']:>6.1f}s  {entry['llm_calls']:>2} LLM  "
+            f"{entry['search_calls']:>2} search"
+        )
     print("-" * 70)
-    print(f"  {'TOTAL':40s} {total_tokens:>8} tokens  "
-          f"{total_elapsed:>6.1f}s  {total_llm:>2} LLM  "
-          f"{total_search:>2} search")
+    print(
+        f"  {'TOTAL':40s} {total_tokens:>8} tokens  "
+        f"{total_elapsed:>6.1f}s  {total_llm:>2} LLM  "
+        f"{total_search:>2} search"
+    )
     print("=" * 70)

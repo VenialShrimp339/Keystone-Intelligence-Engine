@@ -33,9 +33,7 @@ class TestToolAuthorizer:
         authorizer = ToolAuthorizer(registry)
 
         with pytest.raises(AuthorizationError) as exc_info:
-            authorizer.check(
-                "agent-1", ["exa_search", "brave_search"], "edgar_filings"
-            )
+            authorizer.check("agent-1", ["exa_search", "brave_search"], "edgar_filings")
 
         assert exc_info.value.agent_id == "agent-1"
         assert exc_info.value.tool_name == "edgar_filings"

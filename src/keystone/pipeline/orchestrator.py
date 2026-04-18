@@ -106,6 +106,11 @@ class Pipeline:
         max_eval_tasks: int | None = None,
         evidence_records: list[EvidencePrepRecord] | None = None,
         retrieval_service_factory: Callable[[str], RetrievalService] | None = None,
+        ensemble_panel_override: Callable[
+            [EvaluationIntensity, Callable[[ModelTier], LLMCallable]],
+            list[tuple[str, LLMCallable]] | None,
+        ]
+        | None = None,
     ) -> None:
         """Construct a pipeline.
 
@@ -135,6 +140,13 @@ class Pipeline:
         service remains useful for system callers that bypass the
         bridge (e.g. string-form :meth:`RetrievalService.search`
         calls) -- those paths still inherit the context automatically.
+
+        ``ensemble_panel_override`` lets operators swap the default
+        Layer 5 judge panel without patching this module. When supplied,
+        it is called instead of :func:`_resolve_ensemble_judges` with
+        the same signature ``(intensity, llm_factory) -> panel | None``,
+        and its return value flows straight through to the Evaluator.
+        Passing ``None`` (default) preserves the built-in mapping.
         """
         self._llm_factory = llm_factory
         self._gateway = gateway
@@ -142,6 +154,7 @@ class Pipeline:
         self._max_eval_tasks = max_eval_tasks
         self._evidence_records = evidence_records
         self._retrieval_service_factory = retrieval_service_factory
+        self._ensemble_panel_override = ensemble_panel_override
         # Internal run state (overwritten on each run).
         self._result: PipelineResult | None = None
         # Tests may call _build_components(), mutate fields, then assign here
@@ -380,10 +393,13 @@ class Pipeline:
             process_context = _build_process_context(task, agent_by_task, events_by_agent, spec)
 
             # Fresh evaluator per task (each stores one result)
+            intensity = _resolve_evaluation_intensity(spec)
+            resolver = self._ensemble_panel_override or _resolve_ensemble_judges
             evaluator = Evaluator(
                 llm=self._llm_factory(ModelTier.FLAGSHIP),
                 profile=_resolve_evaluation_profile(spec),
-                intensity=_resolve_evaluation_intensity(spec),
+                intensity=intensity,
+                ensemble_llms=resolver(intensity, self._llm_factory),
             )
             async for event in evaluator.evaluate(
                 output_text,
@@ -805,6 +821,57 @@ def _resolve_evaluation_intensity(spec: EngagementSpec) -> EvaluationIntensity:
     if profile == PipelineProfile.DEEP:
         return EvaluationIntensity.DEEP
     return EvaluationIntensity.STANDARD
+
+
+def _resolve_ensemble_judges(
+    intensity: EvaluationIntensity,
+    llm_factory: Callable[[ModelTier], LLMCallable],
+) -> list[tuple[str, LLMCallable]] | None:
+    """Compose the Layer 5 judge panel for the given evaluation intensity.
+
+    Judge-panel selection rationale:
+    - LIGHT_TOUCH skips Layer 3 entirely; Layer 5 must be inert.
+    - STANDARD uses two independent FLAGSHIP (Opus) runs. Same model,
+      different calls — sampling stochasticity between runs exposes
+      unstable rubric scores while avoiding the weaker Haiku tier, which
+      is a classification/extraction model without the reasoning depth
+      needed for a nuanced 10-dimension rubric. Zero Play Favorites risk
+      (neither judge is the STANDARD/Sonnet tier that L1 generates with).
+    - DEEP adds one STANDARD (Sonnet) judge alongside the two FLAGSHIP
+      judges for cross-model diversity. Sonnet IS the L1 generator tier,
+      so there is a Play Favorites risk, but it is bounded to 1-of-3
+      votes by median aggregation and is further surfaced by the
+      agreement_level signal on Layer5Result. The STANDARD slot here is
+      an INTERIM choice: it is intended to be replaced by an external
+      provider (GPT-5.4, Gemini) once a second provider family is wired
+      into the LLM client factory. Until then, Sonnet is the best
+      available cross-model diversity signal inside the Anthropic
+      family. See TODO.md "L5 ensemble follow-ups" for the external-
+      provider tracking item.
+
+    Haiku (FAST tier) is deliberately NOT used as a judge. FAST stays in
+    the research-agent fallback chain (error_recovery.FALLBACK_CHAIN)
+    and in the Layer 1 deterministic fact decomposer where its
+    extraction properties are appropriate, but judging a 10-dimension
+    rubric is a reasoning task that requires at least Sonnet-class.
+    """
+    if intensity == EvaluationIntensity.LIGHT_TOUCH:
+        return None
+    flagship_a = llm_factory(ModelTier.FLAGSHIP)
+    flagship_b = llm_factory(ModelTier.FLAGSHIP)
+    if intensity == EvaluationIntensity.DEEP:
+        return [
+            ("flagship_a", flagship_a),
+            ("flagship_b", flagship_b),
+            # INTERIM slot: swap to an external provider (GPT-5.4 / Gemini)
+            # when one is integrated. Sonnet is the L1 generator tier, so
+            # Play Favorites is mitigated by median aggregation (1 of 3).
+            ("standard_crossmodel", llm_factory(ModelTier.STANDARD)),
+        ]
+    return [
+        ("flagship_a", flagship_a),
+        ("flagship_b", flagship_b),
+    ]
 
 
 def _raise_if_halted(governance) -> None:

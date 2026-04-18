@@ -158,8 +158,12 @@ async def _ensure_basic_pipeline_ran(config: AppConfig):
     _basic_events = await _collect_events(engine, AV_SENSOR_QUESTION)
     _basic_spec = await engine.get_spec()
     _basic_elapsed = time.monotonic() - start
-    _record("basic_functionality", llm_calls=9, elapsed=_basic_elapsed,
-            extra={"task_count": len(_basic_spec.task_decomposition.tasks)})
+    _record(
+        "basic_functionality",
+        llm_calls=9,
+        elapsed=_basic_elapsed,
+        extra={"task_count": len(_basic_spec.task_decomposition.tasks)},
+    )
 
 
 class TestBasicFunctionality:
@@ -343,8 +347,14 @@ class TestJSONParsingRobustness:
 
         self._verify_json(
             raw,
-            ["day_1_hypothesis", "intent_clear", "unstated_constraints",
-             "scope_boundaries", "decision_context", "surprising_finding"],
+            [
+                "day_1_hypothesis",
+                "intent_clear",
+                "unstated_constraints",
+                "scope_boundaries",
+                "decision_context",
+                "surprising_finding",
+            ],
         )
 
     async def test_decompose_market_lens_json(self, llm):
@@ -402,25 +412,56 @@ class TestJSONParsingRobustness:
         # Provide a minimal synthetic tree to test the validation prompt
         synthetic_tree = {
             "root": {
-                "id": "root", "name": "AV Sensor TAM",
-                "description": "Issue tree", "children": [
-                    {"id": "b1", "name": "Market Size", "description": "TAM estimation",
-                     "lens_annotations": {}, "children": [
-                         {"id": "b1.1", "name": "Current market", "description": "2024 baseline",
-                          "lens_annotations": {}, "children": []},
-                         {"id": "b1.2", "name": "Growth drivers", "description": "CAGR factors",
-                          "lens_annotations": {}, "children": []},
-                     ]},
-                    {"id": "b2", "name": "Supply Chain", "description": "Key players",
-                     "lens_annotations": {}, "children": [
-                         {"id": "b2.1", "name": "Lidar", "description": "Lidar manufacturers",
-                          "lens_annotations": {}, "children": []},
-                     ]},
+                "id": "root",
+                "name": "AV Sensor TAM",
+                "description": "Issue tree",
+                "children": [
+                    {
+                        "id": "b1",
+                        "name": "Market Size",
+                        "description": "TAM estimation",
+                        "lens_annotations": {},
+                        "children": [
+                            {
+                                "id": "b1.1",
+                                "name": "Current market",
+                                "description": "2024 baseline",
+                                "lens_annotations": {},
+                                "children": [],
+                            },
+                            {
+                                "id": "b1.2",
+                                "name": "Growth drivers",
+                                "description": "CAGR factors",
+                                "lens_annotations": {},
+                                "children": [],
+                            },
+                        ],
+                    },
+                    {
+                        "id": "b2",
+                        "name": "Supply Chain",
+                        "description": "Key players",
+                        "lens_annotations": {},
+                        "children": [
+                            {
+                                "id": "b2.1",
+                                "name": "Lidar",
+                                "description": "Lidar manufacturers",
+                                "lens_annotations": {},
+                                "children": [],
+                            },
+                        ],
+                    },
                 ],
                 "lens_annotations": {},
             },
-            "metadata": {"depth": 2, "leaf_count": 3, "lenses_used": ["market"],
-                         "synthesis_rationale": "test"},
+            "metadata": {
+                "depth": 2,
+                "leaf_count": 3,
+                "lenses_used": ["market"],
+                "synthesis_rationale": "test",
+            },
         }
         prompt = load_prompt(
             "mece_validation",
@@ -439,8 +480,11 @@ class TestJSONParsingRobustness:
         data = self._verify_json(raw, ["dimensions", "feedback"])
         dims = data["dimensions"]
         for expected_dim in [
-            "mutual_exclusivity", "collective_exhaustiveness",
-            "tailoring", "actionability", "depth_appropriateness",
+            "mutual_exclusivity",
+            "collective_exhaustiveness",
+            "tailoring",
+            "actionability",
+            "depth_appropriateness",
         ]:
             assert expected_dim in dims, f"Missing dimension: {expected_dim}"
 
@@ -485,9 +529,11 @@ class TestJSONParsingRobustness:
         if "<completeness_check>" in raw:
             logger.warning("Model echoed <completeness_check> tag in output")
         # Not a hard failure, but log it
-        print(f"\n  XML tags in output: "
-              f"analytical_contract={'<analytical_contract>' in raw}, "
-              f"completeness_check={'<completeness_check>' in raw}")
+        print(
+            f"\n  XML tags in output: "
+            f"analytical_contract={'<analytical_contract>' in raw}, "
+            f"completeness_check={'<completeness_check>' in raw}"
+        )
 
     def _verify_json(self, raw: str, expected_keys: list[str]) -> dict:
         """Verify raw LLM output contains valid JSON with expected keys."""
@@ -495,11 +541,15 @@ class TestJSONParsingRobustness:
         # Check for truncation
         stripped = raw.rstrip()
         if not stripped.endswith("}") and not stripped.endswith("]"):
-            logger.warning("Response may be truncated (doesn't end with } or ]): ...%s", stripped[-50:])
+            logger.warning(
+                "Response may be truncated (doesn't end with } or ]): ...%s", stripped[-50:]
+            )
 
         data = extract_json(raw)
         for key in expected_keys:
-            assert key in data, f"Missing expected key '{key}' in JSON. Keys present: {list(data.keys())}"
+            assert key in data, (
+                f"Missing expected key '{key}' in JSON. Keys present: {list(data.keys())}"
+            )
         return data
 
 
@@ -574,8 +624,10 @@ class TestEdgeCases:
         _record("edge_ambiguous", 9, elapsed)
 
         assert spec is not None
-        print(f"\n  Ambiguous question: type={spec.research_spec.engagement_type}, "
-              f"tasks={len(spec.task_decomposition.tasks)}, {elapsed:.1f}s")
+        print(
+            f"\n  Ambiguous question: type={spec.research_spec.engagement_type}, "
+            f"tasks={len(spec.task_decomposition.tasks)}, {elapsed:.1f}s"
+        )
 
     async def test_non_english_terms(self, engine):
         """Question with non-English specialized terms."""
@@ -591,8 +643,10 @@ class TestEdgeCases:
         _record("edge_non_english", 9, elapsed)
 
         assert spec is not None
-        print(f"\n  Non-English terms: type={spec.research_spec.engagement_type}, "
-              f"tasks={len(spec.task_decomposition.tasks)}, {elapsed:.1f}s")
+        print(
+            f"\n  Non-English terms: type={spec.research_spec.engagement_type}, "
+            f"tasks={len(spec.task_decomposition.tasks)}, {elapsed:.1f}s"
+        )
 
 
 # =========================================================================
@@ -671,10 +725,15 @@ class TestTokenMeasurement:
             raw = await llm(prompt)
         elapsed = time.monotonic() - start
         response_chars = len(raw)
-        _record("token_classification", 1, elapsed, {
-            "prompt_chars": prompt_chars,
-            "response_chars": response_chars,
-        })
+        _record(
+            "token_classification",
+            1,
+            elapsed,
+            {
+                "prompt_chars": prompt_chars,
+                "response_chars": response_chars,
+            },
+        )
 
         print(f"\n  Prompt: ~{prompt_chars} chars")
         print(f"  Response: ~{response_chars} chars")
@@ -693,10 +752,15 @@ class TestTokenMeasurement:
                 day_1_hypothesis="L4+ AV sensor TAM in NA is $15-20B by 2030.",
             )
         elapsed = time.monotonic() - start
-        _record("token_decomposition", 4, elapsed, {
-            "leaf_count": tree.metadata.leaf_count,
-            "depth": tree.metadata.depth,
-        })
+        _record(
+            "token_decomposition",
+            4,
+            elapsed,
+            {
+                "leaf_count": tree.metadata.leaf_count,
+                "depth": tree.metadata.depth,
+            },
+        )
 
         print(f"\n  3 lenses + synthesis: {elapsed:.2f}s")
         print(f"  Leaves: {tree.metadata.leaf_count}, Depth: {tree.metadata.depth}")
@@ -720,7 +784,13 @@ class TestPromptModelFit:
         data = extract_json(raw)
 
         # Check all 4 required fields
-        assert data["engagement_type"] in ["sizing", "diagnostic", "evaluative", "exploratory", "strategic"]
+        assert data["engagement_type"] in [
+            "sizing",
+            "diagnostic",
+            "evaluative",
+            "exploratory",
+            "strategic",
+        ]
         assert data["pipeline_profile"] in ["light", "standard", "deep"]
         assert isinstance(data["confidence"], (int, float))
         assert isinstance(data["reasoning"], str)
@@ -931,7 +1001,9 @@ class TestToolNameValidity:
                     hallucinated_tools.setdefault(tool, []).append(t.id)
 
         valid_pct = valid_assignments / total_assignments if total_assignments else 0
-        print(f"\n  Tool assignments: {valid_assignments}/{total_assignments} valid ({valid_pct:.0%})")
+        print(
+            f"\n  Tool assignments: {valid_assignments}/{total_assignments} valid ({valid_pct:.0%})"
+        )
         if hallucinated_tools:
             print(f"  Hallucinated tools: {dict(hallucinated_tools)}")
             logger.warning(
@@ -1018,7 +1090,7 @@ class TestCodexOAuthReliability:
         """Measure latency for a simple call vs a complex call."""
         # Simple call
         start = time.monotonic()
-        await llm("Return exactly: {\"ok\": true}")
+        await llm('Return exactly: {"ok": true}')
         simple_elapsed = time.monotonic() - start
 
         # Complex call (classification prompt)
@@ -1033,7 +1105,7 @@ class TestCodexOAuthReliability:
 
         print(f"\n  Simple call: {simple_elapsed:.2f}s")
         print(f"  Classification call: {complex_elapsed:.2f}s")
-        print(f"  Overhead ratio: {complex_elapsed/simple_elapsed:.1f}x")
+        print(f"  Overhead ratio: {complex_elapsed / simple_elapsed:.1f}x")
 
 
 # =========================================================================

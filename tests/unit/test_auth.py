@@ -10,6 +10,7 @@ from keystone.gateway.tool_registry import ToolEntry, ToolRegistry, TransportTyp
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 def _make_entry(name: str) -> ToolEntry:
     return ToolEntry(
         name=name,
@@ -36,6 +37,7 @@ def authorizer(registry: ToolRegistry) -> ToolAuthorizer:
 # ---------------------------------------------------------------------------
 # Authorization checks
 # ---------------------------------------------------------------------------
+
 
 class TestCheck:
     def test_authorized_tool_succeeds(self, authorizer: ToolAuthorizer) -> None:
@@ -93,6 +95,7 @@ class TestCheck:
 # ---------------------------------------------------------------------------
 # get_agent_tools
 # ---------------------------------------------------------------------------
+
 
 class TestGetAgentTools:
     def test_returns_matching_entries(self, authorizer: ToolAuthorizer) -> None:

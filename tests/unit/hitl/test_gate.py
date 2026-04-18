@@ -131,9 +131,7 @@ class TestCreateAndWaitForGate:
                     await service.submit_decision(
                         bg_session,
                         pending[0].id,
-                        SubmitDecisionRequest(
-                            decision=DecisionType.APPROVE, decided_by="jack"
-                        ),
+                        SubmitDecisionRequest(decision=DecisionType.APPROVE, decided_by="jack"),
                     )
 
             task = asyncio.create_task(approve_after_delay())
@@ -281,9 +279,7 @@ class TestHITLEventEmission:
                     await service.submit_decision(
                         bg_session,
                         pending[0].id,
-                        SubmitDecisionRequest(
-                            decision=DecisionType.APPROVE, decided_by="jack"
-                        ),
+                        SubmitDecisionRequest(decision=DecisionType.APPROVE, decided_by="jack"),
                     )
 
             task = asyncio.create_task(approve_after_delay())
@@ -413,9 +409,7 @@ class TestHITLEventEmission:
                     await service.submit_decision(
                         bg_session,
                         pending[0].id,
-                        SubmitDecisionRequest(
-                            decision=DecisionType.APPROVE, decided_by="jack"
-                        ),
+                        SubmitDecisionRequest(decision=DecisionType.APPROVE, decided_by="jack"),
                     )
 
             task = asyncio.create_task(approve_after_delay())

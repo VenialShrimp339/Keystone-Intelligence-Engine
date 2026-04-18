@@ -55,9 +55,7 @@ TIER_1_FLOOR_THRESHOLDS: dict[RubricDimension, float] = {
 # Tier 2: Adaptive dimensions (weights flex by profile)
 # ---------------------------------------------------------------------------
 
-TIER_2_DIMENSIONS: set[RubricDimension] = {
-    d for d in RubricDimension if d not in TIER_1_DIMENSIONS
-}
+TIER_2_DIMENSIONS: set[RubricDimension] = {d for d in RubricDimension if d not in TIER_1_DIMENSIONS}
 
 # ---------------------------------------------------------------------------
 # Engagement type -> evaluation profile mapping

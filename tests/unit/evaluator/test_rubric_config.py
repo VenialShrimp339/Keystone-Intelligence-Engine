@@ -57,7 +57,9 @@ class TestProfileWeights:
     def test_strategic_emphasizes_analytical_depth(self) -> None:
         default = get_profile_weights(EvaluationProfile.DEFAULT)
         strategic = get_profile_weights(EvaluationProfile.STRATEGIC)
-        assert strategic[RubricDimension.ANALYTICAL_DEPTH] > default[RubricDimension.ANALYTICAL_DEPTH]
+        assert (
+            strategic[RubricDimension.ANALYTICAL_DEPTH] > default[RubricDimension.ANALYTICAL_DEPTH]
+        )
 
     def test_strategic_emphasizes_actionability(self) -> None:
         default = get_profile_weights(EvaluationProfile.DEFAULT)
@@ -67,7 +69,10 @@ class TestProfileWeights:
     def test_estimative_emphasizes_calibrated_confidence(self) -> None:
         default = get_profile_weights(EvaluationProfile.DEFAULT)
         estimative = get_profile_weights(EvaluationProfile.ESTIMATIVE)
-        assert estimative[RubricDimension.CALIBRATED_CONFIDENCE] > default[RubricDimension.CALIBRATED_CONFIDENCE]
+        assert (
+            estimative[RubricDimension.CALIBRATED_CONFIDENCE]
+            > default[RubricDimension.CALIBRATED_CONFIDENCE]
+        )
 
 
 # ---------------------------------------------------------------------------

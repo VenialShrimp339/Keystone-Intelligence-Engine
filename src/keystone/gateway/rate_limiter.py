@@ -35,8 +35,7 @@ class RateLimitExceeded(Exception):
         self.provider = provider
         self.retry_after = retry_after
         super().__init__(
-            f"Rate limit exceeded for provider '{provider}'. "
-            f"Retry after {retry_after:.1f}s"
+            f"Rate limit exceeded for provider '{provider}'. Retry after {retry_after:.1f}s"
         )
 
 

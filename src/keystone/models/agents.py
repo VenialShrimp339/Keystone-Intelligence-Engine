@@ -114,12 +114,6 @@ class AgentInstance(BaseModel):
         default="pending",
         description="Agent lifecycle state: pending, running, completed, failed",
     )
-    task_ids: list[str] = Field(
-        default_factory=list, description="Tasks claimed by this agent"
-    )
-    tokens_consumed: int = Field(
-        default=0, ge=0, description="Total tokens used by this agent"
-    )
-    cost_usd: float = Field(
-        default=0.0, ge=0.0, description="Estimated cost in USD"
-    )
+    task_ids: list[str] = Field(default_factory=list, description="Tasks claimed by this agent")
+    tokens_consumed: int = Field(default=0, ge=0, description="Total tokens used by this agent")
+    cost_usd: float = Field(default=0.0, ge=0.0, description="Estimated cost in USD")

@@ -183,9 +183,7 @@ class TestClaim:
 
 class TestCorroborationPair:
     def test_valid_creation(self):
-        cp = CorroborationPair(
-            citation_a="CIT-001", citation_b="CIT-002", overlap_score=0.75
-        )
+        cp = CorroborationPair(citation_a="CIT-001", citation_b="CIT-002", overlap_score=0.75)
         assert cp.citation_a == "CIT-001"
         assert cp.overlap_score == 0.75
 
@@ -193,9 +191,7 @@ class TestCorroborationPair:
         CorroborationPair(citation_a="CIT-001", citation_b="CIT-002", overlap_score=0.0)
         CorroborationPair(citation_a="CIT-001", citation_b="CIT-002", overlap_score=1.0)
         with pytest.raises(ValidationError):
-            CorroborationPair(
-                citation_a="CIT-001", citation_b="CIT-002", overlap_score=1.5
-            )
+            CorroborationPair(citation_a="CIT-001", citation_b="CIT-002", overlap_score=1.5)
 
 
 # ---------------------------------------------------------------------------
@@ -207,9 +203,7 @@ class TestCitationManifest:
     def test_assembly(self):
         c1 = _make_citation(citation_id="CIT-001")
         c2 = _make_citation(citation_id="CIT-002", url="https://other.com")
-        pair = CorroborationPair(
-            citation_a="CIT-001", citation_b="CIT-002", overlap_score=0.9
-        )
+        pair = CorroborationPair(citation_a="CIT-001", citation_b="CIT-002", overlap_score=0.9)
         manifest = CitationManifest(
             manifest_id="MAN-001",
             engagement_id="ENG-001",

@@ -38,12 +38,15 @@ def _aggregated(
 
 def _mock_wwhtb_llm():
     async def llm(prompt: str) -> str:
-        return json.dumps({
-            "assumptions": [
-                "Market growth continues at current rate",
-                "No major regulatory changes",
-            ],
-        })
+        return json.dumps(
+            {
+                "assumptions": [
+                    "Market growth continues at current rate",
+                    "No major regulatory changes",
+                ],
+            }
+        )
+
     return llm
 
 

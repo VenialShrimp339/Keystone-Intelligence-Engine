@@ -158,9 +158,7 @@ class TestGetGate:
         assert fetched.engagement_id == created.engagement_id
         assert len(fetched.items) == len(created.items)
 
-    async def test_get_nonexistent_gate_raises(
-        self, session: AsyncSession, service: HITLService
-    ):
+    async def test_get_nonexistent_gate_raises(self, session: AsyncSession, service: HITLService):
         with pytest.raises(ValueError, match="not found"):
             await service.get_gate(session, "nonexistent-id")
 
@@ -179,17 +177,13 @@ class TestGetPendingGates:
         await service.submit_decision(
             session,
             gate.id,
-            SubmitDecisionRequest(
-                decision=DecisionType.APPROVE, decided_by="jack"
-            ),
+            SubmitDecisionRequest(decision=DecisionType.APPROVE, decided_by="jack"),
         )
 
         pending = await service.get_pending_gates(session)
         assert len(pending) == 0
 
-    async def test_filters_by_engagement(
-        self, session: AsyncSession, service: HITLService
-    ):
+    async def test_filters_by_engagement(self, session: AsyncSession, service: HITLService):
         # Create gates for different engagements
         for eng_id in ["eng-A", "eng-B", "eng-A"]:
             await service.create_gate(
@@ -310,9 +304,7 @@ class TestSubmitDecision:
             await service.submit_decision(
                 session,
                 gate.id,
-                SubmitDecisionRequest(
-                    decision=DecisionType.MODIFY, decided_by="jack"
-                ),
+                SubmitDecisionRequest(decision=DecisionType.MODIFY, decided_by="jack"),
             )
 
     async def test_double_decision_raises(
@@ -330,9 +322,7 @@ class TestSubmitDecision:
             await service.submit_decision(
                 session,
                 gate.id,
-                SubmitDecisionRequest(
-                    decision=DecisionType.REJECT, decided_by="jack"
-                ),
+                SubmitDecisionRequest(decision=DecisionType.REJECT, decided_by="jack"),
             )
 
     async def test_decision_on_nonexistent_gate_raises(
@@ -342,9 +332,7 @@ class TestSubmitDecision:
             await service.submit_decision(
                 session,
                 "nonexistent",
-                SubmitDecisionRequest(
-                    decision=DecisionType.APPROVE, decided_by="jack"
-                ),
+                SubmitDecisionRequest(decision=DecisionType.APPROVE, decided_by="jack"),
             )
 
 
@@ -373,14 +361,8 @@ class TestWaitForDecision:
         gate = await service.create_gate(session, spec_gate_request)
 
         with pytest.raises(TimeoutError, match="Timeout"):
-            await service.wait_for_decision(
-                session, gate.id, poll_interval=0.05, timeout=0.1
-            )
+            await service.wait_for_decision(session, gate.id, poll_interval=0.05, timeout=0.1)
 
-    async def test_wait_nonexistent_gate_raises(
-        self, session: AsyncSession, service: HITLService
-    ):
+    async def test_wait_nonexistent_gate_raises(self, session: AsyncSession, service: HITLService):
         with pytest.raises(ValueError, match="not found"):
-            await service.wait_for_decision(
-                session, "nonexistent", poll_interval=0.05, timeout=0.1
-            )
+            await service.wait_for_decision(session, "nonexistent", poll_interval=0.05, timeout=0.1)

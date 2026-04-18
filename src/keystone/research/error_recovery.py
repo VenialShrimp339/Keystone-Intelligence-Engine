@@ -114,8 +114,7 @@ class ErrorRecovery:
                     if attempt < self._max_retries - 1:
                         delay = self._base_delay * (2**attempt)
                         logger.warning(
-                            "Transient error (attempt %d/%d, %s): %s. "
-                            "Retrying in %.1fs.",
+                            "Transient error (attempt %d/%d, %s): %s. Retrying in %.1fs.",
                             attempt + 1,
                             self._max_retries,
                             description or "unnamed",
@@ -131,10 +130,7 @@ class ErrorRecovery:
                             exc,
                         )
 
-        msg = (
-            f"LLM call '{description}' failed after all retries "
-            f"and fallbacks: {last_error}"
-        )
+        msg = f"LLM call '{description}' failed after all retries and fallbacks: {last_error}"
         raise RuntimeError(msg)
 
     def _get_fallback_tiers(self, current: ModelTier) -> list[ModelTier]:

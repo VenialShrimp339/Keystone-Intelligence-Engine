@@ -54,9 +54,7 @@ class SimpleMCPClient:
         """Close the underlying HTTP client."""
         await self._client.aclose()
 
-    async def call_tool(
-        self, server: str, tool: str, params: dict[str, Any]
-    ) -> Any:
+    async def call_tool(self, server: str, tool: str, params: dict[str, Any]) -> Any:
         """Execute a tool call via the appropriate API."""
         self.call_count += 1
 
@@ -109,13 +107,15 @@ class SimpleMCPClient:
         # Normalize to a standard format with URLs and titles
         results = []
         for item in data.get("results", []):
-            results.append({
-                "url": item.get("url", ""),
-                "title": item.get("title", ""),
-                "text": item.get("text", ""),
-                "score": item.get("score", 0.0),
-                "published_date": item.get("publishedDate", ""),
-            })
+            results.append(
+                {
+                    "url": item.get("url", ""),
+                    "title": item.get("title", ""),
+                    "text": item.get("text", ""),
+                    "score": item.get("score", 0.0),
+                    "published_date": item.get("publishedDate", ""),
+                }
+            )
 
         return {
             "status": "ok",
@@ -150,11 +150,13 @@ class SimpleMCPClient:
         # Normalize to standard format
         results = []
         for item in data.get("web", {}).get("results", []):
-            results.append({
-                "url": item.get("url", ""),
-                "title": item.get("title", ""),
-                "text": item.get("description", ""),
-            })
+            results.append(
+                {
+                    "url": item.get("url", ""),
+                    "title": item.get("title", ""),
+                    "text": item.get("description", ""),
+                }
+            )
 
         return {
             "status": "ok",

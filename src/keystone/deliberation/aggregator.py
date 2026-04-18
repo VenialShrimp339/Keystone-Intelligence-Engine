@@ -48,9 +48,7 @@ class AggregatedClaim(BaseModel):
     aggregated_claim_id: str | None = Field(
         default=None, description="Unique ID for this aggregated claim"
     )
-    task_ids: list[str] = Field(
-        default_factory=list, description="Source task IDs for this claim"
-    )
+    task_ids: list[str] = Field(default_factory=list, description="Source task IDs for this claim")
 
 
 class Aggregator:
@@ -74,9 +72,7 @@ class Aggregator:
         if not claims:
             return []
 
-        source_to_canonical, agent_ids_by_canonical = self._build_manifest_provenance(
-            manifest
-        )
+        source_to_canonical, agent_ids_by_canonical = self._build_manifest_provenance(manifest)
 
         aggregated: list[AggregatedClaim] = []
         for claim in claims:
@@ -117,9 +113,7 @@ class Aggregator:
 
             # Judge-based selection for disputed claims
             if variance > DISPUTE_VARIANCE_THRESHOLD and len(confidences) >= 2:
-                selected_type, sel_reasoning = await self._judge_select(
-                    claim, scores, reasoning
-                )
+                selected_type, sel_reasoning = await self._judge_select(claim, scores, reasoning)
                 mean_conf = scores.get(selected_type, statistics.mean(confidences))
             else:
                 selected_type = None
@@ -139,7 +133,9 @@ class Aggregator:
                     dissenting_analysts=dissenting,
                     total_analysts=len(scores),
                     mean_confidence=mean_conf,
-                    source_count=max(source_counts.values()) if source_counts else len(citation_ids),
+                    source_count=max(source_counts.values())
+                    if source_counts
+                    else len(citation_ids),
                     corroboration_count=corroboration_count,
                     citation_ids=citation_ids,
                     analyst_scores=scores,
@@ -175,9 +171,7 @@ class Aggregator:
             source_to_canonical[alias.source_instance_id] = alias.canonical_citation_id
 
             if alias.agent_id:
-                agent_ids = agent_ids_by_canonical.setdefault(
-                    alias.canonical_citation_id, []
-                )
+                agent_ids = agent_ids_by_canonical.setdefault(alias.canonical_citation_id, [])
                 if alias.agent_id not in agent_ids:
                     agent_ids.append(alias.agent_id)
 
@@ -244,9 +238,7 @@ class Aggregator:
             f"Do NOT blend or average. Pick one.\n\n"
             f'Respond with JSON: {{"selected_analyst": "<analyst_type>", "reasoning": "..."}}'
         )
-        response = await retry_llm_call(
-            self._judge, prompt, description="judge_selection"
-        )
+        response = await retry_llm_call(self._judge, prompt, description="judge_selection")
         try:
             parsed = safe_llm_json(response, required_keys=("selected_analyst",))
             selected = parsed.get("selected_analyst", "")
@@ -280,9 +272,7 @@ class Aggregator:
             f'Respond with JSON: {{"contradictions": ['
             f'{{"claim_a": <index>, "claim_b": <index>, "issue": "..."}}]}}'
         )
-        response = await retry_llm_call(
-            self._judge, prompt, description="consistency_check"
-        )
+        response = await retry_llm_call(self._judge, prompt, description="consistency_check")
         try:
             parsed = safe_llm_json(response)
             contradictions = parsed.get("contradictions", [])

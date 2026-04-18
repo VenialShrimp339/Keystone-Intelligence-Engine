@@ -197,13 +197,15 @@ class SpecificationEngine:
         self._agent_configs = []
         for task in task_decomposition.tasks:
             match = self._registry.match(task, classification.engagement_type)
-            self._agent_configs.append({
-                "task_id": task.id,
-                "template": match.template.name,
-                "match_type": match.match_type,
-                "similarity": match.similarity,
-                "tools": task.assigned_tools,
-            })
+            self._agent_configs.append(
+                {
+                    "task_id": task.id,
+                    "template": match.template.name,
+                    "match_type": match.match_type,
+                    "similarity": match.similarity,
+                    "tools": task.assigned_tools,
+                }
+            )
 
         # Yield SpecificationGenerated (truthful validation state)
         all_validation_passed = intent.intent_clear and mece_passed
@@ -285,9 +287,7 @@ class SpecificationEngine:
                 question, engagement_type, day_1_hypothesis, client_context
             )
 
-            validation = await self._validator.validate(
-                tree, question, engagement_type
-            )
+            validation = await self._validator.validate(tree, question, engagement_type)
 
             if validation.all_passed:
                 return tree, True
@@ -296,11 +296,17 @@ class SpecificationEngine:
                 "MECE validation failed (attempt %d/%d): %s",
                 attempt + 1,
                 _MAX_DECOMPOSE_RETRIES + 1,
-                {k.value: v for k, v in validation.feedback.items() if not validation.dimensions[k]},
+                {
+                    k.value: v
+                    for k, v in validation.feedback.items()
+                    if not validation.dimensions[k]
+                },
             )
 
         # Return last tree even if validation didn't fully pass
-        logger.warning("Returning tree after %d attempts despite validation issues", _MAX_DECOMPOSE_RETRIES + 1)
+        logger.warning(
+            "Returning tree after %d attempts despite validation issues", _MAX_DECOMPOSE_RETRIES + 1
+        )
         return tree, False
 
     def _build_research_spec(
@@ -323,9 +329,7 @@ class SpecificationEngine:
             if boundary and not boundary.startswith("No ")
         ]
 
-        methodology = _DEFAULT_METHODOLOGY.get(
-            classification.engagement_type, []
-        )
+        methodology = _DEFAULT_METHODOLOGY.get(classification.engagement_type, [])
 
         non_goals = [
             "Political positioning and recommendation framing",

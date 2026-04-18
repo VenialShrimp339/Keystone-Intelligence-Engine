@@ -139,9 +139,7 @@ async def test_fallback_to_next_tier() -> None:
 
     # Start at STANDARD, should fall back to FAST
     base_llm = make_llm(ModelTier.STANDARD)
-    result = await recovery.execute_with_recovery(
-        base_llm, "test", current_tier=ModelTier.STANDARD
-    )
+    result = await recovery.execute_with_recovery(base_llm, "test", current_tier=ModelTier.STANDARD)
     assert result == f"success at {ModelTier.FAST}"
     assert ModelTier.STANDARD in tiers_tried
     assert ModelTier.FAST in tiers_tried

@@ -54,9 +54,7 @@ class HTTPDOIVerifier:
 
     async def verify(self, doi: str) -> DOIVerificationResult:
         url = f"https://doi.org/{doi}"
-        async with httpx.AsyncClient(
-            timeout=self._timeout, follow_redirects=True
-        ) as client:
+        async with httpx.AsyncClient(timeout=self._timeout, follow_redirects=True) as client:
             try:
                 resp = await client.head(url)
                 if resp.status_code < 400:
@@ -136,7 +134,5 @@ class Layer2CitationGate:
         )
 
     def _title_matches(self, citation_title: str, resolved_title: str) -> bool:
-        ratio = SequenceMatcher(
-            None, citation_title.lower(), resolved_title.lower()
-        ).ratio()
+        ratio = SequenceMatcher(None, citation_title.lower(), resolved_title.lower()).ratio()
         return ratio >= self.TITLE_MATCH_THRESHOLD

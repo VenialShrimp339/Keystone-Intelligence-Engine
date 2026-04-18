@@ -56,9 +56,11 @@ class MockDOIVerifier:
 class TestDOIVerification:
     @pytest.mark.asyncio
     async def test_valid_doi_passes(self) -> None:
-        verifier = MockDOIVerifier({
-            "10.1234/real.2024": DOIVerificationResult(exists=True),
-        })
+        verifier = MockDOIVerifier(
+            {
+                "10.1234/real.2024": DOIVerificationResult(exists=True),
+            }
+        )
         gate = Layer2CitationGate(doi_verifier=verifier)
         manifest = _manifest(_cit("CIT-001", doi="10.1234/real.2024"))
         result = await gate.evaluate(manifest)
@@ -68,9 +70,11 @@ class TestDOIVerification:
 
     @pytest.mark.asyncio
     async def test_fabricated_doi_fails(self) -> None:
-        verifier = MockDOIVerifier({
-            "10.9999/fake.2024.0001": DOIVerificationResult(exists=False),
-        })
+        verifier = MockDOIVerifier(
+            {
+                "10.9999/fake.2024.0001": DOIVerificationResult(exists=False),
+            }
+        )
         gate = Layer2CitationGate(doi_verifier=verifier)
         manifest = _manifest(_cit("CIT-001", doi="10.9999/fake.2024.0001"))
         result = await gate.evaluate(manifest)
@@ -79,11 +83,13 @@ class TestDOIVerification:
 
     @pytest.mark.asyncio
     async def test_mixed_citations_one_fabricated_fails(self) -> None:
-        verifier = MockDOIVerifier({
-            "10.1234/real.1": DOIVerificationResult(exists=True),
-            "10.1234/real.2": DOIVerificationResult(exists=True),
-            "10.9999/fake.1": DOIVerificationResult(exists=False),
-        })
+        verifier = MockDOIVerifier(
+            {
+                "10.1234/real.1": DOIVerificationResult(exists=True),
+                "10.1234/real.2": DOIVerificationResult(exists=True),
+                "10.9999/fake.1": DOIVerificationResult(exists=False),
+            }
+        )
         gate = Layer2CitationGate(doi_verifier=verifier)
         manifest = _manifest(
             _cit("CIT-001", doi="10.1234/real.1"),
@@ -124,9 +130,11 @@ class TestEdgeCases:
     @pytest.mark.asyncio
     async def test_gate_passed_invariant(self) -> None:
         """gate_passed must be True iff citations_fabricated is empty."""
-        verifier = MockDOIVerifier({
-            "10.1234/a": DOIVerificationResult(exists=True),
-        })
+        verifier = MockDOIVerifier(
+            {
+                "10.1234/a": DOIVerificationResult(exists=True),
+            }
+        )
         gate = Layer2CitationGate(doi_verifier=verifier)
         manifest = _manifest(_cit("CIT-001", doi="10.1234/a"))
         result = await gate.evaluate(manifest)

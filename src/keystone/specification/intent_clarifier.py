@@ -19,20 +19,14 @@ from keystone.specification._prompts import load_prompt
 class IntentClarificationResult(BaseModel):
     """Output of the intent clarifier."""
 
-    day_1_hypothesis: str = Field(
-        description="Testable claim anchoring the engagement"
-    )
+    day_1_hypothesis: str = Field(description="Testable claim anchoring the engagement")
     intent_clear: bool = Field(
         description="Whether the question is sufficiently specified for research"
     )
     unstated_constraints: list[str] = Field(default_factory=list)
     scope_boundaries: list[str] = Field(default_factory=list)
-    decision_context: str = Field(
-        description="What decision this research informs"
-    )
-    surprising_finding: str = Field(
-        description="What a surprising finding would look like"
-    )
+    decision_context: str = Field(description="What decision this research informs")
+    surprising_finding: str = Field(description="What a surprising finding would look like")
 
 
 class IntentClarifier:
@@ -62,15 +56,20 @@ class IntentClarifier:
             question=question,
             engagement_type=engagement_type.value,
             client_context=client_context or "No additional context provided.",
-            constraints="\n".join(f"- {c}" for c in constraints) if constraints else "None specified.",
+            constraints="\n".join(f"- {c}" for c in constraints)
+            if constraints
+            else "None specified.",
         )
 
-        raw = await retry_llm_call(
-            self._llm, prompt, description="intent_clarification"
-        )
+        raw = await retry_llm_call(self._llm, prompt, description="intent_clarification")
         data = safe_llm_json(
             raw,
-            required_keys=("day_1_hypothesis", "intent_clear", "decision_context", "surprising_finding"),
+            required_keys=(
+                "day_1_hypothesis",
+                "intent_clear",
+                "decision_context",
+                "surprising_finding",
+            ),
             bool_keys=frozenset(["intent_clear"]),
         )
 

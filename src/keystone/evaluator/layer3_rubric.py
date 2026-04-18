@@ -123,9 +123,15 @@ class Layer3RubricScorer:
     6. Return Layer3Result
     """
 
-    def __init__(self, llm: LLMCallable, profile: EvaluationProfile) -> None:
+    def __init__(
+        self,
+        llm: LLMCallable,
+        profile: EvaluationProfile,
+        judge_id: str | None = None,
+    ) -> None:
         self._llm = llm
         self._weights = get_profile_weights(profile)
+        self._judge_id = judge_id
 
     async def score_all_dimensions(
         self,
@@ -188,15 +194,16 @@ class Layer3RubricScorer:
         """Score a single dimension using its dedicated prompt template."""
         prompt_file = _DIMENSION_PROMPT_FILES[dimension]
         template = (_PROMPTS_DIR / prompt_file).read_text()
-        prompt = (
-            template
-            .replace("{{output_text}}", output_text)
-            .replace("{{sprint_contract_criteria}}", criteria_text)
+        prompt = template.replace("{{output_text}}", output_text).replace(
+            "{{sprint_contract_criteria}}", criteria_text
         )
 
-        raw = await retry_llm_call(
-            self._llm, prompt, description=f"rubric_{dimension.value}"
+        description = (
+            f"rubric_{dimension.value}[{self._judge_id}]"
+            if self._judge_id is not None
+            else f"rubric_{dimension.value}"
         )
+        raw = await retry_llm_call(self._llm, prompt, description=description)
         # ParseError propagates -- callers must not silently default to score=50
         parsed = safe_llm_json(raw, required_keys=("score",))
 
@@ -212,9 +219,12 @@ class Layer3RubricScorer:
         template = (_PROMPTS_DIR / "gestalt_overlay.md").read_text()
         prompt = template.replace("{{output_text}}", output_text)
 
-        raw = await retry_llm_call(
-            self._llm, prompt, description="gestalt_overlay"
+        description = (
+            f"gestalt_overlay[{self._judge_id}]"
+            if self._judge_id is not None
+            else "gestalt_overlay"
         )
+        raw = await retry_llm_call(self._llm, prompt, description=description)
         try:
             parsed = safe_llm_json(raw)
             return float(parsed.get("adjustment", 0))

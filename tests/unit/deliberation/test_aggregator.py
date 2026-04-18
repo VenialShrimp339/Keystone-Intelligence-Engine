@@ -29,8 +29,12 @@ from keystone.models.citations import (
 
 def _claim(idx: int = 0, text: str = "Test claim") -> InputClaim:
     return InputClaim(
-        index=idx, task_id="T1", agent_id="A1", text=text,
-        evidence="Evidence", citation_ids=["CIT-001"],
+        index=idx,
+        task_id="T1",
+        agent_id="A1",
+        text=text,
+        evidence="Evidence",
+        citation_ids=["CIT-001"],
         original_confidence=0.7,
     )
 
@@ -45,20 +49,27 @@ def _analyst_output(analyst_type: str, scored: list[ScoredClaim]) -> AnalystOutp
 
 def _scored(idx: int, confidence: float, reasoning: str = "test") -> ScoredClaim:
     return ScoredClaim(
-        index=idx, claim_text="Test claim",
-        analyst_confidence=confidence, source_count=3, reasoning=reasoning,
+        index=idx,
+        claim_text="Test claim",
+        analyst_confidence=confidence,
+        source_count=3,
+        reasoning=reasoning,
     )
 
 
 def _mock_judge(selected: str = "ach", reasoning: str = "Best supported"):
     """Mock judge LLM that always selects the specified analyst."""
+
     async def llm(prompt: str) -> str:
         if "contradict" in prompt.lower():
             return json.dumps({"contradictions": []})
-        return json.dumps({
-            "selected_analyst": selected,
-            "reasoning": reasoning,
-        })
+        return json.dumps(
+            {
+                "selected_analyst": selected,
+                "reasoning": reasoning,
+            }
+        )
+
     return llm
 
 
@@ -191,6 +202,7 @@ class TestSelection:
     @pytest.mark.asyncio
     async def test_judge_fallback_on_bad_json(self) -> None:
         """If judge returns bad JSON, fallback to highest confidence analyst."""
+
         async def bad_judge(prompt: str) -> str:
             if "contradict" in prompt.lower():
                 return json.dumps({"contradictions": []})
@@ -223,9 +235,13 @@ class TestConsistencyCheck:
 
         async def judge_with_contradictions(prompt: str) -> str:
             if "contradict" in prompt.lower():
-                return json.dumps({"contradictions": [
-                    {"claim_a": 0, "claim_b": 1, "issue": "Direct contradiction"},
-                ]})
+                return json.dumps(
+                    {
+                        "contradictions": [
+                            {"claim_a": 0, "claim_b": 1, "issue": "Direct contradiction"},
+                        ]
+                    }
+                )
             return json.dumps({"selected_analyst": "ach", "reasoning": "ok"})
 
         aggregator = Aggregator(judge_llm=judge_with_contradictions)

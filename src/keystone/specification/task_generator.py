@@ -105,9 +105,7 @@ class TaskGenerator:
                 return decomposition
             except (ParseError, ValidationError, ValueError, KeyError) as exc:
                 last_error = exc
-                logger.warning(
-                    "Task generation attempt %d failed: %s", attempt + 1, exc
-                )
+                logger.warning("Task generation attempt %d failed: %s", attempt + 1, exc)
 
         msg = f"Task generation failed after 3 attempts: {last_error}"
         raise RuntimeError(msg)
@@ -149,7 +147,9 @@ class TaskGenerator:
                     spec=spec,
                     target_decision_usefulness=t.get("target_decision_usefulness", 3),
                 ),
-                anti_confirmatory_framing=t.get("anti_confirmatory_framing", "Evaluate evidence both for and against"),
+                anti_confirmatory_framing=t.get(
+                    "anti_confirmatory_framing", "Evaluate evidence both for and against"
+                ),
                 assigned_tools=self._resolve_tools(t, category, engagement_type),
                 assigned_model=ModelTier(t.get("assigned_model", "standard")),
                 end_product=t.get("end_product", "Structured analysis with supporting evidence"),
@@ -205,7 +205,11 @@ class TaskGenerator:
         template_tools = match.template.tools[:5]
         if len(template_tools) < 3:
             template_tools = list(DEFAULT_TOOLS) + [DEFAULT_TOOLS[0]]
-        return template_tools[:5] if len(template_tools) >= 3 else template_tools + [DEFAULT_TOOLS[0]] * (3 - len(template_tools))
+        return (
+            template_tools[:5]
+            if len(template_tools) >= 3
+            else template_tools + [DEFAULT_TOOLS[0]] * (3 - len(template_tools))
+        )
 
     def _resolve_importance(
         self,
@@ -218,10 +222,7 @@ class TaskGenerator:
         if priority_rank == 1:
             return TaskImportance.PRIMARY
 
-        if (
-            spec.effective_pipeline_profile == PipelineProfile.DEEP
-            and priority_rank <= 3
-        ):
+        if spec.effective_pipeline_profile == PipelineProfile.DEEP and priority_rank <= 3:
             return TaskImportance.CRITICAL
 
         if target_decision_usefulness <= 2 and priority_rank > 5:
@@ -242,10 +243,7 @@ class TaskGenerator:
                 score.branch_id,
             ),
         )
-        return {
-            priority.branch_id: index
-            for index, priority in enumerate(ordered, start=1)
-        }
+        return {priority.branch_id: index for index, priority in enumerate(ordered, start=1)}
 
     def _coerce_priority(self, raw: object) -> int | None:
         if not isinstance(raw, int):

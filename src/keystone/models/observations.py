@@ -71,9 +71,7 @@ class ObservationEntry(BaseModel):
     recorded_at: datetime = Field(description="When this observation was recorded")
 
     # What happened
-    dimension: RubricDimension = Field(
-        description="Which rubric dimension failed or excelled"
-    )
+    dimension: RubricDimension = Field(description="Which rubric dimension failed or excelled")
     what_was_produced: str = Field(
         description="Description of the output that triggered this observation"
     )

@@ -87,9 +87,7 @@ class SubmitDecisionRequest(BaseModel):
         default=None,
         description="Modified artifacts (required when decision is 'modify')",
     )
-    reasoning: str | None = Field(
-        default=None, description="Reviewer's rationale for the decision"
-    )
+    reasoning: str | None = Field(default=None, description="Reviewer's rationale for the decision")
 
 
 # ---------------------------------------------------------------------------

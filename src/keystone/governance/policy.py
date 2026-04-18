@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from keystone.governance.models import (
     EnforcementAction,
     EnforcementScope,
@@ -13,6 +15,9 @@ from keystone.governance.models import (
 from keystone.models.evaluation import EvaluationResult
 from keystone.models.research import FindingStatus, PipelineProfile, StructuredFinding
 from keystone.models.tasks import ResearchTask, TaskImportance
+
+if TYPE_CHECKING:
+    from keystone.models.evaluation import Layer5Result
 
 
 class ProfileExecutionPolicy:
@@ -112,9 +117,7 @@ class ProfileExecutionPolicy:
 
         if self.profile == PipelineProfile.LIGHT:
             uncovered = [
-                outcome.task_id
-                for outcome in outcomes
-                if self._requires_light_pass(outcome)
+                outcome.task_id for outcome in outcomes if self._requires_light_pass(outcome)
             ]
             if uncovered:
                 return QualityFlag(
@@ -242,7 +245,122 @@ class ProfileExecutionPolicy:
                 task_id=task.id,
             )
 
+        # Layer 5 ensemble-specific gates. These fire in addition to the
+        # generic l4_rubric_threshold above so operators can distinguish
+        # ensemble-driven rejections from single-judge rejections.
+        layer5 = result.layer5_results
+        if layer5 is not None and layer5.all_judges_failed:
+            self.apply_flag(
+                state,
+                QualityFlag(
+                    gate="l5_ensemble_infrastructure_failure",
+                    action=EnforcementAction.WARN,
+                    scope=EnforcementScope.TASK,
+                    severity="warn",
+                    message=(
+                        f"Task {task.id} ensemble judges all failed; "
+                        f"score degraded but not a content signal."
+                    ),
+                    task_id=task.id,
+                ),
+                task_id=task.id,
+            )
+        if (
+            layer5 is not None
+            and layer5.tier1_vetoed
+            and not result.passed
+            and self.profile != PipelineProfile.LIGHT
+        ):
+            # Disagreement across judges is ambiguous evidence, not a
+            # definitive rejection. Escalate for human review regardless of
+            # profile (DEGRADE would hide the signal on STANDARD profile).
+            self.apply_flag(
+                state,
+                QualityFlag(
+                    gate="l5_ensemble_dissenter_veto",
+                    action=EnforcementAction.ESCALATE,
+                    scope=EnforcementScope.TASK,
+                    severity="error",
+                    message=(
+                        f"Task {task.id} failed Tier 1 dissenter-veto from ensemble judges "
+                        f"({len(layer5.veto_events)} dimension(s))."
+                    ),
+                    task_id=task.id,
+                ),
+                task_id=task.id,
+            )
+
+        # Reduced-panel warning: some judges failed but aggregation still
+        # produced a score. Operators need to know the ensemble degraded to
+        # fewer judges than designed; a score from N-1 judges carries less
+        # cross-model signal than a score from the full panel.
+        if layer5 is not None and not layer5.all_judges_failed and layer5.failed_judge_ids:
+            self.apply_flag(
+                state,
+                QualityFlag(
+                    gate="l5_ensemble_degraded_panel",
+                    action=EnforcementAction.WARN,
+                    scope=EnforcementScope.TASK,
+                    severity="warn",
+                    message=(
+                        f"Task {task.id} ensemble ran with a reduced panel: "
+                        f"{len(layer5.failed_judge_ids)} of {len(layer5.judges_used)} "
+                        f"judge(s) failed ({sorted(layer5.failed_judge_ids)})."
+                    ),
+                    task_id=task.id,
+                ),
+                task_id=task.id,
+            )
+
+        # Low cross-judge agreement is the most valuable signal an ensemble
+        # produces. Surface it whenever judges spread enough to keep most
+        # dimensions above the 10-point concordance threshold but still
+        # disagreed on majority of the rubric. Tier 1 veto already covers
+        # the hard failure case; this gate catches the quieter "judges
+        # disagreed a lot but no single dimension crossed a floor" path.
+        low_agreement_gate = self._low_agreement_gate(layer5, task_id=task.id)
+        if low_agreement_gate is not None:
+            self.apply_flag(state, low_agreement_gate, task_id=task.id)
+
         return outcome
+
+    _LOW_AGREEMENT_THRESHOLD: float = 0.30
+
+    def _low_agreement_gate(
+        self,
+        layer5: Layer5Result | None,
+        *,
+        task_id: str,
+    ) -> QualityFlag | None:
+        """Return a low-agreement flag when judges disagreed enough to warn."""
+        if layer5 is None:
+            return None
+        if layer5.tier1_vetoed or layer5.all_judges_failed:
+            return None
+        if len(layer5.judges_used) < 2:
+            # Agreement is trivially 1.0 with a single judge; nothing to warn.
+            return None
+        if layer5.agreement_level >= self._LOW_AGREEMENT_THRESHOLD:
+            return None
+        if self.profile == PipelineProfile.LIGHT:
+            return None
+        action = (
+            EnforcementAction.ESCALATE
+            if self.profile == PipelineProfile.DEEP
+            else EnforcementAction.WARN
+        )
+        return QualityFlag(
+            gate="l5_low_agreement",
+            action=action,
+            scope=EnforcementScope.TASK,
+            severity="warn" if action == EnforcementAction.WARN else "error",
+            message=(
+                f"Task {task_id} ensemble agreement_level={layer5.agreement_level:.2f} "
+                f"is below {self._LOW_AGREEMENT_THRESHOLD:.2f}; "
+                f"judges disagreed substantially across dimensions."
+            ),
+            task_id=task_id,
+        )
 
     def _partial_output_action(
         self,

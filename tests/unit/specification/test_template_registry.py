@@ -37,7 +37,6 @@ def _make_task(
 
 
 class TestTemplateRegistry:
-
     def test_at_least_5_seed_templates(self):
         registry = TemplateRegistry()
         templates = registry.get_seed_templates()

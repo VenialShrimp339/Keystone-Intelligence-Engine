@@ -103,6 +103,7 @@ class TestWeightedGeometricMean:
 # Tier 1 gate logic (mock LLM)
 # ---------------------------------------------------------------------------
 
+
 def _make_contract() -> SprintContract:
     return SprintContract(
         section_id="section_task_001",
@@ -133,13 +134,15 @@ def _mock_dimension_scores(
         for dim in RubricDimension:
             header = f"# {dim.value.replace('_', ' ')} evaluation"
             if header in lower:
-                return json.dumps({
-                    "score": all_scores.get(dim, 60),
-                    "feedback": f"Test feedback for {dim.value}",
-                    "sub_criteria_notes": [f"note for {dim.value}"],
-                    "slop_detected": False,
-                    "slop_details": None,
-                })
+                return json.dumps(
+                    {
+                        "score": all_scores.get(dim, 60),
+                        "feedback": f"Test feedback for {dim.value}",
+                        "sub_criteria_notes": [f"note for {dim.value}"],
+                        "slop_detected": False,
+                        "slop_details": None,
+                    }
+                )
         return json.dumps({"score": 60, "feedback": "fallback", "sub_criteria_notes": []})
 
     return mock_llm
@@ -201,7 +204,10 @@ class TestProfileScoring:
         # ESTIMATIVE weights differ from DEFAULT
         default_weights = get_profile_weights(EvaluationProfile.DEFAULT)
         est_weights = get_profile_weights(EvaluationProfile.ESTIMATIVE)
-        assert est_weights[RubricDimension.CALIBRATED_CONFIDENCE] != default_weights[RubricDimension.CALIBRATED_CONFIDENCE]
+        assert (
+            est_weights[RubricDimension.CALIBRATED_CONFIDENCE]
+            != default_weights[RubricDimension.CALIBRATED_CONFIDENCE]
+        )
 
     @pytest.mark.asyncio
     async def test_strategic_applies_overrides(self) -> None:
@@ -338,7 +344,9 @@ class TestGestaltOverlay:
 
 
 class TestPromptTemplates:
-    PROMPTS_DIR = Path(__file__).parent.parent.parent.parent / "src" / "keystone" / "evaluator" / "prompts"
+    PROMPTS_DIR = (
+        Path(__file__).parent.parent.parent.parent / "src" / "keystone" / "evaluator" / "prompts"
+    )
 
     def test_all_11_templates_exist(self) -> None:
         expected = list(_DIMENSION_PROMPT_FILES.values()) + ["gestalt_overlay.md"]

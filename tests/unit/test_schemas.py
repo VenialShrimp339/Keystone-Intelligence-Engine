@@ -89,9 +89,7 @@ class TestResearchMdSchemaRejection:
             "engagement_type": "evaluative",
             "decision_context": "Some decision",
             "surprising_finding": "Something surprising",
-            "questions": [
-                {"question": "Primary question?", "is_primary": True}
-            ],
+            "questions": [{"question": "Primary question?", "is_primary": True}],
             "output_format": "markdown",
             "non_goals": ["Political positioning"],
         }

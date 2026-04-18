@@ -223,7 +223,8 @@ class TestMetadataPopulation:
         claims = [_claim(0, "Moderate claim", 0.75)]
         wwhtb = [
             WWHTBResult(
-                claim_index=0, claim_text="Moderate claim",
+                claim_index=0,
+                claim_text="Moderate claim",
                 assumptions=["Assumption A"],
             ),
         ]
@@ -313,9 +314,7 @@ class TestProvenancePropagation:
         moderate_claim = self._claim_with_provenance(
             1, "Moderate claim", 0.70, "AGG-bbb222", ["TASK-003"]
         )
-        weak_claim = self._claim_with_provenance(
-            2, "Weak claim", 0.55, "AGG-ccc333", ["TASK-001"]
-        )
+        weak_claim = self._claim_with_provenance(2, "Weak claim", 0.55, "AGG-ccc333", ["TASK-001"])
         contested_claim = self._claim_with_provenance(
             3, "Contested claim", 0.30, "AGG-ddd444", ["TASK-004"]
         )
@@ -354,6 +353,7 @@ class TestProvenancePropagation:
     def test_insufficient_claim_carries_provenance(self) -> None:
         """InsufficientEvidenceClaim also carries provenance fields."""
         from keystone.deliberation.aggregator import AggregatedClaim as AC
+
         insuf = AC(
             claim_text="Unknown",
             index=0,

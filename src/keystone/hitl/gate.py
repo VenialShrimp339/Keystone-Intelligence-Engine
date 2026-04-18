@@ -180,9 +180,11 @@ async def create_and_wait_for_gate(
 
     if event_collector is not None:
         if resolved.status == GateStatus.MODIFIED:
-            modification_keys = list(resolved.decision.modifications.keys()) if (
-                resolved.decision and resolved.decision.modifications
-            ) else []
+            modification_keys = (
+                list(resolved.decision.modifications.keys())
+                if (resolved.decision and resolved.decision.modifications)
+                else []
+            )
             event_collector.append(
                 ReviewGateModified(
                     event_id=str(uuid.uuid4()),

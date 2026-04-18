@@ -27,6 +27,7 @@ from keystone.gateway.tool_registry import ToolEntry, ToolRegistry, TransportTyp
 # Fixtures
 # ---------------------------------------------------------------------------
 
+
 def _build_gateway(
     mock_client: MockMCPClient | None = None,
     rate_limits: dict[str, RateLimit] | None = None,
@@ -80,16 +81,20 @@ def _make_call(
 # Full flow: success path
 # ---------------------------------------------------------------------------
 
+
 class TestFullFlow:
     @pytest.mark.asyncio
     async def test_successful_execution(self) -> None:
         """Full flow: auth -> rate limit -> circuit break -> execute -> audit."""
         gateway, client, audit = _build_gateway()
-        client.set_response("exa_search", {
-            "results": [
-                {"title": "EV Battery Market", "url": "https://example.com/ev"},
-            ],
-        })
+        client.set_response(
+            "exa_search",
+            {
+                "results": [
+                    {"title": "EV Battery Market", "url": "https://example.com/ev"},
+                ],
+            },
+        )
 
         call = _make_call("exa_search")
         result = await gateway.execute(call)
@@ -107,12 +112,15 @@ class TestFullFlow:
     async def test_citations_extracted(self) -> None:
         """Tool results with URLs produce citations."""
         gateway, client, audit = _build_gateway()
-        client.set_response("exa_search", {
-            "results": [
-                {"title": "Report", "url": "https://example.com/report"},
-                {"title": "Data", "link": "https://data.gov/ev"},
-            ],
-        })
+        client.set_response(
+            "exa_search",
+            {
+                "results": [
+                    {"title": "Report", "url": "https://example.com/report"},
+                    {"title": "Data", "link": "https://data.gov/ev"},
+                ],
+            },
+        )
 
         result = await gateway.execute(_make_call("exa_search"))
         urls = {c["url"] for c in result.citations}
@@ -130,6 +138,7 @@ class TestFullFlow:
 # ---------------------------------------------------------------------------
 # Authorization failures
 # ---------------------------------------------------------------------------
+
 
 class TestAuthorizationFailures:
     @pytest.mark.asyncio
@@ -159,6 +168,7 @@ class TestAuthorizationFailures:
 # ---------------------------------------------------------------------------
 # Rate limiting
 # ---------------------------------------------------------------------------
+
 
 class TestRateLimiting:
     @pytest.mark.asyncio
@@ -200,6 +210,7 @@ class TestRateLimiting:
 # ---------------------------------------------------------------------------
 # Circuit breaker
 # ---------------------------------------------------------------------------
+
 
 class TestCircuitBreaker:
     @pytest.mark.asyncio
@@ -243,6 +254,7 @@ class TestCircuitBreaker:
 # ---------------------------------------------------------------------------
 # Retry + dead-letter (Directive 9)
 # ---------------------------------------------------------------------------
+
 
 class TestRetryAndDeadLetter:
     @pytest.mark.asyncio
@@ -310,6 +322,7 @@ class TestRetryAndDeadLetter:
 # ---------------------------------------------------------------------------
 # Citation extraction
 # ---------------------------------------------------------------------------
+
 
 class TestCitationExtraction:
     def test_extract_urls_from_text(self) -> None:

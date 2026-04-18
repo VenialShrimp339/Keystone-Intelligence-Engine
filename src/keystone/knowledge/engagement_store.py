@@ -45,9 +45,7 @@ class FilesystemWikiStore:
 
     def _meta_path(self, engagement_id: str, compiled_path: str) -> Path:
         """Path to the JSON metadata sidecar for a compiled entry."""
-        return self._compiled_dir(engagement_id) / (
-            Path(compiled_path).stem + ".meta.json"
-        )
+        return self._compiled_dir(engagement_id) / (Path(compiled_path).stem + ".meta.json")
 
     async def write_raw(
         self,

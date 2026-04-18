@@ -275,6 +275,110 @@ class Layer4Result(BaseModel):
     )
 
 
+class JudgeScore(BaseModel):
+    """Per-judge Layer 3 result in a cross-model ensemble (Layer 5).
+
+    Captures a single judge's full scoring pass plus a success/error flag so
+    the ensemble can distinguish judges that produced scores from judges that
+    raised and were dropped during `asyncio.gather(..., return_exceptions=True)`.
+    """
+
+    judge_id: str = Field(description="Logical judge identifier (e.g. 'flagship', 'fast')")
+    judge_tier: str = Field(description="ModelTier string value this judge ran at")
+    layer3_result: Layer3Result | None = Field(
+        default=None,
+        description="Full per-judge Layer 3 result, or None when this judge failed",
+    )
+    succeeded: bool = Field(description="True when the judge produced a Layer3Result without error")
+    error: str | None = Field(
+        default=None,
+        description="Short error description captured when succeeded is False",
+    )
+
+
+class VetoEvent(BaseModel):
+    """Record of a dissenter-veto trigger on a Tier 1 dimension (Layer 5).
+
+    A veto fires when any surviving judge scored a Tier 1 dimension below its
+    floor threshold, even when the aggregated (median) score is above floor.
+    The name is "dissenter veto" rather than "minority veto" because the
+    mechanism triggers on any dissent regardless of whether the dissenters are
+    a numeric minority. The aggregated `Layer3Result.final_score` is forced to
+    0.0 so downstream governance and pass/fail logic reject the output, while
+    the per-dimension aggregated scores remain preserved for audit.
+    """
+
+    dimension: RubricDimension = Field(description="Which Tier 1 dimension triggered the veto")
+    floor_threshold: float = Field(ge=0.0, le=100.0, description="Tier 1 floor for this dimension")
+    min_score: float = Field(
+        ge=0.0, le=100.0, description="Minimum judge score observed for this dimension"
+    )
+    dissenting_judge_ids: list[str] = Field(
+        description="Judge IDs whose score on this dimension was strictly below the floor",
+    )
+    judge_scores: dict[str, float] = Field(
+        description="All surviving judges' raw scores for this dimension, keyed by judge_id",
+    )
+
+
+class Layer5Result(BaseModel):
+    """Cross-model ensemble evaluation result (Layer 5).
+
+    Layer 5 runs multiple `ThreePassEvaluator` instances in parallel, aggregates
+    per-dimension scores by median, and applies a dissenter veto on Tier 1
+    dimensions: if any judge scores any Tier 1 dimension below its floor, the
+    dimension is vetoed and the aggregated final score is forced to 0.0. The
+    aggregated per-dimension scores stay at the median value so downstream
+    audit and calibration keep the true ensemble signal.
+    """
+
+    judges_used: list[str] = Field(
+        description="Ordered list of judge IDs that were asked to score (pre-failure)"
+    )
+    judge_scores: list[JudgeScore] = Field(
+        description="One JudgeScore per judge with per-judge Layer3Result or error"
+    )
+    aggregated_dimension_scores: list[DimensionScore] = Field(
+        description="Per-dimension median scores across surviving judges (canonical L5 signal)"
+    )
+    ensemble_weighted_total: float = Field(
+        ge=0.0,
+        le=100.0,
+        description="Weighted geometric mean of aggregated_dimension_scores (pre-gestalt, pre-veto)",
+    )
+    ensemble_gestalt_adjustment: float = Field(
+        ge=-10.0,
+        le=10.0,
+        description="Median of per-judge gestalt adjustments across surviving judges",
+    )
+    ensemble_final_score: float = Field(
+        ge=0.0,
+        le=100.0,
+        description="Final ensemble score after gestalt (0.0 when vetoed or all judges failed)",
+    )
+    tier1_vetoed: bool = Field(
+        default=False,
+        description="True when at least one Tier 1 dissenter-veto triggered",
+    )
+    veto_events: list[VetoEvent] = Field(
+        default_factory=list,
+        description="Per-dimension dissenter-veto trigger records",
+    )
+    agreement_level: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="Fraction of dimensions where max-min judge score <= 10 points",
+    )
+    all_judges_failed: bool = Field(
+        default=False,
+        description="True when every judge raised an exception (infrastructure failure path)",
+    )
+    failed_judge_ids: list[str] = Field(
+        default_factory=list,
+        description="Judge IDs that failed during scoring",
+    )
+
+
 class SprintContract(BaseModel):
     """Per-section quality criteria negotiated between generator and evaluator.
 
@@ -306,8 +410,9 @@ class EvaluationResult(BaseModel):
     """Complete output of the Evaluator (L4).
 
     Layers execute in stack order: L1 (deterministic) -> L2 (citation gate)
-    -> L3 (rubric). If L2 finds fabricated citations, L3 is skipped.
-    Layers 4-5 are Phase 2 additions.
+    -> L3 (rubric, or L5 ensemble-of-L3 when `ensemble_llms` is supplied)
+    -> L4 (trajectory, when `process_context` is supplied). If L2 finds
+    fabricated citations, L3/L5 and L4 are skipped.
     """
 
     evaluation_id: str = Field(description="Unique evaluation identifier")
@@ -327,6 +432,13 @@ class EvaluationResult(BaseModel):
     layer4_results: Layer4Result | None = Field(
         default=None,
         description="Process trajectory results. None if L3 failed or context not provided.",
+    )
+    layer5_results: Layer5Result | None = Field(
+        default=None,
+        description=(
+            "Cross-model ensemble results. None at LIGHT_TOUCH or when the evaluator "
+            "was constructed without `ensemble_llms` (single-judge mode)."
+        ),
     )
     feedback: str = Field(description="Specific, actionable feedback for regeneration")
     observation_entry_id: str | None = Field(

@@ -437,10 +437,10 @@ def test_finding_writer_salvages_valid_claims_on_partial_failure() -> None:
         client_id="client_001",
         agent_type="quantitative",
         raw_claims=[
-            _make_raw_claim(text="Valid claim A"),           # good
-            _make_raw_claim(citations=[]),                    # dropped: no citations
-            _make_raw_claim(text="Valid claim B"),           # good
-            _make_raw_claim(text="", evidence="ev"),         # dropped: missing text
+            _make_raw_claim(text="Valid claim A"),  # good
+            _make_raw_claim(citations=[]),  # dropped: no citations
+            _make_raw_claim(text="Valid claim B"),  # good
+            _make_raw_claim(text="", evidence="ev"),  # dropped: missing text
         ],
         absence_report=["Something was not found"],
         sources_consulted=4,

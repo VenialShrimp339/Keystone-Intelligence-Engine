@@ -188,9 +188,7 @@ class Deliberation:
         client_id: str,
     ) -> None:
         """Trigger HITL Gate 2 (post-deliberation review)."""
-        if not ProfileExecutionPolicy(
-            self._effective_pipeline_profile
-        ).should_run_hitl_gate():
+        if not ProfileExecutionPolicy(self._effective_pipeline_profile).should_run_hitl_gate():
             logger.info("Skipping HITL Gate 2 for LIGHT profile")
             return
 

@@ -31,15 +31,17 @@ from keystone.research.agent_pool import AgentPool, AgentResult
 # Shared fixtures
 # ---------------------------------------------------------------------------
 
-_CLAIMS = json.dumps([
-    {
-        "text": "Market growing at 25% CAGR",
-        "evidence": "Industry reports confirm growth trajectory",
-        "citation_refs": ["SRC-001"],
-        "confidence": 0.82,
-        "caveats": [],
-    },
-])
+_CLAIMS = json.dumps(
+    [
+        {
+            "text": "Market growing at 25% CAGR",
+            "evidence": "Industry reports confirm growth trajectory",
+            "citation_refs": ["SRC-001"],
+            "confidence": 0.82,
+            "caveats": [],
+        },
+    ]
+)
 _ABSENCE = json.dumps(["No data on emerging markets"])
 
 
@@ -55,15 +57,17 @@ def _build_gateway(
     registry = ToolRegistry()
     register_all_tools(registry)
     authorizer = ToolAuthorizer(registry)
-    limiter = InMemoryRateLimiter({
-        "exa-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
-        "brave-search-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
-        "edgartools-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
-        "fred-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
-        "finnhub-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
-        "paper-search-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
-        "doi-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
-    })
+    limiter = InMemoryRateLimiter(
+        {
+            "exa-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
+            "brave-search-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
+            "edgartools-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
+            "fred-mcp-server": RateLimit(max_tokens=100, refill_rate=10.0),
+            "finnhub-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
+            "paper-search-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
+            "doi-mcp": RateLimit(max_tokens=100, refill_rate=10.0),
+        }
+    )
     audit = AuditLogger()
     client = mock_client or MockMCPClient()
     gateway = MCPGateway(

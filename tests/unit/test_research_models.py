@@ -407,9 +407,7 @@ class TestEngagementSpecIssueTree:
             specification_version=1,
             decision_context="Test context",
             surprising_finding="Test surprise",
-            questions=[
-                ResearchQuestion(question="Primary?", is_primary=True)
-            ],
+            questions=[ResearchQuestion(question="Primary?", is_primary=True)],
             output_format="markdown",
             non_goals=["None"],
             engagement_type=EngagementType.EVALUATIVE,

@@ -65,9 +65,7 @@ class Citation(BaseModel):
     title: str = Field(description="Title of the source document")
     authors: list[str] = Field(default_factory=list, description="Author names")
     publication: str = Field(default="", description="Publication or outlet name")
-    date_published: date | None = Field(
-        default=None, description="Publication date (ISO 8601)"
-    )
+    date_published: date | None = Field(default=None, description="Publication date (ISO 8601)")
     access_date: datetime = Field(description="When this source was accessed")
     source_type: SourceType = Field(description="Classification of source origin")
     quality_score: float = Field(
@@ -110,7 +108,9 @@ class Citation(BaseModel):
     @classmethod
     def validate_citation_id(cls, v: str) -> str:
         if not (v.startswith("CIT-") or v.startswith("CAN-")):
-            raise ValueError("citation_id must start with 'CIT-' (source instance) or 'CAN-' (canonical)")
+            raise ValueError(
+                "citation_id must start with 'CIT-' (source instance) or 'CAN-' (canonical)"
+            )
         return v
 
     @field_validator("content_hash")
@@ -156,16 +156,12 @@ class Claim(BaseModel):
     citation_ids: list[str] = Field(
         description="References to Citation entities backing this claim"
     )
-    confidence: float = Field(
-        ge=0.0, le=1.0, description="Numerical confidence score"
-    )
+    confidence: float = Field(ge=0.0, le=1.0, description="Numerical confidence score")
     corroboration_count: int = Field(
         ge=0,
         description="Number of agents that independently found supporting evidence",
     )
-    provenance_chain: str = Field(
-        description="Trace from claim -> citations -> source documents"
-    )
+    provenance_chain: str = Field(description="Trace from claim -> citations -> source documents")
     confidence_tier: ConfidenceTier = Field(
         description="Discrete confidence tier derived from numerical confidence"
     )
@@ -192,9 +188,7 @@ class CorroborationPair(BaseModel):
 
     citation_a: str = Field(description="First citation ID")
     citation_b: str = Field(description="Second citation ID")
-    overlap_score: float = Field(
-        ge=0.0, le=1.0, description="Degree of evidentiary overlap"
-    )
+    overlap_score: float = Field(ge=0.0, le=1.0, description="Degree of evidentiary overlap")
 
 
 class CitationAlias(BaseModel):

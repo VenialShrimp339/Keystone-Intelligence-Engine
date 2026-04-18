@@ -93,9 +93,9 @@ def extract_claims(findings: list[StructuredFinding]) -> list[InputClaim]:
     idx = 0
     for finding in findings:
         for fc in finding.claims:
-            citation_ids = list(fc.citation_ids) if fc.citation_ids else [
-                c.citation_id for c in fc.citations
-            ]
+            citation_ids = (
+                list(fc.citation_ids) if fc.citation_ids else [c.citation_id for c in fc.citations]
+            )
             claims.append(
                 InputClaim(
                     index=idx,
@@ -182,16 +182,12 @@ class Analyst:
             f'[{{"index": 0, "confidence": 0.85, "source_count": 3, "reasoning": "..."}}]'
         )
 
-    def _parse_response(
-        self, response: str, claims: list[InputClaim]
-    ) -> list[ScoredClaim]:
+    def _parse_response(self, response: str, claims: list[InputClaim]) -> list[ScoredClaim]:
         """Parse LLM JSON response into ScoredClaim list."""
         try:
             items = safe_llm_json(response, expect_list=True)
         except ParseError:
-            logger.warning(
-                "Failed to parse analyst response for analyst %s", self._analyst_id
-            )
+            logger.warning("Failed to parse analyst response for analyst %s", self._analyst_id)
             # Fallback: preserve original confidence for all claims
             return [
                 ScoredClaim(

@@ -1,6 +1,375 @@
 # Handover
 
 Last updated: 2026-04-18
+Session: Layer 5 remediation — judge panel redesign + audit fixes
+
+## What Changed (L5 remediation session)
+
+Responded to the Layer 5 audit by redesigning the judge panel away from
+Haiku (FAST tier) — an extraction/classification model without the
+reasoning depth required for nuanced 10-dimension rubric scoring — and
+landed every audit finding: low-agreement and reduced-panel governance
+gates, a configurable judge-panel override on ``Pipeline``, the
+``MinorityVetoTriggered`` → ``DissenterVetoTriggered`` rename, per-judge
+attribution on aggregated ``sub_criteria_notes``, and the seven missing
+tests. Baseline was 1332 unit+canary passing; final is **1431 +
+3 xfailed unchanged (+99 new tests)**. Ruff/mypy on touched files are
+net-clean (zero new errors; mypy actually -1).
+
+### Judge panel redesign (evaluator/orchestrator)
+
+- STANDARD profile: ``[("flagship_a", Opus), ("flagship_b", Opus)]``.
+  Two independent Opus runs — sampling stochasticity exposes unstable
+  rubric scores without admitting a weaker tier. Zero Play Favorites
+  risk (neither judge is the Sonnet tier that L1 generates with).
+- DEEP profile: ``[("flagship_a", Opus), ("flagship_b", Opus),
+  ("standard_crossmodel", Sonnet)]``. Sonnet adds cross-model diversity
+  inside the Anthropic family. Play Favorites risk bounded to 1-of-3
+  votes by median aggregation and surfaced via ``agreement_level``.
+  **The ``standard_crossmodel`` slot is an INTERIM choice** — intended
+  to be replaced by an external provider (GPT-5.4 / Gemini) when one is
+  integrated into the LLM client factory. Tracked in TODO.md under "L5
+  ensemble follow-ups."
+- LIGHT_TOUCH: no ensemble (unchanged).
+- Haiku (FAST) is no longer used for any evaluator scoring path. It
+  remains in the L1 fallback chain (``error_recovery.FALLBACK_CHAIN``)
+  and extraction-only Layer 1 paths, where its classification strengths
+  are appropriate.
+
+### ``Pipeline(ensemble_panel_override=...)``
+
+New optional constructor param: a callable ``(intensity, llm_factory) ->
+panel | None``. When supplied, the orchestrator calls it instead of
+``_resolve_ensemble_judges``. Default preserves the built-in mapping.
+Ops can tune panel composition per deployment without patching source.
+
+### Rename: ``MinorityVetoTriggered`` → ``DissenterVetoTriggered``
+
+Veto fires on ANY Tier 1 dissent below floor, not strictly a numeric
+minority. The old name overstated the constraint. Renamed across:
+``events.py`` class + union entry, ``evaluator.py`` yield site,
+``contracts.py`` docstring, ``layer5_ensemble.py`` / ``evaluator.py`` /
+``models/evaluation.py`` docstrings and field descriptions, and both
+test files. Governance gate renamed from ``l5_ensemble_tier1_veto`` to
+``l5_ensemble_dissenter_veto``.
+
+### New governance gates (policy.py)
+
+- ``l5_ensemble_degraded_panel`` (WARN): fires when at least one judge
+  failed but not all of them. Surfaces silent panel shrinkage so ops
+  know the ensemble signal is weaker than designed.
+- ``l5_low_agreement`` (WARN under STANDARD, ESCALATE under DEEP):
+  fires when ``agreement_level < 0.30`` and no Tier 1 veto. Single
+  most valuable ensemble signal — inter-judge disagreement — now
+  surfaces as an actionable flag instead of staying buried on
+  ``Layer5Result``. Suppressed under LIGHT and skipped for single-judge
+  ensembles (where agreement is trivially 1.0).
+
+### Per-judge attribution on ``sub_criteria_notes``
+
+``layer5_ensemble._aggregate_dimension_scores`` now prefixes each
+aggregated sub-criteria note with ``[judge_id]``, mirroring the style
+already applied to ``feedback``. Audit trail traces every concern back
+to the judge that raised it.
+
+### New tests (+99 over 1332 baseline; 1431 + 3 xfailed final)
+
+- ``tests/unit/evaluator/test_layer5_ensemble.py``:
+  ``TestSingleJudgeEnsemble``, ``TestMixedDimensionCoverage``,
+  ``TestSubCriteriaAttribution``, ``TestDimensionEmphasisThroughEnsemble``
+  — plus rename of ``TestMinorityVeto`` → ``TestDissenterVeto``.
+- ``tests/unit/evaluator/test_evaluator.py``:
+  ``TestEnsembleEvaluatorIntegration`` exercising end-to-end event
+  ordering (``EnsembleJudgeScored`` → ``DissenterVetoTriggered`` →
+  ``EnsembleEvaluationComplete`` → ``EvaluationComplete``), veto event
+  emission, ``RubricDimensionScored.weight`` tracking the ensemble's
+  profile, and L5-veto-cannot-be-lifted-by-L4-process-quality.
+- ``tests/unit/governance/test_policy.py``:
+  ``test_low_agreement_emits_warn_under_standard``,
+  ``test_low_agreement_escalates_under_deep``,
+  ``test_low_agreement_suppressed_when_already_vetoed``,
+  ``test_degraded_panel_warns_when_one_judge_fails``. Existing
+  ``test_tier1_veto_*`` fixtures now use coherent ``Layer3Result``-bearing
+  ``JudgeScore`` fixtures (via ``_judge_layer3`` helper) instead of the
+  prior ``succeeded=True, layer3_result=None`` incoherence.
+
+### Files touched
+
+**Modified source:**
+- ``src/keystone/pipeline/orchestrator.py`` (new judge panel,
+  ``ensemble_panel_override`` parameter, resolver plumbing)
+- ``src/keystone/evaluator/evaluator.py`` (DissenterVetoTriggered
+  import + yield, docstring updates, feedback wording)
+- ``src/keystone/evaluator/layer5_ensemble.py`` (docstring wording,
+  sub_criteria_notes attribution)
+- ``src/keystone/events.py`` (DissenterVetoTriggered class + union
+  entry)
+- ``src/keystone/models/evaluation.py`` (VetoEvent + Layer5Result
+  docstring wording)
+- ``src/keystone/governance/policy.py`` (gate rename, two new gates,
+  ``_low_agreement_gate`` helper, TYPE_CHECKING for Layer5Result)
+- ``src/keystone/contracts.py`` (docstring rename)
+
+**Modified tests:**
+- ``tests/unit/evaluator/test_layer5_ensemble.py`` (class rename + 4
+  new test classes)
+- ``tests/unit/evaluator/test_evaluator.py`` (4 new integration tests
+  under ``TestEnsembleEvaluatorIntegration``)
+- ``tests/unit/governance/test_policy.py`` (fixture helper
+  ``_judge_layer3``, new low-agreement + degraded-panel tests, gate
+  rename, coherent JudgeScore fixtures)
+
+### Governance event stream (updated)
+
+Per task, under STANDARD ensemble profile:
+1. ``DeterministicCheckPassed`` (L1)
+2. ``CitationGateResult`` (L2)
+3. 2 × ``EnsembleJudgeScored`` (L5)
+4. 0..M × ``DissenterVetoTriggered`` (L5)
+5. 10 × ``RubricDimensionScored`` (L4)
+6. ``EnsembleEvaluationComplete`` (L5)
+7. ``ProcessTrajectoryScored`` (L4, optional)
+8. ``EvaluationComplete`` (L4)
+
+---
+
+## Previous Session (kept for continuity)
+
+Session: Slop detector — deterministic LLM-prose quality filter for L2
+
+## What Changed (Slop detector session)
+
+Added `keystone.quality`: a deterministic pattern-matcher that catches the
+verbal tics LLMs over-use ("it's important to note that," "delve into,"
+"leverage cutting-edge solutions," "a tapestry of synergies," etc.) before
+the Evaluator scores a section. No LLM calls — pure regex with word-boundary
+awareness, sub-millisecond on a ten-kilobyte brief. Baseline was 1311
+unit+canary passing; running `pytest tests/unit/` now yields **1407
+passing** (+96 new). Zero new ruff or mypy errors on touched files.
+
+### New package `src/keystone/quality/`
+
+- `patterns.py`: 300 curated patterns across 9 categories (FILLER, BUZZWORD,
+  HEDGING, FALSE_TRANSITION, SUPERLATIVE, AI_TELL, LLM_TIC,
+  CORPORATE_FILLER, WEAK_OPENER) with severities HIGH/MEDIUM/LOW. Each
+  pattern is a `SlopPattern` (phrase, regex, category, severity, optional
+  replacement, optional note). 183 HIGH, 105 MEDIUM, 12 LOW. Replacements
+  are grammatically correct (`"delve into" → "examine"`, not
+  `"delve" → "examine"` which would leave "examine into" stranded).
+  `StrEnum` subclasses match the rest of the project's conventions.
+- `slop_detector.py`: `SlopDetector`, `SlopMatch`, `SlopReport`. `detect()`
+  returns all matches with line/col offsets and a count breakdown by
+  severity and category. Overlap resolution keeps the longest match
+  (so "it is important to note that" wins over inner "important"). `clean()`
+  applies HIGH/MEDIUM replacements right-to-left (so offsets stay valid),
+  then a `_tidy()` pass collapses double spaces, strips leading
+  whitespace, removes space-before-punctuation, capitalizes sentence
+  starts, and capitalizes the first letter after a markdown list marker.
+  `LOW`-severity patterns are never auto-edited even when a replacement is
+  configured — defense against aggressive edits.
+
+### New event `SlopDetected`
+
+- `src/keystone/events.py`: emitted from L2 per task when a section draft
+  has at least one slop match. Carries `task_id`, `section_id`,
+  `total_count`, `high_count`, `medium_count`, `low_count`,
+  `top_categories` (sorted by match count, most first), and `cleaned`
+  (True when auto-replacements changed the stored text). Folded into
+  `AnyPipelineEvent`.
+
+### Integration into L2 `ContentStructurer`
+
+- `src/keystone/structuring/content_structuring.py`: constructor gains a
+  `slop_detector: SlopDetector | None` parameter (default constructs one
+  with `DEFAULT_PATTERNS`). After `render_task_section_text`, the raw
+  text is handed to `_scrub_slop`, which runs `detect` + `clean` in one
+  pass and returns `(cleaned_text, SlopDetected | None)`. The cleaned
+  text is stored under `task_id` — the Evaluator grades the cleaned
+  version. Event emission order per task is now
+  `SectionDrafted -> SlopDetected? -> SprintContractProposed?`
+  with each event conditional on whether there is anything to report.
+
+### Tests
+
+- `tests/unit/quality/test_slop_detector.py` (83 tests, 11 classes): one
+  class per category, plus `TestPatternDatabase` (shape invariants),
+  `TestWordBoundaries` (no false positives inside "paradigmatic",
+  "developer", etc.), `TestClean` (deletion, substitution, idempotence,
+  markdown list preservation, empty/no-match/all-slop), `TestSeverity
+  Filtering` (`min_severity` + `at_or_above`), `TestReportShape`
+  (offsets, line/col, ordering), and `TestConsultingIntegration` on a
+  realistic consulting paragraph.
+- `tests/unit/structuring/test_content_structuring.py`: new
+  `TestSlopFiltering` class (4 tests): slop event emitted per task when
+  the rendered section text has matches, stored section text is scrubbed,
+  a clean finding produces no HIGH/MEDIUM event, and an injected
+  `SlopDetector` replaces the default for testability.
+
+### Files touched
+
+**Added source:**
+- `src/keystone/quality/__init__.py`
+- `src/keystone/quality/patterns.py`
+- `src/keystone/quality/slop_detector.py`
+
+**Modified source:**
+- `src/keystone/events.py` (`SlopDetected` + union entry)
+- `src/keystone/structuring/content_structuring.py` (detector injection
+  + `_scrub_slop` helper + event threading)
+
+**Added tests:**
+- `tests/unit/quality/__init__.py`
+- `tests/unit/quality/test_slop_detector.py`
+
+**Modified tests:**
+- `tests/unit/structuring/test_content_structuring.py` (`TestSlopFiltering`
+  + `_sloppy_finding` helper)
+
+---
+
+## Previous Session (kept for continuity)
+
+Session: Evaluator Layer 5 — cross-model ensemble with minority veto
+
+## What Changed (Layer 5 session)
+
+Added Layer 5 to the Evaluator stack: a cross-model ensemble that wraps
+Layer 3 when `ensemble_llms` is provided. PoLL (Panel of LLM Judges)
+pattern addresses the SOS-Bench single-judge bias (ICLR 2025: holistic
+LLM judging penalizes TONE 7× more than FACTUAL ERRORS, Play Favorites
+self-scoring, 60–68% expert-agreement ceiling). Layer 5 runs 2–3
+`ThreePassEvaluator` instances in parallel, aggregates per-dimension
+scores by median, and applies a minority veto on Tier 1 dimensions:
+if any judge scores any Tier 1 dimension below its floor, the
+aggregated `Layer3Result.final_score` is forced to 0.0. Baseline was
+1311 unit+canary passing; final is **1332 passing (+21 new tests)**.
+3 xfailed unchanged. Ruff debt on touched files net-reduced (29→21
+errors); mypy: zero new errors introduced (the 6 remaining on touched
+files are all pre-existing).
+
+### Architecture
+
+- **Wrap point:** `ThreePassEvaluator.run()`. Each judge is a separate
+  `ThreePassEvaluator` (so Phase 2 Observation Library scan applies
+  per-judge when it lands). `Layer3RubricScorer` and
+  `ThreePassEvaluator` now accept `judge_id: str | None = None`, which
+  threads into `retry_llm_call` description strings so logs are
+  judge-distinguishable (e.g. `rubric_intent_alignment[flagship]`).
+- **Judge panel selection** (orchestrator `_resolve_ensemble_judges`):
+  - LIGHT_TOUCH → `ensemble_llms=None`; L5 inert.
+  - STANDARD → `[("flagship", Opus), ("fast", Haiku)]`. Excludes STANDARD
+    tier because L1 agents generate with Sonnet → Play Favorites risk.
+    Cost: 22 L3 LLM calls/task (vs 33).
+  - DEEP → `[("flagship", Opus), ("standard", Sonnet), ("fast", Haiku)]`.
+    All three tiers; Play Favorites risk mitigated by minority veto
+    and `agreement_level` signal.
+- **Aggregation math:**
+  - Per dimension: `statistics.median(judge_scores)` for both Tier 1
+    and Tier 2. Median is the observable aggregated score and is NOT
+    overwritten when a Tier 1 veto fires (preserves audit signal).
+  - Tier 1 veto: separate `any(judge_score < floor)` check, computed
+    independently. If True for any Tier 1 dim → `tier1_vetoed=True`
+    and `final_score = 0.0`.
+  - Weighted total: `weighted_geometric_mean(median_scores, weights)`
+    (reuses the existing function in `layer3_rubric.py`).
+  - Gestalt: median of per-judge gestalts (post-aggregation of
+    dimensional scores, preserving `Layer3Result.weighted_total` /
+    `gestalt_adjustment` / `final_score` separation).
+  - Agreement level: fraction of dimensions where
+    `max_judge_score - min_judge_score <= 10` (matches gestalt clamp
+    width). When only one judge scored a dimension (e.g. other bailed
+    at Tier 1), that dimension counts as trivially concordant.
+- **Graceful degradation:** `asyncio.gather(..., return_exceptions=True)`.
+  Exceptions are captured as `JudgeScore(succeeded=False, error=...)`.
+  Aggregation runs over survivors. If **all** judges fail,
+  `Layer5Result.all_judges_failed=True` and the ensemble returns a zero
+  `Layer3Result` — consistent with the existing Layer 3 exception path.
+
+### Event stream
+
+The ensemble path emits events in this order (per task):
+1. `DeterministicCheckPassed` (L1)
+2. `CitationGateResult` (L2)
+3. N × `EnsembleJudgeScored` (layer `"L5"`, one per judge with per-judge
+   scores + success flag)
+4. 0..M × `MinorityVetoTriggered` (layer `"L5"`, one per vetoed Tier 1
+   dimension, carries dissenting judge IDs + min_judge_score)
+5. 10 × `RubricDimensionScored` (layer `"L4"`, aggregated-median scores
+   — the existing `len(rubric_events) == 10` invariant in
+   `test_evaluator.py` is preserved; per-judge detail is in the L5
+   events above)
+6. `EnsembleEvaluationComplete` (layer `"L5"`)
+7. `ProcessTrajectoryScored` (L4, if `process_context` provided)
+8. `EvaluationComplete` (L4)
+
+### Governance gates
+
+Two new gates in `record_evaluation_outcome`:
+- **`l5_ensemble_tier1_veto`** (action `ESCALATE`): fires when
+  `result.layer5_results.tier1_vetoed` and `not result.passed` and
+  profile is not LIGHT. Always `ESCALATE` rather than `HALT` or
+  `DEGRADE` because judge disagreement is ambiguous evidence, not a
+  definitive rejection — it warrants human review regardless of profile.
+- **`l5_ensemble_infrastructure_failure`** (action `WARN`): fires when
+  `result.layer5_results.all_judges_failed` — distinguishes ensemble
+  model-availability failure from content failure. Does not block.
+
+Existing `l4_rubric_threshold` gate still fires in parallel for veto
+failures (a veto produces `passed=False`), so operators get both
+signals and can distinguish ensemble-driven rejections from
+single-judge rejections.
+
+### New models (src/keystone/models/evaluation.py)
+
+- `JudgeScore(judge_id, judge_tier, layer3_result | None, succeeded,
+  error | None)` — per-judge pass record
+- `VetoEvent(dimension, floor_threshold, min_score,
+  dissenting_judge_ids, judge_scores)` — per-dimension veto record
+- `Layer5Result(judges_used, judge_scores, aggregated_dimension_scores,
+  ensemble_weighted_total, ensemble_gestalt_adjustment,
+  ensemble_final_score, tier1_vetoed, veto_events, agreement_level,
+  all_judges_failed, failed_judge_ids)` — full ensemble output
+- `EvaluationResult.layer5_results: Layer5Result | None` — additive,
+  None for LIGHT_TOUCH or single-judge mode. No existing `EvaluationResult`
+  construction breaks (field is optional with `None` default).
+
+### Files touched
+
+**New source:**
+- `src/keystone/evaluator/layer5_ensemble.py` (EnsembleL3Evaluator +
+  internal `_JudgeRun` dataclass + `_short_error` helper)
+
+**Modified source:**
+- `src/keystone/evaluator/evaluator.py` (ensemble_llms param,
+  dispatch single-judge vs ensemble in `evaluate()`, emit new L5 events,
+  propagate layer5_results through `_build_result`)
+- `src/keystone/evaluator/three_pass.py` (judge_id param)
+- `src/keystone/evaluator/layer3_rubric.py` (judge_id param + threaded
+  into retry descriptions)
+- `src/keystone/evaluator/__init__.py` (export EnsembleL3Evaluator)
+- `src/keystone/models/evaluation.py` (JudgeScore, VetoEvent,
+  Layer5Result, EvaluationResult.layer5_results)
+- `src/keystone/models/__init__.py` (re-exports)
+- `src/keystone/events.py` (EnsembleJudgeScored,
+  MinorityVetoTriggered, EnsembleEvaluationComplete + union entries)
+- `src/keystone/pipeline/orchestrator.py` (_resolve_ensemble_judges
+  helper; pass `ensemble_llms` to Evaluator per intensity)
+- `src/keystone/governance/policy.py` (l5_ensemble_tier1_veto,
+  l5_ensemble_infrastructure_failure gates)
+- `src/keystone/contracts.py` (EvaluatorContract.evaluate docstring)
+
+**New tests:**
+- `tests/unit/evaluator/test_layer5_ensemble.py` (18 tests: construction,
+  aggregation math, minority veto, judge failure, gestalt aggregation,
+  agreement level, retry description signature)
+
+**Updated tests:**
+- `tests/unit/governance/test_policy.py` (new `TestEnsembleGovernanceGates`
+  class, 3 tests: tier1_veto escalates under STANDARD, tier1_veto
+  skipped under LIGHT, all_judges_failed warns)
+
+## Previous Session (kept for continuity)
+
 Session: Audit remediation — integration-session findings fixed end to end
 
 ## What Changed (Audit remediation session)

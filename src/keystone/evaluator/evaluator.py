@@ -1,18 +1,22 @@
 """Main Evaluator orchestrator (L4). Satisfies EvaluatorContract Protocol.
 
-Four-layer evaluation stack:
+Five-layer evaluation stack:
   Layer 1: Deterministic verification (FActScore, numerical, URLs)
   Layer 2: Citation validation gate (any fabrication = rejection)
   Layer 3: Multi-rubric scoring (10 dimensions, geometric mean)
+  Layer 5: Cross-model ensemble of Layer 3 with dissenter veto (optional)
   Layer 4: Process trajectory (research-process quality; optional)
+
+Layer 5 wraps Layer 3 when ``ensemble_llms`` is supplied: multiple judges
+run independently, scores aggregate by median, and any Tier 1 below-floor
+score from any judge triggers a dissenter veto. Without ``ensemble_llms``
+the evaluator runs the single-judge Layer 3 path.
 
 Layer 4 runs only when a ProcessContext is provided to ``evaluate``. It
 evaluates HOW the output was produced — Layers 1-3 can be fooled by
 plausible prose from a narrow research process. When Layer 4 runs, the
 overall score is the weighted geometric mean of L3 and L4 (default
 80/20), so lazy research lowers the composite without erasing it.
-
-Layer 5 (diverse judge ensemble) remains Phase 2.
 """
 
 from __future__ import annotations
@@ -26,6 +30,7 @@ from keystone.evaluator.layer1_deterministic import Layer1Evaluator
 from keystone.evaluator.layer2_citation_gate import DOIVerifier, Layer2CitationGate
 from keystone.evaluator.layer3_rubric import _apply_dimension_emphasis
 from keystone.evaluator.layer4_trajectory import Layer4Evaluator, ProcessContext
+from keystone.evaluator.layer5_ensemble import EnsembleL3Evaluator
 from keystone.evaluator.retry import LLMCallable
 from keystone.evaluator.rubric_config import EvaluationProfile, get_profile_weights
 from keystone.evaluator.three_pass import ThreePassEvaluator
@@ -33,6 +38,9 @@ from keystone.events import (
     AnyPipelineEvent,
     CitationGateResult,
     DeterministicCheckPassed,
+    DissenterVetoTriggered,
+    EnsembleEvaluationComplete,
+    EnsembleJudgeScored,
     EvaluationComplete,
     ProcessTrajectoryScored,
     RubricDimensionScored,
@@ -45,6 +53,7 @@ from keystone.models.evaluation import (
     Layer2Result,
     Layer3Result,
     Layer4Result,
+    Layer5Result,
     SprintContract,
 )
 from keystone.models.research import EngagementSpec
@@ -90,6 +99,7 @@ class Evaluator:
         intensity: EvaluationIntensity = EvaluationIntensity.STANDARD,
         pass_threshold: float = DEFAULT_PASS_THRESHOLD,
         layer3_weight: float = DEFAULT_LAYER3_WEIGHT,
+        ensemble_llms: list[tuple[str, LLMCallable]] | None = None,
     ) -> None:
         if not 0.0 < layer3_weight <= 1.0:
             raise ValueError("layer3_weight must be in (0, 1]")
@@ -103,6 +113,13 @@ class Evaluator:
         self._layer2 = Layer2CitationGate(doi_verifier=doi_verifier)
         self._three_pass = ThreePassEvaluator(llm=llm, profile=profile)
         self._layer4 = Layer4Evaluator(llm=llm)
+        # Layer 5 is inert for LIGHT_TOUCH (Layer 3 is skipped) and when no
+        # ensemble judges are provided. Otherwise construct an ensemble wrapper.
+        self._ensemble: EnsembleL3Evaluator | None
+        if ensemble_llms and intensity != EvaluationIntensity.LIGHT_TOUCH:
+            self._ensemble = EnsembleL3Evaluator(judges=ensemble_llms, profile=profile)
+        else:
+            self._ensemble = None
         self._result: EvaluationResult | None = None
 
     async def evaluate(
@@ -200,22 +217,74 @@ class Evaluator:
             )
             return
 
-        try:
-            layer3_result = await self._three_pass.run(output_text, contract)
-        except Exception as exc:
-            import logging as _log
+        layer5_result: Layer5Result | None = None
+        if self._ensemble is not None:
+            try:
+                layer3_result, layer5_result = await self._ensemble.run(output_text, contract)
+            except Exception as exc:
+                import logging as _log
 
-            _log.getLogger(__name__).warning(
-                "Layer 3 evaluation failed for task %s, using degraded score: %s",
-                task.id,
-                exc,
-            )
-            layer3_result = Layer3Result(
-                dimension_scores=[],
-                weighted_total=0.0,
-                gestalt_adjustment=0.0,
-                final_score=0.0,
-            )
+                _log.getLogger(__name__).warning(
+                    "Layer 5 ensemble evaluation failed for task %s, using degraded score: %s",
+                    task.id,
+                    exc,
+                )
+                layer3_result = Layer3Result(
+                    dimension_scores=[],
+                    weighted_total=0.0,
+                    gestalt_adjustment=0.0,
+                    final_score=0.0,
+                )
+                layer5_result = None
+        else:
+            try:
+                layer3_result = await self._three_pass.run(output_text, contract)
+            except Exception as exc:
+                import logging as _log
+
+                _log.getLogger(__name__).warning(
+                    "Layer 3 evaluation failed for task %s, using degraded score: %s",
+                    task.id,
+                    exc,
+                )
+                layer3_result = Layer3Result(
+                    dimension_scores=[],
+                    weighted_total=0.0,
+                    gestalt_adjustment=0.0,
+                    final_score=0.0,
+                )
+
+        # Emit L5 per-judge + veto events before the aggregated L4 events so
+        # consumers see judge detail first, then the aggregated picture.
+        if layer5_result is not None:
+            for js in layer5_result.judge_scores:
+                judge_l3 = js.layer3_result
+                yield EnsembleJudgeScored(
+                    event_id=_uid(),
+                    engagement_id=eid,
+                    client_id=cid,
+                    task_id=task.id,
+                    judge_id=js.judge_id,
+                    judge_tier=js.judge_tier,
+                    judge_succeeded=js.succeeded,
+                    judge_final_score=judge_l3.final_score if judge_l3 is not None else 0.0,
+                    judge_weighted_total=judge_l3.weighted_total if judge_l3 is not None else 0.0,
+                    judge_gestalt=judge_l3.gestalt_adjustment if judge_l3 is not None else 0.0,
+                    error=js.error,
+                )
+            for ve in layer5_result.veto_events:
+                yield DissenterVetoTriggered(
+                    event_id=_uid(),
+                    engagement_id=eid,
+                    client_id=cid,
+                    task_id=task.id,
+                    dimension=ve.dimension.value,
+                    floor_threshold=ve.floor_threshold,
+                    min_judge_score=ve.min_score,
+                    dissenting_judge_ids=list(ve.dissenting_judge_ids),
+                    judge_count=len(layer5_result.judge_scores),
+                )
+
         event_weights = _apply_dimension_emphasis(
             self._weights,
             contract.dimension_emphasis,
@@ -229,6 +298,20 @@ class Evaluator:
                 dimension=score.dimension.value,
                 score=score.score,
                 weight=event_weights.get(score.dimension, 0.0),
+            )
+
+        if layer5_result is not None:
+            yield EnsembleEvaluationComplete(
+                event_id=_uid(),
+                engagement_id=eid,
+                client_id=cid,
+                task_id=task.id,
+                n_judges=len(layer5_result.judges_used),
+                n_judges_succeeded=sum(1 for js in layer5_result.judge_scores if js.succeeded),
+                aggregated_score=layer5_result.ensemble_final_score,
+                agreement_level=layer5_result.agreement_level,
+                veto_count=len(layer5_result.veto_events),
+                tier1_vetoed=layer5_result.tier1_vetoed,
             )
 
         # --- Layer 4: Process trajectory (optional, only when context provided) ---
@@ -278,6 +361,7 @@ class Evaluator:
             layer2_result,
             layer3_result,
             layer4_result,
+            layer5_result,
             composite_score,
             passed,
         )
@@ -381,6 +465,7 @@ class Evaluator:
         l2: Layer2Result,
         l3: Layer3Result,
         l4: Layer4Result | None,
+        l5: Layer5Result | None,
         composite_score: float,
         passed: bool,
     ) -> EvaluationResult:
@@ -396,6 +481,24 @@ class Evaluator:
             feedback_parts.append(
                 f"{verdict} with score {l3.final_score:.1f}/100 (threshold: {self._pass_threshold})."
             )
+
+        if l5 is not None:
+            if l5.all_judges_failed:
+                feedback_parts.append(
+                    f"Ensemble infrastructure failure: all {len(l5.judges_used)} "
+                    f"judge(s) raised. Score degraded to zero; not a content signal."
+                )
+            elif l5.tier1_vetoed:
+                vetoed = ", ".join(ve.dimension.value for ve in l5.veto_events)
+                feedback_parts.append(
+                    f"Dissenter veto triggered on Tier 1 dimension(s): {vetoed}. "
+                    f"Agreement level {l5.agreement_level:.2f}."
+                )
+            else:
+                feedback_parts.append(
+                    f"Ensemble of {len(l5.judges_used)} judge(s) aggregated; "
+                    f"agreement level {l5.agreement_level:.2f}."
+                )
 
         # Per-dimension feedback
         strengths = []
@@ -434,6 +537,7 @@ class Evaluator:
             layer2_results=l2,
             layer3_results=l3,
             layer4_results=l4,
+            layer5_results=l5,
             feedback=" ".join(feedback_parts),
         )
 

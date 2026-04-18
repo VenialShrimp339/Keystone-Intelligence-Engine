@@ -40,11 +40,28 @@ class TestFactDecomposition:
 
     @pytest.mark.asyncio
     async def test_decomposes_claims(self) -> None:
-        mock_response = json.dumps([
-            {"claim": "Revenue was $50M", "status": "SUPPORTED", "citation_id": "CIT-001", "reasoning": "Matches source"},
-            {"claim": "Growth was 20%", "status": "NOT_SUPPORTED", "citation_id": None, "reasoning": "No citation"},
-            {"claim": "Market is shrinking", "status": "CONTRADICTED", "citation_id": "CIT-002", "reasoning": "Source says growing"},
-        ])
+        mock_response = json.dumps(
+            [
+                {
+                    "claim": "Revenue was $50M",
+                    "status": "SUPPORTED",
+                    "citation_id": "CIT-001",
+                    "reasoning": "Matches source",
+                },
+                {
+                    "claim": "Growth was 20%",
+                    "status": "NOT_SUPPORTED",
+                    "citation_id": None,
+                    "reasoning": "No citation",
+                },
+                {
+                    "claim": "Market is shrinking",
+                    "status": "CONTRADICTED",
+                    "citation_id": "CIT-002",
+                    "reasoning": "Source says growing",
+                },
+            ]
+        )
         llm = AsyncMock(return_value=mock_response)
         evaluator = Layer1Evaluator(llm=llm)
         cit = _make_citation("CIT-001")
@@ -76,23 +93,25 @@ class TestNumericalConsistency:
     @pytest.mark.asyncio
     async def test_catches_contradictions(self) -> None:
         mock_fact = json.dumps([])
-        mock_num = json.dumps({
-            "numerical_claims": [
-                {"value": "15%", "metric": "revenue growth", "location": "paragraph 2"},
-                {"value": "12.3%", "metric": "revenue growth", "location": "table row 4"},
-            ],
-            "inconsistencies": [
-                {
-                    "metric": "revenue growth",
-                    "value_a": "15%",
-                    "location_a": "paragraph 2",
-                    "value_b": "12.3%",
-                    "location_b": "table row 4",
-                    "severity": "high",
-                    "explanation": "Same metric, contradictory values",
-                },
-            ],
-        })
+        mock_num = json.dumps(
+            {
+                "numerical_claims": [
+                    {"value": "15%", "metric": "revenue growth", "location": "paragraph 2"},
+                    {"value": "12.3%", "metric": "revenue growth", "location": "table row 4"},
+                ],
+                "inconsistencies": [
+                    {
+                        "metric": "revenue growth",
+                        "value_a": "15%",
+                        "location_a": "paragraph 2",
+                        "value_b": "12.3%",
+                        "location_b": "table row 4",
+                        "severity": "high",
+                        "explanation": "Same metric, contradictory values",
+                    },
+                ],
+            }
+        )
 
         call_idx = 0
 
@@ -119,7 +138,11 @@ class TestURLLiveness:
         manifest = _make_manifest(cit1, cit2)
 
         async def mock_llm(prompt: str) -> str:
-            return json.dumps([]) if "[" in prompt else json.dumps({"numerical_claims": [], "inconsistencies": []})
+            return (
+                json.dumps([])
+                if "[" in prompt
+                else json.dumps({"numerical_claims": [], "inconsistencies": []})
+            )
 
         with patch(
             "keystone.evaluator.layer1_deterministic.batch_check_urls",
@@ -148,9 +171,16 @@ class TestEdgeCases:
     async def test_layer1_result_fields_populated(self) -> None:
         async def mock_llm(prompt: str) -> str:
             if "Fact Decomposition" in prompt:
-                return json.dumps([
-                    {"claim": "X", "status": "SUPPORTED", "citation_id": "CIT-001", "reasoning": "ok"},
-                ])
+                return json.dumps(
+                    [
+                        {
+                            "claim": "X",
+                            "status": "SUPPORTED",
+                            "citation_id": "CIT-001",
+                            "reasoning": "ok",
+                        },
+                    ]
+                )
             return json.dumps({"numerical_claims": [], "inconsistencies": []})
 
         manifest = _make_manifest(_make_citation("CIT-001"))

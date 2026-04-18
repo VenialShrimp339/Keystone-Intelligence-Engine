@@ -18,12 +18,14 @@ def _make_lens_tree(prefix: str, leaf_count: int = 4) -> dict:
     """Create a mock lens tree with the given prefix and leaf count."""
     children = []
     for i in range(1, leaf_count + 1):
-        children.append({
-            "id": f"{prefix}_{i}",
-            "name": f"{prefix.title()} Branch {i}",
-            "description": f"Investigate {prefix} aspect {i}",
-            "children": [],
-        })
+        children.append(
+            {
+                "id": f"{prefix}_{i}",
+                "name": f"{prefix.title()} Branch {i}",
+                "description": f"Investigate {prefix} aspect {i}",
+                "children": [],
+            }
+        )
     return {
         "id": f"{prefix}_root",
         "name": f"{prefix.title()} Analysis",
@@ -39,20 +41,24 @@ def _make_synthesized_tree(leaf_count: int = 12) -> dict:
     for i in range(1, 4):
         children = []
         for j in range(1, leaves_per_branch + 1):
-            children.append({
-                "id": f"branch_{i}.{j}",
-                "name": f"Sub-topic {i}.{j}",
-                "description": f"Investigate sub-topic {i}.{j}",
-                "lens_annotations": {"financial": "Financial aspect"} if j == 1 else {},
-                "children": [],
-            })
-        branches.append({
-            "id": f"branch_{i}",
-            "name": f"Major Branch {i}",
-            "description": f"Top-level branch {i}",
-            "lens_annotations": {"financial": "Revenue", "market": "Competition"},
-            "children": children,
-        })
+            children.append(
+                {
+                    "id": f"branch_{i}.{j}",
+                    "name": f"Sub-topic {i}.{j}",
+                    "description": f"Investigate sub-topic {i}.{j}",
+                    "lens_annotations": {"financial": "Financial aspect"} if j == 1 else {},
+                    "children": [],
+                }
+            )
+        branches.append(
+            {
+                "id": f"branch_{i}",
+                "name": f"Major Branch {i}",
+                "description": f"Top-level branch {i}",
+                "lens_annotations": {"financial": "Revenue", "market": "Competition"},
+                "children": children,
+            }
+        )
     return {
         "root": {
             "id": "root",
@@ -65,7 +71,6 @@ def _make_synthesized_tree(leaf_count: int = 12) -> dict:
 
 
 class TestDecomposer:
-
     async def test_produces_valid_tree(self):
         call_count = 0
 
@@ -171,10 +176,11 @@ class TestDecomposer:
 
 
 class TestTreeHelpers:
-
     def test_count_leaves_simple(self):
         node = IssueTreeNode(
-            id="root", name="Root", description="Root",
+            id="root",
+            name="Root",
+            description="Root",
             children=[
                 IssueTreeNode(id="a", name="A", description="A"),
                 IssueTreeNode(id="b", name="B", description="B"),
@@ -184,10 +190,14 @@ class TestTreeHelpers:
 
     def test_count_leaves_nested(self):
         node = IssueTreeNode(
-            id="root", name="Root", description="Root",
+            id="root",
+            name="Root",
+            description="Root",
             children=[
                 IssueTreeNode(
-                    id="a", name="A", description="A",
+                    id="a",
+                    name="A",
+                    description="A",
                     children=[
                         IssueTreeNode(id="a1", name="A1", description="A1"),
                         IssueTreeNode(id="a2", name="A2", description="A2"),
@@ -200,7 +210,9 @@ class TestTreeHelpers:
 
     def test_max_depth_flat(self):
         node = IssueTreeNode(
-            id="root", name="Root", description="Root",
+            id="root",
+            name="Root",
+            description="Root",
             children=[
                 IssueTreeNode(id="a", name="A", description="A"),
             ],
@@ -209,10 +221,14 @@ class TestTreeHelpers:
 
     def test_max_depth_nested(self):
         node = IssueTreeNode(
-            id="root", name="Root", description="Root",
+            id="root",
+            name="Root",
+            description="Root",
             children=[
                 IssueTreeNode(
-                    id="a", name="A", description="A",
+                    id="a",
+                    name="A",
+                    description="A",
                     children=[
                         IssueTreeNode(id="a1", name="A1", description="A1"),
                     ],

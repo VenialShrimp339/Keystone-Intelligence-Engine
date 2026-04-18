@@ -79,8 +79,7 @@ def build_confidence_map(
         gaps_identified=gap_report.gaps,
         absence_report=gap_report.absence_items,
         gap_provenance={
-            gap_text: list(task_ids)
-            for gap_text, task_ids in gap_report.gap_provenance.items()
+            gap_text: list(task_ids) for gap_text, task_ids in gap_report.gap_provenance.items()
         },
         provenance_index=provenance_index,
     )
@@ -163,8 +162,7 @@ def _build_weak(
     wwhtb = wwhtb_by_idx.get(claim.index)
     if wwhtb and wwhtb.assumptions:
         recommendation = (
-            f"Present with uncertainty framing. "
-            f"Assumptions: {'; '.join(wwhtb.assumptions[:2])}"
+            f"Present with uncertainty framing. Assumptions: {'; '.join(wwhtb.assumptions[:2])}"
         )
     else:
         recommendation = "Present with prominent uncertainty framing"
@@ -189,9 +187,7 @@ def _build_contested(claim: AggregatedClaim) -> ContestedClaim:
     key_disagreement = disagreements[0] if disagreements else "Fundamental methodological split"
 
     # Steelmanned opposing view from strongest dissenter
-    dissent_scores = {
-        at: claim.analyst_scores.get(at, 0.5) for at in claim.dissenting_analysts
-    }
+    dissent_scores = {at: claim.analyst_scores.get(at, 0.5) for at in claim.dissenting_analysts}
     if dissent_scores:
         strongest_dissenter = min(dissent_scores, key=dissent_scores.get)  # type: ignore[arg-type]
         steelmanned = claim.analyst_reasoning.get(

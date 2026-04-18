@@ -80,6 +80,7 @@ def _merge_group(
     - Preserve any real content_hash already attached to one of the citations
     - Migrate url:title hashes to metadata_hash (not content_hash)
     """
+
     # Score completeness: count non-None optional fields
     def completeness(c: Citation) -> int:
         score = 0

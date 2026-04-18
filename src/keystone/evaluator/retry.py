@@ -68,7 +68,5 @@ async def retry_llm_call(
                     exc,
                 )
 
-    msg = (
-        f"LLM call '{description}' failed after {max_retries} retries: {last_error}"
-    )
+    msg = f"LLM call '{description}' failed after {max_retries} retries: {last_error}"
     raise RuntimeError(msg)

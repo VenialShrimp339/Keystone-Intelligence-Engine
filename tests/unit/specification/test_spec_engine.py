@@ -23,12 +23,14 @@ from keystone.specification.template_registry import TemplateRegistry
 def _make_lens_tree(prefix: str) -> dict:
     children = []
     for i in range(1, 5):
-        children.append({
-            "id": f"{prefix}_{i}",
-            "name": f"{prefix.title()} Branch {i}",
-            "description": f"Investigate {prefix} aspect {i}",
-            "children": [],
-        })
+        children.append(
+            {
+                "id": f"{prefix}_{i}",
+                "name": f"{prefix.title()} Branch {i}",
+                "description": f"Investigate {prefix} aspect {i}",
+                "children": [],
+            }
+        )
     return {
         "id": f"{prefix}_root",
         "name": f"{prefix.title()} Analysis",
@@ -42,20 +44,24 @@ def _make_synthesized_tree() -> dict:
     for i in range(1, 4):
         children = []
         for j in range(1, 5):
-            children.append({
-                "id": f"branch_{i}.{j}",
-                "name": f"Sub-topic {i}.{j}",
-                "description": f"Investigate sub-topic {i}.{j}",
-                "lens_annotations": {},
-                "children": [],
-            })
-        branches.append({
-            "id": f"branch_{i}",
-            "name": f"Major Branch {i}",
-            "description": f"Top-level branch {i}",
-            "lens_annotations": {"financial": "Revenue"},
-            "children": children,
-        })
+            children.append(
+                {
+                    "id": f"branch_{i}.{j}",
+                    "name": f"Sub-topic {i}.{j}",
+                    "description": f"Investigate sub-topic {i}.{j}",
+                    "lens_annotations": {},
+                    "children": [],
+                }
+            )
+        branches.append(
+            {
+                "id": f"branch_{i}",
+                "name": f"Major Branch {i}",
+                "description": f"Top-level branch {i}",
+                "lens_annotations": {"financial": "Revenue"},
+                "children": children,
+            }
+        )
     return {
         "root": {
             "id": "root",
@@ -90,39 +96,53 @@ def _make_priority_scores() -> dict:
     scores = []
     for i in range(1, 4):
         for j in range(1, 5):
-            scores.append({
-                "branch_id": f"branch_{i}.{j}",
-                "decision_relevance": 0.8,
-                "uncertainty_reduction": 0.7,
-                "reasoning": "Test score.",
-            })
+            scores.append(
+                {
+                    "branch_id": f"branch_{i}.{j}",
+                    "decision_relevance": 0.8,
+                    "uncertainty_reduction": 0.7,
+                    "reasoning": "Test score.",
+                }
+            )
     return {"scores": scores}
 
 
 def _make_tasks() -> dict:
     tasks = []
     for i in range(1, 13):
-        tasks.append({
-            "id": f"task_{i:03d}",
-            "category": ["market_sizing", "competitive_landscape", "financial_analysis",
-                         "technology_assessment", "regulatory", "strategic_positioning",
-                         "market_sizing", "competitive_landscape", "financial_analysis",
-                         "technology_assessment", "regulatory", "strategic_positioning"][i - 1],
-            "type": "estimative" if i % 2 == 0 else "current",
-            "target_decision_usefulness": 4,
-            "description": f"Investigate Luminar topic {i}",
-            "required_sources": ["industry_reports", "news"],
-            "acceptance_criteria": [f"Criterion {i}"],
-            "deliverable_destination": f"Section {i}",
-            "priority": i,
-            "anti_confirmatory_framing": f"Evaluate whether topic {i} holds, including evidence both for and against",
-            "assigned_tools": ["exa_search", "brave_search", "edgar_filings"],
-            "assigned_model": "standard",
-            "end_product": f"Analysis for topic {i}",
-            "dependencies": [f"task_{i - 1:03d}"] if i > 3 else [],
-            "issue_tree_branch_id": f"branch_{(i - 1) // 4 + 1}.{(i - 1) % 4 + 1}",
-            "custom_category": None,
-        })
+        tasks.append(
+            {
+                "id": f"task_{i:03d}",
+                "category": [
+                    "market_sizing",
+                    "competitive_landscape",
+                    "financial_analysis",
+                    "technology_assessment",
+                    "regulatory",
+                    "strategic_positioning",
+                    "market_sizing",
+                    "competitive_landscape",
+                    "financial_analysis",
+                    "technology_assessment",
+                    "regulatory",
+                    "strategic_positioning",
+                ][i - 1],
+                "type": "estimative" if i % 2 == 0 else "current",
+                "target_decision_usefulness": 4,
+                "description": f"Investigate Luminar topic {i}",
+                "required_sources": ["industry_reports", "news"],
+                "acceptance_criteria": [f"Criterion {i}"],
+                "deliverable_destination": f"Section {i}",
+                "priority": i,
+                "anti_confirmatory_framing": f"Evaluate whether topic {i} holds, including evidence both for and against",
+                "assigned_tools": ["exa_search", "brave_search", "edgar_filings"],
+                "assigned_model": "standard",
+                "end_product": f"Analysis for topic {i}",
+                "dependencies": [f"task_{i - 1:03d}"] if i > 3 else [],
+                "issue_tree_branch_id": f"branch_{(i - 1) // 4 + 1}.{(i - 1) % 4 + 1}",
+                "custom_category": None,
+            }
+        )
     return {
         "decomposition_rationale": "Structured by issue tree branches for Luminar analysis.",
         "tasks": tasks,
@@ -143,23 +163,27 @@ def _make_full_mock_llm(
 
         # Step 1: Classification
         if call_count == 1:
-            return json.dumps({
-                "engagement_type": engagement_type,
-                "pipeline_profile": pipeline_profile,
-                "confidence": 0.92,
-                "reasoning": "Complex multi-variable strategic question about competitive positioning.",
-            })
+            return json.dumps(
+                {
+                    "engagement_type": engagement_type,
+                    "pipeline_profile": pipeline_profile,
+                    "confidence": 0.92,
+                    "reasoning": "Complex multi-variable strategic question about competitive positioning.",
+                }
+            )
 
         # Step 2: Intent clarification
         if call_count == 2:
-            return json.dumps({
-                "day_1_hypothesis": "Luminar's 1550nm lidar technology lead is sustainable through 2028 due to manufacturing complexity barriers and existing OEM design wins",
-                "intent_clear": True,
-                "unstated_constraints": ["3-week timeline", "Growth equity fund perspective"],
-                "scope_boundaries": ["No investment recommendation", "No DCF valuation"],
-                "decision_context": "Growth equity fund evaluating $200M position in LAZR",
-                "surprising_finding": "Evidence that Chinese competitors have already closed the technology gap",
-            })
+            return json.dumps(
+                {
+                    "day_1_hypothesis": "Luminar's 1550nm lidar technology lead is sustainable through 2028 due to manufacturing complexity barriers and existing OEM design wins",
+                    "intent_clear": True,
+                    "unstated_constraints": ["3-week timeline", "Growth equity fund perspective"],
+                    "scope_boundaries": ["No investment recommendation", "No DCF valuation"],
+                    "decision_context": "Growth equity fund evaluating $200M position in LAZR",
+                    "surprising_finding": "Evidence that Chinese competitors have already closed the technology gap",
+                }
+            )
 
         # Steps 3a-3c: Lens decompositions (calls 3, 4, 5)
         if call_count in (3, 4, 5):
@@ -201,7 +225,6 @@ def _session_factory() -> _NullAsyncSession:
 
 
 class TestSpecificationEngine:
-
     async def test_full_pipeline_luminar(self):
         """Full pipeline with Luminar test case (mock all LLM calls)."""
         llm = _make_full_mock_llm()

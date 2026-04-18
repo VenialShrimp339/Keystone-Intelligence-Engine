@@ -42,12 +42,8 @@ class IssueTreeMetadata(BaseModel):
 
     depth: int = Field(description="Maximum tree depth (target: 2-3)")
     leaf_count: int = Field(description="Number of leaf nodes (target: 8-20)")
-    lenses_used: list[str] = Field(
-        description="Analytical lenses used in construction"
-    )
-    synthesis_rationale: str = Field(
-        description="Why the synthesis chose this structure"
-    )
+    lenses_used: list[str] = Field(description="Analytical lenses used in construction")
+    synthesis_rationale: str = Field(description="Why the synthesis chose this structure")
 
 
 class IssueTree(BaseModel):
@@ -124,9 +120,7 @@ class Decomposer:
         )
 
         # Phase 2: Synthesis
-        return await self._synthesize(
-            question, engagement_type, day_1_hypothesis, lens_trees
-        )
+        return await self._synthesize(question, engagement_type, day_1_hypothesis, lens_trees)
 
     async def _run_lens(
         self,
@@ -145,9 +139,7 @@ class Decomposer:
             client_context=client_context or "No additional context provided.",
         )
 
-        raw = await retry_llm_call(
-            self._llm, prompt, description=f"decompose_{lens}_lens"
-        )
+        raw = await retry_llm_call(self._llm, prompt, description=f"decompose_{lens}_lens")
         return extract_json(raw)
 
     async def _synthesize(
@@ -168,9 +160,7 @@ class Decomposer:
             market_tree=json.dumps(lens_trees[2], indent=2),
         )
 
-        raw = await retry_llm_call(
-            self._llm, prompt, description="decompose_synthesis"
-        )
+        raw = await retry_llm_call(self._llm, prompt, description="decompose_synthesis")
         data = extract_json(raw)
 
         root_data = data.get("root", data.get("tree", data))

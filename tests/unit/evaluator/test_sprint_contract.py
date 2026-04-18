@@ -85,15 +85,17 @@ def _make_spec() -> EngagementSpec:
 class TestSprintContractGeneration:
     @pytest.mark.asyncio
     async def test_generates_non_empty_criteria(self) -> None:
-        mock_response = json.dumps({
-            "acceptance_criteria": [
-                "Identify at least 5 competitors with market share data",
-                "Include pricing comparison across at least 3 models",
-            ],
-            "mandatory_elements": ["competitive comparison table"],
-            "anti_patterns": ["Generic SWOT without company-specific data"],
-            "dimension_emphasis": {"analytical_depth": 1.5, "source_quality": 1.2},
-        })
+        mock_response = json.dumps(
+            {
+                "acceptance_criteria": [
+                    "Identify at least 5 competitors with market share data",
+                    "Include pricing comparison across at least 3 models",
+                ],
+                "mandatory_elements": ["competitive comparison table"],
+                "anti_patterns": ["Generic SWOT without company-specific data"],
+                "dimension_emphasis": {"analytical_depth": 1.5, "source_quality": 1.2},
+            }
+        )
 
         async def mock_llm(prompt: str) -> str:
             return mock_response
@@ -106,12 +108,14 @@ class TestSprintContractGeneration:
 
     @pytest.mark.asyncio
     async def test_dimension_emphasis_valid_enums(self) -> None:
-        mock_response = json.dumps({
-            "acceptance_criteria": ["test"],
-            "mandatory_elements": [],
-            "anti_patterns": ["generic advice"],
-            "dimension_emphasis": {"analytical_depth": 1.5, "actionability": 1.3},
-        })
+        mock_response = json.dumps(
+            {
+                "acceptance_criteria": ["test"],
+                "mandatory_elements": [],
+                "anti_patterns": ["generic advice"],
+                "dimension_emphasis": {"analytical_depth": 1.5, "actionability": 1.3},
+            }
+        )
 
         async def mock_llm(prompt: str) -> str:
             return mock_response
@@ -123,12 +127,14 @@ class TestSprintContractGeneration:
 
     @pytest.mark.asyncio
     async def test_anti_patterns_populated(self) -> None:
-        mock_response = json.dumps({
-            "acceptance_criteria": ["test"],
-            "mandatory_elements": [],
-            "anti_patterns": ["Industry-generic SWOT", "No competitor names"],
-            "dimension_emphasis": {},
-        })
+        mock_response = json.dumps(
+            {
+                "acceptance_criteria": ["test"],
+                "mandatory_elements": [],
+                "anti_patterns": ["Industry-generic SWOT", "No competitor names"],
+                "dimension_emphasis": {},
+            }
+        )
 
         async def mock_llm(prompt: str) -> str:
             return mock_response
@@ -139,12 +145,14 @@ class TestSprintContractGeneration:
 
     @pytest.mark.asyncio
     async def test_contract_references_correct_ids(self) -> None:
-        mock_response = json.dumps({
-            "acceptance_criteria": ["test"],
-            "mandatory_elements": [],
-            "anti_patterns": [],
-            "dimension_emphasis": {},
-        })
+        mock_response = json.dumps(
+            {
+                "acceptance_criteria": ["test"],
+                "mandatory_elements": [],
+                "anti_patterns": [],
+                "dimension_emphasis": {},
+            }
+        )
 
         async def mock_llm(prompt: str) -> str:
             return mock_response
