@@ -23,7 +23,10 @@ from keystone.models.citations import CitationManifest
 logger = logging.getLogger(__name__)
 
 # Variance threshold above which analyst disagreement triggers judge selection.
-# 0.04 corresponds to stddev ~0.2 (a 20+ point spread between analysts).
+# 0.04 corresponds to stddev ~0.2 (a 20+ point spread between analysts). Kept
+# as a module-level constant so legacy callers keep working; the
+# ``Aggregator`` constructor accepts an override sourced from
+# :class:`PipelineConfig.dispute_variance_threshold`.
 DISPUTE_VARIANCE_THRESHOLD = 0.04
 
 
@@ -59,8 +62,14 @@ class Aggregator:
     best-supported analyst assessment.
     """
 
-    def __init__(self, judge_llm: LLMCallable) -> None:
+    def __init__(
+        self,
+        judge_llm: LLMCallable,
+        *,
+        dispute_variance_threshold: float = DISPUTE_VARIANCE_THRESHOLD,
+    ) -> None:
         self._judge = judge_llm
+        self._dispute_variance_threshold = dispute_variance_threshold
 
     async def aggregate(
         self,
@@ -112,7 +121,7 @@ class Aggregator:
             variance = statistics.variance(confidences) if len(confidences) > 1 else 0.0
 
             # Judge-based selection for disputed claims
-            if variance > DISPUTE_VARIANCE_THRESHOLD and len(confidences) >= 2:
+            if variance > self._dispute_variance_threshold and len(confidences) >= 2:
                 selected_type, sel_reasoning = await self._judge_select(claim, scores, reasoning)
                 mean_conf = scores.get(selected_type, statistics.mean(confidences))
             else:

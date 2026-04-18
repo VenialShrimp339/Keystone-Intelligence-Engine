@@ -1080,17 +1080,22 @@ async def test_evaluator_fallback_constructors_produce_valid_models() -> None:
     result = await evaluator.get_result()
     assert isinstance(result.layer1_results, Layer1Result)
     assert isinstance(result.layer3_results, Layer3Result)
+    # Layer 1 + Layer 3 each surface an infrastructure_failure flag so
+    # downstream consumers can distinguish "scoring didn't run" from
+    # "scored zero." Counts stay 0 either way.
     assert result.layer1_results.model_dump() == {
         "facts_verified": 0,
         "facts_failed": 0,
         "numerical_inconsistencies": [],
         "dead_urls": [],
+        "infrastructure_failure": True,
     }
     assert result.layer3_results.model_dump() == {
         "dimension_scores": [],
         "weighted_total": 0.0,
         "gestalt_adjustment": 0.0,
         "final_score": 0.0,
+        "infrastructure_failure": True,
     }
 
 

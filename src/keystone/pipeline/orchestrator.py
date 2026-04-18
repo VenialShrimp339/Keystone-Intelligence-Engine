@@ -29,10 +29,11 @@ from keystone.events import AnyPipelineEvent, ChunkIngested, SearchCompleted
 from keystone.gateway.mcp_gateway import MCPGateway
 from keystone.gateway.retrieval_bridge import register_retrieval_handlers
 from keystone.governance.policy import ProfileExecutionPolicy
-from keystone.llm_client import get_deep_research_callable
+from keystone.llm_client import LayerAwareLLMFactory, get_deep_research_callable
 from keystone.models.agents import AgentInstance
 from keystone.models.citations import CitationManifest
 from keystone.models.confidence import ConfidenceMap
+from keystone.models.config import PipelineConfig
 from keystone.models.evaluation import EvaluationIntensity, EvaluationResult
 from keystone.models.research import EngagementSpec, PipelineProfile, StructuredFinding
 from keystone.models.tasks import ModelTier, ResearchTask
@@ -111,6 +112,7 @@ class Pipeline:
             list[tuple[str, LLMCallable]] | None,
         ]
         | None = None,
+        pipeline_config: PipelineConfig | None = None,
     ) -> None:
         """Construct a pipeline.
 
@@ -155,11 +157,44 @@ class Pipeline:
         self._evidence_records = evidence_records
         self._retrieval_service_factory = retrieval_service_factory
         self._ensemble_panel_override = ensemble_panel_override
+        # Pipeline-wide behavior knobs. Resolved in preference order:
+        # explicit parameter, factory's own ``pipeline_config`` attribute
+        # (when the factory is a LayerAwareLLMFactory), fresh default
+        # instance. Tests that inject a plain callable for ``llm_factory``
+        # still get a fresh PipelineConfig and so see historical defaults.
+        if pipeline_config is not None:
+            self._pipeline_config = pipeline_config
+        elif isinstance(llm_factory, LayerAwareLLMFactory):
+            self._pipeline_config = llm_factory.pipeline_config
+        else:
+            self._pipeline_config = PipelineConfig()
         # Internal run state (overwritten on each run).
         self._result: PipelineResult | None = None
         # Tests may call _build_components(), mutate fields, then assign here
         # before calling run() to inject mocks.
         self._pending_components: PipelineComponents | None = None
+
+    def _layer_llm(
+        self,
+        layer_name: str,
+        *,
+        fallback_tier: ModelTier,
+        fallback_effort: str | None = None,  # noqa: ARG002
+    ) -> LLMCallable:
+        """Resolve an LLMCallable for a pipeline layer.
+
+        Prefers the factory's ``for_layer`` method (real factory knows
+        about config, including per-layer reasoning effort); falls back
+        to the tier-based callable interface for test doubles that only
+        implement ``(tier) -> LLMCallable``. ``fallback_effort`` is kept
+        on the signature as a readability aid for call sites — it
+        documents the intended effort when a real factory is wired, even
+        though the parameter is unused on the test-double path.
+        """
+        factory = self._llm_factory
+        if isinstance(factory, LayerAwareLLMFactory):
+            return factory.for_layer(layer_name)
+        return factory(fallback_tier)
 
     def _build_components(self) -> PipelineComponents:
         """Build and return a fresh set of pipeline components.
@@ -173,7 +208,9 @@ class Pipeline:
         deep_llm = None
         if os.environ.get("DEEP_RESEARCH", "").strip() == "1":
             logger.info("DEEP_RESEARCH=1: L1 agents will use multi-turn web research")
-            deep_llm = get_deep_research_callable()
+            deep_llm = get_deep_research_callable(
+                pipeline_config=self._pipeline_config,
+            )
 
         evidence_provider: EvidenceContextProvider | None = None
         if self._evidence_records:
@@ -182,24 +219,76 @@ class Pipeline:
         sprint_contract_generator = SprintContractGenerator(
             llm=self._llm_factory(ModelTier.FLAGSHIP),
         )
+        pc = self._pipeline_config
         return PipelineComponents(
             spec_engine=SpecificationEngine(
-                llm=self._llm_factory(ModelTier.FLAGSHIP),
+                llm=self._layer_llm(
+                    "l0_specification",
+                    fallback_tier=ModelTier.FLAGSHIP,
+                    fallback_effort="xhigh",
+                ),
                 template_registry=TemplateRegistry(),
                 db_session_factory=self._db_session_factory,
+                classifier_llm=self._layer_llm(
+                    "l0_engagement_classifier",
+                    fallback_tier=ModelTier.STANDARD,
+                ),
+                clarifier_llm=self._layer_llm(
+                    "l0_intent_clarifier",
+                    fallback_tier=ModelTier.FLAGSHIP,
+                ),
+                decomposer_lens_llm=self._layer_llm(
+                    "l0_decomposer_lens",
+                    fallback_tier=ModelTier.STANDARD,
+                ),
+                decomposer_synth_llm=self._layer_llm(
+                    "l0_decomposer_synth",
+                    fallback_tier=ModelTier.FLAGSHIP,
+                ),
+                mece_validator_llm=self._layer_llm(
+                    "l0_mece_validator",
+                    fallback_tier=ModelTier.FLAGSHIP,
+                ),
+                priority_scorer_llm=self._layer_llm(
+                    "l0_priority_scorer",
+                    fallback_tier=ModelTier.FLAGSHIP,
+                ),
+                task_generator_llm=self._layer_llm(
+                    "l0_task_generator",
+                    fallback_tier=ModelTier.STANDARD,
+                ),
             ),
             agent_pool=AgentPool(
-                llm=self._llm_factory(ModelTier.STANDARD),
+                llm=self._layer_llm(
+                    "l1_research",
+                    fallback_tier=ModelTier.STANDARD,
+                ),
                 gateway=self._gateway,
                 deep_llm=deep_llm,
                 error_recovery=ErrorRecovery(llm_factory=self._llm_factory),
                 evidence_provider=evidence_provider,
+                research_default_rounds=pc.research_default_rounds,
+                research_max_rounds=pc.research_max_rounds,
+                research_quality_threshold=pc.research_quality_threshold,
             ),
             citation_processor=CitationProcessor(),
             deliberation=Deliberation(
-                analyst_llm=self._llm_factory(ModelTier.STANDARD),
-                judge_llm=self._llm_factory(ModelTier.FLAGSHIP),
+                analyst_llm=self._layer_llm(
+                    "l1_5_analysts",
+                    fallback_tier=ModelTier.STANDARD,
+                ),
+                judge_llm=self._layer_llm(
+                    "l1_5_aggregator",
+                    fallback_tier=ModelTier.FLAGSHIP,
+                ),
                 db_session_factory=self._db_session_factory,
+                analyst_tier=_resolve_layer_tier_or(
+                    self._pipeline_config,
+                    "l1_5_analysts",
+                    ModelTier.STANDARD,
+                ),
+                dispute_variance_threshold=pc.dispute_variance_threshold,
+                wwhtb_confidence_threshold=pc.wwhtb_confidence_threshold,
             ),
             content_structurer=ContentStructurer(
                 sprint_contract_generator=sprint_contract_generator,
@@ -261,7 +350,10 @@ class Pipeline:
         # Deliberation is built before L0 runs, so propagate the classified
         # pipeline profile once the finalized spec is available.
         c.deliberation._effective_pipeline_profile = spec.research_spec.effective_pipeline_profile
-        policy = ProfileExecutionPolicy(spec.research_spec.effective_pipeline_profile)
+        policy = ProfileExecutionPolicy(
+            spec.research_spec.effective_pipeline_profile,
+            low_agreement_threshold=self._pipeline_config.l5_low_agreement_threshold,
+        )
         governance = policy.new_state(spec.task_decomposition.tasks)
         logger.info("L0 complete: %d tasks", len(spec.task_decomposition.tasks))
 
@@ -362,6 +454,32 @@ class Pipeline:
         outline = await c.content_structurer.get_outline()
         logger.info("L2 complete: %d outline sections", len(outline.sections))
 
+        # Surface sprint-contract fallback as a WARN governance flag per
+        # task. Silent fallback was the audit finding: operators need to
+        # see when the generator failed even though L2/L4 continued.
+        for fallback_task_id in sorted(c.content_structurer.get_fallback_task_ids()):
+            from keystone.governance.models import (
+                EnforcementAction,
+                EnforcementScope,
+                QualityFlag,
+            )
+
+            policy.apply_flag(
+                governance,
+                QualityFlag(
+                    gate="sprint_contract_fallback",
+                    action=EnforcementAction.WARN,
+                    scope=EnforcementScope.TASK,
+                    severity="warn",
+                    message=(
+                        f"Task {fallback_task_id} sprint contract negotiation "
+                        "failed; L2 used the task-derived fallback contract."
+                    ),
+                    task_id=fallback_task_id,
+                ),
+                task_id=fallback_task_id,
+            )
+
         # --- Stage 6: L4 Evaluation ---
         logger.info(
             "L4: Evaluating %d/%d renderable tasks",
@@ -396,10 +514,20 @@ class Pipeline:
             intensity = _resolve_evaluation_intensity(spec)
             resolver = self._ensemble_panel_override or _resolve_ensemble_judges
             evaluator = Evaluator(
-                llm=self._llm_factory(ModelTier.FLAGSHIP),
+                llm=self._layer_llm(
+                    "l4_evaluator",
+                    fallback_tier=ModelTier.FLAGSHIP,
+                    fallback_effort="high",
+                ),
+                extraction_llm=self._layer_llm(
+                    "l4_extraction",
+                    fallback_tier=ModelTier.STANDARD,
+                ),
                 profile=_resolve_evaluation_profile(spec),
                 intensity=intensity,
                 ensemble_llms=resolver(intensity, self._llm_factory),
+                pass_threshold=self._pipeline_config.evaluator_pass_threshold,
+                layer3_weight=self._pipeline_config.evaluator_layer3_weight,
             )
             async for event in evaluator.evaluate(
                 output_text,
@@ -872,6 +1000,27 @@ def _resolve_ensemble_judges(
         ("flagship_a", flagship_a),
         ("flagship_b", flagship_b),
     ]
+
+
+def _resolve_layer_tier_or(
+    pipeline_config: PipelineConfig,
+    layer_name: str,
+    default: ModelTier,
+) -> ModelTier:
+    """Read a layer's configured ModelTier from PipelineConfig.model_mixing.
+
+    Falls back to ``default`` when the layer is unknown or the config's
+    value is not a valid tier string. Used by orchestrator code that has
+    to report the tier (e.g. truthful AnalystSpawned events) without
+    re-deriving the mapping.
+    """
+    raw = getattr(pipeline_config.model_mixing, layer_name, None)
+    if raw is None:
+        return default
+    try:
+        return ModelTier(raw)
+    except ValueError:
+        return default
 
 
 def _raise_if_halted(governance) -> None:

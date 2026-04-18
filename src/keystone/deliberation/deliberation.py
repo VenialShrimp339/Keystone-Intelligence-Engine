@@ -15,10 +15,11 @@ from collections.abc import AsyncIterator, Callable
 
 logger = logging.getLogger(__name__)
 
-from keystone.deliberation.aggregator import Aggregator
+from keystone.deliberation.aggregator import DISPUTE_VARIANCE_THRESHOLD, Aggregator
 from keystone.deliberation.analyst import Analyst, AnalystOutput, extract_claims
 from keystone.deliberation.confidence_builder import build_confidence_map
 from keystone.deliberation.gap_detector import detect_gaps
+from keystone.deliberation.wwhtb import CONFIDENCE_THRESHOLD as WWHTB_DEFAULT_THRESHOLD
 from keystone.deliberation.wwhtb import run_wwhtb
 from keystone.evaluator.retry import LLMCallable
 from keystone.events import (
@@ -32,8 +33,7 @@ from keystone.governance.policy import ProfileExecutionPolicy
 from keystone.models.agents import DeliberationAnalystType
 from keystone.models.citations import CitationManifest
 from keystone.models.confidence import ConfidenceMap
-from keystone.models.research import StructuredFinding
-from keystone.models.research import PipelineProfile
+from keystone.models.research import PipelineProfile, StructuredFinding
 from keystone.models.tasks import ModelTier
 
 DEFAULT_ANALYST_TYPES = [
@@ -64,6 +64,9 @@ class Deliberation:
         analyst_types: list[DeliberationAnalystType] | None = None,
         db_session_factory: Callable | None = None,
         effective_pipeline_profile: PipelineProfile = PipelineProfile.STANDARD,
+        analyst_tier: ModelTier = ModelTier.STANDARD,
+        dispute_variance_threshold: float = DISPUTE_VARIANCE_THRESHOLD,
+        wwhtb_confidence_threshold: float = WWHTB_DEFAULT_THRESHOLD,
     ) -> None:
         self._analyst_llm = analyst_llm
         self._judge_llm = judge_llm or analyst_llm
@@ -71,6 +74,13 @@ class Deliberation:
         self._analyst_types = analyst_types or list(DEFAULT_ANALYST_TYPES)
         self._db_session_factory = db_session_factory
         self._effective_pipeline_profile = effective_pipeline_profile
+        # Truthful analyst-tier reporting on the AnalystSpawned event.
+        # Default STANDARD matches the historic hardcoded value; callers
+        # that mix tiers (e.g. a FAST analyst ensemble) set this explicitly
+        # so the event stream does not mislead observability consumers.
+        self._analyst_tier = analyst_tier
+        self._dispute_variance_threshold = dispute_variance_threshold
+        self._wwhtb_confidence_threshold = wwhtb_confidence_threshold
         self._confidence_map: ConfidenceMap | None = None
 
     async def deliberate(
@@ -98,7 +108,7 @@ class Deliberation:
                 client_id=client_id,
                 analyst_id=analyst.analyst_id,
                 analyst_type=at.value,
-                model_tier=ModelTier.STANDARD.value,
+                model_tier=self._analyst_tier.value,
             )
 
         # Run all analysts in parallel (no inter-agent communication).
@@ -131,10 +141,17 @@ class Deliberation:
             )
 
         # --- Phase 2: Aggregation ---
-        aggregator = Aggregator(judge_llm=self._judge_llm)
+        aggregator = Aggregator(
+            judge_llm=self._judge_llm,
+            dispute_variance_threshold=self._dispute_variance_threshold,
+        )
         aggregated = await aggregator.aggregate(analyst_outputs, claims, manifest)
 
-        wwhtb_results = await run_wwhtb(self._wwhtb_llm, aggregated)
+        wwhtb_results = await run_wwhtb(
+            self._wwhtb_llm,
+            aggregated,
+            confidence_threshold=self._wwhtb_confidence_threshold,
+        )
 
         gap_report = detect_gaps(findings, aggregated)
 

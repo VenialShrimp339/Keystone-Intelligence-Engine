@@ -50,9 +50,7 @@ You MUST produce exactly this JSON structure with ALL fields present:
 {
   "score": 0,
   "feedback": "2-4 specific, actionable sentences. MUST include a direct quote from the evaluated text supporting the score.",
-  "sub_criteria_notes": ["absence detection: ...", "deletion test: ...", "perspective coverage: ...", "data category coverage: ..."],
-  "slop_detected": false,
-  "slop_details": "Describe the specific slop pattern if detected. Otherwise null."
+  "sub_criteria_notes": ["absence detection: ...", "deletion test: ...", "perspective coverage: ...", "data category coverage: ..."]
 }
 ```
 
@@ -72,6 +70,4 @@ Before outputting, verify your response includes:
 [ ] score (integer 0-100, calibrated to the scoring rubric)
 [ ] feedback (2-4 specific, actionable sentences with a direct quote from the text)
 [ ] sub_criteria_notes (exactly 4 entries: absence detection, deletion test, perspective coverage, data category coverage)
-[ ] slop_detected (boolean)
-[ ] slop_details (string description or null)
 </completeness_check>

@@ -1,24 +1,19 @@
 """Per-layer model settings for the Keystone Intelligence Engine.
 
-Maps model tiers to reasoning_effort values and model IDs.
-Based on OPENAI-SWITCHOVER-PLAN.md Decision 1 reasoning_effort table.
+Bridges :class:`keystone.models.config.PipelineConfig` (the configuration
+surface) to the LLM factory (the call-site). Every source for per-tier or
+per-layer behavior flows through here so a single ``PipelineConfig`` can
+drive tier selection, reasoning effort, and model ID resolution across
+every provider path.
 """
 
 from __future__ import annotations
 
-from keystone.models.config import AppConfig
+from keystone.models.config import _DEFAULT_LAYER_EFFORTS, AppConfig, PipelineConfig
 from keystone.models.tasks import ModelTier
 
-# Default reasoning_effort per model tier.
-# Pipeline layers that need different effort can override at call time.
-#
-# Reference (OPENAI-SWITCHOVER-PLAN.md):
-#   L0 Specification (FLAGSHIP)            -> xhigh
-#   L1 Research (STANDARD)                 -> medium
-#   L1.5 Deliberation analysts (STANDARD)  -> medium
-#   L1.5 Deliberation aggregator (FLAGSHIP)-> xhigh
-#   L4 Evaluator (FLAGSHIP)               -> high
-#   Extraction/classification (FAST)       -> low
+# Default reasoning_effort per model tier. Used as the fallback when a
+# layer does not declare its own override in PipelineConfig.
 TIER_REASONING_EFFORT: dict[ModelTier, str] = {
     ModelTier.FLAGSHIP: "high",
     ModelTier.STANDARD: "medium",
@@ -26,16 +21,13 @@ TIER_REASONING_EFFORT: dict[ModelTier, str] = {
     ModelTier.LIGHT: "low",
 }
 
-# Layer-specific reasoning_effort for when a layer needs different
-# effort than the tier default (e.g. L0 wants xhigh on FLAGSHIP).
-LAYER_REASONING_EFFORT: dict[str, str] = {
-    "l0_specification": "xhigh",
-    "l1_research": "medium",
-    "l1_5_analysts": "medium",
-    "l1_5_aggregator": "xhigh",
-    "l4_evaluator": "high",
-    "extraction": "low",
-}
+# View of the default layer-effort table. The canonical source is
+# :data:`keystone.models.config._DEFAULT_LAYER_EFFORTS`, which
+# :class:`PipelineConfig.layer_effort_overrides` copies at construction.
+# Kept here as a module-level constant so legacy imports continue to
+# resolve and operators reading ``from keystone.llm_settings import
+# LAYER_REASONING_EFFORT`` still get the current defaults.
+LAYER_REASONING_EFFORT: dict[str, str] = dict(_DEFAULT_LAYER_EFFORTS)
 
 
 def get_reasoning_effort(tier: ModelTier) -> str:
@@ -52,3 +44,36 @@ def get_model_id(tier: ModelTier, config: AppConfig) -> str:
         ModelTier.LIGHT: config.fast_model,
     }
     return mapping.get(tier, config.standard_model)
+
+
+def get_layer_tier(layer_name: str, pipeline_config: PipelineConfig) -> ModelTier:
+    """Resolve the model tier assigned to a pipeline layer.
+
+    Reads the ``model_mixing`` section of ``pipeline_config``; returns
+    :class:`ModelTier.STANDARD` when the layer has no override. Unknown
+    tier string values raise ``ValueError`` via the enum constructor so a
+    typo in config produces a loud failure, not silent degradation.
+    """
+    mixing = pipeline_config.model_mixing
+    # Introspect the ModelMixingConfig fields directly — the layer names
+    # are declared as attributes so we keep one source of truth.
+    raw = getattr(mixing, layer_name, None)
+    if raw is None:
+        return ModelTier.STANDARD
+    return ModelTier(raw)
+
+
+def get_layer_effort(
+    layer_name: str,
+    tier: ModelTier,
+    pipeline_config: PipelineConfig,
+) -> str:
+    """Resolve the reasoning effort for a pipeline layer.
+
+    Falls back to the tier's default effort when the layer name has no
+    explicit override in ``pipeline_config.layer_effort_overrides``.
+    """
+    override = pipeline_config.layer_effort_overrides.get(layer_name)
+    if override is not None:
+        return override
+    return get_reasoning_effort(tier)

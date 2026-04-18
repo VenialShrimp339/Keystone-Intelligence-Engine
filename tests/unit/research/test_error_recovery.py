@@ -120,12 +120,13 @@ async def test_permanent_error_no_retry() -> None:
 
 @pytest.mark.asyncio
 async def test_fallback_to_next_tier() -> None:
+    """FLAGSHIP failure falls back to STANDARD; the chain stops there."""
     tiers_tried: list[ModelTier] = []
 
     def make_llm(tier: ModelTier):
         async def llm(prompt: str) -> str:
             tiers_tried.append(tier)
-            if tier == ModelTier.STANDARD:
+            if tier == ModelTier.FLAGSHIP:
                 raise Exception("model overloaded")
             return f"success at {tier}"
 
@@ -137,25 +138,57 @@ async def test_fallback_to_next_tier() -> None:
         llm_factory=make_llm,
     )
 
-    # Start at STANDARD, should fall back to FAST
-    base_llm = make_llm(ModelTier.STANDARD)
-    result = await recovery.execute_with_recovery(base_llm, "test", current_tier=ModelTier.STANDARD)
-    assert result == f"success at {ModelTier.FAST}"
+    # Start at FLAGSHIP, should fall back to STANDARD. Chain stops there:
+    # research tasks must never degrade to FAST.
+    base_llm = make_llm(ModelTier.FLAGSHIP)
+    result = await recovery.execute_with_recovery(base_llm, "test", current_tier=ModelTier.FLAGSHIP)
+    assert result == f"success at {ModelTier.STANDARD}"
+    assert ModelTier.FLAGSHIP in tiers_tried
     assert ModelTier.STANDARD in tiers_tried
-    assert ModelTier.FAST in tiers_tried
+    # FAST must never be tried — research tasks need Sonnet-class reasoning.
+    assert ModelTier.FAST not in tiers_tried
 
 
 @pytest.mark.asyncio
 async def test_fallback_chain_order() -> None:
+    """Chain is truncated at STANDARD — Haiku is not an acceptable research tier."""
     recovery = ErrorRecovery()
     tiers = recovery._get_fallback_tiers(ModelTier.FLAGSHIP)
-    assert tiers == [ModelTier.FLAGSHIP, ModelTier.STANDARD, ModelTier.FAST]
+    assert tiers == [ModelTier.FLAGSHIP, ModelTier.STANDARD]
+    assert ModelTier.FAST not in tiers
 
     tiers = recovery._get_fallback_tiers(ModelTier.STANDARD)
-    assert tiers == [ModelTier.STANDARD, ModelTier.FAST]
+    assert tiers == [ModelTier.STANDARD]
+    assert ModelTier.FAST not in tiers
 
+    # FAST is no longer in the chain; calls starting there get only their own tier.
     tiers = recovery._get_fallback_tiers(ModelTier.FAST)
     assert tiers == [ModelTier.FAST]
+
+
+@pytest.mark.asyncio
+async def test_research_never_degrades_to_haiku() -> None:
+    """Research tasks must never fall back to FAST, even under repeated model errors."""
+    tiers_tried: list[ModelTier] = []
+
+    def factory(tier: ModelTier):
+        async def llm(prompt: str) -> str:
+            tiers_tried.append(tier)
+            # Every tier raises a model error so the recovery chain walks
+            # every remaining tier.
+            raise Exception("model overloaded")
+
+        return llm
+
+    recovery = ErrorRecovery(max_retries=1, base_delay=0.0, llm_factory=factory)
+    base_llm = factory(ModelTier.FLAGSHIP)
+    with pytest.raises(RuntimeError, match="failed after all retries"):
+        await recovery.execute_with_recovery(base_llm, "prompt", current_tier=ModelTier.FLAGSHIP)
+
+    # FLAGSHIP + STANDARD only. No FAST.
+    assert ModelTier.FLAGSHIP in tiers_tried
+    assert ModelTier.STANDARD in tiers_tried
+    assert ModelTier.FAST not in tiers_tried
 
 
 @pytest.mark.asyncio
@@ -178,18 +211,20 @@ async def test_error_recovery_uses_wired_llm_factory() -> None:
     def factory(tier: ModelTier):
         async def llm(prompt: str) -> str:
             tiers_requested.append(tier)
-            if tier == ModelTier.STANDARD:
+            if tier == ModelTier.FLAGSHIP:
                 raise Exception("model overloaded")
             return f"ok from {tier}"
 
         return llm
 
     recovery = ErrorRecovery(max_retries=1, base_delay=0.0, llm_factory=factory)
-    base_llm = factory(ModelTier.STANDARD)
+    base_llm = factory(ModelTier.FLAGSHIP)
     result = await recovery.execute_with_recovery(
-        base_llm, "prompt", current_tier=ModelTier.STANDARD
+        base_llm, "prompt", current_tier=ModelTier.FLAGSHIP
     )
 
-    # Factory must have been called for the fallback tier (FAST)
-    assert ModelTier.FAST in tiers_requested
-    assert result == f"ok from {ModelTier.FAST}"
+    # Factory must have been called for the STANDARD fallback tier.
+    # Chain is truncated at STANDARD so FAST never appears.
+    assert ModelTier.STANDARD in tiers_requested
+    assert ModelTier.FAST not in tiers_requested
+    assert result == f"ok from {ModelTier.STANDARD}"

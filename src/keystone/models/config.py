@@ -3,13 +3,21 @@
 Application configuration uses PydanticSettings for environment variables.
 Engagement configuration is YAML-loadable for per-project overrides.
 Model mixing settings define which model tier serves which pipeline layer.
+
+The :class:`PipelineConfig` is the single source of truth for pipeline
+behavior knobs — per-layer model tiers, per-layer reasoning effort
+overrides, research concurrency, evaluator thresholds, deliberation
+thresholds, and L5 ensemble thresholds. Changing any of those should be
+an environment-variable or constructor-parameter change, not a source
+edit. Env vars use the ``PIPELINE__`` prefix with ``__`` nested delimiter,
+e.g. ``PIPELINE__RESEARCH_QUALITY_THRESHOLD=0.9``.
 """
 
 from __future__ import annotations
 
 from pathlib import Path
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 from pydantic_settings import BaseSettings
 
 
@@ -146,12 +154,46 @@ class RateLimitConfig(BaseModel):
 class ModelMixingConfig(BaseModel):
     """Which model tier serves each pipeline layer.
 
-    Default: Flagship for L0/L4 (judgment), Standard for L1 (throughput),
-    Fast for extraction/classification. Validated configuration from
-    multi-agent research system (90.2% improvement).
+    Default: Flagship for judgment-heavy layers, Standard for throughput
+    and extraction work that still requires Sonnet-class reasoning, Fast
+    for pure extraction/classification. The spec-engine per-step split
+    (classifier/task-generator at STANDARD, decomposer lenses at STANDARD
+    with FLAGSHIP synthesis, clarifier/validator/scorer at FLAGSHIP) is
+    expressed as individual fields so operators can retune each step
+    without patching source.
     """
 
     l0_specification: str = Field(default="flagship", description="Specification Engine model tier")
+    # Per-step overrides for the specification engine. Each step is named
+    # so operators can retune without patching source.
+    l0_engagement_classifier: str = Field(
+        default="standard",
+        description="Step 1 (engagement classifier) model tier — classification task",
+    )
+    l0_intent_clarifier: str = Field(
+        default="flagship",
+        description="Step 2 (intent clarifier) model tier — judgment task",
+    )
+    l0_decomposer_lens: str = Field(
+        default="standard",
+        description="Step 3 (decomposer per-lens) model tier — parallel lens analyses",
+    )
+    l0_decomposer_synth: str = Field(
+        default="flagship",
+        description="Step 3 (decomposer synthesis) model tier — meta synthesis",
+    )
+    l0_mece_validator: str = Field(
+        default="flagship",
+        description="Step 4 (MECE validator) model tier — judgment task",
+    )
+    l0_priority_scorer: str = Field(
+        default="flagship",
+        description="Step 5 (priority scorer) model tier — judgment task",
+    )
+    l0_task_generator: str = Field(
+        default="standard",
+        description="Step 7 (task generator) model tier — schema emission",
+    )
     l1_research: str = Field(default="standard", description="Research Agent model tier")
     l1_5_analysts: str = Field(default="standard", description="Deliberation analyst model tier")
     l1_5_aggregator: str = Field(
@@ -159,8 +201,150 @@ class ModelMixingConfig(BaseModel):
     )
     l2_structuring: str = Field(default="standard", description="Content structuring model tier")
     l3_generation: str = Field(default="standard", description="Deliverable generation model tier")
-    l4_evaluator: str = Field(default="flagship", description="Evaluator model tier")
+    # Layer 1 (Evaluator) fact decomposition and numerical extraction. Sonnet
+    # reasoning is enough for extraction work; Opus is unnecessary here.
+    l4_extraction: str = Field(
+        default="standard",
+        description="Layer 1 evaluator (fact decomposition + numerics) tier",
+    )
+    # Layer 3 rubric scoring keeps flagship. This is the judgment step.
+    l4_evaluator: str = Field(default="flagship", description="Evaluator Layer 3 rubric tier")
     extraction: str = Field(default="fast", description="Extraction/classification model tier")
+
+
+# Layer-name keys used by :class:`PipelineConfig.layer_effort_overrides`.
+# The LLM factory reads this mapping to resolve per-layer reasoning effort.
+# L0 runs at xhigh (maximum reasoning depth — most critical layer).
+# L4 evaluator at high. Extraction at low.
+_DEFAULT_LAYER_EFFORTS: dict[str, str] = {
+    "l0_specification": "xhigh",
+    "l0_engagement_classifier": "medium",
+    "l0_intent_clarifier": "xhigh",
+    "l0_decomposer_lens": "medium",
+    "l0_decomposer_synth": "xhigh",
+    "l0_mece_validator": "xhigh",
+    "l0_priority_scorer": "xhigh",
+    "l0_task_generator": "medium",
+    "l1_research": "medium",
+    "l1_5_analysts": "medium",
+    "l1_5_aggregator": "xhigh",
+    "l2_structuring": "medium",
+    "l3_generation": "medium",
+    "l4_extraction": "medium",
+    "l4_evaluator": "high",
+    "extraction": "low",
+}
+
+
+class PipelineConfig(BaseModel):
+    """Pipeline-wide behavior knobs.
+
+    Holds every tunable that was previously a module-level constant or a
+    hardcoded literal: per-layer model tier assignments, per-layer
+    reasoning effort, research concurrency and quality thresholds,
+    evaluator pass threshold, evaluator L3/L4 blend weight, deliberation
+    dispute variance and WWHTB confidence thresholds, and the L5 low-
+    agreement threshold. Default instance reproduces prior hardcoded
+    behavior so unchanged call sites see no behavior change.
+
+    Operators override via env vars (``PIPELINE__<field>=...``) or by
+    passing a constructed instance to :class:`AppConfig` / the LLM
+    factory / :class:`Pipeline`.
+    """
+
+    model_config = ConfigDict(frozen=False)
+
+    # Model selection
+    model_mixing: ModelMixingConfig = Field(
+        default_factory=ModelMixingConfig,
+        description="Per-layer model tier assignments",
+    )
+    layer_effort_overrides: dict[str, str] = Field(
+        default_factory=lambda: dict(_DEFAULT_LAYER_EFFORTS),
+        description=(
+            "Per-layer reasoning-effort overrides. Keys match pipeline layer "
+            "names (e.g. 'l0_specification'); values are 'low'/'medium'/'high'/'xhigh'."
+        ),
+    )
+
+    # Research (L1) knobs
+    research_default_rounds: int = Field(
+        default=3,
+        ge=1,
+        le=20,
+        description="Default iterative research rounds per agent.",
+    )
+    research_max_rounds: int = Field(
+        default=5,
+        ge=1,
+        le=20,
+        description="Hard cap on research rounds regardless of constructor input.",
+    )
+    research_quality_threshold: float = Field(
+        default=0.8,
+        ge=0.0,
+        le=1.0,
+        description="Minimum claim confidence that short-circuits further rounds.",
+    )
+    claude_cli_concurrency: int = Field(
+        default=10,
+        ge=1,
+        le=200,
+        description="Global ceiling on simultaneous ``claude -p`` processes.",
+    )
+    research_concurrency: int = Field(
+        default=5,
+        ge=1,
+        le=100,
+        description="Global ceiling on simultaneous deep-research ``claude -p`` sessions.",
+    )
+    deep_research_timeout_s: int = Field(
+        default=1200,
+        ge=60,
+        description="Timeout (seconds) for a deep-research ``claude -p`` call.",
+    )
+
+    # Evaluator knobs
+    evaluator_pass_threshold: float = Field(
+        default=60.0,
+        ge=0.0,
+        le=100.0,
+        description="Composite score threshold above which evaluation passes.",
+    )
+    evaluator_layer3_weight: float = Field(
+        default=0.8,
+        gt=0.0,
+        le=1.0,
+        description="Weight applied to L3 content score when blending with L4 process score.",
+    )
+
+    # Deliberation knobs
+    dispute_variance_threshold: float = Field(
+        default=0.04,
+        ge=0.0,
+        le=1.0,
+        description=(
+            "Variance of analyst confidences above which a claim is routed to the "
+            "judge LLM for selection. 0.04 ≈ stddev 0.2 (a 20-point spread)."
+        ),
+    )
+    wwhtb_confidence_threshold: float = Field(
+        default=0.6,
+        ge=0.0,
+        le=1.0,
+        description="Confidence below which 'What Would You Have to Believe?' fires.",
+    )
+
+    # L5 ensemble knobs
+    l5_low_agreement_threshold: float = Field(
+        default=0.30,
+        ge=0.0,
+        le=1.0,
+        description=(
+            "Agreement-level below which the l5_low_agreement governance gate fires "
+            "(judges disagreed on > (1 - threshold) of dimensions)."
+        ),
+    )
 
 
 class EvaluationConfig(BaseModel):
@@ -241,6 +425,15 @@ class AppConfig(BaseSettings):
     )
     voyage_api_key: str = Field(default="", description="Voyage AI API key")
     cohere_api_key: str = Field(default="", description="Cohere API key")
+
+    # Pipeline behavior — see :class:`PipelineConfig` for the full field list.
+    # Env vars route through the nested-delimiter prefix, e.g.
+    # ``PIPELINE__RESEARCH_QUALITY_THRESHOLD=0.9`` or
+    # ``PIPELINE__LAYER_EFFORT_OVERRIDES='{"l0_specification": "xhigh"}'``.
+    pipeline: PipelineConfig = Field(
+        default_factory=PipelineConfig,
+        description="Pipeline behavior knobs (model tiers, efforts, thresholds)",
+    )
 
 
 class EngagementConfig(BaseModel):

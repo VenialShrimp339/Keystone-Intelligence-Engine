@@ -119,17 +119,39 @@ class SpecificationEngine:
         llm: LLMCallable,
         template_registry: TemplateRegistry | None = None,
         db_session_factory: Callable | None = None,
+        *,
+        classifier_llm: LLMCallable | None = None,
+        clarifier_llm: LLMCallable | None = None,
+        decomposer_lens_llm: LLMCallable | None = None,
+        decomposer_synth_llm: LLMCallable | None = None,
+        mece_validator_llm: LLMCallable | None = None,
+        priority_scorer_llm: LLMCallable | None = None,
+        task_generator_llm: LLMCallable | None = None,
     ) -> None:
+        """Construct the Specification Engine.
+
+        ``llm`` remains the baseline call site used whenever a per-step
+        LLM is not supplied. The per-step kwargs let the orchestrator mix
+        tiers: classifier and task_generator at STANDARD (schema/label
+        work), decomposer lens at STANDARD + synthesis at FLAGSHIP,
+        clarifier/validator/scorer at FLAGSHIP (judgment).
+        """
         self._llm = llm
         self._registry = template_registry or TemplateRegistry()
         self._db_session_factory = db_session_factory
 
-        self._classifier = EngagementClassifier(llm)
-        self._clarifier = IntentClarifier(llm)
-        self._decomposer = Decomposer(llm)
-        self._validator = MECEValidator(llm)
-        self._scorer = PriorityScorer(llm)
-        self._task_generator = TaskGenerator(llm, self._registry)
+        def _or(specific: LLMCallable | None) -> LLMCallable:
+            return specific if specific is not None else llm
+
+        self._classifier = EngagementClassifier(_or(classifier_llm))
+        self._clarifier = IntentClarifier(_or(clarifier_llm))
+        self._decomposer = Decomposer(
+            lens_llm=_or(decomposer_lens_llm),
+            synth_llm=_or(decomposer_synth_llm),
+        )
+        self._validator = MECEValidator(_or(mece_validator_llm))
+        self._scorer = PriorityScorer(_or(priority_scorer_llm))
+        self._task_generator = TaskGenerator(_or(task_generator_llm), self._registry)
 
         self._spec: EngagementSpec | None = None
         self._agent_configs: list[dict] = []

@@ -30,9 +30,38 @@ from keystone.specification._prompts import load_prompt
 from keystone.specification.decomposer import IssueTree
 from keystone.specification.priority_scorer import PriorityScore
 from keystone.specification.template_registry import TemplateRegistry
-from keystone.tool_names import DEFAULT_TOOLS
+from keystone.tool_names import BASELINE_AGENT_TOOLS
 
 logger = logging.getLogger(__name__)
+
+
+def _ensure_minimum_distinct_tools(tools: list[str]) -> list[str]:
+    """Pad a tool list to 3-5 distinct entries drawn from BASELINE_AGENT_TOOLS.
+
+    ResearchTask requires 3-5 assigned tools. When a template provides fewer
+    than 3, we extend with distinct agent-assignable tools rather than
+    duplicating a single entry — the old behavior (``[DEFAULT_TOOLS[0]] * n``)
+    produced useless "three copies of exa_search" lists. Order of existing
+    tools is preserved; baseline tools are appended only when not already
+    present to keep the set distinct.
+    """
+    distinct: list[str] = []
+    seen: set[str] = set()
+    for tool in tools:
+        if tool in seen:
+            continue
+        distinct.append(tool)
+        seen.add(tool)
+
+    for baseline in BASELINE_AGENT_TOOLS:
+        if len(distinct) >= 3:
+            break
+        if baseline in seen:
+            continue
+        distinct.append(baseline)
+        seen.add(baseline)
+
+    return distinct[:5]
 
 
 class TaskGenerator:
@@ -185,7 +214,9 @@ class TaskGenerator:
             if 3 <= len(valid_tools) <= 5:
                 return valid_tools
 
-        # Fall back to template tools
+        # Fall back to template tools. Build the temp task with distinct
+        # baseline tools so the template matcher does not receive a
+        # contrived duplicate list.
         temp_task = ResearchTask(
             id="temp",
             engagement_id="temp",
@@ -198,18 +229,12 @@ class TaskGenerator:
             deliverable_destination="temp",
             priority=1,
             anti_confirmatory_framing="Evaluate whether this is the case, including evidence both for and against",
-            assigned_tools=list(DEFAULT_TOOLS) + [DEFAULT_TOOLS[0]],
+            assigned_tools=list(BASELINE_AGENT_TOOLS),
             end_product="temp",
         )
         match = self._registry.match(temp_task, engagement_type)
-        template_tools = match.template.tools[:5]
-        if len(template_tools) < 3:
-            template_tools = list(DEFAULT_TOOLS) + [DEFAULT_TOOLS[0]]
-        return (
-            template_tools[:5]
-            if len(template_tools) >= 3
-            else template_tools + [DEFAULT_TOOLS[0]] * (3 - len(template_tools))
-        )
+        template_tools = list(match.template.tools[:5])
+        return _ensure_minimum_distinct_tools(template_tools)
 
     def _resolve_importance(
         self,

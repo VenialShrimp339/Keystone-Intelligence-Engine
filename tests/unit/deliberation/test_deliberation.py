@@ -452,6 +452,26 @@ class TestEventMetadata:
         for s in spawned:
             assert s.model_tier == "standard"
 
+    @pytest.mark.asyncio
+    async def test_analyst_spawned_tier_reflects_constructor_override(self) -> None:
+        """Phase 4J: AnalystSpawned must report the actual analyst tier.
+
+        Pre-fix, the orchestrator emitted a hardcoded ``STANDARD`` value
+        regardless of which tier the analyst LLM actually ran at. Post-fix,
+        ``Deliberation.__init__`` accepts an ``analyst_tier`` parameter and
+        the event carries whatever was passed in.
+        """
+        from keystone.models.tasks import ModelTier
+
+        findings = [_finding("agent-1", [_fc("Claim", 0.8)])]
+        delib = Deliberation(analyst_llm=_mock_llm(), analyst_tier=ModelTier.FLAGSHIP)
+        events = await _collect_events(delib, _manifest(), findings)
+
+        spawned = [e for e in events if isinstance(e, AnalystSpawned)]
+        assert spawned  # sanity
+        for s in spawned:
+            assert s.model_tier == "flagship"
+
 
 # ---------------------------------------------------------------------------
 # Empty input tests

@@ -172,8 +172,6 @@ def _make_mock_llm(
                         "score": all_scores.get(dim, 60),
                         "feedback": f"Feedback for {dim.value}",
                         "sub_criteria_notes": [f"note for {dim.value}"],
-                        "slop_detected": False,
-                        "slop_details": None,
                     }
                 )
         return json.dumps({"score": 60, "feedback": "fallback"})

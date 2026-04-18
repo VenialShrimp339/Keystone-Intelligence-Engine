@@ -25,7 +25,6 @@ from typing import TYPE_CHECKING
 from keystone.events import (
     OutlineGenerated,
     SectionDrafted,
-    SlopDetected,
     SprintContractProposed,
 )
 from keystone.models.evaluation import SprintContract
@@ -38,7 +37,6 @@ from keystone.models.structuring import (
     StructuredOutline,
     StructuredSection,
 )
-from keystone.quality import SlopDetector
 from keystone.structuring.framework_selector import (
     frameworks_for_engagement,
     primary_framework,
@@ -77,16 +75,17 @@ class ContentStructurer:
         self,
         sprint_contract_generator: SprintContractGenerator | None = None,
         frameworks_override: list[FrameworkHint] | None = None,
-        slop_detector: SlopDetector | None = None,
     ) -> None:
         self._sprint_contract_generator = sprint_contract_generator
         self._frameworks_override = frameworks_override
-        # Default detector is shared across tasks; tests can inject a
-        # stub with a custom pattern list.
-        self._slop_detector = slop_detector if slop_detector is not None else SlopDetector()
         self._outline: StructuredOutline | None = None
         self._section_texts: dict[str, str] = {}
         self._sprint_contracts: dict[str, SprintContract] = {}
+        # Task IDs whose sprint contract came from the fallback path rather
+        # than a successful generator call. The orchestrator reads this set
+        # after ``structure()`` to emit a ``sprint_contract_fallback``
+        # governance flag per task — silent fallback was the audit finding.
+        self._fallback_task_ids: set[str] = set()
 
     async def structure(
         self,
@@ -117,18 +116,12 @@ class ContentStructurer:
 
         for task in tasks:
             finding = finding_by_task.get(task.id)
-            raw_text = render_task_section_text(
+            section_text = render_task_section_text(
                 task=task,
                 finding=finding,
                 framework=framework,
                 engagement_type_label=spec.research_spec.engagement_type.value,
                 confidence_map=confidence_map,
-            )
-            section_text, slop_event = self._scrub_slop(
-                raw_text=raw_text,
-                task_id=task.id,
-                engagement_id=engagement_id,
-                client_id=client_id,
             )
             self._section_texts[task.id] = section_text
 
@@ -141,8 +134,6 @@ class ContentStructurer:
                 section_title=task.deliverable_destination,
                 claim_count=claim_count,
             )
-            if slop_event is not None:
-                yield slop_event
 
             if self._sprint_contract_generator is not None:
                 contract = await self._negotiate_contract(task, spec)
@@ -191,51 +182,6 @@ class ContentStructurer:
         return list(self._sprint_contracts.values())
 
     # ------------------------------------------------------------------
-    # Internal: deterministic slop filter
-    # ------------------------------------------------------------------
-
-    def _scrub_slop(
-        self,
-        *,
-        raw_text: str,
-        task_id: str,
-        engagement_id: str,
-        client_id: str,
-    ) -> tuple[str, SlopDetected | None]:
-        """Run slop detection on the section text.
-
-        Returns the cleaned text (same as input if nothing was auto-edited)
-        plus an optional ``SlopDetected`` event when at least one pattern
-        matched. The Evaluator scores the cleaned text, so HIGH / MEDIUM
-        auto-replacements land on the version that enters L4.
-        """
-        report = self._slop_detector.detect(raw_text)
-        if report.total == 0:
-            return raw_text, None
-        cleaned = self._slop_detector.clean(raw_text)
-        top_categories = [
-            category.value
-            for category, _count in sorted(
-                report.counts_by_category.items(),
-                key=lambda entry: (-entry[1], entry[0].value),
-            )
-        ]
-        event = SlopDetected(
-            event_id=_uid(),
-            engagement_id=engagement_id,
-            client_id=client_id,
-            task_id=task_id,
-            section_id=f"section_{task_id}",
-            total_count=report.total,
-            high_count=report.high_count,
-            medium_count=report.medium_count,
-            low_count=report.low_count,
-            top_categories=top_categories,
-            cleaned=cleaned != raw_text,
-        )
-        return cleaned, event
-
-    # ------------------------------------------------------------------
     # Internal: sprint-contract negotiation
     # ------------------------------------------------------------------
 
@@ -245,7 +191,10 @@ class ContentStructurer:
         On generator failure, fall back to a task-derived contract so L2 never
         blocks L4 on an LLM mishap. The fallback contract is functionally
         equivalent to what `SprintContractGenerator.generate` produces when
-        the LLM returns an unrecognized JSON shape.
+        the LLM returns an unrecognized JSON shape. The task ID is recorded
+        in ``self._fallback_task_ids`` so the orchestrator can emit a WARN
+        governance flag for operators — silent fallback was the audit
+        finding.
         """
         assert self._sprint_contract_generator is not None
         try:
@@ -257,6 +206,7 @@ class ContentStructurer:
                 task.id,
                 exc,
             )
+            self._fallback_task_ids.add(task.id)
             return SprintContract(
                 section_id=f"section_{task.id}",
                 engagement_id=task.engagement_id,
@@ -268,6 +218,14 @@ class ContentStructurer:
                 mandatory_elements=[],
                 anti_patterns=[],
             )
+
+    def get_fallback_task_ids(self) -> set[str]:
+        """Return task IDs whose sprint contract came from the fallback path.
+
+        Orchestrator reads this after ``structure()`` to emit per-task
+        governance flags. Empty set is the happy path.
+        """
+        return set(self._fallback_task_ids)
 
     # ------------------------------------------------------------------
     # Internal: outline construction

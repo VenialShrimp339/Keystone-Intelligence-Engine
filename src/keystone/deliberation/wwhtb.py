@@ -27,13 +27,16 @@ class WWHTBResult(BaseModel):
 async def run_wwhtb(
     llm: LLMCallable,
     claims: list[AggregatedClaim],
+    *,
+    confidence_threshold: float = CONFIDENCE_THRESHOLD,
 ) -> list[WWHTBResult]:
     """Run WWHTB on claims below the confidence threshold.
 
-    Only fires for claims with mean_confidence < 0.6.
-    Returns results only for claims that were evaluated.
+    Only fires for claims with ``mean_confidence < confidence_threshold``.
+    Threshold is tunable via :class:`PipelineConfig.wwhtb_confidence_threshold`;
+    the default matches the historic 0.6 constant.
     """
-    low_conf = [c for c in claims if c.mean_confidence < CONFIDENCE_THRESHOLD]
+    low_conf = [c for c in claims if c.mean_confidence < confidence_threshold]
     if not low_conf:
         return []
 

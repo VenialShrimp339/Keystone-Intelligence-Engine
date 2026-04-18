@@ -138,6 +138,16 @@ class Layer1Result(BaseModel):
     dead_urls: list[str] = Field(
         default_factory=list, description="Citation URLs that are unreachable"
     )
+    infrastructure_failure: bool = Field(
+        default=False,
+        description=(
+            "True when Layer 1 could not run (LLM exception, subprocess crash, "
+            "parse error) so downstream consumers can distinguish 'fact "
+            "checking skipped due to error' from 'no facts to check'. Counts "
+            "remain 0/0 in the skipped case; observability consumers must "
+            "check this flag before inferring quality."
+        ),
+    )
 
 
 class Layer2Result(BaseModel):
@@ -172,6 +182,15 @@ class Layer3Result(BaseModel):
         description="Pass 2 holistic overlay: emergent quality adjustment",
     )
     final_score: float = Field(ge=0.0, le=100.0, description="weighted_total + gestalt_adjustment")
+    infrastructure_failure: bool = Field(
+        default=False,
+        description=(
+            "True when Layer 3 rubric scoring could not run (LLM exception, "
+            "parse error across retries). In that case ``final_score`` is "
+            "0.0 and ``dimension_scores`` is empty; consumers must check "
+            "this flag before treating the zero as a content signal."
+        ),
+    )
 
 
 class ProcessFlag(StrEnum):

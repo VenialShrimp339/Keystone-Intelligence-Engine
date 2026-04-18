@@ -1,6 +1,269 @@
 # Handover
 
 Last updated: 2026-04-18
+Session: Pipeline configuration + audit-driven quality fixes
+
+## What Changed (Pipeline config + quality fixes session)
+
+Landed a comprehensive audit sweep. Built the :class:`PipelineConfig`
+system that unifies per-layer model tier assignment, per-layer
+reasoning effort, research concurrency + quality thresholds, evaluator
+pass threshold + L3/L4 blend weight, deliberation thresholds, and L5
+low-agreement threshold — previously each was a module-level constant
+or hardcoded literal. Wired :class:`LayerAwareLLMFactory` so the
+``claude_cli`` path reads AppConfig (no more hardcoded CLAUDE_MODEL_MAP)
+and every component that used to receive a raw tier factory now routes
+through ``factory.for_layer(name)`` for config-driven tier + effort.
+Owner-reviewed model-tier fixes: L0 Spec Engine runs at xhigh effort;
+Layer 1 evaluator takes a dedicated STANDARD (Sonnet) extraction LLM
+while Layer 3 rubric stays FLAGSHIP; Spec Engine per-step tiers
+(classifier/task-generator at STANDARD, decomposer lens at STANDARD
+with FLAGSHIP synthesis, clarifier/validator/scorer at FLAGSHIP);
+Decomposer now honors its docstring's lens / synth split. Silent
+failures surfaced: ``Layer1Result`` and ``Layer3Result`` gained
+``infrastructure_failure: bool`` so failed scoring is distinguishable
+from zero-score content; sprint-contract fallback emits a
+``sprint_contract_fallback`` governance WARN flag per task. Dead-code
+cleanup: research agent routes LLM calls through ``ErrorRecovery`` with
+the fallback chain truncated at STANDARD (research never degrades to
+Haiku); stripped ``slop_detected``/``slop_details`` from the 10
+evaluator prompt files that asked for fields the parser never read;
+``AnalystSpawned`` reports the actual analyst tier via a new
+``analyst_tier`` constructor parameter; task-generator tool padding
+uses distinct :data:`BASELINE_AGENT_TOOLS` instead of duplicating
+``DEFAULT_TOOLS[0]``. Slop detector deleted per owner decision
+(``src/keystone/quality/``, ``tests/unit/quality/``, the
+``SlopDetected`` event, the ``_scrub_slop`` integration, all
+imports). Baseline was 1431 unit+canary passing; final is **1395
+passing + 3 xfailed** (-87 slop tests deleted, +51 new tests covering
+config + tier fixes + silent-failure flags + error-recovery wiring +
+tool-padding + truthful analyst-tier reporting; net delta matches the
+slop-test removal). Ruff -4 net on the project; mypy net-zero; no new
+errors introduced.
+
+### Configuration system (Phase 1)
+
+- ``src/keystone/models/config.py`` — new :class:`PipelineConfig`
+  consolidates every tunable previously scattered across module-level
+  constants. Nested under :class:`AppConfig.pipeline`, env-var drivable
+  via ``PIPELINE__<field>=...``. Includes per-layer model-mixing
+  fields, per-layer effort overrides, research knobs (default/max
+  rounds, quality threshold, deep research timeout, Claude CLI and
+  research concurrency), evaluator knobs (pass threshold, L3/L4 blend
+  weight), deliberation knobs (dispute variance, WWHTB confidence), L5
+  low-agreement threshold. The default instance exactly reproduces
+  prior hardcoded behavior so unchanged call sites see no regression.
+- :class:`ModelMixingConfig` expanded from 8 fields to 16 (adds the
+  spec-engine per-step split + Layer 1 extraction tier).
+- ``src/keystone/llm_client.py`` — :class:`LayerAwareLLMFactory`
+  supersedes the tier-only factory. Still satisfies the legacy
+  ``Callable[[ModelTier], LLMCallable]`` signature via ``__call__`` so
+  every existing test keeps working. Adds ``for_tier(tier, effort=...)``
+  and ``for_layer(name)`` access patterns. The ``claude_cli`` path now
+  reads ``AppConfig.flagship_model`` / ``standard_model`` /
+  ``fast_model`` instead of a hardcoded ``CLAUDE_MODEL_MAP``. Semaphores
+  are instance-level so per-pipeline concurrency limits can be tuned
+  without a module reload. ``CLAUDE_MODEL_MAP`` and ``_research_semaphore``
+  remain as backward-compat module-level exports for tests.
+- ``src/keystone/llm_settings.py`` — :data:`LAYER_REASONING_EFFORT`
+  now sources from :data:`_DEFAULT_LAYER_EFFORTS` in ``config.py`` so
+  a single table drives both the class default and the
+  back-compat export. New :func:`get_layer_tier` /
+  :func:`get_layer_effort` helpers bridge ``PipelineConfig`` to
+  ``get_llm_for_tier``.
+- ``src/keystone/pipeline/orchestrator.py`` — ``Pipeline.__init__``
+  accepts ``pipeline_config: PipelineConfig | None``. When omitted,
+  defaults come from the factory's own ``pipeline_config`` attribute
+  (real factory path) or a fresh ``PipelineConfig()`` (test path).
+  New private ``_layer_llm`` helper hides the factory-type branching
+  so ``_build_components`` can say ``self._layer_llm("l0_specification",
+  fallback_tier=FLAGSHIP, fallback_effort="xhigh")`` and the helper
+  picks the right resolution path. Pipeline threads
+  ``dispute_variance_threshold``, ``wwhtb_confidence_threshold``,
+  research rounds / quality threshold, evaluator pass_threshold /
+  layer3_weight, and ``l5_low_agreement_threshold`` into each sub-
+  component at construction time.
+
+### Model-tier fixes (Phase 2)
+
+- **Fix A — L0 xhigh** (``orchestrator._build_components``): L0 spec
+  engine constructs its LLM via ``_layer_llm("l0_specification",
+  fallback_tier=FLAGSHIP, fallback_effort="xhigh")``. The real factory
+  reads ``PipelineConfig.layer_effort_overrides["l0_specification"]
+  = "xhigh"``. L0 is the most critical layer; it now runs at maximum
+  reasoning depth.
+- **Fix B — Layer 1 STANDARD extraction** (``evaluator.Evaluator``):
+  new ``extraction_llm`` constructor parameter fed into
+  ``Layer1Evaluator``. Orchestrator wires this to
+  ``_layer_llm("l4_extraction", fallback_tier=STANDARD)``. Opus is no
+  longer wasted on fact decomposition; Layer 3 rubric scoring keeps
+  its FLAGSHIP LLM.
+- **Fix C — Spec engine per-step tiers** (``SpecificationEngine``):
+  ``__init__`` accepts ``classifier_llm``, ``clarifier_llm``,
+  ``decomposer_lens_llm``, ``decomposer_synth_llm``,
+  ``mece_validator_llm``, ``priority_scorer_llm``,
+  ``task_generator_llm`` kwargs. Orchestrator supplies each via
+  ``_layer_llm`` with layer names that resolve to the owner-reviewed
+  tier assignments. Legacy single-``llm`` construction is preserved
+  for tests.
+- **Fix D — Decomposer split** (``Decomposer``): ``__init__`` accepts
+  ``lens_llm`` and ``synth_llm`` separately. The three-lens
+  decomposition runs against ``lens_llm`` (STANDARD), the synthesis
+  meta-agent runs against ``synth_llm`` (FLAGSHIP), matching the
+  docstring that always claimed this split.
+
+### Silent-failure fixes (Phase 3)
+
+- **Fix E — Layer1Result infrastructure_failure**: new boolean field
+  on ``Layer1Result``. Set to ``True`` when the evaluator catches an
+  exception from ``Layer1Evaluator.evaluate``; counts stay at 0/0 but
+  downstream consumers can distinguish "fact-checking skipped due to
+  error" from "no facts to check".
+- **Fix F — Layer3Result infrastructure_failure**: mirror field on
+  ``Layer3Result``. Set to ``True`` both when
+  ``ThreePassEvaluator.run`` raises and when the Layer 5 ensemble
+  path raises. Prevents silent zero-score corruption of downstream
+  analytics.
+- **Fix G — Sprint contract fallback governance flag**: new
+  ``self._fallback_task_ids: set[str]`` on ``ContentStructurer``
+  records task IDs whose contract came from the task-derived
+  fallback path. Orchestrator drains the set after ``structure()``
+  and emits a per-task ``sprint_contract_fallback`` WARN
+  ``QualityFlag`` via ``policy.apply_flag``. Operators now see every
+  fallback; previously it was silent.
+
+### Dead-code and cleanup (Phase 4)
+
+- **Fix H — ErrorRecovery wiring + FALLBACK_CHAIN truncation**:
+  ``ResearchAgent._execute_shallow`` and ``_generate_absence_report``
+  now route LLM calls through ``self._error_recovery.execute_with_
+  recovery(..., current_tier=STANDARD)`` instead of
+  ``retry_llm_call``. ``FALLBACK_CHAIN`` truncated to ``[FLAGSHIP,
+  STANDARD]`` — FAST removed. Research tasks must never degrade to
+  Haiku; extraction-only paths (e.g. Layer 1 fact decomposition via
+  extraction_llm) retain FAST via their own wiring.
+- **Fix I — Strip slop_detected / slop_details** from 10 evaluator
+  prompts (``actionability.md`` et al.). The rubric scorer never
+  parsed these fields; they were dead prompt surface.
+- **Fix J — AnalystSpawned truthful tier reporting**:
+  ``Deliberation.__init__`` takes an ``analyst_tier: ModelTier``
+  parameter (default STANDARD matches the historic hardcoded value);
+  the ``AnalystSpawned`` event reports whatever was passed in.
+  Orchestrator supplies ``analyst_tier`` derived from
+  ``PipelineConfig.model_mixing.l1_5_analysts`` so mixed-tier
+  ensembles produce truthful observability events.
+- **Fix K — Task generator tool padding**: new
+  :data:`BASELINE_AGENT_TOOLS = [EXA_SEARCH, BRAVE_SEARCH,
+  PAPER_SEARCH]` in ``tool_names.py``. New
+  ``_ensure_minimum_distinct_tools`` helper in ``task_generator.py``
+  pads short template tool lists with distinct baseline tools instead
+  of duplicating ``DEFAULT_TOOLS[0]`` (which produced useless "three
+  copies of exa_search" lists).
+
+### Slop detector deletion (Phase 5)
+
+- Deleted ``src/keystone/quality/`` (entire package:
+  ``patterns.py``, ``slop_detector.py``, ``__init__.py``).
+- Deleted ``tests/unit/quality/`` (83 tests for the slop detector
+  plus 4 ``TestSlopFiltering`` cases in
+  ``tests/unit/structuring/test_content_structuring.py``).
+- Removed ``SlopDetected`` event class and its entry in the
+  ``AnyPipelineEvent`` union from ``src/keystone/events.py``.
+- Removed ``_scrub_slop``, the ``slop_detector`` constructor
+  parameter, and the ``_slop_detector`` instance state from
+  ``ContentStructurer``. Section text is now passed through to the
+  evaluator as rendered, with no intermediate pattern-match scrub.
+
+## Files touched (this session)
+
+**Modified source:**
+- ``src/keystone/models/config.py`` (+ :class:`PipelineConfig`,
+  expanded :class:`ModelMixingConfig`, :data:`_DEFAULT_LAYER_EFFORTS`)
+- ``src/keystone/llm_settings.py`` (rewritten to bridge
+  :class:`PipelineConfig`)
+- ``src/keystone/llm_client.py`` (+ :class:`LayerAwareLLMFactory`,
+  config-driven claude model + effort, instance semaphores, optional
+  effort kwarg on ``get_llm_for_tier``)
+- ``src/keystone/pipeline/orchestrator.py`` (per-layer LLM wiring,
+  sprint-contract fallback governance flag, config threading)
+- ``src/keystone/evaluator/evaluator.py`` (+ ``extraction_llm``
+  parameter + infrastructure_failure tagging on L1/L3 fallbacks)
+- ``src/keystone/specification/spec_engine.py`` (+ per-step LLM
+  kwargs)
+- ``src/keystone/specification/decomposer.py`` (lens/synth split)
+- ``src/keystone/specification/task_generator.py`` (+
+  ``_ensure_minimum_distinct_tools`` baseline padding helper)
+- ``src/keystone/deliberation/deliberation.py`` (+ ``analyst_tier``
+  parameter + config-driven deliberation thresholds)
+- ``src/keystone/deliberation/aggregator.py`` (+
+  ``dispute_variance_threshold`` constructor parameter)
+- ``src/keystone/deliberation/wwhtb.py`` (+ ``confidence_threshold``
+  kwarg)
+- ``src/keystone/research/research_agent.py`` (ErrorRecovery wire-
+  up, config-driven rounds/quality threshold, drop unused
+  ``retry_llm_call`` import)
+- ``src/keystone/research/agent_pool.py`` (propagate research knobs)
+- ``src/keystone/research/error_recovery.py`` (FALLBACK_CHAIN
+  truncated to ``[FLAGSHIP, STANDARD]``)
+- ``src/keystone/governance/policy.py`` (+
+  ``low_agreement_threshold`` constructor parameter)
+- ``src/keystone/structuring/content_structuring.py`` (slop scrub
+  removed, ``_fallback_task_ids`` tracker added)
+- ``src/keystone/events.py`` (``SlopDetected`` removed from class
+  and union)
+- ``src/keystone/models/evaluation.py`` (+ ``infrastructure_failure``
+  fields on L1/L3 results)
+- ``src/keystone/tool_names.py`` (+ :data:`BASELINE_AGENT_TOOLS`)
+- ``src/keystone/evaluator/prompts/*.md`` (10 prompt files — slop
+  fields stripped from output contract)
+
+**Deleted:**
+- ``src/keystone/quality/`` (entire package)
+- ``tests/unit/quality/`` (entire package)
+
+**Modified tests:**
+- ``tests/unit/test_llm_client.py`` (``LAYER_REASONING_EFFORT``
+  assertions updated for the expanded layer set)
+- ``tests/canary/test_architectural_guarantees.py``
+  (``infrastructure_failure`` fields included in L1/L3 fallback
+  result assertions)
+- ``tests/unit/research/test_error_recovery.py`` (chain expectations
+  updated; added ``test_research_never_degrades_to_haiku``)
+- ``tests/unit/deliberation/test_deliberation.py`` (+
+  ``test_analyst_spawned_tier_reflects_constructor_override``)
+- ``tests/unit/specification/test_task_generator.py`` (+
+  ``TestEnsureMinimumDistinctTools`` class with 6 tests)
+- ``tests/unit/structuring/test_content_structuring.py`` (``TestSlopFiltering``
+  class removed)
+- ``tests/unit/evaluator/test_evaluator.py``,
+  ``tests/unit/evaluator/test_layer3.py`` (slop_detected / slop_details
+  stripped from mock dimension responses)
+
+**New tests:**
+- ``tests/unit/test_pipeline_config.py`` (23 tests — config
+  defaults, layer tier/effort resolution, env-var routing, factory
+  access patterns)
+- ``tests/unit/test_model_tier_fixes.py`` (8 tests — evaluator
+  extraction_llm flow, decomposer lens/synth split, spec-engine
+  per-step wiring)
+- ``tests/unit/test_silent_failure_fixes.py`` (8 tests —
+  infrastructure_failure flag surfacing + sprint-contract fallback
+  tracking)
+- ``tests/unit/research/test_research_agent_error_recovery.py`` (4
+  tests — chain truncation, recovery-path log assertion)
+
+## Test baseline
+
+``pytest tests/unit/ tests/canary/`` = **1395 passed + 3 xfailed**
+(vs. 1431 prior). Net delta: +51 new tests, -87 slop tests deleted.
+Ruff on ``src/keystone/`` net-clean (-4 errors vs baseline). Mypy
+strict net-zero (128 errors vs baseline 128). Zero new ruff or mypy
+errors introduced by this session.
+
+---
+
+## Previous Session (kept for continuity)
+
 Session: Layer 5 remediation — judge panel redesign + audit fixes
 
 ## What Changed (L5 remediation session)

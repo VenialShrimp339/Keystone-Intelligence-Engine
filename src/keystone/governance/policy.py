@@ -23,8 +23,23 @@ if TYPE_CHECKING:
 class ProfileExecutionPolicy:
     """Apply the Wave 2B enforcement matrix for a specific pipeline profile."""
 
-    def __init__(self, profile: PipelineProfile) -> None:
+    # Class default; the constructor copies this to an instance attribute so
+    # operators can override per-pipeline via PipelineConfig without mutating
+    # the class.
+    _LOW_AGREEMENT_THRESHOLD: float = 0.30
+
+    def __init__(
+        self,
+        profile: PipelineProfile,
+        *,
+        low_agreement_threshold: float | None = None,
+    ) -> None:
         self.profile = profile
+        self.low_agreement_threshold: float = (
+            low_agreement_threshold
+            if low_agreement_threshold is not None
+            else self._LOW_AGREEMENT_THRESHOLD
+        )
 
     def new_state(self, tasks: list[ResearchTask]) -> GovernanceState:
         return GovernanceState(
@@ -324,8 +339,6 @@ class ProfileExecutionPolicy:
 
         return outcome
 
-    _LOW_AGREEMENT_THRESHOLD: float = 0.30
-
     def _low_agreement_gate(
         self,
         layer5: Layer5Result | None,
@@ -340,7 +353,7 @@ class ProfileExecutionPolicy:
         if len(layer5.judges_used) < 2:
             # Agreement is trivially 1.0 with a single judge; nothing to warn.
             return None
-        if layer5.agreement_level >= self._LOW_AGREEMENT_THRESHOLD:
+        if layer5.agreement_level >= self.low_agreement_threshold:
             return None
         if self.profile == PipelineProfile.LIGHT:
             return None
@@ -356,7 +369,7 @@ class ProfileExecutionPolicy:
             severity="warn" if action == EnforcementAction.WARN else "error",
             message=(
                 f"Task {task_id} ensemble agreement_level={layer5.agreement_level:.2f} "
-                f"is below {self._LOW_AGREEMENT_THRESHOLD:.2f}; "
+                f"is below {self.low_agreement_threshold:.2f}; "
                 f"judges disagreed substantially across dimensions."
             ),
             task_id=task_id,

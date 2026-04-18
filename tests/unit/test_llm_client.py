@@ -370,15 +370,30 @@ class TestReasoningEffort:
             assert get_reasoning_effort(tier) in ("low", "medium", "high", "xhigh")
 
     def test_layer_table_complete(self):
-        expected = {
+        # L0 runs at xhigh (most critical layer), L4 evaluator at high,
+        # extraction at low. The spec-engine per-step split and extra
+        # L0 substeps make this a superset of the original 6-key table.
+        required_layers = {
             "l0_specification",
+            "l0_engagement_classifier",
+            "l0_intent_clarifier",
+            "l0_decomposer_lens",
+            "l0_decomposer_synth",
+            "l0_mece_validator",
+            "l0_priority_scorer",
+            "l0_task_generator",
             "l1_research",
             "l1_5_analysts",
             "l1_5_aggregator",
+            "l4_extraction",
             "l4_evaluator",
             "extraction",
         }
-        assert set(LAYER_REASONING_EFFORT.keys()) == expected
+        assert required_layers.issubset(set(LAYER_REASONING_EFFORT.keys()))
+        # L0 is the most critical layer and must run at xhigh.
+        assert LAYER_REASONING_EFFORT["l0_specification"] == "xhigh"
+        # L4 evaluator runs at high (not xhigh — we accept some cost savings).
+        assert LAYER_REASONING_EFFORT["l4_evaluator"] == "high"
 
     def test_layer_values_valid(self):
         for effort in LAYER_REASONING_EFFORT.values():

@@ -3,21 +3,27 @@
 Three transport paths:
   * **claude_cli** (default): Shells out to ``claude -p`` on the local
     machine.  Requires a Claude Max subscription.  3-5s per call with
-    full parallelism (10 concurrent).
+    full parallelism (concurrency from PipelineConfig).
   * **api_key**: Standard OpenAI API at api.openai.com.
   * **codex_oauth** (legacy): Routes through the ChatGPT-authenticated
     Codex backend at chatgpt.com/backend-api/codex.
 
 Set LLM_PROVIDER env var to choose: claude_cli | api_key | codex_oauth.
+
+The LLM factory is the single place that reads :class:`AppConfig` and
+:class:`PipelineConfig`. Every downstream caller gets an LLM by tier,
+optionally with an effort override, or by pipeline layer name (which
+resolves tier + effort from config).
 """
 
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import json
 import logging
 import os
-from collections.abc import Awaitable, Callable
+from collections.abc import Callable
 from pathlib import Path
 from typing import TypeAlias
 
@@ -27,8 +33,13 @@ except ImportError:
     AsyncOpenAI = None  # Only needed for api_key/codex_oauth paths
 
 from keystone.evaluator.retry import LLMCallable
-from keystone.llm_settings import get_model_id, get_reasoning_effort
-from keystone.models.config import AppConfig
+from keystone.llm_settings import (
+    get_layer_effort,
+    get_layer_tier,
+    get_model_id,
+    get_reasoning_effort,
+)
+from keystone.models.config import AppConfig, PipelineConfig
 from keystone.models.tasks import ModelTier
 
 logger = logging.getLogger(__name__)
@@ -37,26 +48,47 @@ LLMFactory: TypeAlias = Callable[[ModelTier], LLMCallable]
 
 CODEX_BASE_URL = "https://chatgpt.com/backend-api/codex"
 
-# ---- Claude CLI mappings ----
 
+# ---- Claude CLI model map (backward-compat module-level view) -----------
+#
+# The canonical source is AppConfig.flagship_model / standard_model /
+# fast_model, resolved via :func:`_resolve_claude_model`. This module
+# constant remains exported for legacy call sites and tests; it reflects
+# the default AppConfig values.
 CLAUDE_MODEL_MAP: dict[ModelTier, str] = {
-    ModelTier.FLAGSHIP: "claude-opus-4-6",
-    ModelTier.STANDARD: "claude-sonnet-4-6",
-    ModelTier.FAST: "claude-haiku-4-5",
-    ModelTier.LIGHT: "claude-haiku-4-5",
+    ModelTier.FLAGSHIP: AppConfig.model_fields["flagship_model"].default,
+    ModelTier.STANDARD: AppConfig.model_fields["standard_model"].default,
+    ModelTier.FAST: AppConfig.model_fields["fast_model"].default,
+    ModelTier.LIGHT: AppConfig.model_fields["fast_model"].default,
 }
 
-CLAUDE_EFFORT_MAP: dict[ModelTier, str] = {
-    ModelTier.FLAGSHIP: "high",
-    ModelTier.STANDARD: "medium",
-    ModelTier.FAST: "low",
-    ModelTier.LIGHT: "low",
-}
 
-_claude_semaphore = asyncio.Semaphore(10)
+# ---- Backward-compat module-level semaphores ----------------------------
+#
+# Primary path: :class:`LayerAwareLLMFactory` holds its own instance-level
+# semaphores sized by :class:`PipelineConfig`. These module-level ones
+# remain for legacy direct callers (e.g. tests importing
+# ``_research_semaphore``). Sized with the PipelineConfig defaults.
+_DEFAULT_PIPELINE_CONFIG = PipelineConfig()
+_claude_semaphore = asyncio.Semaphore(_DEFAULT_PIPELINE_CONFIG.claude_cli_concurrency)
+_research_semaphore = asyncio.Semaphore(_DEFAULT_PIPELINE_CONFIG.research_concurrency)
 
-# Deep research: lower concurrency (heavier calls, 5-10 min each)
-_research_semaphore = asyncio.Semaphore(5)
+
+def _resolve_claude_model(tier: ModelTier, config: AppConfig) -> str:
+    """Return the Claude CLI model ID for a tier, reading from AppConfig.
+
+    Previously this was a hardcoded ``CLAUDE_MODEL_MAP`` that ignored
+    configuration. The claude_cli path now reads ``AppConfig.flagship_model``
+    / ``standard_model`` / ``fast_model`` so operators can swap models via
+    env var without patching source.
+    """
+    mapping: dict[ModelTier, str] = {
+        ModelTier.FLAGSHIP: config.flagship_model,
+        ModelTier.STANDARD: config.standard_model,
+        ModelTier.FAST: config.fast_model,
+        ModelTier.LIGHT: config.fast_model,
+    }
+    return mapping.get(tier, config.standard_model)
 
 
 # ---- Claude CLI transport ----
@@ -115,6 +147,7 @@ async def _call_claude_cli_research(
     prompt: str,
     model: str,
     semaphore: asyncio.Semaphore,
+    timeout_s: int | None = None,
 ) -> str:
     """Call Claude via ``claude -p`` with web research tools enabled.
 
@@ -128,9 +161,18 @@ async def _call_claude_cli_research(
     - No ``--system-prompt ""`` (default context aids web research)
     - No ``--bare`` (breaks Max subscription auth)
     - ``--effort medium`` (depth comes from web search turns, not thinking)
-    - 1200s timeout (deep research sessions: many web searches + full page reads)
+    - ``timeout_s`` seconds timeout (deep research sessions: many web
+      searches + full page reads). The ``DEEP_RESEARCH_TIMEOUT`` env var
+      overrides both the parameter and the default. Default (None) pulls
+      from :class:`PipelineConfig.deep_research_timeout_s`.
     """
-    timeout = int(os.environ.get("DEEP_RESEARCH_TIMEOUT", "1200"))
+    if timeout_s is None:
+        timeout_s = _DEFAULT_PIPELINE_CONFIG.deep_research_timeout_s
+    legacy_override = os.environ.get("DEEP_RESEARCH_TIMEOUT")
+    if legacy_override is not None:
+        with contextlib.suppress(ValueError):
+            timeout_s = int(legacy_override)
+
     async with semaphore:
         proc = await asyncio.create_subprocess_exec(
             "claude",
@@ -152,11 +194,11 @@ async def _call_claude_cli_research(
         try:
             stdout, stderr = await asyncio.wait_for(
                 proc.communicate(),
-                timeout=timeout,
+                timeout=timeout_s,
             )
         except asyncio.TimeoutError:
             raise RuntimeError(
-                f"claude -p research timed out after {timeout}s (model={model})"
+                f"claude -p research timed out after {timeout_s}s (model={model})"
             ) from None
         finally:
             # Kill the subprocess if it is still running (TimeoutError,
@@ -349,11 +391,109 @@ def _resolve_provider() -> str:
     return "claude_cli"
 
 
-def get_llm_for_tier(tier: ModelTier, config: AppConfig) -> LLMCallable:
-    """Create an LLMCallable for a specific model tier.
+class LayerAwareLLMFactory:
+    """LLM factory that resolves tier + effort + model ID from config.
 
-    Returns an async callable ``(str) -> str`` that sends the prompt to
-    the configured provider and returns the response text.
+    Three access patterns:
+
+    - ``factory(tier)`` — backward-compat callable interface; returns an
+      LLM at the tier's default effort.
+    - ``factory.for_tier(tier, effort=<override>)`` — explicit tier, with
+      an optional per-call effort override.
+    - ``factory.for_layer(layer_name)`` — reads ``PipelineConfig`` to
+      resolve the tier and reasoning effort for a named pipeline layer
+      (e.g. ``"l0_specification"``).
+
+    Semaphores controlling concurrency for the ``claude -p`` transports
+    are instance-level so every pipeline run can tune them via
+    :class:`PipelineConfig`. Instances share state across the components
+    they build, so one factory per pipeline-run is the intended pattern.
+    """
+
+    def __init__(
+        self,
+        config: AppConfig,
+        pipeline_config: PipelineConfig | None = None,
+    ) -> None:
+        self._config = config
+        self._pipeline_config = pipeline_config or config.pipeline
+        self._claude_semaphore = asyncio.Semaphore(self._pipeline_config.claude_cli_concurrency)
+        self._research_semaphore = asyncio.Semaphore(self._pipeline_config.research_concurrency)
+
+    @property
+    def app_config(self) -> AppConfig:
+        return self._config
+
+    @property
+    def pipeline_config(self) -> PipelineConfig:
+        return self._pipeline_config
+
+    def __call__(self, tier: ModelTier) -> LLMCallable:
+        """Backward-compat shim: ``factory(tier)`` returns an LLM at tier default."""
+        return self.for_tier(tier)
+
+    def for_tier(
+        self,
+        tier: ModelTier,
+        *,
+        effort: str | None = None,
+    ) -> LLMCallable:
+        """Create an LLMCallable for a tier, with optional effort override."""
+        effective_effort = effort if effort is not None else get_reasoning_effort(tier)
+        return _build_llm_callable(
+            tier,
+            effective_effort,
+            self._config,
+            claude_semaphore=self._claude_semaphore,
+        )
+
+    def for_layer(self, layer_name: str) -> LLMCallable:
+        """Create an LLMCallable configured for a named pipeline layer.
+
+        Tier comes from ``PipelineConfig.model_mixing``; effort from
+        ``PipelineConfig.layer_effort_overrides`` (falling back to the
+        tier default when no override is set).
+        """
+        tier = get_layer_tier(layer_name, self._pipeline_config)
+        effort = get_layer_effort(layer_name, tier, self._pipeline_config)
+        return self.for_tier(tier, effort=effort)
+
+    def deep_research_callable(self) -> LLMCallable:
+        """Create an LLMCallable for deep web research via Claude CLI.
+
+        Uses the standard tier's model (Sonnet by default) with WebSearch
+        and WebFetch tools enabled, allowing multi-turn research
+        sessions. Concurrency honors ``PipelineConfig.research_concurrency``
+        and timeout honors ``PipelineConfig.deep_research_timeout_s``.
+        """
+        if os.environ.get("ANTHROPIC_API_KEY"):
+            raise RuntimeError(
+                "ANTHROPIC_API_KEY is set! claude -p will bill to API, "
+                "not Max subscription. Run: unset ANTHROPIC_API_KEY"
+            )
+
+        model = _resolve_claude_model(ModelTier.STANDARD, self._config)
+        timeout_s = self._pipeline_config.deep_research_timeout_s
+        semaphore = self._research_semaphore
+
+        async def _call_research(prompt: str) -> str:
+            return await _call_claude_cli_research(prompt, model, semaphore, timeout_s)
+
+        return _call_research
+
+
+def _build_llm_callable(
+    tier: ModelTier,
+    effort: str,
+    config: AppConfig,
+    *,
+    claude_semaphore: asyncio.Semaphore,
+) -> LLMCallable:
+    """Return an LLMCallable bound to the active provider transport.
+
+    Split out of :class:`LayerAwareLLMFactory` so the module-level
+    :func:`get_llm_for_tier` helper (legacy API) can share the same
+    construction path without requiring a factory instance.
     """
     provider = _resolve_provider()
 
@@ -363,18 +503,16 @@ def get_llm_for_tier(tier: ModelTier, config: AppConfig) -> LLMCallable:
                 "ANTHROPIC_API_KEY is set! claude -p will bill to API, "
                 "not Max subscription. Run: unset ANTHROPIC_API_KEY"
             )
-        model = CLAUDE_MODEL_MAP[tier]
-        effort = CLAUDE_EFFORT_MAP[tier]
+        model = _resolve_claude_model(tier, config)
 
         async def _call_claude(prompt: str) -> str:
-            return await _call_claude_cli(prompt, model, effort, _claude_semaphore)
+            return await _call_claude_cli(prompt, model, effort, claude_semaphore)
 
         return _call_claude
 
     # Legacy OpenAI paths (api_key / codex_oauth)
     client = _get_cached_client(config)
     model_id = get_model_id(tier, config)
-    effort = get_reasoning_effort(tier)
     is_oauth = provider == "codex_oauth"
 
     async def _call_llm(prompt: str) -> str:
@@ -385,39 +523,55 @@ def get_llm_for_tier(tier: ModelTier, config: AppConfig) -> LLMCallable:
     return _call_llm
 
 
-def create_llm_factory(config: AppConfig) -> LLMFactory:
-    """Return an ``LLMFactory`` bound to *config*.
+def get_llm_for_tier(
+    tier: ModelTier,
+    config: AppConfig,
+    *,
+    effort: str | None = None,
+) -> LLMCallable:
+    """Create an LLMCallable for a specific model tier.
+
+    Legacy free-function API kept for call sites that construct one-off
+    LLMs without a :class:`LayerAwareLLMFactory`. The factory is the
+    recommended entry point because it owns the shared concurrency
+    semaphores; this helper spins up its own semaphore per call and so
+    should only be used outside a pipeline run.
+    """
+    effective_effort = effort if effort is not None else get_reasoning_effort(tier)
+    semaphore = asyncio.Semaphore(config.pipeline.claude_cli_concurrency)
+    return _build_llm_callable(
+        tier,
+        effective_effort,
+        config,
+        claude_semaphore=semaphore,
+    )
+
+
+def create_llm_factory(
+    config: AppConfig,
+    pipeline_config: PipelineConfig | None = None,
+) -> LayerAwareLLMFactory:
+    """Return a :class:`LayerAwareLLMFactory` bound to *config*.
 
     Usage::
 
         factory = create_llm_factory(AppConfig())
-        llm = factory(ModelTier.FLAGSHIP)
-        result = await llm("What is the market size for ...")
+        spec_llm = factory.for_layer("l0_specification")  # xhigh effort
+        sonnet = factory(ModelTier.STANDARD)              # backward-compat
+        sonnet_xhigh = factory.for_tier(ModelTier.STANDARD, effort="xhigh")
     """
-
-    def _factory(tier: ModelTier) -> LLMCallable:
-        return get_llm_for_tier(tier, config)
-
-    return _factory
+    return LayerAwareLLMFactory(config, pipeline_config)
 
 
-def get_deep_research_callable() -> LLMCallable:
+def get_deep_research_callable(
+    config: AppConfig | None = None,
+    pipeline_config: PipelineConfig | None = None,
+) -> LLMCallable:
     """Return an LLMCallable for deep web research via Claude CLI.
 
-    Uses Sonnet with WebSearch + WebFetch tools enabled, allowing
-    multi-turn research sessions (5-10 minutes per call).
-
-    Concurrency limited to 5 simultaneous research sessions.
+    Retained as a module-level helper for orchestrator paths that have
+    only an AppConfig handy. Internally constructs a short-lived factory
+    so concurrency limits and model selection come from config.
     """
-    if os.environ.get("ANTHROPIC_API_KEY"):
-        raise RuntimeError(
-            "ANTHROPIC_API_KEY is set! claude -p will bill to API, "
-            "not Max subscription. Run: unset ANTHROPIC_API_KEY"
-        )
-
-    model = CLAUDE_MODEL_MAP[ModelTier.STANDARD]  # sonnet
-
-    async def _call_research(prompt: str) -> str:
-        return await _call_claude_cli_research(prompt, model, _research_semaphore)
-
-    return _call_research
+    factory = LayerAwareLLMFactory(config or AppConfig(), pipeline_config)
+    return factory.deep_research_callable()

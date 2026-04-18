@@ -278,31 +278,6 @@ class SprintContractProposed(PipelineEvent):
     criteria_count: int = Field(description="Number of acceptance criteria")
 
 
-class SlopDetected(PipelineEvent):
-    """Deterministic slop-pattern matches found in an L2 section draft.
-
-    Fires once per task whose draft text contains at least one match from
-    the curated slop-pattern database (filler phrases, buzzwords, LLM tics,
-    AI tells, etc.). The Evaluator scores the cleaned text, but the raw
-    counts flow through observability so regressions in upstream agents
-    show up as an uptick in HIGH-severity matches.
-    """
-
-    layer: str = "L2"
-    task_id: str = Field(description="Task whose section text was scanned")
-    section_id: str = Field(description="Section identifier used downstream")
-    total_count: int = Field(description="Total matches across all severities")
-    high_count: int = Field(description="Matches with HIGH severity")
-    medium_count: int = Field(description="Matches with MEDIUM severity")
-    low_count: int = Field(description="Matches with LOW severity")
-    top_categories: list[str] = Field(
-        description="Category names with the highest match counts, most first",
-    )
-    cleaned: bool = Field(
-        description="True when auto-replacements changed the stored text",
-    )
-
-
 # ---------------------------------------------------------------------------
 # L3: Generation events
 # ---------------------------------------------------------------------------
@@ -566,7 +541,6 @@ AnyPipelineEvent = (
     | OutlineGenerated
     | SectionDrafted
     | SprintContractProposed
-    | SlopDetected
     # L3
     | DraftGenerated
     | CitationFormatted

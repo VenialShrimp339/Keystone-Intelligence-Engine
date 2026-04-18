@@ -20,7 +20,12 @@ from keystone.research.context_loader import ContextLoader
 from keystone.research.error_recovery import ErrorRecovery
 from keystone.research.evidence_context import EvidenceContextProvider
 from keystone.research.finding_writer import FindingWriter
-from keystone.research.research_agent import ResearchAgent
+from keystone.research.research_agent import (
+    DEFAULT_ROUNDS,
+    MAX_ROUNDS,
+    QUALITY_THRESHOLD,
+    ResearchAgent,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -62,6 +67,9 @@ class AgentPool:
         error_recovery: ErrorRecovery | None = None,
         evidence_provider: EvidenceContextProvider | None = None,
         max_retries: int = 1,
+        research_default_rounds: int = DEFAULT_ROUNDS,
+        research_max_rounds: int = MAX_ROUNDS,
+        research_quality_threshold: float = QUALITY_THRESHOLD,
     ) -> None:
         self._llm = llm
         self._gateway = gateway
@@ -71,6 +79,9 @@ class AgentPool:
         self._error_recovery = error_recovery
         self._evidence_provider = evidence_provider
         self._max_retries = max_retries
+        self._research_default_rounds = research_default_rounds
+        self._research_max_rounds = research_max_rounds
+        self._research_quality_threshold = research_quality_threshold
 
     async def execute_all(
         self,
@@ -127,6 +138,9 @@ class AgentPool:
             context_loader=self._context_loader,
             error_recovery=self._error_recovery,
             evidence_provider=self._evidence_provider,
+            max_rounds=self._research_default_rounds,
+            max_rounds_cap=self._research_max_rounds,
+            quality_threshold=self._research_quality_threshold,
         )
 
         events: list = []

@@ -33,8 +33,12 @@ class ErrorCategory(StrEnum):
 FALLBACK_CHAIN: list[ModelTier] = [
     ModelTier.FLAGSHIP,
     ModelTier.STANDARD,
-    ModelTier.FAST,
 ]
+# Research tasks must never degrade to Haiku. FAST is a classification/
+# extraction model without the reasoning depth research requires, so the
+# fallback chain is truncated at STANDARD. Layer 1 evaluator extraction
+# and other dedicated extraction paths retain FAST via their own wiring
+# (e.g. ``get_model_id(ModelTier.FAST, config)``).
 
 
 def classify_error(error: Exception) -> ErrorCategory:

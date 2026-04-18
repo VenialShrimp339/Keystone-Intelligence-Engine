@@ -100,6 +100,7 @@ class Evaluator:
         pass_threshold: float = DEFAULT_PASS_THRESHOLD,
         layer3_weight: float = DEFAULT_LAYER3_WEIGHT,
         ensemble_llms: list[tuple[str, LLMCallable]] | None = None,
+        extraction_llm: LLMCallable | None = None,
     ) -> None:
         if not 0.0 < layer3_weight <= 1.0:
             raise ValueError("layer3_weight must be in (0, 1]")
@@ -109,7 +110,13 @@ class Evaluator:
         self._intensity = intensity
         self._pass_threshold = pass_threshold
         self._layer3_weight = layer3_weight
-        self._layer1 = Layer1Evaluator(llm=llm)
+        # Layer 1 handles fact decomposition + numerical extraction — work
+        # that Sonnet (STANDARD) is fully capable of, reserving Opus
+        # (FLAGSHIP) for Layer 3 rubric judgment. When callers do not
+        # supply a dedicated extraction LLM we fall back to ``llm`` so
+        # existing single-LLM tests keep working.
+        self._extraction_llm = extraction_llm if extraction_llm is not None else llm
+        self._layer1 = Layer1Evaluator(llm=self._extraction_llm)
         self._layer2 = Layer2CitationGate(doi_verifier=doi_verifier)
         self._three_pass = ThreePassEvaluator(llm=llm, profile=profile)
         self._layer4 = Layer4Evaluator(llm=llm)
@@ -152,15 +159,19 @@ class Evaluator:
             import logging as _log
 
             _log.getLogger(__name__).warning(
-                "Layer 1 evaluation failed for task %s, using empty result: %s",
+                "Layer 1 evaluation failed for task %s, marking infrastructure "
+                "failure on result: %s",
                 task.id,
                 exc,
             )
+            # infrastructure_failure=True distinguishes this skipped-run case
+            # from a real zero-facts result (0/0 counts are otherwise ambiguous).
             layer1_result = Layer1Result(
                 facts_verified=0,
                 facts_failed=0,
                 numerical_inconsistencies=[],
                 dead_urls=[],
+                infrastructure_failure=True,
             )
         yield DeterministicCheckPassed(
             event_id=_uid(),
@@ -225,15 +236,20 @@ class Evaluator:
                 import logging as _log
 
                 _log.getLogger(__name__).warning(
-                    "Layer 5 ensemble evaluation failed for task %s, using degraded score: %s",
+                    "Layer 5 ensemble evaluation failed for task %s, marking "
+                    "infrastructure failure on result: %s",
                     task.id,
                     exc,
                 )
+                # infrastructure_failure=True differentiates "rubric scoring
+                # failed" from a legitimate 0/100 score. Downstream logic
+                # that treats 0 as "content is terrible" must skip this path.
                 layer3_result = Layer3Result(
                     dimension_scores=[],
                     weighted_total=0.0,
                     gestalt_adjustment=0.0,
                     final_score=0.0,
+                    infrastructure_failure=True,
                 )
                 layer5_result = None
         else:
@@ -243,7 +259,8 @@ class Evaluator:
                 import logging as _log
 
                 _log.getLogger(__name__).warning(
-                    "Layer 3 evaluation failed for task %s, using degraded score: %s",
+                    "Layer 3 evaluation failed for task %s, marking "
+                    "infrastructure failure on result: %s",
                     task.id,
                     exc,
                 )
@@ -252,6 +269,7 @@ class Evaluator:
                     weighted_total=0.0,
                     gestalt_adjustment=0.0,
                     final_score=0.0,
+                    infrastructure_failure=True,
                 )
 
         # Emit L5 per-judge + veto events before the aggregated L4 events so

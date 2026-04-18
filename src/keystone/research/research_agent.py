@@ -24,7 +24,7 @@ import uuid
 from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 
-from keystone.evaluator.retry import LLMCallable, retry_llm_call
+from keystone.evaluator.retry import LLMCallable
 from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.events import (
     AnyPipelineEvent,
@@ -38,7 +38,7 @@ from keystone.gateway.mcp_gateway import MCPGateway, ToolCall
 from keystone.models.agents import AgentInstance
 from keystone.models.citations import Citation, SourceType
 from keystone.models.research import EngagementSpec, StructuredFinding
-from keystone.models.tasks import ResearchTask
+from keystone.models.tasks import ModelTier, ResearchTask
 from keystone.research.context_loader import ContextLoader
 from keystone.research.error_recovery import ErrorRecovery
 from keystone.research.evidence_context import (
@@ -97,6 +97,12 @@ DEFAULT_ROUNDS = 3
 MAX_ROUNDS = 5
 QUALITY_THRESHOLD = 0.8
 
+# These constants remain the hardcoded defaults used when no
+# :class:`PipelineConfig`-driven override is provided. The canonical
+# source is :class:`keystone.models.config.PipelineConfig` fields
+# ``research_default_rounds``, ``research_max_rounds``, and
+# ``research_quality_threshold``; wiring goes through the orchestrator.
+
 
 def _make_event_id() -> str:
     return f"evt_{uuid.uuid4().hex[:12]}"
@@ -148,6 +154,8 @@ class ResearchAgent:
         error_recovery: ErrorRecovery | None = None,
         evidence_provider: EvidenceContextProvider | None = None,
         max_rounds: int = DEFAULT_ROUNDS,
+        max_rounds_cap: int = MAX_ROUNDS,
+        quality_threshold: float = QUALITY_THRESHOLD,
     ) -> None:
         self._llm = llm
         self._deep_llm = deep_llm
@@ -156,7 +164,8 @@ class ResearchAgent:
         self._context_loader = context_loader
         self._error_recovery = error_recovery or ErrorRecovery()
         self._evidence_provider = evidence_provider
-        self._max_rounds = min(max_rounds, MAX_ROUNDS)
+        self._max_rounds = min(max_rounds, max_rounds_cap)
+        self._quality_threshold = quality_threshold
         self._finding: StructuredFinding | None = None
         # Per-round accumulators
         self._all_claims: list[dict] = []
@@ -548,11 +557,14 @@ class ResearchAgent:
             )
             newly_minted_ev: list[Citation] = []
             try:
-                raw_response = await retry_llm_call(
+                # Route the synthesis call through ErrorRecovery so transient
+                # failures retry with exponential backoff and model-error
+                # responses walk down the (truncated) STANDARD-floor fallback
+                # chain. Research tasks never degrade to Haiku.
+                raw_response = await self._error_recovery.execute_with_recovery(
                     self._llm,
                     synthesis_prompt,
-                    max_retries=3,
-                    base_delay=0.01,
+                    current_tier=ModelTier.STANDARD,
                     description=f"synthesis_round_{round_num}",
                 )
                 round_claims = self._parse_synthesis(raw_response)
@@ -620,7 +632,7 @@ class ResearchAgent:
             )
 
             # --- Stopping criteria ---
-            if conf_values and min(conf_values) >= QUALITY_THRESHOLD:
+            if conf_values and min(conf_values) >= self._quality_threshold:
                 logger.info("Quality threshold met in round %d", round_num)
                 break
 
@@ -1000,11 +1012,10 @@ OUTPUT THE JSON AND NOTHING ELSE."""
             "Return a JSON array of strings.\n"
         )
         try:
-            response = await retry_llm_call(
+            response = await self._error_recovery.execute_with_recovery(
                 self._llm,
                 prompt,
-                max_retries=2,
-                base_delay=0.01,
+                current_tier=ModelTier.STANDARD,
                 description="absence_report",
             )
             result = self._parse_absence(response)

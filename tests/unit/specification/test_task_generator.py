@@ -14,8 +14,12 @@ from keystone.models.research import (
 from keystone.models.tasks import TaskImportance
 from keystone.specification.decomposer import IssueTree, IssueTreeMetadata, IssueTreeNode
 from keystone.specification.priority_scorer import PriorityScore
-from keystone.specification.task_generator import TaskGenerator
+from keystone.specification.task_generator import (
+    TaskGenerator,
+    _ensure_minimum_distinct_tools,
+)
 from keystone.specification.template_registry import TemplateRegistry
+from keystone.tool_names import BASELINE_AGENT_TOOLS, DEFAULT_TOOLS
 
 
 def _make_spec() -> ResearchSpec:
@@ -339,3 +343,63 @@ class TestTaskGenerator:
         assert tasks_by_id["task_high"].importance == TaskImportance.PRIMARY
         assert tasks_by_id["task_low"].priority == 2
         assert tasks_by_id["task_low"].importance == TaskImportance.CRITICAL
+
+
+# ---------------------------------------------------------------------------
+# Phase 4K: baseline tool padding
+# ---------------------------------------------------------------------------
+
+
+class TestEnsureMinimumDistinctTools:
+    """Padding a short tool list must use distinct baseline tools."""
+
+    def test_empty_list_pads_to_three_distinct_tools(self):
+        out = _ensure_minimum_distinct_tools([])
+        assert len(out) >= 3
+        assert len(set(out)) == len(out)  # No duplicates
+
+    def test_two_tools_pad_to_three_with_distinct_baseline(self):
+        out = _ensure_minimum_distinct_tools(list(DEFAULT_TOOLS))
+        assert len(out) >= 3
+        assert len(set(out)) == len(out)
+        # Original tools preserved at the front.
+        assert out[:2] == list(DEFAULT_TOOLS)
+
+    def test_does_not_duplicate_already_present_tool(self):
+        """Padding must not re-add a tool the template already provided."""
+        out = _ensure_minimum_distinct_tools(["exa_search"])
+        assert len(set(out)) == len(out)
+        # exa_search appears exactly once, not twice.
+        assert out.count("exa_search") == 1
+
+    def test_template_with_five_tools_stays_unchanged(self):
+        tools = ["exa_search", "brave_search", "paper_search", "doi_verify", "fred_data"]
+        out = _ensure_minimum_distinct_tools(tools)
+        assert out == tools
+
+    def test_trims_to_five_when_list_too_long(self):
+        tools = [
+            "exa_search",
+            "brave_search",
+            "paper_search",
+            "doi_verify",
+            "fred_data",
+            "finnhub_market",
+            "edgar_filings",
+        ]
+        out = _ensure_minimum_distinct_tools(tools)
+        assert len(out) == 5
+
+    def test_no_duplicate_padding_under_any_input(self):
+        """Regression: the old code padded with ``[DEFAULT_TOOLS[0]] * n``."""
+        # Start with just ``exa_search`` — the prior hack would have produced
+        # ``[exa_search, exa_search, exa_search]``. New helper must not.
+        out = _ensure_minimum_distinct_tools(["exa_search"])
+        assert "exa_search" in out
+        assert len(set(out)) == len(out)
+        # Must reach three distinct items from BASELINE_AGENT_TOOLS.
+        assert len(out) == 3
+        for tool in BASELINE_AGENT_TOOLS:
+            if tool != "exa_search":
+                # Another baseline tool must have been used to pad.
+                break

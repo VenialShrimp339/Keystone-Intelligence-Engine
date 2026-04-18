@@ -69,6 +69,18 @@ ACADEMIC_TOOLS: list[str] = [ToolName.PAPER_SEARCH, ToolName.DOI_VERIFY]
 # Tools available to every agent as a baseline
 DEFAULT_TOOLS: list[str] = [ToolName.EXA_SEARCH, ToolName.BRAVE_SEARCH]
 
+# Baseline agent-assignable tools: distinct entries usable as defaults when a
+# template does not provide enough tools to satisfy the 3-5 assigned-tools
+# validation on :class:`ResearchTask`. Previously the task generator padded
+# with duplicates of ``DEFAULT_TOOLS[0]`` (three copies of exa_search), which
+# is useless to the agent. ``BASELINE_AGENT_TOOLS`` is a distinct set of real
+# tools drawn from the registry; never contains system-owned tools.
+BASELINE_AGENT_TOOLS: list[str] = [
+    ToolName.EXA_SEARCH,
+    ToolName.BRAVE_SEARCH,
+    ToolName.PAPER_SEARCH,
+]
+
 # Retrieval tools served in-process by the RetrievalService. The spec
 # engine MUST NOT hand these out in template tool assignments -- they
 # are invoked by the gateway directly in response to agent queries and

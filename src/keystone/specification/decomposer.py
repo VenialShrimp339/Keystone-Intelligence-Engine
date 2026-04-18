@@ -96,12 +96,38 @@ class Decomposer:
 
     Three-phase decomposition:
     1. Spawn 3 parallel agents (financial, operational, market/competitive)
+       at the STANDARD tier — lens decompositions benefit from parallelism
+       more than raw reasoning depth.
     2. Each produces an independent shallow tree (2-3 levels)
-    3. Flagship meta-agent synthesizes into unified tree
+    3. FLAGSHIP meta-agent synthesizes into unified tree — the synthesis
+       step is the real reasoning work and keeps the strongest model.
+
+    Callers may pass ``lens_llm`` and ``synth_llm`` as distinct callables
+    to honor the tier split. Legacy single-LLM callers pass ``llm`` and
+    both phases use it.
     """
 
-    def __init__(self, llm: LLMCallable) -> None:
-        self._llm = llm
+    def __init__(
+        self,
+        llm: LLMCallable | None = None,
+        *,
+        lens_llm: LLMCallable | None = None,
+        synth_llm: LLMCallable | None = None,
+    ) -> None:
+        if lens_llm is None and synth_llm is None and llm is None:
+            raise ValueError(
+                "Decomposer requires at least one LLM (pass 'llm', or both "
+                "'lens_llm' and 'synth_llm')."
+            )
+        resolved_lens = lens_llm if lens_llm is not None else llm
+        resolved_synth = synth_llm if synth_llm is not None else llm
+        if resolved_lens is None or resolved_synth is None:
+            raise ValueError(
+                "Decomposer requires both lens and synthesis LLMs; fall back "
+                "to the legacy 'llm' kwarg to share one callable across both."
+            )
+        self._lens_llm = resolved_lens
+        self._synth_llm = resolved_synth
 
     async def decompose(
         self,
@@ -139,7 +165,7 @@ class Decomposer:
             client_context=client_context or "No additional context provided.",
         )
 
-        raw = await retry_llm_call(self._llm, prompt, description=f"decompose_{lens}_lens")
+        raw = await retry_llm_call(self._lens_llm, prompt, description=f"decompose_{lens}_lens")
         return extract_json(raw)
 
     async def _synthesize(
@@ -160,7 +186,7 @@ class Decomposer:
             market_tree=json.dumps(lens_trees[2], indent=2),
         )
 
-        raw = await retry_llm_call(self._llm, prompt, description="decompose_synthesis")
+        raw = await retry_llm_call(self._synth_llm, prompt, description="decompose_synthesis")
         data = extract_json(raw)
 
         root_data = data.get("root", data.get("tree", data))
