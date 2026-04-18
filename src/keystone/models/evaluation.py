@@ -118,12 +118,8 @@ class DimensionScore(BaseModel):
     """
 
     dimension: RubricDimension = Field(description="Which rubric dimension")
-    score: float = Field(
-        ge=0.0, le=100.0, description="Score on 0-100 scale"
-    )
-    feedback: str = Field(
-        description="Specific, actionable feedback for this dimension"
-    )
+    score: float = Field(ge=0.0, le=100.0, description="Score on 0-100 scale")
+    feedback: str = Field(description="Specific, actionable feedback for this dimension")
     sub_criteria_notes: list[str] = Field(
         default_factory=list,
         description="Notes on sub-criteria (trendslop detection, deletion test, etc.)",
@@ -153,9 +149,7 @@ class Layer2Result(BaseModel):
         default_factory=list,
         description="Citation IDs flagged as fabricated. Non-empty = automatic fail.",
     )
-    gate_passed: bool = Field(
-        description="True only if zero fabricated citations found"
-    )
+    gate_passed: bool = Field(description="True only if zero fabricated citations found")
 
     @field_validator("gate_passed")
     @classmethod
@@ -171,16 +165,113 @@ class Layer3Result(BaseModel):
     dimension_scores: list[DimensionScore] = Field(
         description="One score per rubric dimension (10 total)"
     )
-    weighted_total: float = Field(
-        ge=0.0, le=100.0, description="Weighted sum of dimension scores"
-    )
+    weighted_total: float = Field(ge=0.0, le=100.0, description="Weighted sum of dimension scores")
     gestalt_adjustment: float = Field(
         ge=-10.0,
         le=10.0,
         description="Pass 2 holistic overlay: emergent quality adjustment",
     )
-    final_score: float = Field(
-        ge=0.0, le=100.0, description="weighted_total + gestalt_adjustment"
+    final_score: float = Field(ge=0.0, le=100.0, description="weighted_total + gestalt_adjustment")
+
+
+class ProcessFlag(StrEnum):
+    """Deterministic process trajectory concerns emitted by Layer 4.
+
+    Flags are computed from the research agent's event trail and the
+    citation manifest, not from LLM judgment. An output with several
+    flags may still pass if the content itself is strong, but the flags
+    surface "beautiful prose from lazy research" patterns for review.
+    """
+
+    SINGLE_SOURCE_TYPE = "single_source_type"
+    SINGLE_DOMAIN = "single_domain"
+    LOW_DOMAIN_DIVERSITY = "low_domain_diversity"
+    NO_MULTI_ROUND = "no_multi_round"
+    LOW_TOOL_DIVERSITY = "low_tool_diversity"
+    LOW_SOURCE_COUNT = "low_source_count"
+    COVERAGE_GAP = "coverage_gap"
+    NO_HIGH_CONFIDENCE_CITATIONS = "no_high_confidence_citations"
+    MISSING_ANTI_CONFIRMATORY_EVIDENCE = "missing_anti_confirmatory_evidence"
+    NARROW_INQUIRY = "narrow_inquiry"
+
+
+class Layer4Result(BaseModel):
+    """Process trajectory evaluation results (Section 5.11).
+
+    Layer 4 evaluates the RESEARCH PROCESS — how the output was produced,
+    not what it says. Catches the failure mode Layers 1-3 cannot see:
+    plausible-sounding prose from a lazy or narrow research process.
+    """
+
+    # --- Deterministic process metrics ---
+    source_count: int = Field(
+        ge=0,
+        description="Total distinct sources the agent consulted (SourceFound events).",
+    )
+    unique_domains: int = Field(
+        ge=0,
+        description="Count of unique URL hostnames across consulted sources.",
+    )
+    source_type_diversity: int = Field(
+        ge=0,
+        description="Count of distinct source_type labels observed.",
+    )
+    assigned_tools: list[str] = Field(
+        default_factory=list,
+        description="Tools the task was authorized to use.",
+    )
+    tools_used: list[str] = Field(
+        default_factory=list,
+        description="Tools actually invoked (from SourceFound.source_type signals).",
+    )
+    tool_utilization: float = Field(
+        ge=0.0,
+        le=1.0,
+        description="len(tools_used) / len(assigned_tools), or 0.0 when none assigned.",
+    )
+    round_count: int = Field(
+        ge=0,
+        description="Synthesis rounds observed (FindingSynthesized events).",
+    )
+    issue_tree_branches_covered: list[str] = Field(
+        default_factory=list,
+        description="Issue-tree branch IDs the task's findings addressed.",
+    )
+    issue_tree_branches_missed: list[str] = Field(
+        default_factory=list,
+        description="Sibling issue-tree branches the agent's output did not cover.",
+    )
+    citation_quality_distribution: dict[str, int] = Field(
+        default_factory=dict,
+        description="Counts of citations at HIGH/MEDIUM/LOW quality tiers.",
+    )
+
+    # --- LLM assessment ---
+    qualitative_score: float = Field(
+        ge=0.0,
+        le=100.0,
+        description="LLM-assessed strategy quality (0-100), independent of content.",
+    )
+    rationale: str = Field(
+        description="LLM's rationale for the qualitative score, citing specific events.",
+    )
+    missed_inquiries: list[str] = Field(
+        default_factory=list,
+        description="Obvious lines of inquiry the agent did not pursue.",
+    )
+    skepticism_assessment: str = Field(
+        description="Whether the agent honored anti-confirmatory framing.",
+    )
+
+    # --- Overall score + flags ---
+    process_quality_score: float = Field(
+        ge=0.0,
+        le=100.0,
+        description="Composite of deterministic metrics and LLM assessment.",
+    )
+    process_flags: list[str] = Field(
+        default_factory=list,
+        description="Specific concerns. Values come from ProcessFlag.",
     )
 
 
@@ -196,9 +287,7 @@ class SprintContract(BaseModel):
     client_id: str = Field(description="Client identifier for data sandboxing")
     task_id: str = Field(description="Which research task this section addresses")
     section_title: str = Field(description="Human-readable section title")
-    acceptance_criteria: list[str] = Field(
-        description="Specific criteria for this section to pass"
-    )
+    acceptance_criteria: list[str] = Field(description="Specific criteria for this section to pass")
     dimension_emphasis: dict[RubricDimension, float] = Field(
         default_factory=dict,
         description="Per-section weight overrides for rubric dimensions",
@@ -226,26 +315,20 @@ class EvaluationResult(BaseModel):
     client_id: str = Field(description="Client identifier for data sandboxing")
     task_id: str = Field(description="Which task was evaluated")
     evaluated_at: datetime = Field(description="When this evaluation ran")
-    intensity: EvaluationIntensity = Field(
-        description="Evaluation depth applied"
-    )
+    intensity: EvaluationIntensity = Field(description="Evaluation depth applied")
     passed: bool = Field(description="Whether the output meets quality threshold")
-    overall_score: float = Field(
-        ge=0.0, le=100.0, description="Final composite score"
-    )
-    layer1_results: Layer1Result = Field(
-        description="Deterministic verification results"
-    )
-    layer2_results: Layer2Result = Field(
-        description="Citation gate results"
-    )
+    overall_score: float = Field(ge=0.0, le=100.0, description="Final composite score")
+    layer1_results: Layer1Result = Field(description="Deterministic verification results")
+    layer2_results: Layer2Result = Field(description="Citation gate results")
     layer3_results: Layer3Result | None = Field(
         default=None,
         description="Rubric scoring results. None if Layer 2 gate failed.",
     )
-    feedback: str = Field(
-        description="Specific, actionable feedback for regeneration"
+    layer4_results: Layer4Result | None = Field(
+        default=None,
+        description="Process trajectory results. None if L3 failed or context not provided.",
     )
+    feedback: str = Field(description="Specific, actionable feedback for regeneration")
     observation_entry_id: str | None = Field(
         default=None,
         description="ID of the Observation Library entry (Phase 2)",
@@ -260,9 +343,7 @@ class CalibrationSample(BaseModel):
     human_scores: dict[RubricDimension, float] = Field(
         description="Human scores per dimension (1-5 scale)"
     )
-    human_overall: float = Field(
-        ge=0.0, le=100.0, description="Human overall score (0-100)"
-    )
+    human_overall: float = Field(ge=0.0, le=100.0, description="Human overall score (0-100)")
     scorer_id: str = Field(description="Who scored this (e.g., 'jack')")
     scored_at: datetime = Field(description="When the human scoring was done")
 
@@ -273,15 +354,9 @@ class CalibrationReport(BaseModel):
     spearman_correlation: float = Field(
         description="Rank correlation between automated and human scores. Target: >= 0.80."
     )
-    cohens_kappa: float = Field(
-        description="Inter-rater agreement. Target: >= 0.60."
-    )
+    cohens_kappa: float = Field(description="Inter-rater agreement. Target: >= 0.60.")
     per_dimension_bias: dict[RubricDimension, float] = Field(
         description="Positive = overscoring, negative = underscoring per dimension"
     )
-    calibration_ready: bool = Field(
-        description="True if spearman >= 0.80 and kappa >= 0.60"
-    )
-    sample_count: int = Field(
-        ge=0, description="Number of samples in the calibration set"
-    )
+    calibration_ready: bool = Field(description="True if spearman >= 0.80 and kappa >= 0.60")
+    sample_count: int = Field(ge=0, description="Number of samples in the calibration set")

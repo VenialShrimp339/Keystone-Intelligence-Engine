@@ -16,10 +16,11 @@ from typing import TYPE_CHECKING, Protocol, runtime_checkable
 if TYPE_CHECKING:
     from collections.abc import AsyncIterator
 
+    from keystone.citation.processor import CitationProcessorResult
+    from keystone.evaluator.layer4_trajectory import ProcessContext
     from keystone.events import (
         AnyPipelineEvent,
     )
-    from keystone.citation.processor import CitationProcessorResult
     from keystone.hitl.schemas import GateResolution
     from keystone.models.agents import AgentInstance
     from keystone.models.citations import CitationManifest
@@ -306,11 +307,13 @@ class EvaluatorContract(Protocol):
         task: ResearchTask,
         manifest: CitationManifest,
         spec: EngagementSpec,
+        process_context: ProcessContext | None = None,
     ) -> AsyncIterator[AnyPipelineEvent]:
-        """Run the 5-layer evaluation stack (Layers 1-3 in Phase 1).
+        """Run the evaluation stack (Layers 1-3, plus Layer 4 when context is given).
 
         Yields DeterministicCheckPassed, CitationGateResult,
-        RubricDimensionScored, EvaluationComplete events.
+        RubricDimensionScored, optionally ProcessTrajectoryScored,
+        EvaluationComplete events.
         """
         ...
 

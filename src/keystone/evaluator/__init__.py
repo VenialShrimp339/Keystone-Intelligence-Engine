@@ -13,6 +13,7 @@ from keystone.evaluator.layer2_citation_gate import (
     Layer2CitationGate,
 )
 from keystone.evaluator.layer3_rubric import Layer3RubricScorer, weighted_geometric_mean
+from keystone.evaluator.layer4_trajectory import Layer4Evaluator, ProcessContext
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
 from keystone.evaluator.rubric_config import (
     ENGAGEMENT_PROFILE_MAP,
@@ -36,6 +37,8 @@ __all__ = [
     "Layer1Evaluator",
     "Layer2CitationGate",
     "Layer3RubricScorer",
+    "Layer4Evaluator",
+    "ProcessContext",
     "STRATEGIC_WEIGHT_OVERRIDES",
     "SprintContractGenerator",
     "TIER_1_DIMENSIONS",

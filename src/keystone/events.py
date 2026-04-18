@@ -304,6 +304,20 @@ class RubricDimensionScored(PipelineEvent):
     weight: float = Field(description="Weight of this dimension")
 
 
+class ProcessTrajectoryScored(PipelineEvent):
+    """Layer 4: research-process trajectory has been evaluated."""
+
+    layer: str = "L4"
+    task_id: str = Field(description="Task whose research process was scored")
+    process_quality_score: float = Field(description="Composite process score on 0-100 scale")
+    qualitative_score: float = Field(description="LLM assessment score on 0-100 scale")
+    source_count: int = Field(description="Sources consulted by this task's agent")
+    unique_domains: int = Field(description="Unique source hostnames consulted")
+    round_count: int = Field(description="Synthesis rounds observed")
+    tool_utilization: float = Field(description="Fraction of assigned tools actually used")
+    flag_count: int = Field(description="Number of process flags raised")
+
+
 class EvaluationComplete(PipelineEvent):
     """Full evaluation has completed."""
 
@@ -437,6 +451,7 @@ AnyPipelineEvent = (
     | DeterministicCheckPassed
     | CitationGateResult
     | RubricDimensionScored
+    | ProcessTrajectoryScored
     | EvaluationComplete
     # META
     | ObservationRecorded

@@ -9,7 +9,6 @@ Yields AnyPipelineEvent throughout for observability.
 
 from __future__ import annotations
 
-import json
 import logging
 import os
 import uuid
@@ -21,6 +20,7 @@ from pydantic import BaseModel, Field
 from keystone.citation.processor import CitationProcessor
 from keystone.deliberation.deliberation import Deliberation
 from keystone.evaluator.evaluator import Evaluator
+from keystone.evaluator.layer4_trajectory import ProcessContext
 from keystone.evaluator.retry import LLMCallable
 from keystone.evaluator.rubric_config import EvaluationProfile
 from keystone.evaluator.sprint_contract import SprintContractGenerator
@@ -28,7 +28,7 @@ from keystone.events import AnyPipelineEvent
 from keystone.gateway.mcp_gateway import MCPGateway
 from keystone.governance.policy import ProfileExecutionPolicy
 from keystone.llm_client import get_deep_research_callable
-from keystone.models.agents import AgentDefinition, AgentInstance, AgentRole
+from keystone.models.agents import AgentInstance
 from keystone.models.citations import CitationManifest
 from keystone.models.confidence import ConfidenceMap
 from keystone.models.evaluation import EvaluationIntensity, EvaluationResult
@@ -223,8 +223,14 @@ class Pipeline:
         assignments = self._build_assignments(spec, c.template_registry)
         agent_results = await c.agent_pool.execute_all(assignments)
 
+        # Preserve per-agent event trails so Layer 4 can inspect the
+        # research process after citations have been dedup/canonicalized.
+        events_by_agent: dict[str, list[AnyPipelineEvent]] = {}
+        agent_by_task: dict[str, AgentInstance] = {task.id: agent for task, _, agent in assignments}
+
         # Collect events from agent results
         for ar in agent_results:
+            events_by_agent.setdefault(ar.agent_id, []).extend(ar.events)
             for event in ar.events:
                 yield event
 
@@ -317,13 +323,23 @@ class Pipeline:
             # citations this task actually used (not the full engagement)
             task_manifest = _build_task_manifest(task_finding, manifest)
 
+            # Build Layer 4 process context from the agent that handled this task
+            process_context = _build_process_context(task, agent_by_task, events_by_agent, spec)
+
             # Fresh evaluator per task (each stores one result)
             evaluator = Evaluator(
                 llm=self._llm_factory(ModelTier.FLAGSHIP),
                 profile=_resolve_evaluation_profile(spec),
                 intensity=_resolve_evaluation_intensity(spec),
             )
-            async for event in evaluator.evaluate(output_text, contract, task, task_manifest, spec):
+            async for event in evaluator.evaluate(
+                output_text,
+                contract,
+                task,
+                task_manifest,
+                spec,
+                process_context=process_context,
+            ):
                 yield event
 
             result = await evaluator.get_result()
@@ -432,6 +448,34 @@ class Pipeline:
             assignments.append((task, spec, instance))
 
         return assignments
+
+
+def _build_process_context(
+    task: ResearchTask,
+    agent_by_task: dict[str, AgentInstance],
+    events_by_agent: dict[str, list[AnyPipelineEvent]],
+    spec: EngagementSpec,
+) -> ProcessContext | None:
+    """Assemble the Layer 4 ProcessContext for a single evaluation task.
+
+    Returns None when the task has no agent or no event trail, so the
+    evaluator skips Layer 4 rather than running it against empty input.
+    """
+    agent = agent_by_task.get(task.id)
+    if agent is None:
+        return None
+
+    events = events_by_agent.get(agent.agent_id, [])
+    if not events:
+        return None
+
+    return ProcessContext(
+        agent_id=agent.agent_id,
+        task=task,
+        agent=agent,
+        events=list(events),
+        issue_tree=spec.issue_tree,
+    )
 
 
 def _finding_to_text(finding: StructuredFinding) -> str:
