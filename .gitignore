@@ -2,6 +2,8 @@
 .env
 .env.local
 .env.*.local
+.substack-session
+.substack-session.json
 
 # Python
 __pycache__/
