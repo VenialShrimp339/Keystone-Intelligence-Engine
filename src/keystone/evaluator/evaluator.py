@@ -118,13 +118,17 @@ class Evaluator:
         self._extraction_llm = extraction_llm if extraction_llm is not None else llm
         self._layer1 = Layer1Evaluator(llm=self._extraction_llm)
         self._layer2 = Layer2CitationGate(doi_verifier=doi_verifier)
-        self._three_pass = ThreePassEvaluator(llm=llm, profile=profile)
+        self._three_pass = ThreePassEvaluator(
+            llm=llm, profile=profile, pass_threshold=pass_threshold
+        )
         self._layer4 = Layer4Evaluator(llm=llm)
         # Layer 5 is inert for LIGHT_TOUCH (Layer 3 is skipped) and when no
         # ensemble judges are provided. Otherwise construct an ensemble wrapper.
         self._ensemble: EnsembleL3Evaluator | None
         if ensemble_llms and intensity != EvaluationIntensity.LIGHT_TOUCH:
-            self._ensemble = EnsembleL3Evaluator(judges=ensemble_llms, profile=profile)
+            self._ensemble = EnsembleL3Evaluator(
+                judges=ensemble_llms, profile=profile, pass_threshold=pass_threshold
+            )
         else:
             self._ensemble = None
         self._result: EvaluationResult | None = None

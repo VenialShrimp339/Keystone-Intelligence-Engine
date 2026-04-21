@@ -35,7 +35,7 @@ Generate a sprint contract with:
 
 3. **Anti-Patterns**: Specific failure modes to watch for, based on the task category and engagement type. Be concrete: not "avoid generic advice" but "recommendations must reference the specific company's constraints, not industry-wide platitudes".
 
-4. **Dimension Emphasis**: Which rubric dimensions deserve extra weight for this specific task. Use the dimension names exactly: analytical_depth, source_quality, quantitative_rigor, actionability, evaluative_surprise, calibrated_confidence. Provide a weight multiplier (1.0 = normal, 1.5 = emphasized, 0.7 = de-emphasized).
+4. **Dimension Emphasis**: Which rubric dimensions deserve extra weight for this specific task. Use the dimension names exactly: intent_alignment, intellectual_honesty, completeness, narrative_coherence, analytical_depth, source_quality, quantitative_rigor, actionability, evaluative_surprise, calibrated_confidence. Provide a weight multiplier (1.0 = normal, 1.5 = emphasized, 0.7 = de-emphasized). Note: the first four are Tier 1 dimensions with floor gates that override weight adjustments — emphasis can increase their contribution to the composite score but cannot lower the floor threshold.
 
 ## Output Format
 
@@ -58,7 +58,7 @@ Field requirements:
 - "acceptance_criteria": 4-8 specific, measurable criteria. Each MUST be testable, not vague. Example: "identifies at least 3 competitive dynamics with supporting data" NOT "good analysis."
 - "mandatory_elements": 2-5 concrete deliverables that MUST appear in the output.
 - "anti_patterns": 2-4 specific failure modes. Reference the task category and engagement type. Example: "recommendations must reference the specific company's constraints" NOT "avoid generic advice."
-- "dimension_emphasis": Use ONLY these dimension names as keys: analytical_depth, source_quality, quantitative_rigor, actionability, evaluative_surprise, calibrated_confidence. Values are weight multipliers (0.7 = de-emphasized, 1.0 = normal, 1.5 = emphasized).
+- "dimension_emphasis": Use ONLY these dimension names as keys: intent_alignment, intellectual_honesty, completeness, narrative_coherence, analytical_depth, source_quality, quantitative_rigor, actionability, evaluative_surprise, calibrated_confidence. Values are weight multipliers (0.7 = de-emphasized, 1.0 = normal, 1.5 = emphasized). Tier 1 dimensions (intent_alignment, intellectual_honesty, completeness, narrative_coherence) have floor gates that override weight adjustments.
 
 Do NOT omit any field. Do NOT add commentary outside the JSON.
 Output only the JSON object. After the closing brace, output nothing further.

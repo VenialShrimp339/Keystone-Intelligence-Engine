@@ -13,7 +13,6 @@ import math
 from pathlib import Path
 
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
-from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.evaluator.rubric_config import (
     TIER_1_DIMENSIONS,
     TIER_2_DIMENSIONS,
@@ -21,6 +20,7 @@ from keystone.evaluator.rubric_config import (
     get_profile_weights,
     get_tier1_passed,
 )
+from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.models.evaluation import (
     DimensionScore,
     Layer3Result,
@@ -138,10 +138,12 @@ class Layer3RubricScorer:
         llm: LLMCallable,
         profile: EvaluationProfile,
         judge_id: str | None = None,
+        pass_threshold: float = 60.0,
     ) -> None:
         self._llm = llm
         self._weights = get_profile_weights(profile)
         self._judge_id = judge_id
+        self._pass_threshold = pass_threshold
 
     async def score_all_dimensions(
         self,
@@ -181,9 +183,17 @@ class Layer3RubricScorer:
         # Step 4: Compute geometric mean
         geo_mean = weighted_geometric_mean(all_scores, weights)
 
-        # Step 5: Gestalt overlay
+        # Step 5: Gestalt overlay — informs composite but cannot flip pass/fail
         gestalt_adj = await self._gestalt_overlay(output_text)
         gestalt_adj = max(-10.0, min(10.0, gestalt_adj))
+
+        # Clamp so gestalt cannot cross the pass threshold boundary:
+        # a failing geo_mean stays failing, a passing geo_mean stays passing.
+        threshold = self._pass_threshold
+        if geo_mean < threshold and geo_mean + gestalt_adj >= threshold:
+            gestalt_adj = threshold - geo_mean - 0.01
+        elif geo_mean >= threshold and geo_mean + gestalt_adj < threshold:
+            gestalt_adj = threshold - geo_mean
 
         # Step 6: Compute final score (clamped to [0, 100])
         final = max(0.0, min(100.0, geo_mean + gestalt_adj))

@@ -38,8 +38,11 @@ class ThreePassEvaluator:
         llm: LLMCallable,
         profile: EvaluationProfile,
         judge_id: str | None = None,
+        pass_threshold: float = 60.0,
     ) -> None:
-        self._scorer = Layer3RubricScorer(llm=llm, profile=profile, judge_id=judge_id)
+        self._scorer = Layer3RubricScorer(
+            llm=llm, profile=profile, judge_id=judge_id, pass_threshold=pass_threshold
+        )
         self._judge_id = judge_id
 
     async def run(self, output_text: str, contract: SprintContract) -> Layer3Result:

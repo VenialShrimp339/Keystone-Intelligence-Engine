@@ -30,7 +30,7 @@ Consider these emergent qualities that are not captured by individual dimensions
 
 ## Adjustment Range
 
-Propose a numeric adjustment between -10 and +10 to be added to the dimensional composite score.
+Propose a numeric adjustment between -10 and +10 to be added to the dimensional composite score. This adjustment informs the final composite but cannot change a pass/fail outcome — a report that fails the dimensional threshold is not rescued by a positive gestalt, and a report that passes is not failed by a negative gestalt.
 
 - **-10 to -6:** The whole is significantly less than the sum of its parts. Sections contradict each other, quality is wildly inconsistent, or the output feels assembled rather than authored.
 - **-5 to -1:** The output has specific holistic weaknesses: missed connections, inconsistent quality, or a feeling of competent-but-hollow.

@@ -201,7 +201,7 @@ class TestSelection:
 
     @pytest.mark.asyncio
     async def test_judge_fallback_on_bad_json(self) -> None:
-        """If judge returns bad JSON, fallback to highest confidence analyst."""
+        """If judge returns bad JSON, fallback to median confidence with no selection."""
 
         async def bad_judge(prompt: str) -> str:
             if "contradict" in prompt.lower():
@@ -216,7 +216,8 @@ class TestSelection:
         aggregator = Aggregator(judge_llm=bad_judge)
         result = await aggregator.aggregate(outputs, claims)
 
-        assert result[0].selected_from == "ach"  # highest confidence
+        assert result[0].selected_from is None
+        assert result[0].mean_confidence == pytest.approx(0.50)  # median of 0.90, 0.10
         assert "Fallback" in (result[0].selection_reasoning or "")
 
 

@@ -407,13 +407,13 @@ class TestDeepPromptConstruction:
         assert "PARSED EVIDENCE ALREADY FETCHED" in prompt
         assert "Key LiDAR revenue datum" in prompt
 
-    def test_prompt_demands_at_least_twenty_claims(self) -> None:
-        """Regression: deep mode is worthless if we forget to ask for volume."""
+    def test_prompt_demands_proportional_claims(self) -> None:
+        """Regression: deep mode prompt must request claim volume."""
         gw, _ = _build_gateway()
         agent = ResearchAgent(llm=_shallow_fallback_llm, gateway=gw, deep_llm=_deep_llm)
         prompt = agent._build_deep_research_prompt(_make_task(), _make_spec(), _make_agent())
 
-        assert "at least 20 claims" in prompt
+        assert "15-30 claims" in prompt
 
     def test_prompt_bakes_in_anti_confirmatory_instructions(self) -> None:
         gw, _ = _build_gateway()

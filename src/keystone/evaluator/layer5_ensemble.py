@@ -83,6 +83,7 @@ class EnsembleL3Evaluator:
         self,
         judges: list[tuple[str, LLMCallable]],
         profile: EvaluationProfile,
+        pass_threshold: float = 60.0,
     ) -> None:
         if len(judges) < 1:
             msg = "EnsembleL3Evaluator requires at least 1 judge"
@@ -92,7 +93,12 @@ class EnsembleL3Evaluator:
         self._profile = profile
         self._weights = get_profile_weights(profile)
         self._judges: list[tuple[str, ThreePassEvaluator]] = [
-            (judge_id, ThreePassEvaluator(llm=llm, profile=profile, judge_id=judge_id))
+            (
+                judge_id,
+                ThreePassEvaluator(
+                    llm=llm, profile=profile, judge_id=judge_id, pass_threshold=pass_threshold
+                ),
+            )
             for judge_id, llm in judges
         ]
 

@@ -124,7 +124,10 @@ class Aggregator:
             # Judge-based selection for disputed claims
             if variance > self._dispute_variance_threshold and len(confidences) >= 2:
                 selected_type, sel_reasoning = await self._judge_select(claim, scores, reasoning)
-                mean_conf = scores.get(selected_type, statistics.mean(confidences))
+                if selected_type is not None and selected_type in scores:
+                    mean_conf = scores[selected_type]
+                else:
+                    mean_conf = statistics.median(confidences)
             else:
                 selected_type = None
                 sel_reasoning = None
@@ -258,9 +261,10 @@ class Aggregator:
                 claim.index,
             )
 
-        # Fallback: pick highest confidence analyst
-        best = max(scores, key=scores.get)  # type: ignore[arg-type]
-        return best, "Fallback: selected highest confidence analyst"
+        # Fallback: median confidence, no selected analyst. Median is
+        # conservative and mathematically neutral; max picks the most
+        # aggressive analyst, which is the wrong default on parse failure.
+        return None, "Fallback: judge parse failed, using median confidence"
 
     async def _consistency_check(self, claims: list[AggregatedClaim]) -> None:
         """Screen selected claims for incoherence."""

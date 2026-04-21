@@ -859,7 +859,9 @@ class TestResearchAgentEvidenceIntegration:
         async for _ in agent.execute(_make_task(), _make_spec(), _make_agent()):
             pass
 
-        synthesis_prompts = [p for p in captured_prompts if "Synthesize findings" in p]
+        synthesis_prompts = [
+            p for p in captured_prompts if "Synthesize" in p and "claims" in p.lower()
+        ]
         assert synthesis_prompts
         for prompt in synthesis_prompts:
             assert "Parsed evidence passages" not in prompt
@@ -890,7 +892,9 @@ class TestResearchAgentEvidenceIntegration:
         async for _ in agent.execute(_make_task(), _make_spec(), _make_agent()):
             pass
 
-        synthesis_prompts = [p for p in captured_prompts if "Synthesize findings" in p]
+        synthesis_prompts = [
+            p for p in captured_prompts if "Synthesize" in p and "claims" in p.lower()
+        ]
         assert any("Parsed evidence passages" in p for p in synthesis_prompts)
         assert any("EV-001" in p for p in synthesis_prompts)
         assert any("Survey" in p for p in synthesis_prompts)

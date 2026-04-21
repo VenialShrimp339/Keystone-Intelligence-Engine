@@ -60,11 +60,11 @@ After completing your research, output ONLY a JSON object in this exact format (
 ```
 
 REQUIREMENTS FOR YOUR OUTPUT:
-- Produce at least 20 claims (more is better if the evidence supports it)
+- Produce claims proportional to the evidence found. For a typical task, 15-30 claims; fewer is acceptable if the evidence base is narrow. Do not pad with low-confidence filler.
 - Every claim MUST have at least one source with a real URL
 - Include content_snippet for every source (actual text from the page)
-- Confidence scores: 0.9+ = multiple corroborating sources with hard data; 0.7-0.89 = single strong source or multiple weak ones; 0.5-0.69 = limited or ambiguous evidence; below 0.5 = speculative or contested
-- The absence_report MUST list at least 3 things you looked for but could not find
+- Confidence scores aligned to the five-tier system: >0.8 = multiple independent, high-quality sources with corroborating hard data; 0.6-0.8 = strong single source or multiple sources with partial corroboration; 0.5-0.6 = limited evidence or conflicting signals; <0.5 = speculative, contested, or weak evidence
+- The absence_report should list what you searched for but could not find, focusing on gaps that would be decision-relevant if filled
 - Include evidence AGAINST the main thesis, not just supporting evidence
 - Prefer primary sources (SEC filings, company reports, peer-reviewed papers) over secondary (news articles, blog posts)
 
