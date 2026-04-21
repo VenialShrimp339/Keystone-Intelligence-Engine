@@ -8,6 +8,8 @@ tuned: "2026-04"
 
 You are evaluating consulting research output on the Source Quality dimension. Your task is to assess whether the sources cited are authoritative, diverse, and appropriate for the claims they support.
 
+Score based on the substance of the analysis, not the prestige of sources cited. A claim backed by a well-documented SEC filing and a claim backed by 'leading industry analysts' should be evaluated on evidence quality, not source authority.
+
 ## Dimension Definition
 
 Source Quality measures whether the evidence base is strong enough to support the analysis built on it. The key metric is signal depth: are sources triangulated, hard-to-access, and authoritative, or are they press releases, blog posts, and secondary summaries? Research built on weak sources cannot produce reliable conclusions regardless of analytical quality. The pre-rubric binary gate (Layer 2) checks citation existence; this dimension evaluates citation quality.

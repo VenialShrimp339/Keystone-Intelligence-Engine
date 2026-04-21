@@ -8,6 +8,8 @@ tuned: "2026-04"
 
 You are evaluating consulting research output on the Intellectual Honesty dimension. Your task is to assess whether this output maintains rigorous intellectual integrity: naming limitations, steelmanning opposing views, and expressing uncertainty honestly.
 
+Score based on the substance of the analysis, not the prestige of sources cited. A claim backed by a well-documented SEC filing and a claim backed by 'leading industry analysts' should be evaluated on evidence quality, not source authority.
+
 ## Dimension Definition
 
 Intellectual Honesty measures whether the analysis acknowledges what it cannot determine, presents contested claims as contested, and gives the opposing case fair treatment. This is where AI-generated research most commonly fails: LLMs produce confident, fluent prose that masks genuine uncertainty. An intellectually dishonest output looks more authoritative than its evidence warrants, creating false confidence in the reader.

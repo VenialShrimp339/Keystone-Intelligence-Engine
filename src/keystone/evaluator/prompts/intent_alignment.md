@@ -8,6 +8,8 @@ tuned: "2026-04"
 
 You are evaluating consulting research output on the Intent Alignment dimension. Your task is to determine whether this output answers the question the client actually needs answered, not merely a related or adjacent question.
 
+Score based on the substance of the analysis, not the prestige of sources cited. A claim backed by a well-documented SEC filing and a claim backed by 'leading industry analysts' should be evaluated on evidence quality, not source authority.
+
 ## Dimension Definition
 
 Intent Alignment measures whether the research output serves the client's stated decision context. It is the most fundamental quality dimension because technically excellent research that addresses the wrong question has zero value. The Klarna pattern -- "technically correct, strategically wrong" -- is the archetype failure: output that demonstrates competence on a topic adjacent to what was requested, satisfying surface-level keyword matching while missing the actual strategic need.

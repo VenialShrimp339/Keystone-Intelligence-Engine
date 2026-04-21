@@ -15,7 +15,8 @@ import logging
 from pydantic import ValidationError
 
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
-from keystone.models.research import EngagementType, ResearchSpec
+from keystone.llm.parsing import ParseError, safe_llm_json
+from keystone.models.research import EngagementType, PipelineProfile, ResearchSpec
 from keystone.models.tasks import (
     ModelTier,
     ResearchTask,
@@ -24,13 +25,11 @@ from keystone.models.tasks import (
     TaskImportance,
     TaskType,
 )
-from keystone.models.research import PipelineProfile
-from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.specification._prompts import load_prompt
 from keystone.specification.decomposer import IssueTree
 from keystone.specification.priority_scorer import PriorityScore
 from keystone.specification.template_registry import TemplateRegistry
-from keystone.tool_names import BASELINE_AGENT_TOOLS
+from keystone.tool_names import ALL_TOOLS, BASELINE_AGENT_TOOLS, SYSTEM_OWNED_TOOLS
 
 logger = logging.getLogger(__name__)
 
@@ -93,6 +92,8 @@ class TaskGenerator:
         """
         priority_ranks = self._build_priority_ranks(priorities)
 
+        _system_owned = set(SYSTEM_OWNED_TOOLS)
+        _assignable_tools = [t for t in ALL_TOOLS if t not in _system_owned]
         prompt = load_prompt(
             "task_generation",
             question=spec.questions[0].question if spec.questions else "",
@@ -102,6 +103,7 @@ class TaskGenerator:
             issue_tree=json.dumps(tree.model_dump(), indent=2),
             priorities=json.dumps([p.model_dump() for p in priorities], indent=2),
             day_1_hypothesis=spec.day_1_hypothesis or "",
+            available_tools=", ".join(_assignable_tools),
         )
 
         last_error: Exception | None = None
@@ -204,8 +206,6 @@ class TaskGenerator:
         engagement_type: EngagementType,
     ) -> list[str]:
         """Resolve tool assignments: use LLM-provided if valid, else template match."""
-        from keystone.tool_names import ALL_TOOLS
-
         registered = set(ALL_TOOLS)
         tools = task_data.get("assigned_tools", [])
         if isinstance(tools, list):

@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field
 
+from keystone.deliberation._prompts import load_prompt as load_deliberation_prompt
 from keystone.deliberation.aggregator import AggregatedClaim
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
 from keystone.llm.parsing import ParseError, safe_llm_json
@@ -42,14 +43,11 @@ async def run_wwhtb(
 
     results: list[WWHTBResult] = []
     for claim in low_conf:
-        prompt = (
-            f"For the following uncertain claim, identify the key assumptions "
-            f"that would have to be true for it to hold. List 2-5 specific, "
-            f"testable assumptions.\n\n"
-            f"Claim: {claim.claim_text}\n"
-            f"Current confidence: {claim.mean_confidence:.2f}\n"
-            f"Dissenting views: {', '.join(claim.dissenting_analysts) or 'none'}\n\n"
-            f'Respond with JSON: {{"assumptions": ["assumption 1", "assumption 2"]}}'
+        prompt = load_deliberation_prompt(
+            "wwhtb",
+            claim_text=claim.claim_text,
+            mean_confidence=f"{claim.mean_confidence:.2f}",
+            dissenting_views=", ".join(claim.dissenting_analysts) or "none",
         )
         response = await retry_llm_call(llm, prompt, description=f"wwhtb_claim_{claim.index}")
         try:

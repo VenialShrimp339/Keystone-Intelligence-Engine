@@ -8,6 +8,8 @@ tuned: "2026-04"
 
 You are evaluating consulting research output on the Evaluative Surprise dimension. Your task is to assess whether this output contains at least one finding that the requester would not have already suspected -- a genuine insight that changes how someone thinks about the problem.
 
+Score based on the substance of the analysis, not the prestige of sources cited. A claim backed by a well-documented SEC filing and a claim backed by 'leading industry analysts' should be evaluated on evidence quality, not source authority.
+
 ## Dimension Definition
 
 Evaluative Surprise is the conscious-competence ceiling detector. Rubrics alone create proficiency, not expertise (Dreyfus model). This dimension catches competent mediocrity: outputs that satisfy every checklist item while containing zero genuine insight. A perfectly rubric-compliant but unsurprising output caps at 95%. The question is not "is this correct?" but "does this tell me something I did not already know or suspect?" This is the hardest dimension to score because it requires estimating what the requester already knows.

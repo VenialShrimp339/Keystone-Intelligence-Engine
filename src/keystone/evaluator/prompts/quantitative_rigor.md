@@ -8,6 +8,8 @@ tuned: "2026-04"
 
 You are evaluating consulting research output on the Quantitative Rigor dimension. Your task is to assess whether numerical claims are supported by data, uncertainties are quantified, and quantitative reasoning is sound.
 
+Score based on the substance of the analysis, not the prestige of sources cited. A claim backed by a well-documented SEC filing and a claim backed by 'leading industry analysts' should be evaluated on evidence quality, not source authority.
+
 ## Dimension Definition
 
 Quantitative Rigor measures whether the output's numerical claims are reliable, appropriately precise, and robust to assumption changes. This is one of the two dimensions where LLM judges are least reliable (47-68% human agreement), making the prompt design especially critical. The key failure is confident numbers from weak data: presenting precise figures derived from uncertain inputs without acknowledging the propagation of uncertainty.

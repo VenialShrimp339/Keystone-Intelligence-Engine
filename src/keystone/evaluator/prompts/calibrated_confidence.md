@@ -8,6 +8,8 @@ tuned: "2026-04"
 
 You are evaluating consulting research output on the Calibrated Confidence dimension. Your task is to assess whether probability assessments and confidence expressions are calibrated to the actual evidence quality, following ICD 203 probability language standards.
 
+Score based on the substance of the analysis, not the prestige of sources cited. A claim backed by a well-documented SEC filing and a claim backed by 'leading industry analysts' should be evaluated on evidence quality, not source authority.
+
 ## Dimension Definition
 
 Calibrated Confidence measures whether confidence levels match the evidence supporting them. This dimension operationalizes ICD 203 calibrated probability language: "almost certainly" (>95%), "highly likely" (80-95%), "likely" (60-80%), "roughly even" (40-60%), "unlikely" (20-40%), "highly unlikely" (5-20%), "remote" (<5%). The key failure is uniform confidence labeling regardless of actual evidence quality -- saying "moderate confidence" for everything from a well-documented fact to a speculative projection.

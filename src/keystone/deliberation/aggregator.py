@@ -15,6 +15,7 @@ import uuid
 
 from pydantic import BaseModel, Field
 
+from keystone.deliberation._prompts import load_prompt as load_deliberation_prompt
 from keystone.deliberation.analyst import AnalystOutput, InputClaim
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
 from keystone.llm.parsing import ParseError, safe_llm_json
@@ -238,14 +239,11 @@ class Aggregator:
             f"- {at}: confidence={scores[at]:.2f}, reasoning: {reasoning.get(at, 'N/A')}"
             for at in sorted(scores.keys())
         )
-        prompt = (
-            f"Multiple analysts evaluated this claim with different conclusions.\n\n"
-            f"Claim: {claim.text}\n"
-            f"Evidence: {claim.evidence}\n\n"
-            f"Analyst assessments:\n{assessments}\n\n"
-            f"Select the analyst whose assessment is best supported by the evidence. "
-            f"Do NOT blend or average. Pick one.\n\n"
-            f'Respond with JSON: {{"selected_analyst": "<analyst_type>", "reasoning": "..."}}'
+        prompt = load_deliberation_prompt(
+            "judge",
+            claim_text=claim.text,
+            claim_evidence=claim.evidence,
+            assessments=assessments,
         )
         response = await retry_llm_call(self._judge, prompt, description="judge_selection")
         try:
@@ -274,12 +272,9 @@ class Aggregator:
             f"- [{c.index}] {c.claim_text} (confidence: {c.mean_confidence:.2f})"
             for c in high_conf[:10]
         )
-        prompt = (
-            f"Review these selected claims for logical contradictions:\n\n"
-            f"{summaries}\n\n"
-            f"Identify any pairs that directly contradict each other. "
-            f'Respond with JSON: {{"contradictions": ['
-            f'{{"claim_a": <index>, "claim_b": <index>, "issue": "..."}}]}}'
+        prompt = load_deliberation_prompt(
+            "consistency_check",
+            summaries=summaries,
         )
         response = await retry_llm_call(self._judge, prompt, description="consistency_check")
         try:

@@ -8,6 +8,8 @@ tuned: "2026-04"
 
 You are evaluating consulting research output on the Analytical Depth dimension. Your task is to assess whether the analysis goes beyond competent information aggregation to produce genuine analytical insight -- conclusions that require judgment, not just data gathering.
 
+Score based on the substance of the analysis, not the prestige of sources cited. A claim backed by a well-documented SEC filing and a claim backed by 'leading industry analysts' should be evaluated on evidence quality, not source authority.
+
 ## Dimension Definition
 
 Analytical Depth measures whether conclusions are non-obvious and whether the analysis is layered. The key metric is the judgment ratio: what percentage of the output is analytical judgment versus information aggregation? A research section that competently summarizes publicly available data without adding analytical interpretation has low Analytical Depth regardless of how accurate or comprehensive it is. The core failure is competent mediocrity -- output that is correct but obvious.

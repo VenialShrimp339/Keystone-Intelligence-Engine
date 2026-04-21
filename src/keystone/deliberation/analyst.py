@@ -15,11 +15,12 @@ from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
 
-logger = logging.getLogger(__name__)
-
+from keystone.deliberation._prompts import load_prompt as load_deliberation_prompt
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
 from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.models.agents import DeliberationAnalystType
+
+logger = logging.getLogger(__name__)
 
 if TYPE_CHECKING:
     from keystone.models.research import StructuredFinding
@@ -85,6 +86,24 @@ METHODOLOGY_PROMPTS: dict[str, str] = {
         "based on robustness across plausible scenarios."
     ),
 }
+
+# Mapping from analyst type to .md prompt file name (without extension).
+# .md files take precedence over METHODOLOGY_PROMPTS in _build_prompt.
+_ANALYST_TYPE_TO_PROMPT_FILE: dict[str, str] = {
+    DeliberationAnalystType.ACH: "ach",
+    DeliberationAnalystType.QUANTITATIVE: "quantitative",
+    DeliberationAnalystType.ADVERSARIAL: "adversarial",
+    DeliberationAnalystType.HISTORICAL_ANALOGY: "historical_analogy",
+    DeliberationAnalystType.SCENARIO_PLANNING: "scenario_planning",
+}
+
+
+def _load_methodology_prompt(analyst_type: str) -> str:
+    """Load methodology prompt from .md file, falling back to METHODOLOGY_PROMPTS."""
+    name = _ANALYST_TYPE_TO_PROMPT_FILE.get(analyst_type)
+    if name is None:
+        return METHODOLOGY_PROMPTS.get(analyst_type, "Evaluate each claim for confidence.")
+    return load_deliberation_prompt(name)
 
 
 def extract_claims(findings: list[StructuredFinding]) -> list[InputClaim]:
@@ -160,10 +179,7 @@ class Analyst:
         )
 
     def _build_prompt(self, claims: list[InputClaim]) -> str:
-        methodology = METHODOLOGY_PROMPTS.get(
-            self._analyst_type,
-            "Evaluate each claim for confidence.",
-        )
+        methodology = _load_methodology_prompt(self._analyst_type)
         claims_text = "\n".join(
             f"[{c.index}] {c.text}\n"
             f"  Evidence: {c.evidence}\n"
