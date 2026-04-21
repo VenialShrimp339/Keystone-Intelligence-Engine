@@ -39,6 +39,9 @@ from keystone.models.tasks import (
 )
 from keystone.research.evidence_context import (
     EvidenceContextProvider,
+    _relevance_score,
+    build_default_task_filter,
+    build_default_task_ranker,
     evidence_to_citation,
     infer_source_type,
 )
@@ -442,6 +445,188 @@ class TestEvidenceContextProvider:
         selected = provider.records_for_task(_make_task())
         rendered = provider.render_passages_for_prompt(provider.build_reference_table(selected))
         assert "p.7" in rendered
+
+
+# ---------------------------------------------------------------------------
+# GAP-03: Task-aware evidence filtering + relevance ranking
+# ---------------------------------------------------------------------------
+
+
+class TestBuildDefaultTaskFilter:
+    def test_passes_all_when_required_sources_empty(self) -> None:
+        filt = build_default_task_filter()
+        task = _make_task(required_sources=[])
+        record = _make_record(source_family=SourceFamily.ARTICLE)
+        assert filt(task, record) is True
+
+    def test_passes_matching_academic_url(self) -> None:
+        filt = build_default_task_filter()
+        task = _make_task(required_sources=["academic"])
+        record = _make_record(
+            canonical_url="https://arxiv.org/abs/2025.12345",
+            source_family=SourceFamily.ARTICLE,
+        )
+        assert filt(task, record) is True
+
+    def test_excludes_news_when_academic_required(self) -> None:
+        filt = build_default_task_filter()
+        task = _make_task(required_sources=["academic"])
+        record = _make_record(
+            canonical_url="https://reuters.com/article/x",
+            source_family=SourceFamily.ARTICLE,
+        )
+        assert filt(task, record) is False
+
+    def test_passes_filing_for_financial_data(self) -> None:
+        filt = build_default_task_filter()
+        task = _make_task(required_sources=["financial_data"])
+        record = _make_record(
+            canonical_url="https://www.sec.gov/cgi-bin/browse-edgar",
+            source_family=SourceFamily.PDF,
+        )
+        assert filt(task, record) is True
+
+    def test_passes_report_for_industry_reports(self) -> None:
+        filt = build_default_task_filter()
+        task = _make_task(required_sources=["industry_reports"])
+        record = _make_record(
+            canonical_url="https://internal.example.com/whitepaper",
+            source_family=SourceFamily.REPORT,
+        )
+        assert filt(task, record) is True
+
+    def test_excludes_article_for_industry_reports(self) -> None:
+        filt = build_default_task_filter()
+        task = _make_task(required_sources=["industry_reports"])
+        record = _make_record(
+            canonical_url="https://techcrunch.com/article",
+            source_family=SourceFamily.ARTICLE,
+        )
+        assert filt(task, record) is False
+
+    def test_passes_gov_url_for_government(self) -> None:
+        filt = build_default_task_filter()
+        task = _make_task(required_sources=["government"])
+        record = _make_record(
+            canonical_url="https://data.bls.gov/stats",
+            source_family=SourceFamily.REPORT,
+        )
+        assert filt(task, record) is True
+
+    def test_multiple_required_sources_is_or(self) -> None:
+        filt = build_default_task_filter()
+        task = _make_task(required_sources=["academic", "news"])
+        arxiv = _make_record(
+            record_id="ev:1",
+            canonical_url="https://arxiv.org/abs/1",
+            source_family=SourceFamily.ARTICLE,
+        )
+        reuters = _make_record(
+            record_id="ev:2",
+            canonical_url="https://reuters.com/a",
+            source_family=SourceFamily.ARTICLE,
+        )
+        assert filt(task, arxiv) is True
+        assert filt(task, reuters) is True
+
+    def test_unknown_required_source_passes_all(self) -> None:
+        filt = build_default_task_filter()
+        task = _make_task(required_sources=["exotic_satellite_feeds"])
+        record = _make_record()
+        assert filt(task, record) is True
+
+
+class TestRelevanceScore:
+    def test_identical_text_scores_high(self) -> None:
+        score = _relevance_score("market growth analysis", "market growth analysis")
+        assert score > 0.9
+
+    def test_disjoint_text_scores_zero(self) -> None:
+        assert _relevance_score("quantum physics experiments", "banana recipe cookbook") == 0.0
+
+    def test_partial_overlap_is_between_zero_and_one(self) -> None:
+        score = _relevance_score("market growth analysis report", "market size estimation report")
+        assert 0 < score < 1
+
+    def test_empty_text_scores_zero(self) -> None:
+        assert _relevance_score("", "something") == 0.0
+        assert _relevance_score("something", "") == 0.0
+
+    def test_stopwords_only_scores_zero(self) -> None:
+        assert _relevance_score("the and or", "is are was") == 0.0
+
+
+class TestDefaultTaskRanker:
+    def test_ranks_relevant_record_higher(self) -> None:
+        ranker = build_default_task_ranker()
+        task = _make_task(description="Market size estimation for AV sensors")
+        relevant = _make_record(
+            record_id="ev:rel",
+            text="The AV sensor market size reached $12B in 2025",
+        )
+        irrelevant = _make_record(
+            record_id="ev:irr",
+            text="Climate change affects coral reef biodiversity patterns",
+        )
+        assert ranker(task, relevant) > ranker(task, irrelevant)
+
+
+class TestFilteredAndRankedProvider:
+    def test_filter_plus_ranker_plus_cap(self) -> None:
+        task = _make_task(
+            description="Estimate TAM for autonomous vehicle sensors",
+            required_sources=["industry_reports"],
+        )
+
+        report_relevant = _make_record(
+            record_id="ev:1",
+            source_family=SourceFamily.REPORT,
+            text="The autonomous vehicle sensor market is growing",
+            canonical_url="https://example.com/av-report",
+        )
+        report_irrelevant = _make_record(
+            record_id="ev:2",
+            source_family=SourceFamily.REPORT,
+            text="Cloud computing costs declined in Q3 2025",
+            canonical_url="https://example.com/cloud-report",
+        )
+        article_excluded = _make_record(
+            record_id="ev:3",
+            source_family=SourceFamily.ARTICLE,
+            text="AV sensors are the future of automotive",
+            canonical_url="https://techcrunch.com/av-sensors",
+        )
+
+        provider = EvidenceContextProvider(
+            [report_irrelevant, article_excluded, report_relevant],
+            task_filter=build_default_task_filter(),
+            task_ranker=build_default_task_ranker(),
+            max_passages_per_task=2,
+        )
+        selected = provider.records_for_task(task)
+        # article_excluded filtered out (NEWS, not REPORT)
+        # report_relevant ranks above report_irrelevant
+        assert len(selected) == 2
+        assert selected[0].record_id == "ev:1"
+        assert selected[1].record_id == "ev:2"
+
+    def test_ranker_without_filter(self) -> None:
+        task = _make_task(description="Estimate market size")
+        relevant = _make_record(record_id="ev:rel", text="market size estimate report")
+        irrelevant = _make_record(record_id="ev:irr", text="unrelated coral reef biology")
+
+        provider = EvidenceContextProvider(
+            [irrelevant, relevant],
+            task_ranker=build_default_task_ranker(),
+        )
+        selected = provider.records_for_task(task)
+        assert selected[0].record_id == "ev:rel"
+
+    def test_no_ranker_preserves_original_order(self) -> None:
+        records = [_make_record(record_id=f"ev:{i}") for i in range(5)]
+        provider = EvidenceContextProvider(records, max_passages_per_task=3)
+        selected = provider.records_for_task(_make_task())
+        assert [r.record_id for r in selected] == ["ev:0", "ev:1", "ev:2"]
 
 
 # ---------------------------------------------------------------------------

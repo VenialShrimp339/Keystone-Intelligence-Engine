@@ -39,6 +39,9 @@ from keystone.retrieval.parse_models import (
 TaskFilter = Callable[[ResearchTask, EvidencePrepRecord], bool]
 """Predicate deciding whether a record is relevant to a task."""
 
+TaskRanker = Callable[[ResearchTask, EvidencePrepRecord], float]
+"""Score function for ranking records by relevance to a task."""
+
 # Map Lane E's coarse source_family to the research pipeline's SourceType.
 # URL-based inference (below) takes precedence when it matches.
 _FAMILY_TO_SOURCE_TYPE: dict[SourceFamily, SourceType] = {
@@ -83,6 +86,118 @@ _PASSAGE_PREVIEW_CHARS = 360
 # Maximum characters of passage text stored on Citation.content_snippet.
 # Keeps manifest size bounded; full text lives in the originating record.
 _CITATION_SNIPPET_CHARS = 500
+
+# ---------------------------------------------------------------------------
+# GAP-03: Task-aware evidence filtering + relevance ranking
+# ---------------------------------------------------------------------------
+
+_REQUIRED_TO_INFERRED: dict[str, frozenset[SourceType]] = {
+    "industry_reports": frozenset({SourceType.REPORT}),
+    "financial_data": frozenset({SourceType.FILING, SourceType.REPORT}),
+    "academic": frozenset({SourceType.ACADEMIC}),
+    "news": frozenset({SourceType.NEWS}),
+    "government": frozenset({SourceType.GOVERNMENT}),
+}
+
+_STOP_WORDS = frozenset(
+    {
+        "a",
+        "an",
+        "the",
+        "and",
+        "or",
+        "but",
+        "in",
+        "on",
+        "at",
+        "to",
+        "for",
+        "of",
+        "with",
+        "by",
+        "from",
+        "is",
+        "are",
+        "was",
+        "were",
+        "be",
+        "been",
+        "has",
+        "have",
+        "had",
+        "do",
+        "does",
+        "did",
+        "will",
+        "would",
+        "could",
+        "should",
+        "may",
+        "might",
+        "shall",
+        "can",
+        "this",
+        "that",
+        "these",
+        "those",
+        "it",
+        "its",
+        "not",
+        "no",
+        "nor",
+    }
+)
+
+
+def _tokenize(text: str) -> set[str]:
+    """Lowercase, split on whitespace, drop stopwords and single chars."""
+    return {w for w in text.lower().split() if w not in _STOP_WORDS and len(w) > 1}
+
+
+def _relevance_score(task_description: str, record_text: str) -> float:
+    """Jaccard index between task description and record text tokens."""
+    task_tokens = _tokenize(task_description)
+    record_tokens = _tokenize(record_text)
+    if not task_tokens or not record_tokens:
+        return 0.0
+    intersection = task_tokens & record_tokens
+    union = task_tokens | record_tokens
+    return len(intersection) / len(union)
+
+
+def _record_matches_required_source(record: EvidencePrepRecord, required: str) -> bool:
+    """Check if a record matches a ``required_sources`` value."""
+    allowed = _REQUIRED_TO_INFERRED.get(required)
+    if allowed is None:
+        return True
+    inferred = infer_source_type(record.canonical_url, record.source_family)
+    return inferred in allowed
+
+
+def build_default_task_filter() -> TaskFilter:
+    """Source-family filter keyed off ``task.required_sources``.
+
+    When ``required_sources`` is empty, all records pass.  When populated,
+    a record passes if it matches ANY of the required source types (OR
+    semantics).  Unknown source type strings are treated as wildcards so
+    newly-added source types don't silently drop all evidence.
+    """
+
+    def _filter(task: ResearchTask, record: EvidencePrepRecord) -> bool:
+        if not task.required_sources:
+            return True
+        return any(_record_matches_required_source(record, src) for src in task.required_sources)
+
+    return _filter
+
+
+def build_default_task_ranker() -> TaskRanker:
+    """Jaccard relevance ranking against ``task.description``."""
+
+    def _ranker(task: ResearchTask, record: EvidencePrepRecord) -> float:
+        return _relevance_score(task.description, record.text)
+
+    return _ranker
 
 
 def infer_source_type(url: str, source_family: SourceFamily) -> SourceType:
@@ -197,6 +312,7 @@ class EvidenceContextProvider:
         records: Iterable[EvidencePrepRecord],
         *,
         task_filter: TaskFilter | None = None,
+        task_ranker: TaskRanker | None = None,
         max_passages_per_task: int = 20,
     ) -> None:
         if max_passages_per_task < 1:
@@ -207,6 +323,7 @@ class EvidenceContextProvider:
             deduped.setdefault(record.record_id, record)
         self._records: tuple[EvidencePrepRecord, ...] = tuple(deduped.values())
         self._task_filter = task_filter
+        self._task_ranker = task_ranker
         self._max_per_task = max_passages_per_task
 
     @property
@@ -224,9 +341,8 @@ class EvidenceContextProvider:
         """Return the records that should be visible for ``task``.
 
         Applies the ``task_filter`` predicate when one was supplied,
-        then caps the result to ``max_passages_per_task``. The ordering
-        of the underlying store is preserved so EV reference numbers
-        remain stable across calls for the same task.
+        ranks by ``task_ranker`` when one was supplied (most relevant
+        first), then caps the result to ``max_passages_per_task``.
         """
 
         if not self._records:
@@ -236,6 +352,9 @@ class EvidenceContextProvider:
             selected = list(self._records)
         else:
             selected = [r for r in self._records if self._task_filter(task, r)]
+
+        if self._task_ranker is not None:
+            selected.sort(key=lambda r: self._task_ranker(task, r), reverse=True)
 
         if len(selected) > self._max_per_task:
             selected = selected[: self._max_per_task]

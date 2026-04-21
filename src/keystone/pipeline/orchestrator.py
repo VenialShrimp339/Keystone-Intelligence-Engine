@@ -40,7 +40,11 @@ from keystone.models.tasks import ModelTier, ResearchTask
 from keystone.pipeline.markdown_renderer import MarkdownRenderer
 from keystone.research.agent_pool import AgentPool
 from keystone.research.error_recovery import ErrorRecovery
-from keystone.research.evidence_context import EvidenceContextProvider
+from keystone.research.evidence_context import (
+    EvidenceContextProvider,
+    build_default_task_filter,
+    build_default_task_ranker,
+)
 from keystone.retrieval.parse_models import EvidencePrepRecord
 from keystone.retrieval.search.retrieval_service import RetrievalService
 from keystone.specification.spec_engine import SpecificationEngine
@@ -224,7 +228,11 @@ class Pipeline:
 
         evidence_provider: EvidenceContextProvider | None = None
         if self._evidence_records:
-            evidence_provider = EvidenceContextProvider(self._evidence_records)
+            evidence_provider = EvidenceContextProvider(
+                self._evidence_records,
+                task_filter=build_default_task_filter(),
+                task_ranker=build_default_task_ranker(),
+            )
 
         sprint_contract_generator = SprintContractGenerator(
             llm=self._layer_llm(
