@@ -18,6 +18,19 @@ from uuid import uuid4
 
 from pydantic import BaseModel, Field
 
+from keystone.checkpoint.serialization import (
+    deserialize_post_deliberation,
+    deserialize_post_evaluation,
+    deserialize_post_l1_citproc,
+    deserialize_post_spec,
+    deserialize_post_structuring,
+    serialize_post_deliberation,
+    serialize_post_evaluation,
+    serialize_post_l1_citproc,
+    serialize_post_spec,
+    serialize_post_structuring,
+)
+from keystone.checkpoint.store import STAGE_ORDER, CheckpointStore
 from keystone.citation.processor import CitationProcessor
 from keystone.deliberation.deliberation import Deliberation
 from keystone.evaluator.evaluator import Evaluator
@@ -28,6 +41,7 @@ from keystone.evaluator.sprint_contract import SprintContractGenerator
 from keystone.events import AnyPipelineEvent, ChunkIngested, ObservationRecorded, SearchCompleted
 from keystone.gateway.mcp_gateway import MCPGateway
 from keystone.gateway.retrieval_bridge import register_retrieval_handlers
+from keystone.governance.models import GovernanceState
 from keystone.governance.policy import ProfileExecutionPolicy
 from keystone.llm_client import LayerAwareLLMFactory, get_deep_research_callable
 from keystone.models.agents import AgentInstance
@@ -50,6 +64,7 @@ from keystone.retrieval.parse_models import EvidencePrepRecord
 from keystone.retrieval.search.retrieval_service import RetrievalService
 from keystone.specification.spec_engine import SpecificationEngine
 from keystone.specification.template_registry import TemplateRegistry
+from keystone.models.structuring import StructuredOutline
 from keystone.structuring.content_structuring import (
     ContentStructurer,
     filter_outline_by_passed_tasks,
@@ -120,6 +135,7 @@ class Pipeline:
         | None = None,
         pipeline_config: PipelineConfig | None = None,
         observation_store: ObservationStore | None = None,
+        checkpoint_store: CheckpointStore | None = None,
     ) -> None:
         """Construct a pipeline.
 
@@ -165,6 +181,7 @@ class Pipeline:
         self._retrieval_service_factory = retrieval_service_factory
         self._ensemble_panel_override = ensemble_panel_override
         self._observation_store = observation_store
+        self._checkpoint_store = checkpoint_store
         # Pipeline-wide behavior knobs. Resolved in preference order:
         # explicit parameter, factory's own ``pipeline_config`` attribute
         # (when the factory is a LayerAwareLLMFactory), fresh default
@@ -391,6 +408,11 @@ class Pipeline:
         _raise_if_halted(governance)
         logger.info("L0 complete: %d tasks", len(spec.task_decomposition.tasks))
 
+        if self._checkpoint_store is not None:
+            await self._checkpoint_store.save(
+                eid, "POST_SPEC", serialize_post_spec(spec, governance)
+            )
+
         # --- Stage 1b: Retrieval wiring ---
         # Build an engagement-scoped RetrievalService, ingest Lane E
         # records into it, and register the retrieval tool handlers on
@@ -478,6 +500,15 @@ class Pipeline:
         findings = cit_result.canonicalized_findings
         logger.info("CitProc complete: %d citations", len(manifest.citations))
 
+        if self._checkpoint_store is not None:
+            await self._checkpoint_store.save(
+                eid,
+                "POST_L1_CITPROC",
+                serialize_post_l1_citproc(
+                    findings, manifest, events_by_agent, agent_by_task, governance
+                ),
+            )
+
         # --- Stage 4: L1.5 Deliberation ---
         logger.info("L1.5: Deliberating over %d findings", len(findings))
         async for event in c.deliberation.deliberate(manifest, findings, eid, client_id):
@@ -489,6 +520,13 @@ class Pipeline:
             confidence_map.total_claims,
             confidence_map.tiers_populated,
         )
+
+        if self._checkpoint_store is not None:
+            await self._checkpoint_store.save(
+                eid,
+                "POST_DELIBERATION",
+                serialize_post_deliberation(confidence_map, governance),
+            )
 
         # --- Stage 5: L2 Content Structuring ---
         eval_tasks = [
@@ -535,6 +573,20 @@ class Pipeline:
                     task_id=fallback_task_id,
                 ),
                 task_id=fallback_task_id,
+            )
+
+        if self._checkpoint_store is not None:
+            await self._checkpoint_store.save(
+                eid,
+                "POST_STRUCTURING",
+                serialize_post_structuring(
+                    outline,
+                    eval_tasks,
+                    c.content_structurer.get_section_texts(),
+                    c.content_structurer.get_sprint_contracts_map(),
+                    c.content_structurer.get_fallback_task_ids(),
+                    governance,
+                ),
             )
 
         # --- Stage 6: L4 Evaluation ---
@@ -611,6 +663,13 @@ class Pipeline:
             policy.apply_flag(governance, coverage_flag)
         _raise_if_halted(governance)
 
+        if self._checkpoint_store is not None:
+            await self._checkpoint_store.save(
+                eid,
+                "POST_EVALUATION",
+                serialize_post_evaluation(evaluation_results, governance),
+            )
+
         # Gate rendering on evaluation results: only render findings that passed.
         # This must key off passed_task_ids directly so unevaluated tasks do not
         # leak through when only a subset of tasks reached L4.
@@ -674,11 +733,397 @@ class Pipeline:
             async for event in self._write_back_outcomes(evaluation_results, spec, governance):
                 yield event
 
+        # Successful run — checkpoints are no longer needed.
+        if self._checkpoint_store is not None:
+            try:
+                await self._checkpoint_store.delete(eid)
+            except Exception:
+                logger.warning("Failed to clean up checkpoints for %s", eid, exc_info=True)
+
     async def get_result(self) -> PipelineResult:
         """Return the pipeline result after run_with_events() completes."""
         if self._result is None:
             raise RuntimeError("run() or run_with_events() must complete first")
         return self._result
+
+    async def resume_with_events(
+        self,
+        engagement_id: str,
+        question: str,
+        client_id: str,
+        client_context: str | None = None,
+    ) -> AsyncIterator[AnyPipelineEvent]:
+        """Resume a pipeline run from the last completed checkpoint.
+
+        Same return type as ``run_with_events``. Requires
+        ``self._checkpoint_store`` to be set. Raises ``ValueError`` if no
+        checkpoints exist for the engagement.
+        """
+        if self._checkpoint_store is None:
+            raise RuntimeError("Cannot resume without a checkpoint_store")
+
+        checkpoints = await self._checkpoint_store.load(engagement_id)
+        if not checkpoints:
+            raise ValueError(f"No checkpoints found for engagement {engagement_id}")
+
+        last_completed = max(
+            (s for s in STAGE_ORDER if s in checkpoints),
+            key=STAGE_ORDER.index,
+        )
+        logger.info("Resuming engagement %s from %s", engagement_id, last_completed)
+
+        # -- Deserialize all boundary variables from prior stages --
+        spec_data = deserialize_post_spec(checkpoints["POST_SPEC"])
+        spec = spec_data.spec
+        eid = spec.research_spec.engagement_id
+
+        findings: list[StructuredFinding] = []
+        manifest: CitationManifest | None = None
+        events_by_agent: dict[str, list[AnyPipelineEvent]] = {}
+        agent_by_task: dict[str, AgentInstance] = {}
+        confidence_map: ConfidenceMap | None = None
+        outline: StructuredOutline | None = None
+        eval_tasks: list[ResearchTask] = []
+        evaluation_results: list[EvaluationResult] = []
+
+        if "POST_L1_CITPROC" in checkpoints:
+            l1_data = deserialize_post_l1_citproc(checkpoints["POST_L1_CITPROC"])
+            findings = l1_data.findings
+            manifest = l1_data.manifest
+            events_by_agent = l1_data.events_by_agent
+            agent_by_task = l1_data.agent_by_task
+
+        if "POST_DELIBERATION" in checkpoints:
+            delib_data = deserialize_post_deliberation(checkpoints["POST_DELIBERATION"])
+            confidence_map = delib_data.confidence_map
+
+        if "POST_STRUCTURING" in checkpoints:
+            struct_data = deserialize_post_structuring(checkpoints["POST_STRUCTURING"])
+            outline = struct_data.outline
+            eval_tasks = struct_data.eval_tasks
+
+        if "POST_EVALUATION" in checkpoints:
+            eval_data = deserialize_post_evaluation(checkpoints["POST_EVALUATION"])
+            evaluation_results = eval_data.evaluation_results
+
+        # Governance is always taken from the latest checkpoint.
+        governance_payload = checkpoints[last_completed]
+        governance = GovernanceState.model_validate(governance_payload["governance"])
+
+        # -- Reconstruct non-serializable infrastructure --
+        self._result = None
+        c = self._build_components()
+
+        c.deliberation._effective_pipeline_profile = spec.research_spec.effective_pipeline_profile
+        policy = ProfileExecutionPolicy(
+            spec.research_spec.effective_pipeline_profile,
+            low_agreement_threshold=self._pipeline_config.l5_low_agreement_threshold,
+        )
+
+        # Populate ContentStructurer if resuming at POST_STRUCTURING or later.
+        if "POST_STRUCTURING" in checkpoints:
+            struct_data = deserialize_post_structuring(checkpoints["POST_STRUCTURING"])
+            c.content_structurer._outline = struct_data.outline
+            c.content_structurer._section_texts = struct_data.section_texts
+            c.content_structurer._sprint_contracts = struct_data.sprint_contracts
+            c.content_structurer._fallback_task_ids = struct_data.fallback_task_ids
+
+        total_tokens = 0
+
+        # Wire retrieval unconditionally (idempotent).
+        search_events: list[SearchCompleted] = []
+        async for event in self._wire_retrieval(eid, client_id, search_events):
+            yield event
+
+        def _should_run(stage: str) -> bool:
+            return STAGE_ORDER.index(stage) > STAGE_ORDER.index(last_completed)
+
+        # -- Stage 1: L0 Specification --
+        if _should_run("POST_SPEC"):
+            logger.info("L0: Generating specification for '%s'", question[:80])
+            async for event in c.spec_engine.generate_spec(
+                question, client_id, client_context=client_context
+            ):
+                yield event
+            spec = await c.spec_engine.get_spec()
+            eid = spec.research_spec.engagement_id
+            c.deliberation._effective_pipeline_profile = (
+                spec.research_spec.effective_pipeline_profile
+            )
+            policy = ProfileExecutionPolicy(
+                spec.research_spec.effective_pipeline_profile,
+                low_agreement_threshold=self._pipeline_config.l5_low_agreement_threshold,
+            )
+            governance = policy.new_state(spec.task_decomposition.tasks)
+            if not spec.validation_report.scope_valid:
+                policy.flag_mece_failure(governance)
+            _raise_if_halted(governance)
+            if self._checkpoint_store is not None:
+                await self._checkpoint_store.save(
+                    eid, "POST_SPEC", serialize_post_spec(spec, governance)
+                )
+
+        # -- Stage 2+3: L1 Research + CitationProcessor --
+        if _should_run("POST_L1_CITPROC"):
+            logger.info("L1: Dispatching %d agents", len(spec.task_decomposition.tasks))
+            assignments = self._build_assignments(spec, c.template_registry)
+            dead_letters_before = len(self._gateway.dead_letters)
+            agent_results = await c.agent_pool.execute_all(assignments)
+
+            events_by_agent = {}
+            agent_by_task = {task.id: agent for task, _, agent in assignments}
+            for ar in agent_results:
+                events_by_agent.setdefault(ar.agent_id, []).extend(ar.events)
+                for event in ar.events:
+                    yield event
+            for search_event in search_events:
+                events_by_agent.setdefault(search_event.agent_id, []).append(search_event)
+                yield search_event
+
+            findings = c.agent_pool.get_successful_findings(agent_results)
+            l1_tokens = 0
+            for f in findings:
+                l1_tokens += f.tokens_consumed
+            total_tokens += l1_tokens
+            finding_by_task = {finding.task_id: finding for finding in findings}
+            for task in spec.task_decomposition.tasks:
+                policy.record_research_outcome(governance, task, finding_by_task.get(task.id))
+            token_ceiling = self._pipeline_config.research_token_ceiling_per_task
+            for f in findings:
+                if f.tokens_consumed > token_ceiling:
+                    policy.flag_cost_ceiling(
+                        governance,
+                        task_id=f.task_id,
+                        tokens_used=f.tokens_consumed,
+                        ceiling=token_ceiling,
+                    )
+            task_id_by_agent: dict[str, str] = {
+                agent.agent_id: task_id for task_id, agent in agent_by_task.items()
+            }
+            for dl in self._gateway.dead_letters[dead_letters_before:]:
+                task_id = task_id_by_agent.get(dl.call.agent_id, dl.call.agent_id)
+                policy.flag_tool_dead_letter(
+                    governance, tool_name=dl.call.tool_name, task_id=task_id
+                )
+            _raise_if_halted(governance)
+
+            async for event in c.citation_processor.process(findings, eid, client_id):
+                yield event
+            cit_result = await c.citation_processor.get_result()
+            manifest = cit_result.manifest
+            findings = cit_result.canonicalized_findings
+
+            if self._checkpoint_store is not None:
+                await self._checkpoint_store.save(
+                    eid,
+                    "POST_L1_CITPROC",
+                    serialize_post_l1_citproc(
+                        findings, manifest, events_by_agent, agent_by_task, governance
+                    ),
+                )
+
+        # -- Stage 4: L1.5 Deliberation --
+        if _should_run("POST_DELIBERATION"):
+            assert manifest is not None
+            logger.info("L1.5: Deliberating over %d findings", len(findings))
+            async for event in c.deliberation.deliberate(manifest, findings, eid, client_id):
+                yield event
+            confidence_map = await c.deliberation.get_confidence_map()
+            if self._checkpoint_store is not None:
+                await self._checkpoint_store.save(
+                    eid,
+                    "POST_DELIBERATION",
+                    serialize_post_deliberation(confidence_map, governance),
+                )
+
+        # -- Stage 5: L2 Content Structuring --
+        if _should_run("POST_STRUCTURING"):
+            assert confidence_map is not None
+            eval_tasks = [
+                task
+                for task in spec.task_decomposition.tasks
+                if governance.task_outcomes[task.id].renderable
+            ]
+            if self._max_eval_tasks is not None:
+                eval_tasks = eval_tasks[: self._max_eval_tasks]
+            async for event in c.content_structurer.structure(
+                confidence_map,
+                findings,
+                spec,
+                eval_tasks,
+                eid,
+                client_id,
+            ):
+                yield event
+            outline = await c.content_structurer.get_outline()
+
+            for fallback_task_id in sorted(c.content_structurer.get_fallback_task_ids()):
+                from keystone.governance.models import (
+                    EnforcementAction,
+                    EnforcementScope,
+                    QualityFlag,
+                )
+
+                policy.apply_flag(
+                    governance,
+                    QualityFlag(
+                        gate="sprint_contract_fallback",
+                        action=EnforcementAction.WARN,
+                        scope=EnforcementScope.TASK,
+                        severity="warn",
+                        message=(
+                            f"Task {fallback_task_id} sprint contract negotiation "
+                            "failed; L2 used the task-derived fallback contract."
+                        ),
+                        task_id=fallback_task_id,
+                    ),
+                    task_id=fallback_task_id,
+                )
+
+            if self._checkpoint_store is not None:
+                await self._checkpoint_store.save(
+                    eid,
+                    "POST_STRUCTURING",
+                    serialize_post_structuring(
+                        outline,
+                        eval_tasks,
+                        c.content_structurer.get_section_texts(),
+                        c.content_structurer.get_sprint_contracts_map(),
+                        c.content_structurer.get_fallback_task_ids(),
+                        governance,
+                    ),
+                )
+
+        # -- Stage 6: L4 Evaluation --
+        if _should_run("POST_EVALUATION"):
+            assert outline is not None
+            assert confidence_map is not None
+            evaluation_results = []
+            l4_tokens = 0
+            for task in eval_tasks:
+                task_finding = next((f for f in findings if f.task_id == task.id), None)
+                output_text = await c.content_structurer.get_task_section_text(task.id)
+                if not output_text and task_finding is not None:
+                    output_text = _finding_to_text(task_finding)
+
+                contract = await c.content_structurer.get_sprint_contract(task.id)
+                if contract is None:
+                    contract = await c.sprint_contract_generator.generate(task, spec)
+
+                assert manifest is not None
+                task_manifest = _build_task_manifest(task_finding, manifest)
+                process_context = _build_process_context(task, agent_by_task, events_by_agent, spec)
+
+                intensity = _resolve_evaluation_intensity(spec)
+                resolver = self._ensemble_panel_override or _resolve_ensemble_judges
+                evaluator = Evaluator(
+                    llm=self._layer_llm(
+                        "l4_evaluator",
+                        fallback_tier=ModelTier.FLAGSHIP,
+                        fallback_effort="high",
+                    ),
+                    extraction_llm=self._layer_llm(
+                        "l4_extraction",
+                        fallback_tier=ModelTier.STANDARD,
+                    ),
+                    profile=_resolve_evaluation_profile(spec),
+                    intensity=intensity,
+                    ensemble_llms=resolver(intensity, self._llm_factory),
+                    pass_threshold=self._pipeline_config.evaluator_pass_threshold,
+                    layer3_weight=self._pipeline_config.evaluator_layer3_weight,
+                )
+                async for event in evaluator.evaluate(
+                    output_text,
+                    contract,
+                    task,
+                    task_manifest,
+                    spec,
+                    process_context=process_context,
+                ):
+                    yield event
+                result = await evaluator.get_result()
+                evaluation_results.append(result)
+                if result.layer4_results is not None:
+                    l4_tokens += result.layer4_results.tokens_consumed
+                policy.record_evaluation_outcome(governance, task, result)
+
+            coverage_flag = policy.evaluate_coverage(governance)
+            if coverage_flag is not None:
+                policy.apply_flag(governance, coverage_flag)
+            _raise_if_halted(governance)
+
+            if self._checkpoint_store is not None:
+                await self._checkpoint_store.save(
+                    eid,
+                    "POST_EVALUATION",
+                    serialize_post_evaluation(evaluation_results, governance),
+                )
+
+        # -- Stage 7+8: Render + Write-back (always runs on resume) --
+        assert manifest is not None
+        assert confidence_map is not None
+        assert outline is not None
+
+        passed_task_ids = {
+            task_id
+            for task_id, outcome in governance.task_outcomes.items()
+            if outcome.renderable and outcome.evaluation_status == "passed"
+        }
+        evaluated_task_ids = {r.task_id for r in evaluation_results}
+        failed_task_ids = {r.task_id for r in evaluation_results if not r.passed}
+        finding_task_ids = {f.task_id for f in findings}
+        dropped_task_ids = finding_task_ids - passed_task_ids
+
+        if dropped_task_ids:
+            unevaluated_task_ids = finding_task_ids - evaluated_task_ids
+            logger.warning(
+                "L4: excluding %d task(s) from deliverable (failed=%s, unevaluated=%s)",
+                len(dropped_task_ids),
+                failed_task_ids,
+                unevaluated_task_ids,
+            )
+        passed_findings = [f for f in findings if f.task_id in passed_task_ids]
+        filtered_confidence_map = _filter_confidence_map_by_passed_tasks(
+            confidence_map, passed_task_ids
+        )
+        render_manifest = _filter_manifest_by_findings(passed_findings, manifest)
+        render_evaluation_results = [
+            result for result in evaluation_results if result.task_id in passed_task_ids
+        ]
+        filtered_outline = filter_outline_by_passed_tasks(outline, passed_task_ids)
+
+        markdown_output = c.renderer.render(
+            spec,
+            passed_findings,
+            filtered_confidence_map,
+            render_evaluation_results,
+            render_manifest,
+            filtered_outline,
+        )
+
+        self._result = PipelineResult(
+            engagement_id=eid,
+            client_id=client_id,
+            spec=spec,
+            findings=findings,
+            manifest=manifest,
+            confidence_map=confidence_map,
+            evaluation_results=evaluation_results,
+            markdown_output=markdown_output,
+            total_tokens=total_tokens,
+            total_events=0,
+            tokens_by_layer={"l1": 0, "l4": l4_tokens if _should_run("POST_EVALUATION") else 0},
+        )
+
+        if self._observation_store is not None:
+            async for event in self._write_back_outcomes(evaluation_results, spec, governance):
+                yield event
+
+        if self._checkpoint_store is not None:
+            try:
+                await self._checkpoint_store.delete(eid)
+            except Exception:
+                logger.warning("Failed to clean up checkpoints for %s", eid, exc_info=True)
 
     async def _wire_retrieval(
         self,
