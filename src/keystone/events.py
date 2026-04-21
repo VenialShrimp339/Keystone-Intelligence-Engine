@@ -122,6 +122,38 @@ class ResearchComplete(PipelineEvent):
     absence_count: int = Field(description="Items in the absence report")
 
 
+class SubAgentDispatched(PipelineEvent):
+    """A LeadResearcher has dispatched a SubResearcher for a sub-query."""
+
+    layer: str = "L1"
+    task_id: str = Field(description="Parent task")
+    sub_id: str = Field(description="Sub-agent identifier (SUB-001, etc.)")
+    methodology: str = Field(description="Analytical lens for this sub-agent")
+
+
+class SubAgentCompleted(PipelineEvent):
+    """A SubResearcher has finished its sub-query work."""
+
+    layer: str = "L1"
+    task_id: str = Field(description="Parent task")
+    sub_id: str = Field(description="Sub-agent identifier")
+    status: str = Field(description="'success' or 'error'")
+    n_claims: int = Field(default=0, description="Claims produced")
+    sources_consulted: int = Field(default=0, description="Sources reviewed")
+    tokens_consumed: int = Field(default=0, description="Tokens used")
+
+
+class PartialFindingMerged(PipelineEvent):
+    """LeadResearcher has merged sub-agent findings into one StructuredFinding."""
+
+    layer: str = "L1"
+    task_id: str = Field(description="Parent task")
+    n_sub_findings: int = Field(description="How many sub-agents contributed")
+    n_total_claims: int = Field(description="Total claims after collation")
+    n_contradictions: int = Field(default=0, description="Contradiction groups tagged")
+    n_unique_sources: int = Field(default=0, description="Unique sources across sub-agents")
+
+
 # ---------------------------------------------------------------------------
 # CitationProcessor events
 # ---------------------------------------------------------------------------
@@ -528,6 +560,9 @@ AnyPipelineEvent = (
     | CitationExtracted
     | FindingSynthesized
     | ResearchComplete
+    | SubAgentDispatched
+    | SubAgentCompleted
+    | PartialFindingMerged
     # CitationProcessor
     | CitationDeduped
     | CorroborationScored

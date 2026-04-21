@@ -366,6 +366,16 @@ class PipelineConfig(BaseModel):
         description="Days to retain checkpoint data for incomplete runs before cleanup.",
     )
 
+    # L1 sub-agent orchestration (Phase 1)
+    l1_orchestrator_enabled: bool = Field(
+        default=False,
+        description=(
+            "Enable two-tier LeadResearcher/SubResearcher dispatch for eligible "
+            "task categories (competitive_landscape, market_sizing). When False, "
+            "all tasks use the single-agent ResearchAgent path."
+        ),
+    )
+
 
 class EvaluationConfig(BaseModel):
     """Evaluator-specific configuration."""
