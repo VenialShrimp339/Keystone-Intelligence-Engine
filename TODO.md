@@ -3,6 +3,7 @@
 ## Active
 
 - [ ] Phase 2: route deep-mode tool calls through `MCPGateway.call_tool` (not just the audit log) once provider-native WebSearch/WebFetch have gateway-owned wrappers
+- [ ] **Prompt audit and optimization** — all 35 pipeline prompts (27 `.md` files + 8 inline Python in deliberation layer) were built during implementation without owner review. Dedicated session needed to: (a) read and approve/revise every prompt's wording, thresholds, and instructions; (b) externalize the 8 inline L1.5 deliberation prompts to `.md` files; (c) evaluate whether per-task prompt customization from L0 is sufficient or needs enhancement. Highest-leverage quality improvement available. See prompt catalog in session notes.
 
 ## Up Next
 
