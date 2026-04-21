@@ -393,6 +393,7 @@ class Pipeline:
         # --- Stage 2: L1 Research Agents ---
         logger.info("L1: Dispatching %d agents", len(spec.task_decomposition.tasks))
         assignments = self._build_assignments(spec, c.template_registry)
+        dead_letters_before = len(self._gateway.dead_letters)
         agent_results = await c.agent_pool.execute_all(assignments)
 
         # Preserve per-agent event trails so Layer 4 can inspect the
@@ -422,6 +423,16 @@ class Pipeline:
                 governance,
                 task,
                 finding_by_task.get(task.id),
+            )
+        task_id_by_agent: dict[str, str] = {
+            agent.agent_id: task_id for task_id, agent in agent_by_task.items()
+        }
+        for dl in self._gateway.dead_letters[dead_letters_before:]:
+            task_id = task_id_by_agent.get(dl.call.agent_id, dl.call.agent_id)
+            policy.flag_tool_dead_letter(
+                governance,
+                tool_name=dl.call.tool_name,
+                task_id=task_id,
             )
         _raise_if_halted(governance)
         logger.info(

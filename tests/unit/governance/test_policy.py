@@ -46,7 +46,9 @@ def _task(task_id: str, *, importance: TaskImportance = TaskImportance.SUPPORTIN
         deliverable_destination="Section 1",
         priority=1,
         importance=importance,
-        anti_confirmatory_framing="Evaluate whether the market is growing, including evidence both for and against",
+        anti_confirmatory_framing=(
+            "Evaluate whether the market is growing, including evidence both for and against"
+        ),
         assigned_tools=["exa_search", "brave_search", "edgar_filings"],
         assigned_model=ModelTier.STANDARD,
         end_product="table",
@@ -575,3 +577,60 @@ class TestMECEFailureGate:
         flag = next(f for f in state.flags if f.gate == "l0_mece_failed")
         assert flag.scope == EnforcementScope.PIPELINE
         assert flag.task_id is None
+
+
+class TestToolDeadLetterGate:
+    def _state(self, profile: PipelineProfile) -> tuple[ProfileExecutionPolicy, object]:
+        task = _task("task_001")
+        policy = ProfileExecutionPolicy(profile)
+        state = policy.new_state([task])
+        return policy, state
+
+    def test_light_profile_warns(self) -> None:
+        policy, state = self._state(PipelineProfile.LIGHT)
+        policy.flag_tool_dead_letter(state, tool_name="exa_search", task_id="task_001")
+
+        flags = [f for f in state.flags if f.gate == "l1_tool_dead_letter"]
+        assert len(flags) == 1
+        assert flags[0].action == EnforcementAction.WARN
+        assert "exa_search" in flags[0].message
+        assert "task_001" in flags[0].message
+        assert flags[0].task_id == "task_001"
+
+    def test_standard_profile_warns(self) -> None:
+        policy, state = self._state(PipelineProfile.STANDARD)
+        policy.flag_tool_dead_letter(state, tool_name="brave_search", task_id="task_001")
+
+        flags = [f for f in state.flags if f.gate == "l1_tool_dead_letter"]
+        assert len(flags) == 1
+        assert flags[0].action == EnforcementAction.WARN
+
+    def test_deep_profile_degrades(self) -> None:
+        policy, state = self._state(PipelineProfile.DEEP)
+        policy.flag_tool_dead_letter(state, tool_name="edgar_filings", task_id="task_001")
+
+        flags = [f for f in state.flags if f.gate == "l1_tool_dead_letter"]
+        assert len(flags) == 1
+        assert flags[0].action == EnforcementAction.DEGRADE
+        assert state.degraded is True
+        assert state.halted is False
+
+    def test_flag_recorded_on_task_outcome(self) -> None:
+        policy, state = self._state(PipelineProfile.STANDARD)
+        policy.flag_tool_dead_letter(state, tool_name="exa_search", task_id="task_001")
+
+        task_flags = state.task_outcomes["task_001"].flags
+        assert any(f.gate == "l1_tool_dead_letter" for f in task_flags)
+
+    def test_multiple_dead_letters_all_recorded(self) -> None:
+        task = _task("task_001")
+        task2 = _task("task_002")
+        policy = ProfileExecutionPolicy(PipelineProfile.STANDARD)
+        state = policy.new_state([task, task2])
+
+        policy.flag_tool_dead_letter(state, tool_name="exa_search", task_id="task_001")
+        policy.flag_tool_dead_letter(state, tool_name="brave_search", task_id="task_001")
+        policy.flag_tool_dead_letter(state, tool_name="exa_search", task_id="task_002")
+
+        flags = [f for f in state.flags if f.gate == "l1_tool_dead_letter"]
+        assert len(flags) == 3

@@ -99,6 +99,35 @@ class ProfileExecutionPolicy:
             ),
         )
 
+    def flag_tool_dead_letter(
+        self,
+        state: GovernanceState,
+        *,
+        tool_name: str,
+        task_id: str,
+    ) -> None:
+        """Fire the l1_tool_dead_letter gate for an exhausted tool call."""
+        action = (
+            EnforcementAction.DEGRADE
+            if self.profile == PipelineProfile.DEEP
+            else EnforcementAction.WARN
+        )
+        self.apply_flag(
+            state,
+            QualityFlag(
+                gate="l1_tool_dead_letter",
+                action=action,
+                scope=EnforcementScope.TASK,
+                severity="warn",
+                message=(
+                    f"Tool {tool_name!r} exhausted all retries for task {task_id}; "
+                    "coverage may be reduced."
+                ),
+                task_id=task_id,
+            ),
+            task_id=task_id,
+        )
+
     def record_research_outcome(
         self,
         state: GovernanceState,
