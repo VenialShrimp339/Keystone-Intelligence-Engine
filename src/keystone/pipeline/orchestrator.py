@@ -25,7 +25,7 @@ from keystone.evaluator.layer4_trajectory import ProcessContext
 from keystone.evaluator.retry import LLMCallable
 from keystone.evaluator.rubric_config import EvaluationProfile
 from keystone.evaluator.sprint_contract import SprintContractGenerator
-from keystone.events import AnyPipelineEvent, ChunkIngested, SearchCompleted
+from keystone.events import AnyPipelineEvent, ChunkIngested, ObservationRecorded, SearchCompleted
 from keystone.gateway.mcp_gateway import MCPGateway
 from keystone.gateway.retrieval_bridge import register_retrieval_handlers
 from keystone.governance.policy import ProfileExecutionPolicy
@@ -37,6 +37,7 @@ from keystone.models.config import PipelineConfig
 from keystone.models.evaluation import EvaluationIntensity, EvaluationResult
 from keystone.models.research import EngagementSpec, PipelineProfile, StructuredFinding
 from keystone.models.tasks import ModelTier, ResearchTask
+from keystone.observation.store import ObservationStore
 from keystone.pipeline.markdown_renderer import MarkdownRenderer
 from keystone.research.agent_pool import AgentPool
 from keystone.research.error_recovery import ErrorRecovery
@@ -118,6 +119,7 @@ class Pipeline:
         ]
         | None = None,
         pipeline_config: PipelineConfig | None = None,
+        observation_store: ObservationStore | None = None,
     ) -> None:
         """Construct a pipeline.
 
@@ -162,6 +164,7 @@ class Pipeline:
         self._evidence_records = evidence_records
         self._retrieval_service_factory = retrieval_service_factory
         self._ensemble_panel_override = ensemble_panel_override
+        self._observation_store = observation_store
         # Pipeline-wide behavior knobs. Resolved in preference order:
         # explicit parameter, factory's own ``pipeline_config`` attribute
         # (when the factory is a LayerAwareLLMFactory), fresh default
@@ -666,6 +669,11 @@ class Pipeline:
             tokens_by_layer={"l1": l1_tokens, "l4": l4_tokens},
         )
 
+        # --- Stage 8: Write-back (GAP-13 + GAP-05 first slice) ---
+        if self._observation_store is not None:
+            async for event in self._write_back_outcomes(evaluation_results, spec, governance):
+                yield event
+
     async def get_result(self) -> PipelineResult:
         """Return the pipeline result after run_with_events() completes."""
         if self._result is None:
@@ -713,6 +721,70 @@ class Pipeline:
             chunks_created=ingest_result.chunks_created,
             chunks_updated=ingest_result.chunks_updated,
             chunks_skipped=ingest_result.chunks_skipped,
+        )
+
+    async def _write_back_outcomes(
+        self,
+        evaluation_results: list[EvaluationResult],
+        spec: EngagementSpec,
+        governance,
+    ) -> AsyncIterator[AnyPipelineEvent]:
+        """Persist evaluation outcomes to the observation store (GAP-13).
+
+        For each evaluated task, writes one observation row and yields
+        an :class:`ObservationRecorded` event.
+        """
+        assert self._observation_store is not None
+        store = self._observation_store
+        eid = spec.research_spec.engagement_id
+        client_id = spec.research_spec.client_id
+        etype = spec.research_spec.engagement_type.value
+
+        for seq, result in enumerate(evaluation_results):
+            obs_type = "success" if result.passed else "rejection"
+            category = _classify_observation_category(result)
+            dim = _lowest_scoring_dimension(result)
+            dim_scores = _extract_dimension_scores(result)
+            task_flags = [
+                f.gate for f in governance.flags if getattr(f, "task_id", None) == result.task_id
+            ]
+            obs_id = f"OBS-{eid[:8]}-{result.task_id[:8]}-{seq:03d}"
+
+            try:
+                await store.record(
+                    observation_id=obs_id,
+                    client_id=client_id,
+                    engagement_id=eid,
+                    engagement_type=etype,
+                    task_id=result.task_id,
+                    obs_type=obs_type,
+                    category=category,
+                    dimension=dim,
+                    composite_score=result.overall_score,
+                    dimension_scores=dim_scores,
+                    governance_flags=task_flags,
+                )
+                yield ObservationRecorded(
+                    event_id=f"evt-{uuid4().hex[:12]}",
+                    engagement_id=eid,
+                    client_id=client_id,
+                    observation_id=obs_id,
+                    observation_type=obs_type,
+                    category=category,
+                    dimension=dim,
+                )
+            except Exception:
+                logger.warning(
+                    "Failed to record observation for task %s",
+                    result.task_id,
+                    exc_info=True,
+                )
+
+        logger.info(
+            "Write-back: recorded %d observations (%d passed, %d rejected)",
+            len(evaluation_results),
+            sum(1 for r in evaluation_results if r.passed),
+            sum(1 for r in evaluation_results if not r.passed),
         )
 
     # ------------------------------------------------------------------
@@ -1089,3 +1161,48 @@ def _raise_if_halted(governance) -> None:
     if critical_flags:
         raise RuntimeError(critical_flags[-1].message)
     raise RuntimeError("Pipeline halted by governance policy.")
+
+
+# ---------------------------------------------------------------------------
+# GAP-13: Observation classification helpers
+# ---------------------------------------------------------------------------
+
+
+def _classify_observation_category(result: EvaluationResult) -> int:
+    """Derive ObservationCategory (1/2/3) from the evaluation result.
+
+    1 (STRUCTURAL) — citation gate failed (Layer 2 fabrication).
+    2 (ANALYTICAL) — a Tier 1 rubric dimension fell below its floor.
+    3 (JUDGMENT)   — everything else (Tier 2 failure, blend, trajectory).
+    """
+    if not result.layer2_results.gate_passed:
+        return 1
+
+    if result.layer3_results is not None and result.layer3_results.dimension_scores:
+        from keystone.evaluator.rubric_config import (
+            TIER_1_DIMENSIONS,
+            TIER_1_FLOOR_THRESHOLDS,
+        )
+
+        for ds in result.layer3_results.dimension_scores:
+            if ds.dimension in TIER_1_DIMENSIONS:
+                floor = TIER_1_FLOOR_THRESHOLDS.get(ds.dimension, 0.0)
+                if ds.score < floor:
+                    return 2
+
+    return 3
+
+
+def _lowest_scoring_dimension(result: EvaluationResult) -> str:
+    """Return the name of the lowest-scoring rubric dimension, or 'unknown'."""
+    if result.layer3_results is None or not result.layer3_results.dimension_scores:
+        return "unknown"
+    lowest = min(result.layer3_results.dimension_scores, key=lambda d: d.score)
+    return lowest.dimension.value
+
+
+def _extract_dimension_scores(result: EvaluationResult) -> dict[str, float]:
+    """Build a {dimension_name: score} dict from the Layer 3 results."""
+    if result.layer3_results is None or not result.layer3_results.dimension_scores:
+        return {}
+    return {ds.dimension.value: ds.score for ds in result.layer3_results.dimension_scores}

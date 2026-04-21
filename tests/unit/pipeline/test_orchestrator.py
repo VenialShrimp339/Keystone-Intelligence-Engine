@@ -8,19 +8,18 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+from keystone.citation.processor import CitationProcessorResult
 from keystone.deliberation.aggregator import Aggregator
 from keystone.deliberation.analyst import AnalystOutput, InputClaim, ScoredClaim
 from keystone.deliberation.confidence_builder import build_confidence_map
 from keystone.deliberation.gap_detector import GapReport
 from keystone.evaluator.rubric_config import EvaluationProfile
 from keystone.events import (
-    ConfidenceMapProduced,
-    EvaluationComplete,
     ManifestProduced,
     SpecificationGenerated,
 )
 from keystone.gateway.mcp_gateway import MCPGateway, MockMCPClient
-from keystone.models.agents import AgentDefinition, AgentRole
+from keystone.models.agents import AgentRole
 from keystone.models.citations import (
     Citation,
     CitationAlias,
@@ -55,17 +54,17 @@ from keystone.models.tasks import (
     TaskDecomposition,
     TaskType,
 )
-from keystone.citation.processor import CitationProcessorResult
 from keystone.pipeline.markdown_renderer import MarkdownRenderer
 from keystone.pipeline.orchestrator import (
     Pipeline,
-    PipelineComponents,
     PipelineResult,
+    _classify_observation_category,
+    _extract_dimension_scores,
     _filter_confidence_map_by_passed_tasks,
     _finding_to_text,
+    _lowest_scoring_dimension,
 )
 from keystone.research.agent_pool import AgentResult
-
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -1834,3 +1833,133 @@ class TestMECEFailureGate:
             result = await pipeline.run("Test question", "c1")
 
         assert result is not None
+
+
+# ---------------------------------------------------------------------------
+# GAP-13: Write-back observation helpers
+# ---------------------------------------------------------------------------
+
+
+class TestObservationClassification:
+    def test_citation_fabrication_is_structural(self) -> None:
+        result = _make_eval_result()
+        result = result.model_copy(
+            update={
+                "layer2_results": Layer2Result(
+                    citations_checked=3,
+                    citations_verified=2,
+                    citations_fabricated=["CIT-BAD"],
+                    gate_passed=False,
+                )
+            }
+        )
+        assert _classify_observation_category(result) == 1
+
+    def test_tier1_floor_failure_is_analytical(self) -> None:
+        from keystone.models.evaluation import DimensionScore, Layer3Result, RubricDimension
+
+        dim_scores = [
+            DimensionScore(
+                dimension=RubricDimension.INTENT_ALIGNMENT,
+                score=20.0,
+                feedback="Failed floor",
+            ),
+            DimensionScore(
+                dimension=RubricDimension.ANALYTICAL_DEPTH,
+                score=70.0,
+                feedback="Ok",
+            ),
+        ]
+        result = _make_eval_result()
+        result = result.model_copy(
+            update={
+                "layer3_results": Layer3Result(
+                    dimension_scores=dim_scores,
+                    weighted_total=45.0,
+                    gestalt_adjustment=0.0,
+                    final_score=45.0,
+                )
+            }
+        )
+        assert _classify_observation_category(result) == 2
+
+    def test_normal_failure_is_judgment(self) -> None:
+        result = _make_eval_result()
+        assert _classify_observation_category(result) == 3
+
+    def test_lowest_dimension_extracted(self) -> None:
+        from keystone.models.evaluation import DimensionScore, Layer3Result, RubricDimension
+
+        dim_scores = [
+            DimensionScore(
+                dimension=RubricDimension.ANALYTICAL_DEPTH,
+                score=35.0,
+                feedback="Low",
+            ),
+            DimensionScore(
+                dimension=RubricDimension.SOURCE_QUALITY,
+                score=70.0,
+                feedback="High",
+            ),
+        ]
+        result = _make_eval_result()
+        result = result.model_copy(
+            update={
+                "layer3_results": Layer3Result(
+                    dimension_scores=dim_scores,
+                    weighted_total=52.5,
+                    gestalt_adjustment=0.0,
+                    final_score=52.5,
+                )
+            }
+        )
+        assert _lowest_scoring_dimension(result) == "analytical_depth"
+
+    def test_lowest_dimension_unknown_when_no_l3(self) -> None:
+        result = _make_eval_result()
+        assert _lowest_scoring_dimension(result) == "unknown"
+
+    def test_extract_dimension_scores(self) -> None:
+        from keystone.models.evaluation import DimensionScore, Layer3Result, RubricDimension
+
+        dim_scores = [
+            DimensionScore(
+                dimension=RubricDimension.ACTIONABILITY,
+                score=80.0,
+                feedback="Good",
+            ),
+        ]
+        result = _make_eval_result()
+        result = result.model_copy(
+            update={
+                "layer3_results": Layer3Result(
+                    dimension_scores=dim_scores,
+                    weighted_total=80.0,
+                    gestalt_adjustment=0.0,
+                    final_score=80.0,
+                )
+            }
+        )
+        scores = _extract_dimension_scores(result)
+        assert scores == {"actionability": 80.0}
+
+    def test_extract_dimension_scores_empty_when_no_l3(self) -> None:
+        result = _make_eval_result()
+        assert _extract_dimension_scores(result) == {}
+
+
+class TestPipelineObservationStoreParam:
+    def test_observation_store_defaults_to_none(self) -> None:
+        factory = _mock_llm_factory()
+        gw = _make_gateway()
+        pipeline = Pipeline(llm_factory=factory, gateway=gw)
+        assert pipeline._observation_store is None
+
+    def test_observation_store_stored_when_provided(self) -> None:
+        from keystone.observation.store import ObservationStore
+
+        factory = _mock_llm_factory()
+        gw = _make_gateway()
+        store = ObservationStore(":memory:")
+        pipeline = Pipeline(llm_factory=factory, gateway=gw, observation_store=store)
+        assert pipeline._observation_store is store
