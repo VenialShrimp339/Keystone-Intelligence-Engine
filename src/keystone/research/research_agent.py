@@ -25,7 +25,6 @@ from collections.abc import AsyncIterator
 from datetime import UTC, datetime
 
 from keystone.evaluator.retry import LLMCallable
-from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.events import (
     AnyPipelineEvent,
     CitationExtracted,
@@ -35,10 +34,12 @@ from keystone.events import (
     SourceFound,
 )
 from keystone.gateway.mcp_gateway import MCPGateway, ToolCall
+from keystone.llm.parsing import ParseError, safe_llm_json
 from keystone.models.agents import AgentInstance
 from keystone.models.citations import Citation, SourceType
 from keystone.models.research import EngagementSpec, StructuredFinding
 from keystone.models.tasks import ModelTier, ResearchTask
+from keystone.research._prompts import load_prompt
 from keystone.research.context_loader import ContextLoader
 from keystone.research.error_recovery import ErrorRecovery
 from keystone.research.evidence_context import (
@@ -796,72 +797,20 @@ class ResearchAgent:
                 f"{self._evidence_block}\n"
             )
 
-        return f"""You are a senior research analyst conducting deep web research for a consulting engagement.
+        acceptance_criteria = "\n".join(f"  - {c}" for c in task.acceptance_criteria)
 
-ENGAGEMENT CONTEXT:
-- Title: {rs.title}
-- Client Decision Context: {rs.decision_context}
-- Quality Standard: {rs.quality_bar}
-
-RESEARCH QUESTIONS:
-{questions}
-
-YOUR SPECIFIC TASK:
-{task.description}
-
-ACCEPTANCE CRITERIA:
-{chr(10).join(f"  - {c}" for c in task.acceptance_criteria)}
-
-ANTI-CONFIRMATORY FRAMING (you MUST find evidence both for AND against):
-{task.anti_confirmatory_framing}
-
-EXPECTED OUTPUT:
-{task.end_product}
-{evidence_block}
-RESEARCH INSTRUCTIONS:
-1. Search the web thoroughly for information related to this task.
-2. For each promising result, read the full page to extract detailed information.
-3. Follow citations and references to find primary sources.
-4. Cross-reference claims across multiple sources.
-5. Look for the most recent data available (2024-2026).
-6. Seek out contrarian evidence and counterarguments.
-7. Note what you searched for but could NOT find (absence is analytically significant).
-
-After completing your research, output ONLY a JSON object in this exact format (no other text before or after):
-
-```json
-{{
-  "claims": [
-    {{
-      "text": "Clear, specific factual claim statement",
-      "evidence": "Summary of the evidence supporting this claim, including specific data points, dates, and figures",
-      "confidence": 0.85,
-      "caveats": ["Any limitations or qualifications"],
-      "sources": [
-        {{
-          "url": "https://exact-source-url.com/page",
-          "title": "Title of the source page or article",
-          "content_snippet": "Relevant excerpt from the source (50-200 words)"
-        }}
-      ]
-    }}
-  ],
-  "absence_report": [
-    "Description of what was searched for but not found"
-  ]
-}}
-```
-
-REQUIREMENTS FOR YOUR OUTPUT:
-- Produce at least 20 claims (more is better if the evidence supports it)
-- Every claim MUST have at least one source with a real URL
-- Include content_snippet for every source (actual text from the page)
-- Confidence scores: 0.9+ = multiple corroborating sources with hard data; 0.7-0.89 = single strong source or multiple weak ones; 0.5-0.69 = limited or ambiguous evidence; below 0.5 = speculative or contested
-- The absence_report MUST list at least 3 things you looked for but could not find
-- Include evidence AGAINST the main thesis, not just supporting evidence
-- Prefer primary sources (SEC filings, company reports, peer-reviewed papers) over secondary (news articles, blog posts)
-
-OUTPUT THE JSON AND NOTHING ELSE."""
+        return load_prompt(
+            "deep_research",
+            title=rs.title,
+            decision_context=rs.decision_context,
+            quality_bar=rs.quality_bar,
+            questions=questions,
+            task_description=task.description,
+            acceptance_criteria=acceptance_criteria,
+            anti_confirmatory_framing=task.anti_confirmatory_framing,
+            end_product=task.end_product,
+            evidence_block=evidence_block,
+        )
 
     def _parse_deep_response(self, response: str) -> dict:
         """Parse the JSON output from a deep research session."""
@@ -922,18 +871,15 @@ OUTPUT THE JSON AND NOTHING ELSE."""
             evidence_section = "\n\n" + self._evidence_block
             ref_guidance = "SRC-NNN tool-search refs and EV-NNN parsed-passage refs"
 
-        return (
-            f"Task: {task.description}\n"
-            f"Round: {round_num}\n"
-            f"Anti-confirmatory framing: {task.anti_confirmatory_framing}\n"
-            f"{sources_section}"
-            f"{evidence_section}"
-            f"{ctx_section}\n\n"
-            "Synthesize findings as JSON array of claims. Each claim MUST include "
-            f"citation_refs listing {ref_guidance} that support it:\n"
-            '{"text": "...", "evidence": "...", "citation_refs": ["SRC-001", "EV-002"], '
-            '"confidence": 0.0-1.0, "caveats": ["..."]}\n'
-            "Claims without citation_refs will be dropped.\n"
+        return load_prompt(
+            "synthesis",
+            task_description=task.description,
+            round_number=str(round_num),
+            anti_confirmatory_framing=task.anti_confirmatory_framing,
+            sources_section=sources_section,
+            evidence_section=evidence_section,
+            ctx_section=ctx_section,
+            ref_guidance=ref_guidance,
         )
 
     def _build_round_citation_table(self, round_cits: list[Citation]) -> dict[str, Citation]:
@@ -1011,12 +957,11 @@ OUTPUT THE JSON AND NOTHING ELSE."""
         task: ResearchTask,
         spec: EngagementSpec,
     ) -> list[str]:
-        prompt = (
-            f"Task: {task.description}\n"
-            f"Sources consulted: {len(self._all_sources)}\n"
-            f"Claims found: {len(self._all_claims)}\n\n"
-            "List what was looked for but NOT found. "
-            "Return a JSON array of strings.\n"
+        prompt = load_prompt(
+            "absence_report",
+            task_description=task.description,
+            sources_count=str(len(self._all_sources)),
+            claims_count=str(len(self._all_claims)),
         )
         try:
             response = await self._error_recovery.execute_with_recovery(
