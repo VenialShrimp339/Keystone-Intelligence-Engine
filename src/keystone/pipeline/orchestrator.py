@@ -318,6 +318,7 @@ class Pipeline:
                     ModelTier.STANDARD,
                 ),
                 llm_factory=self._llm_factory,
+                l1_orchestrator_enabled=pc.l1_orchestrator_enabled,
             ),
             citation_processor=CitationProcessor(),
             deliberation=Deliberation(

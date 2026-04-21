@@ -19,11 +19,12 @@ from keystone.evaluator.retry import LLMCallable
 from keystone.gateway.mcp_gateway import MCPGateway
 from keystone.models.agents import AgentInstance
 from keystone.models.research import EngagementSpec, StructuredFinding
-from keystone.models.tasks import ModelTier, ResearchTask
+from keystone.models.tasks import ModelTier, ResearchTask, TaskCategory
 from keystone.research.context_loader import ContextLoader
 from keystone.research.error_recovery import ErrorRecovery
 from keystone.research.evidence_context import EvidenceContextProvider
 from keystone.research.finding_writer import FindingWriter
+from keystone.research.lead_researcher import LeadResearcher, _AllSubAgentsFailedError
 from keystone.research.research_agent import (
     DEFAULT_ROUNDS,
     MAX_ROUNDS,
@@ -60,6 +61,11 @@ class AgentPool:
     research mode instead of the shallow gateway-based approach.
     """
 
+    # Task categories eligible for sub-agent dispatch (Phase 1).
+    _ORCHESTRATOR_ELIGIBLE: frozenset[TaskCategory] = frozenset(
+        {TaskCategory.COMPETITIVE_LANDSCAPE, TaskCategory.MARKET_SIZING}
+    )
+
     def __init__(
         self,
         llm: LLMCallable,
@@ -76,6 +82,7 @@ class AgentPool:
         research_quality_threshold: float = QUALITY_THRESHOLD,
         current_tier: ModelTier = ModelTier.STANDARD,
         llm_factory: Callable[[ModelTier], LLMCallable] | None = None,
+        l1_orchestrator_enabled: bool = False,
     ) -> None:
         self._llm = llm
         self._gateway = gateway
@@ -95,6 +102,7 @@ class AgentPool:
         # task carries an explicit assigned_model, _run_single resolves a
         # task-specific LLM callable instead of reusing the shared self._llm.
         self._llm_factory = llm_factory
+        self._l1_orchestrator_enabled = l1_orchestrator_enabled
 
     async def execute_all(
         self,
@@ -136,6 +144,10 @@ class AgentPool:
         coros = [self._run_single(task, spec, agent) for task, spec, agent in assignments]
         return list(await asyncio.gather(*coros))
 
+    def _should_use_orchestrator(self, task: ResearchTask) -> bool:
+        """Check if this task should use the two-tier LeadResearcher dispatch."""
+        return self._l1_orchestrator_enabled and task.category in self._ORCHESTRATOR_ELIGIBLE
+
     async def _run_single(
         self,
         task: ResearchTask,
@@ -143,6 +155,65 @@ class AgentPool:
         agent: AgentInstance,
     ) -> AgentResult:
         """Run a single agent, catching any exceptions."""
+        if self._should_use_orchestrator(task):
+            return await self._run_single_orchestrated(task, spec, agent)
+        return await self._run_single_direct(task, spec, agent)
+
+    async def _run_single_orchestrated(
+        self,
+        task: ResearchTask,
+        spec: EngagementSpec,
+        agent: AgentInstance,
+    ) -> AgentResult:
+        """Two-tier dispatch: LeadResearcher + SubResearchers."""
+        flagship_llm = self._llm_factory(ModelTier.FLAGSHIP) if self._llm_factory else self._llm
+        standard_llm = self._llm
+
+        lead = LeadResearcher(
+            flagship_llm=flagship_llm,
+            standard_llm=standard_llm,
+            gateway=self._gateway,
+            error_recovery=self._error_recovery,
+            evidence_provider=self._evidence_provider,
+            finding_writer=self._finding_writer,
+            flagship_tier=ModelTier.FLAGSHIP if self._llm_factory else self._current_tier,
+            standard_tier=self._current_tier,
+        )
+
+        events: list = []
+        try:
+            async for event in lead.execute(task, spec, agent):
+                events.append(event)
+
+            finding = await lead.get_finding()
+            return AgentResult(
+                agent_id=agent.agent_id,
+                task_id=task.id,
+                finding=finding,
+                events=events,
+            )
+        except _AllSubAgentsFailedError:
+            logger.warning(
+                "All sub-agents failed for task %s — falling back to single-agent path",
+                task.id,
+            )
+            return await self._run_single_direct(task, spec, agent)
+        except Exception as exc:  # noqa: BLE001
+            logger.error(
+                "Orchestrated agent %s failed on task %s: %s — falling back",
+                agent.agent_id,
+                task.id,
+                exc,
+            )
+            return await self._run_single_direct(task, spec, agent)
+
+    async def _run_single_direct(
+        self,
+        task: ResearchTask,
+        spec: EngagementSpec,
+        agent: AgentInstance,
+    ) -> AgentResult:
+        """Original single-agent path — unchanged from pre-orchestrator behavior."""
         # Resolve per-task LLM when the task carries an explicit assigned_model
         # and the pool has a factory. Otherwise fall back to the shared pool LLM.
         if task.assigned_model is not None and self._llm_factory is not None:
