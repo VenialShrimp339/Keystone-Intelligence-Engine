@@ -14,7 +14,10 @@ The create_and_wait_for_gate interface stays the same.
 
 from __future__ import annotations
 
+import json
 import uuid
+from datetime import UTC, datetime
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 import structlog
@@ -71,6 +74,44 @@ class GateModificationRequiredError(Exception):
             f"Review gate {resolution.id} returned modified, but modifications "
             "are not yet supported in this phase."
         )
+
+
+def _persist_modifications(
+    engagement_id: str,
+    client_id: str,
+    gate_name: str,
+    modifications: dict,
+) -> str | None:
+    """Write the modification payload to a deterministic JSON file.
+
+    Returns the path written, or None if writing failed (non-fatal).
+    """
+    timestamp = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
+    out_path = (
+        Path("/tmp")
+        / "keystone"
+        / engagement_id
+        / "hitl_modifications"
+        / f"{gate_name}_{timestamp}.json"
+    )
+    payload = {
+        "engagement_id": engagement_id,
+        "client_id": client_id,
+        "gate_name": gate_name,
+        "timestamp": timestamp,
+        "modifications": modifications,
+    }
+    try:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(json.dumps(payload, default=str, indent=2))
+        return str(out_path)
+    except Exception:
+        logger.warning(
+            "hitl_modification_persist_failed",
+            engagement_id=engagement_id,
+            gate_name=gate_name,
+        )
+        return None
 
 
 async def create_and_wait_for_gate(
@@ -178,6 +219,27 @@ async def create_and_wait_for_gate(
         patch_applied=resolved.status != GateStatus.MODIFIED,
     )
 
+    modifications_path: str | None = None
+    if resolved.status == GateStatus.MODIFIED:
+        modifications = (
+            resolved.decision.modifications
+            if (resolved.decision and resolved.decision.modifications)
+            else {}
+        )
+        modifications_path = _persist_modifications(
+            engagement_id=engagement_id,
+            client_id=client_id,
+            gate_name=str(gate_type),
+            modifications=modifications,
+        )
+        if modifications_path is not None:
+            logger.info(
+                "hitl_modification_persisted",
+                gate_id=gate.id,
+                engagement_id=engagement_id,
+                path=modifications_path,
+            )
+
     if event_collector is not None:
         if resolved.status == GateStatus.MODIFIED:
             modification_keys = (
@@ -193,6 +255,7 @@ async def create_and_wait_for_gate(
                     gate_id=gate.id,
                     gate_type=str(gate_type),
                     modification_keys=modification_keys,
+                    modifications_path=modifications_path,
                 )
             )
         else:

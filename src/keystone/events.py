@@ -498,6 +498,10 @@ class ReviewGateModified(PipelineEvent):
     gate_id: str = Field(description="Review gate ID")
     gate_type: str = Field(description="Which gate was modified")
     modification_keys: list[str] = Field(description="Top-level keys in the modifications payload")
+    modifications_path: str | None = Field(
+        default=None,
+        description="Path where the modification payload was persisted; None if persistence failed",
+    )
 
 
 class ReviewGateRejected(PipelineEvent):

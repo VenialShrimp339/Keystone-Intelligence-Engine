@@ -7,9 +7,11 @@ builders for spec and deliberation gate items.
 from __future__ import annotations
 
 import asyncio
+import json
+from unittest.mock import patch
 
 import pytest
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 
 from keystone.events import (
     ReviewGateApproved,
@@ -28,8 +30,8 @@ from keystone.hitl.gate import (
 from keystone.hitl.models import Base
 from keystone.hitl.schemas import (
     DecisionType,
-    GateStatus,
     GateResolution,
+    GateStatus,
     GateType,
     ReviewItemType,
     SubmitDecisionRequest,
@@ -393,6 +395,54 @@ class TestHITLEventEmission:
             modified = next(e for e in collector if isinstance(e, ReviewGateModified))
             assert "issue_tree" in modified.modification_keys
 
+    async def test_modify_emits_event_with_modifications_path(self, session_factory, tmp_path):
+        """ReviewGateModified event carries the path where modifications were persisted."""
+        async with session_factory() as session:
+            items = build_spec_gate_items(
+                issue_tree={"branches": []},
+                agent_configs=[],
+            )
+            mods = {"issue_tree": {"branches": [{"label": "Revised"}]}}
+            collector: list = []
+
+            async def modify_after_delay():
+                await asyncio.sleep(0.1)
+                async with session_factory() as bg_session:
+                    service = HITLService()
+                    pending = await service.get_pending_gates(bg_session)
+                    await service.submit_decision(
+                        bg_session,
+                        pending[0].id,
+                        SubmitDecisionRequest(
+                            decision=DecisionType.MODIFY,
+                            decided_by="jack",
+                            modifications=mods,
+                        ),
+                    )
+
+            task = asyncio.create_task(modify_after_delay())
+            with (
+                patch(
+                    "keystone.hitl.gate._persist_modifications",
+                    return_value=str(tmp_path / "hitl_mod.json"),
+                ),
+                pytest.raises(GateModificationRequiredError),
+            ):
+                await create_and_wait_for_gate(
+                    session,
+                    engagement_id="eng-001",
+                    client_id="client-001",
+                    gate_type=GateType.POST_SPECIFICATION,
+                    items=items,
+                    poll_interval=0.05,
+                    timeout=5.0,
+                    event_collector=collector,
+                )
+            await task
+
+            modified = next(e for e in collector if isinstance(e, ReviewGateModified))
+            assert modified.modifications_path == str(tmp_path / "hitl_mod.json")
+
     async def test_no_event_collector_does_not_error(self, session_factory):
         """Omitting event_collector is backward-compatible (no AttributeError)."""
         async with session_factory() as session:
@@ -425,3 +475,115 @@ class TestHITLEventEmission:
             )
             await task
             assert result.status == GateStatus.APPROVED
+
+
+# ---------------------------------------------------------------------------
+# GAP-04 Phase 1: modification persistence tests
+# ---------------------------------------------------------------------------
+
+
+class TestModificationPersistence:
+    async def test_modifications_json_written_to_expected_path(self, session_factory, tmp_path):
+        """When MODIFIED, the modifications JSON file is written under the expected directory."""
+        async with session_factory() as session:
+            items = build_spec_gate_items(
+                issue_tree={"branches": []},
+                agent_configs=[],
+            )
+            mods = {"issue_tree": {"branches": [{"label": "New Branch"}]}}
+
+            async def modify_after_delay():
+                await asyncio.sleep(0.1)
+                async with session_factory() as bg_session:
+                    service = HITLService()
+                    pending = await service.get_pending_gates(bg_session)
+                    await service.submit_decision(
+                        bg_session,
+                        pending[0].id,
+                        SubmitDecisionRequest(
+                            decision=DecisionType.MODIFY,
+                            decided_by="jack",
+                            modifications=mods,
+                        ),
+                    )
+
+            task = asyncio.create_task(modify_after_delay())
+            persist_dir = tmp_path / "keystone" / "eng-persist" / "hitl_modifications"
+
+            def fake_persist(engagement_id, client_id, gate_name, modifications):
+                persist_dir.mkdir(parents=True, exist_ok=True)
+                out = persist_dir / f"{gate_name}_test.json"
+                payload = {
+                    "engagement_id": engagement_id,
+                    "client_id": client_id,
+                    "gate_name": gate_name,
+                    "modifications": modifications,
+                }
+                out.write_text(json.dumps(payload))
+                return str(out)
+
+            with (
+                patch("keystone.hitl.gate._persist_modifications", side_effect=fake_persist),
+                pytest.raises(GateModificationRequiredError),
+            ):
+                await create_and_wait_for_gate(
+                    session,
+                    engagement_id="eng-persist",
+                    client_id="client-001",
+                    gate_type=GateType.POST_SPECIFICATION,
+                    items=items,
+                    poll_interval=0.05,
+                    timeout=5.0,
+                )
+            await task
+
+            written = list(persist_dir.iterdir())
+            assert len(written) == 1
+            payload = json.loads(written[0].read_text())
+            assert payload["engagement_id"] == "eng-persist"
+            assert payload["modifications"] == mods
+
+    async def test_persist_failure_does_not_mask_modification_error(self, session_factory):
+        """A write failure during persistence still raises GateModificationRequiredError."""
+        async with session_factory() as session:
+            items = build_spec_gate_items(
+                issue_tree={"branches": []},
+                agent_configs=[],
+            )
+            mods = {"issue_tree": {"branches": []}}
+
+            async def modify_after_delay():
+                await asyncio.sleep(0.1)
+                async with session_factory() as bg_session:
+                    service = HITLService()
+                    pending = await service.get_pending_gates(bg_session)
+                    await service.submit_decision(
+                        bg_session,
+                        pending[0].id,
+                        SubmitDecisionRequest(
+                            decision=DecisionType.MODIFY,
+                            decided_by="jack",
+                            modifications=mods,
+                        ),
+                    )
+
+            task = asyncio.create_task(modify_after_delay())
+
+            # Simulate _persist_modifications returning None (failure absorbed internally)
+            with (
+                patch(
+                    "keystone.hitl.gate._persist_modifications",
+                    return_value=None,
+                ),
+                pytest.raises(GateModificationRequiredError),
+            ):
+                await create_and_wait_for_gate(
+                    session,
+                    engagement_id="eng-001",
+                    client_id="client-001",
+                    gate_type=GateType.POST_SPECIFICATION,
+                    items=items,
+                    poll_interval=0.05,
+                    timeout=5.0,
+                )
+            await task
