@@ -1,8 +1,63 @@
 # Handover
 
-Last updated: 2026-04-18
-Session: Pipeline configuration + audit-driven quality fixes +
-audit-remediation pass
+Last updated: 2026-04-21
+Session: Gap remediation (Tier 1 fixes from Nate corpus audit)
+
+## What Changed (Gap remediation session, 2026-04-21)
+
+Ingested HANDOFF.md (temp session doc) + 4 Deep Research reports on
+OpenClaw/Claude Code architectures into `research/external-sources/
+openclaw-claude-code/s{1,2,3,4}/`. Verified all 17 gaps from the Nate
+corpus audit against the live codebase — all 17 CONFIRMED. Verification
+status appended to `GAP-AUDIT.md`.
+
+**Tier 1 gap fixes landed (7 commits):**
+
+- **GAP-06** `l0_mece_failed` governance gate: WARN on LIGHT, DEGRADE
+  on STANDARD, HALT on DEEP. Orchestrator checks `scope_valid` after L0.
+- **GAP-07** `l1_tool_dead_letter` governance gate: orchestrator polls
+  `MCPGateway.dead_letters` after L1, fires WARN (DEGRADE on DEEP).
+- **GAP-01** `AgentPool` now resolves per-task LLM from
+  `task.assigned_model` via an optional `llm_factory` callback.
+  Falls back to shared pool LLM when factory absent or model is None.
+- **GAP-11** L1 research prompts externalized to `.md` files:
+  `research/prompts/{deep_research,synthesis,absence_report}.md` with
+  `{{placeholder}}` substitution via `_prompts.py` loader.
+- **GAP-10** Model-version YAML frontmatter added to all 27 prompt
+  `.md` files. Six loaders updated with `_strip_frontmatter()`. New
+  canary test `tests/canary/test_prompt_freshness.py` fails when any
+  prompt is >1 version behind `CURRENT_MODEL`.
+- **GAP-12** `semantic_search` now runs vector-only (embed → vector
+  store); `hybrid_search` unchanged (vector + BM25 → RRF → rerank).
+  New `RetrievalService.search_semantic()` method. 11 new tests.
+
+- **GAP-02 + GAP-08** Token accounting: gateway `tokens_used`
+  replaced with char-estimate, L4 trajectory captures
+  `tokens_consumed`, `PipelineResult.tokens_by_layer` added.
+  Cost governance: `l1_cost_ceiling` WARN gate fires when per-task
+  research tokens exceed `PipelineConfig.research_token_ceiling_per_task`
+  (default 50K).
+- **GAP-04 Phase 1** HITL modifications now persisted to
+  `/tmp/keystone/{eid}/hitl_modifications/{gate}_{ts}.json` before
+  the gate raises. `ReviewGateModified` event carries
+  `modifications_path`. Phase 2 (apply + resume) deferred.
+
+All Tier 1 gaps are now complete.
+
+**New workstream flagged:** Prompt audit and optimization. All 35
+pipeline prompts (27 `.md` + 8 inline Python in deliberation) were
+built without owner review. Added to TODO.md as active item. Full
+prompt catalog produced (9 L0 + 3 L1 + 8 L1.5 + 1 L2/L4 bridge +
+14 L4 + 0 L5). L1.5 deliberation prompts still inline in Python.
+
+**Test count:** 1421 passing (from 1404 baseline, +17 new).
+
+**Tier 2 gaps (not started, need design sessions):**
+GAP-03 (evidence filtering), GAP-05 (Observation Library), GAP-09
+(evaluator calibration), GAP-13 (post-run write-back), GAP-15
+(deep-mode gateway), GAP-17 (checkpoint/resume).
+
+**Deferred:** GAP-14 (SDK transport), GAP-16 (prompt caching).
 
 ## What Changed (Audit remediation pass, 2026-04-18 follow-up)
 
