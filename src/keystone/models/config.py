@@ -359,6 +359,13 @@ class PipelineConfig(BaseModel):
         ),
     )
 
+    # Checkpoint knobs
+    checkpoint_retention_days: int = Field(
+        default=7,
+        ge=1,
+        description="Days to retain checkpoint data for incomplete runs before cleanup.",
+    )
+
 
 class EvaluationConfig(BaseModel):
     """Evaluator-specific configuration."""

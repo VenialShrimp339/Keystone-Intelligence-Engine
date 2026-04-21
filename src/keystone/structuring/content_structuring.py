@@ -181,6 +181,14 @@ class ContentStructurer:
         """Return all negotiated contracts. Protocol conformance."""
         return list(self._sprint_contracts.values())
 
+    def get_section_texts(self) -> dict[str, str]:
+        """Return the full task_id -> section_text map (checkpoint serialization)."""
+        return dict(self._section_texts)
+
+    def get_sprint_contracts_map(self) -> dict[str, SprintContract]:
+        """Return the full task_id -> SprintContract map (checkpoint serialization)."""
+        return dict(self._sprint_contracts)
+
     # ------------------------------------------------------------------
     # Internal: sprint-contract negotiation
     # ------------------------------------------------------------------
