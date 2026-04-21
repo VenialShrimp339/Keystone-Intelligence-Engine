@@ -28,6 +28,7 @@ from keystone.retrieval.search.hybrid_search import (
 )
 from keystone.retrieval.search.models import (
     IngestResult,
+    RetrievalSource,
     SearchQuery,
 )
 from keystone.retrieval.search.query_router import RuleBasedQueryRouter
@@ -35,6 +36,7 @@ from keystone.retrieval.search.reranker import (
     PassthroughReranker,
     RerankerError,
 )
+from keystone.retrieval.search.vector_store import VectorStoreError
 
 if TYPE_CHECKING:
     from collections.abc import Iterable, Sequence
@@ -269,6 +271,70 @@ class RetrievalService:
         if not reranked:
             return hybrid_results[: search_query.top_k]
         return reranked
+
+    async def search_semantic(
+        self,
+        query: str | SearchQuery,
+        *,
+        top_k: int | None = None,
+        exclude_engagement_id: str | None = None,
+    ) -> list[RetrievalResult]:
+        """Run pure vector similarity search and return ``top_k`` results.
+
+        Embeds the query text and calls the vector store directly. No
+        BM25, no RRF fusion, no reranking.
+
+        Degradation contract:
+
+        - If the embedding call fails, return an empty list and log a
+          warning. The caller keeps serving; a missing vector store or
+          embedder failure is not fatal for the semantic path.
+
+        Inter-agent isolation:
+
+        ``exclude_engagement_id`` is honoured through the vector store's
+        filter dict, identical to the hybrid path. The
+        ``engagement_context`` auto-apply rules from :meth:`search` also
+        apply here for string-form calls.
+        """
+
+        query_is_search_query_object = isinstance(query, SearchQuery)
+        search_query = self._coerce_query(
+            query, top_k=top_k, exclude_engagement_id=exclude_engagement_id
+        )
+        if (
+            self._engagement_context is not None
+            and search_query.exclude_engagement_id is None
+            and not query_is_search_query_object
+        ):
+            search_query = search_query.model_copy(
+                update={"exclude_engagement_id": self._engagement_context}
+            )
+        try:
+            embedding = await self.embedder.embed_query(search_query.text)
+        except EmbeddingError:
+            logger.warning("semantic_search skipped: query embed failed", exc_info=True)
+            return []
+        filters: dict[str, Any] | None
+        if search_query.filters or search_query.exclude_engagement_id is not None:
+            filters = dict(search_query.filters) if search_query.filters else {}
+            if search_query.exclude_engagement_id is not None:
+                filters["exclude_engagement_id"] = search_query.exclude_engagement_id
+        else:
+            filters = None
+        try:
+            results = await self.vector_store.search_similar(
+                embedding,
+                top_k=search_query.top_k,
+                filters=filters,
+            )
+        except VectorStoreError:
+            logger.warning("semantic_search skipped: vector store unavailable", exc_info=True)
+            return []
+        for rank, result in enumerate(results, start=1):
+            result.rank = rank
+            result.source = RetrievalSource.VECTOR
+        return results
 
     async def classify(self, query: str) -> QueryRoute:
         return await self.router.classify(query)

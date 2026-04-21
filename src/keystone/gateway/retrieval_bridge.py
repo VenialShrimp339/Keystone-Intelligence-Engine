@@ -13,12 +13,14 @@ through the optional ``event_sink`` callback, so Layer 4's
 process-trajectory metrics can pick up internal-corpus usage and
 distinguish it from external MCP tool calls.
 
-Both tools currently delegate to ``RetrievalService.search`` which runs
-the full hybrid + rerank pipeline. The public tool-name split exists so
-the Specification Engine can route queries semantically (e.g. prefer
-``semantic_search`` for conceptual questions and ``hybrid_search`` when
-exact-term recall matters); teasing the two paths apart at the service
-layer is a follow-up once the orchestrator wiring is exercised.
+``semantic_search`` calls ``RetrievalService.search_semantic``, which
+embeds the query and queries the vector store directly — no BM25, no
+RRF fusion, no reranking. Use it for conceptual / semantic queries where
+dense similarity is the right signal.
+
+``hybrid_search`` calls ``RetrievalService.search``, which runs the full
+vector + BM25 → RRF → Cohere rerank pipeline with graceful degradation.
+Use it when exact-term recall matters alongside semantic relevance.
 """
 
 from __future__ import annotations
@@ -69,6 +71,7 @@ def build_retrieval_handlers(
             call=call,
             tool_name=ToolName.SEMANTIC_SEARCH.value,
             event_sink=event_sink,
+            use_semantic=True,
         )
 
     async def hybrid_search(call: ToolCall) -> dict[str, Any]:
@@ -77,6 +80,7 @@ def build_retrieval_handlers(
             call=call,
             tool_name=ToolName.HYBRID_SEARCH.value,
             event_sink=event_sink,
+            use_semantic=False,
         )
 
     return {
@@ -103,6 +107,7 @@ async def _run_search(
     call: ToolCall,
     tool_name: str,
     event_sink: EventSink | None,
+    use_semantic: bool = False,
 ) -> dict[str, Any]:
     query = _build_query(call.parameters)
     # Structural inter-agent isolation: unless the caller already specified
@@ -113,7 +118,10 @@ async def _run_search(
     if query.exclude_engagement_id is None:
         query = query.model_copy(update={"exclude_engagement_id": call.engagement_id})
     start = time.monotonic()
-    results = await service.search(query)
+    if use_semantic:
+        results = await service.search_semantic(query)
+    else:
+        results = await service.search(query)
     latency_ms = (time.monotonic() - start) * 1000
     payload = _serialize_results(results)
     if event_sink is not None:
