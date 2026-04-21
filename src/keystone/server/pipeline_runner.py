@@ -4,8 +4,12 @@ from __future__ import annotations
 
 import asyncio
 import logging
+from typing import TYPE_CHECKING
 
 from keystone.gateway.factory import build_mcp_gateway
+
+if TYPE_CHECKING:
+    from keystone.checkpoint.store import CheckpointStore
 from keystone.llm_client import create_llm_factory
 from keystone.models.config import AppConfig
 from keystone.pipeline.orchestrator import Pipeline
@@ -18,9 +22,15 @@ logger = logging.getLogger(__name__)
 class PipelineRunner:
     """Schedules and cancels single-process Keystone pipeline runs."""
 
-    def __init__(self, store: RunStore, config: AppConfig | None = None) -> None:
+    def __init__(
+        self,
+        store: RunStore,
+        config: AppConfig | None = None,
+        checkpoint_store: CheckpointStore | None = None,
+    ) -> None:
         self._store = store
         self._config = config or AppConfig()
+        self._checkpoint_store = checkpoint_store
         self._tasks: dict[str, asyncio.Task[None]] = {}
 
     async def start(self, request: StartRunRequest) -> RunSummary:
@@ -45,6 +55,18 @@ class PipelineRunner:
             return False
         task.cancel()
         return True
+
+    async def resume(self, run_id: str, request: StartRunRequest) -> RunSummary | None:
+        """Resume a failed/paused run from its last checkpoint."""
+        run = await self._store.get_summary(run_id)
+        if run is None:
+            return None
+        task = asyncio.create_task(
+            self._resume_pipeline(run_id, request), name=f"keystone-resume-{run_id}"
+        )
+        self._tasks[run_id] = task
+        task.add_done_callback(lambda _: self._tasks.pop(run_id, None))
+        return run
 
     async def shutdown(self) -> None:
         tasks = list(self._tasks.values())
@@ -76,6 +98,30 @@ class PipelineRunner:
             logger.exception("Pipeline run %s failed", run_id)
             await self._store.mark_failed(run_id, _error_from_exception(exc))
 
+    async def _resume_pipeline(self, run_id: str, request: StartRunRequest) -> None:
+        pipeline = self._build_pipeline()
+        await self._store.mark_started(run_id)
+        event_count = 0
+        try:
+            async for event in pipeline.resume_with_events(
+                engagement_id=run_id,
+                question=request.question,
+                client_id=request.client_id,
+                client_context=request.client_context,
+            ):
+                event_count += 1
+                await self._store.append_event(run_id, envelope_from_event(event))
+
+            await self._store.mark_rendering(run_id)
+            result = await pipeline.get_result()
+            result = result.model_copy(update={"total_events": event_count})
+            await self._store.complete_run(run_id, result)
+        except asyncio.CancelledError:
+            await self._store.mark_stopped(run_id)
+        except Exception as exc:  # noqa: BLE001
+            logger.exception("Pipeline resume %s failed", run_id)
+            await self._store.mark_failed(run_id, _error_from_exception(exc))
+
     def _build_pipeline(self) -> Pipeline:
         llm_factory = create_llm_factory(self._config, self._config.pipeline)
         gateway = build_mcp_gateway()
@@ -84,6 +130,7 @@ class PipelineRunner:
             gateway=gateway,
             db_session_factory=None,
             pipeline_config=self._config.pipeline,
+            checkpoint_store=self._checkpoint_store,
         )
 
 
