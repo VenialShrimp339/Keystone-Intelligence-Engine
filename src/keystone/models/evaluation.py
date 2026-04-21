@@ -67,12 +67,12 @@ RUBRIC_WEIGHTS: dict[RubricDimension, float] = {
     RubricDimension.ANALYTICAL_DEPTH: 0.12,
     RubricDimension.SOURCE_QUALITY: 0.10,
     RubricDimension.QUANTITATIVE_RIGOR: 0.15,
-    RubricDimension.NARRATIVE_COHERENCE: 0.05,  # Reduced from 0.10; see note above
+    RubricDimension.NARRATIVE_COHERENCE: 0.08,  # Raised from 0.05; Tier 1 but invisible at 0.05
     RubricDimension.COMPLETENESS: 0.08,
     RubricDimension.ACTIONABILITY: 0.15,
     RubricDimension.INTENT_ALIGNMENT: 0.15,
     RubricDimension.INTELLECTUAL_HONESTY: 0.10,
-    RubricDimension.EVALUATIVE_SURPRISE: 0.05,
+    RubricDimension.EVALUATIVE_SURPRISE: 0.02,  # Reduced from 0.05; least reliable LLM dimension
     RubricDimension.CALIBRATED_CONFIDENCE: 0.05,
 }
 assert abs(sum(RUBRIC_WEIGHTS.values()) - 1.00) < 1e-9, "Rubric weights must sum to 1.00"

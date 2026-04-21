@@ -47,7 +47,7 @@ TIER_1_DIMENSIONS: set[RubricDimension] = {
 TIER_1_FLOOR_THRESHOLDS: dict[RubricDimension, float] = {
     RubricDimension.INTENT_ALIGNMENT: 40.0,
     RubricDimension.INTELLECTUAL_HONESTY: 40.0,
-    RubricDimension.COMPLETENESS: 30.0,
+    RubricDimension.COMPLETENESS: 40.0,
     RubricDimension.NARRATIVE_COHERENCE: 40.0,
 }
 

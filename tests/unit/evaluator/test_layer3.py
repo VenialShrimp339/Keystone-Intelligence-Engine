@@ -178,7 +178,7 @@ class TestTier1Gate:
             tier1_scores={
                 RubricDimension.INTENT_ALIGNMENT: 40.0,  # exactly at floor
                 RubricDimension.INTELLECTUAL_HONESTY: 40.0,
-                RubricDimension.COMPLETENESS: 30.0,
+                RubricDimension.COMPLETENESS: 40.0,  # floor raised from 30 to 40
                 RubricDimension.NARRATIVE_COHERENCE: 40.0,
             }
         )

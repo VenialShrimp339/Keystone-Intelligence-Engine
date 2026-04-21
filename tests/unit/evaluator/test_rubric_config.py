@@ -151,7 +151,7 @@ class TestTier1Gate:
         scores = [
             _make_score(RubricDimension.INTENT_ALIGNMENT, 80.0),
             _make_score(RubricDimension.INTELLECTUAL_HONESTY, 70.0),
-            _make_score(RubricDimension.COMPLETENESS, 29.0),  # below 30
+            _make_score(RubricDimension.COMPLETENESS, 39.0),  # below 40
             _make_score(RubricDimension.NARRATIVE_COHERENCE, 50.0),
         ]
         assert get_tier1_passed(scores) is False
@@ -160,7 +160,7 @@ class TestTier1Gate:
         scores = [
             _make_score(RubricDimension.INTENT_ALIGNMENT, 40.0),
             _make_score(RubricDimension.INTELLECTUAL_HONESTY, 40.0),
-            _make_score(RubricDimension.COMPLETENESS, 30.0),
+            _make_score(RubricDimension.COMPLETENESS, 40.0),
             _make_score(RubricDimension.NARRATIVE_COHERENCE, 40.0),
         ]
         assert get_tier1_passed(scores) is True
