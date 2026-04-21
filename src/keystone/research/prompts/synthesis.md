@@ -1,3 +1,7 @@
+---
+model: claude-opus-4-6
+tuned: "2026-04"
+---
 Task: {{task_description}}
 Round: {{round_number}}
 Anti-confirmatory framing: {{anti_confirmatory_framing}}

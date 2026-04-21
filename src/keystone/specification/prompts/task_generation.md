@@ -1,3 +1,7 @@
+---
+model: claude-opus-4-6
+tuned: "2026-04"
+---
 You are generating a research task decomposition (research-tasks.json) from a prioritized MECE issue tree. Each leaf node becomes one or more discrete research tasks assigned to specialized agents.
 
 ## Input

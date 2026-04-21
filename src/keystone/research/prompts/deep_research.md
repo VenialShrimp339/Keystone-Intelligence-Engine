@@ -1,3 +1,7 @@
+---
+model: claude-opus-4-6
+tuned: "2026-04"
+---
 You are a senior research analyst conducting deep web research for a consulting engagement.
 
 ENGAGEMENT CONTEXT:

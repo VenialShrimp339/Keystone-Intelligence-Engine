@@ -33,6 +33,16 @@ logger = logging.getLogger(__name__)
 _PROMPTS_DIR = Path(__file__).parent / "prompts"
 _GEOMETRIC_MEAN_EPSILON = 0.01
 
+
+def _strip_frontmatter(text: str) -> str:
+    """Strip YAML frontmatter (---...---) from a prompt template if present."""
+    if text.startswith("---\n"):
+        end = text.find("\n---\n", 4)
+        if end != -1:
+            return text[end + 5 :]
+    return text
+
+
 # Map RubricDimension enum values to prompt file names
 _DIMENSION_PROMPT_FILES: dict[RubricDimension, str] = {
     RubricDimension.INTENT_ALIGNMENT: "intent_alignment.md",
@@ -193,7 +203,7 @@ class Layer3RubricScorer:
     ) -> DimensionScore:
         """Score a single dimension using its dedicated prompt template."""
         prompt_file = _DIMENSION_PROMPT_FILES[dimension]
-        template = (_PROMPTS_DIR / prompt_file).read_text()
+        template = _strip_frontmatter((_PROMPTS_DIR / prompt_file).read_text())
         prompt = template.replace("{{output_text}}", output_text).replace(
             "{{sprint_contract_criteria}}", criteria_text
         )
@@ -216,7 +226,7 @@ class Layer3RubricScorer:
 
     async def _gestalt_overlay(self, output_text: str) -> float:
         """Pass 2: holistic quality adjustment."""
-        template = (_PROMPTS_DIR / "gestalt_overlay.md").read_text()
+        template = _strip_frontmatter((_PROMPTS_DIR / "gestalt_overlay.md").read_text())
         prompt = template.replace("{{output_text}}", output_text)
 
         description = (

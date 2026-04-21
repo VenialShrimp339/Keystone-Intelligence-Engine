@@ -1,3 +1,7 @@
+---
+model: claude-opus-4-6
+tuned: "2026-04"
+---
 # Quantitative Rigor Evaluation
 
 ## Role

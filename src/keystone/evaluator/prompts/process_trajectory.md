@@ -1,3 +1,7 @@
+---
+model: claude-opus-4-6
+tuned: "2026-04"
+---
 # Process Trajectory Evaluation (Layer 4)
 
 ## Role

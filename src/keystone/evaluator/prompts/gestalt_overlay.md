@@ -1,3 +1,7 @@
+---
+model: claude-opus-4-6
+tuned: "2026-04"
+---
 # Gestalt Overlay Evaluation (Pass 2)
 
 ## Role

@@ -20,6 +20,15 @@ logger = logging.getLogger(__name__)
 _PROMPTS_DIR = Path(__file__).parent / "prompts"
 
 
+def _strip_frontmatter(text: str) -> str:
+    """Strip YAML frontmatter (---...---) from a prompt template if present."""
+    if text.startswith("---\n"):
+        end = text.find("\n---\n", 4)
+        if end != -1:
+            return text[end + 5 :]
+    return text
+
+
 class SprintContractGenerator:
     """Generates sprint contracts for research sections.
 

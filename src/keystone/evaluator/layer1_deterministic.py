@@ -21,8 +21,17 @@ logger = logging.getLogger(__name__)
 _PROMPTS_DIR = Path(__file__).parent / "prompts"
 
 
+def _strip_frontmatter(text: str) -> str:
+    """Strip YAML frontmatter (---...---) from a prompt template if present."""
+    if text.startswith("---\n"):
+        end = text.find("\n---\n", 4)
+        if end != -1:
+            return text[end + 5 :]
+    return text
+
+
 def _load_prompt(name: str) -> str:
-    return (_PROMPTS_DIR / name).read_text()
+    return _strip_frontmatter((_PROMPTS_DIR / name).read_text())
 
 
 class Layer1Evaluator:

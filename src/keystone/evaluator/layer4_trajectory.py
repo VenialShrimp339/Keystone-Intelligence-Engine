@@ -38,6 +38,16 @@ logger = logging.getLogger(__name__)
 _PROMPTS_DIR = Path(__file__).parent / "prompts"
 _PROMPT_FILE = "process_trajectory.md"
 
+
+def _strip_frontmatter(text: str) -> str:
+    """Strip YAML frontmatter (---...---) from a prompt template if present."""
+    if text.startswith("---\n"):
+        end = text.find("\n---\n", 4)
+        if end != -1:
+            return text[end + 5 :]
+    return text
+
+
 # Quality banding thresholds for Citation.quality_score (0-1 scale)
 _HIGH_QUALITY_THRESHOLD = 0.75
 _MEDIUM_QUALITY_THRESHOLD = 0.5
@@ -136,7 +146,7 @@ class Layer4Evaluator:
         metrics: dict[str, Any],
         deterministic_flags: list[ProcessFlag],
     ) -> _LLMAssessment:
-        template = (_PROMPTS_DIR / _PROMPT_FILE).read_text()
+        template = _strip_frontmatter((_PROMPTS_DIR / _PROMPT_FILE).read_text())
         prompt = _fill_prompt(template, context, metrics, deterministic_flags)
 
         try:
