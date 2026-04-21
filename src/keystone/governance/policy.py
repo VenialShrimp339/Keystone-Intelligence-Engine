@@ -77,6 +77,28 @@ class ProfileExecutionPolicy:
             outcome.flags.append(flag)
             state.task_outcomes[task_id] = outcome
 
+    def flag_mece_failure(self, state: GovernanceState) -> None:
+        """Fire the l0_mece_failed gate with profile-dependent action."""
+        if self.profile == PipelineProfile.LIGHT:
+            action = EnforcementAction.WARN
+        elif self.profile == PipelineProfile.STANDARD:
+            action = EnforcementAction.DEGRADE
+        else:
+            action = EnforcementAction.HALT
+        self.apply_flag(
+            state,
+            QualityFlag(
+                gate="l0_mece_failed",
+                action=action,
+                scope=EnforcementScope.PIPELINE,
+                severity="warn" if action == EnforcementAction.WARN else "error",
+                message=(
+                    "MECE validation failed after all retry attempts; "
+                    "issue tree may contain overlapping or incomplete branches."
+                ),
+            ),
+        )
+
     def record_research_outcome(
         self,
         state: GovernanceState,

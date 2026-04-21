@@ -1705,3 +1705,132 @@ class TestWave2BWiring:
                 match="LIGHT profile requires every renderable task",
             ):
                 await pipeline.run("Test question", "c1")
+
+
+# ---------------------------------------------------------------------------
+# Tests: GAP-06 — MECE failure governance gate
+# ---------------------------------------------------------------------------
+
+
+def _make_spec_mece_failed(profile: PipelineProfile) -> EngagementSpec:
+    """Spec with scope_valid=False for MECE failure tests."""
+    from keystone.models.tasks import TaskImportance
+
+    task = _make_task()
+    task = task.model_copy(update={"importance": TaskImportance.SUPPORTING})
+    research_spec = ResearchSpec(
+        engagement_id="eng_test",
+        client_id="c1",
+        title="MECE-failed spec",
+        created_at=__import__("datetime").datetime.now(__import__("datetime").timezone.utc),
+        specification_version=1,
+        decision_context="Test",
+        surprising_finding="Test",
+        questions=[ResearchQuestion(question="Q?", is_primary=True)],
+        output_format="markdown",
+        engagement_type=EngagementType.SIZING,
+        day_1_hypothesis="Hypothesis",
+        effective_evaluation_profile=EvaluationProfileName.ESTIMATIVE,
+        recommended_pipeline_profile=profile,
+        effective_pipeline_profile=profile,
+    )
+    return EngagementSpec(
+        research_spec=research_spec,
+        task_decomposition=__import__(
+            "keystone.models.tasks", fromlist=["TaskDecomposition"]
+        ).TaskDecomposition(
+            project="Test",
+            engagement_id="eng_test",
+            client_id="c1",
+            research_md_path="/tmp/RESEARCH.md",
+            specification_version=1,
+            decomposition_rationale="Test",
+            tasks=[task],
+        ),
+        validation_report=ValidationReport(
+            intent_clear=True,
+            scope_valid=False,
+            within_frontier=True,
+            quality_threshold_met=False,
+        ),
+    )
+
+
+class TestMECEFailureGate:
+    def _run_helpers(self, spec, gw):
+        """Build standard mock components for a pipeline run."""
+        factory = _mock_llm_factory()
+        pipeline = Pipeline(llm_factory=factory, gateway=gw)
+        finding = _make_finding()
+        manifest = _make_manifest()
+        cm = _make_confidence_map()
+        eval_result = _make_eval_result()
+
+        async def noop_gen(*a, **kw):
+            return
+            yield
+
+        c = pipeline._build_components()
+        c.spec_engine.generate_spec = noop_gen
+        c.spec_engine.get_spec = AsyncMock(return_value=spec)
+        c.agent_pool.execute_all = AsyncMock(
+            return_value=[AgentResult("a1", "task_001", finding=finding)]
+        )
+        c.agent_pool.get_successful_findings = MagicMock(return_value=[finding])
+        c.citation_processor.process = noop_gen
+        c.citation_processor.get_result = AsyncMock(
+            return_value=CitationProcessorResult(
+                manifest=manifest, canonicalized_findings=[finding]
+            )
+        )
+        c.deliberation.deliberate = noop_gen
+        c.deliberation.get_confidence_map = AsyncMock(return_value=cm)
+        pipeline._pending_components = c
+        return pipeline, eval_result, noop_gen
+
+    @pytest.mark.asyncio
+    async def test_deep_profile_halts_on_mece_failure(self) -> None:
+        gw = _make_gateway()
+        spec = _make_spec_mece_failed(PipelineProfile.DEEP)
+        pipeline, eval_result, noop_gen = self._run_helpers(spec, gw)
+
+        with patch("keystone.pipeline.orchestrator.Evaluator") as mock_eval:
+            inst = MagicMock()
+            inst.evaluate = noop_gen
+            inst.get_result = AsyncMock(return_value=eval_result)
+            mock_eval.return_value = inst
+
+            with pytest.raises(RuntimeError, match="MECE validation failed"):
+                await pipeline.run("Test question", "c1")
+
+    @pytest.mark.asyncio
+    async def test_standard_profile_degrades_on_mece_failure(self) -> None:
+        gw = _make_gateway()
+        spec = _make_spec_mece_failed(PipelineProfile.STANDARD)
+        pipeline, eval_result, noop_gen = self._run_helpers(spec, gw)
+
+        with patch("keystone.pipeline.orchestrator.Evaluator") as mock_eval:
+            inst = MagicMock()
+            inst.evaluate = noop_gen
+            inst.get_result = AsyncMock(return_value=eval_result)
+            mock_eval.return_value = inst
+
+            result = await pipeline.run("Test question", "c1")
+
+        assert result is not None
+
+    @pytest.mark.asyncio
+    async def test_light_profile_continues_on_mece_failure(self) -> None:
+        gw = _make_gateway()
+        spec = _make_spec_mece_failed(PipelineProfile.LIGHT)
+        pipeline, eval_result, noop_gen = self._run_helpers(spec, gw)
+
+        with patch("keystone.pipeline.orchestrator.Evaluator") as mock_eval:
+            inst = MagicMock()
+            inst.evaluate = noop_gen
+            inst.get_result = AsyncMock(return_value=eval_result)
+            mock_eval.return_value = inst
+
+            result = await pipeline.run("Test question", "c1")
+
+        assert result is not None

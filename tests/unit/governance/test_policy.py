@@ -528,3 +528,50 @@ class TestEnsembleGovernanceGates:
         assert len(degraded) == 1
         assert degraded[0].action == EnforcementAction.WARN
         assert "flagship_a" in degraded[0].message
+
+
+class TestMECEFailureGate:
+    def _state(self, profile: PipelineProfile) -> tuple[ProfileExecutionPolicy, object]:
+        task = _task("task_001")
+        policy = ProfileExecutionPolicy(profile)
+        state = policy.new_state([task])
+        return policy, state
+
+    def test_light_profile_warns(self) -> None:
+        policy, state = self._state(PipelineProfile.LIGHT)
+        policy.flag_mece_failure(state)
+
+        flags = [f for f in state.flags if f.gate == "l0_mece_failed"]
+        assert len(flags) == 1
+        assert flags[0].action == EnforcementAction.WARN
+        assert state.degraded is True
+        assert state.halted is False
+
+    def test_standard_profile_degrades(self) -> None:
+        policy, state = self._state(PipelineProfile.STANDARD)
+        policy.flag_mece_failure(state)
+
+        flags = [f for f in state.flags if f.gate == "l0_mece_failed"]
+        assert len(flags) == 1
+        assert flags[0].action == EnforcementAction.DEGRADE
+        assert state.degraded is True
+        assert state.halted is False
+
+    def test_deep_profile_halts(self) -> None:
+        policy, state = self._state(PipelineProfile.DEEP)
+        policy.flag_mece_failure(state)
+
+        flags = [f for f in state.flags if f.gate == "l0_mece_failed"]
+        assert len(flags) == 1
+        assert flags[0].action == EnforcementAction.HALT
+        assert state.halted is True
+
+    def test_flag_scope_is_pipeline(self) -> None:
+        from keystone.governance.models import EnforcementScope
+
+        policy, state = self._state(PipelineProfile.STANDARD)
+        policy.flag_mece_failure(state)
+
+        flag = next(f for f in state.flags if f.gate == "l0_mece_failed")
+        assert flag.scope == EnforcementScope.PIPELINE
+        assert flag.task_id is None

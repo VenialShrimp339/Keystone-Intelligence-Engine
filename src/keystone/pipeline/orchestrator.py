@@ -373,6 +373,9 @@ class Pipeline:
             low_agreement_threshold=self._pipeline_config.l5_low_agreement_threshold,
         )
         governance = policy.new_state(spec.task_decomposition.tasks)
+        if not spec.validation_report.scope_valid:
+            policy.flag_mece_failure(governance)
+        _raise_if_halted(governance)
         logger.info("L0 complete: %d tasks", len(spec.task_decomposition.tasks))
 
         # --- Stage 1b: Retrieval wiring ---
