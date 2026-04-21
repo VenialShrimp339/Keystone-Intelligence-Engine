@@ -1,7 +1,7 @@
 # Handover
 
-Last updated: 2026-04-21
-Session: Gap remediation (Tier 1 fixes from Nate corpus audit)
+Last updated: 2026-04-21 (end of day)
+Session: Gap remediation + prompt audit + UI v0.1 + checkpoint/resume + L1 architecture research
 
 ## What Changed (Gap remediation session, 2026-04-21)
 
@@ -44,20 +44,85 @@ status appended to `GAP-AUDIT.md`.
 
 All Tier 1 gaps are now complete.
 
+- **GAP-17** Checkpoint/resume implemented: `CheckpointStore`
+  (aiosqlite), 5 stage boundaries (POST_SPEC, POST_L1_CITPROC,
+  POST_DELIBERATION, POST_STRUCTURING, POST_EVALUATION),
+  `Pipeline.resume_with_events()`, `PipelineRunner.resume()`,
+  schema versioning, TTL cleanup. Opt-in via `checkpoint_store`
+  constructor parameter. 22 new tests.
+
+**Tier 2 gaps also completed this session:**
+
+- **GAP-03** Task-aware evidence filtering (source-family +
+  Jaccard relevance ranking)
+- **GAP-05** ObservationStore (aiosqlite, first slice of
+  Observation Library)
+- **GAP-13** Post-run observation ingest hook (emits
+  `ObservationRecorded` events)
+
+**Prompt audit completed this session (3 phases):**
+
+- **Phase A**: Authority-marker instruction on 10 rubric prompts,
+  absence report expansion, prompt-injection mitigation in deep
+  research, tool list templating, 8 L1.5 prompts externalized to
+  `.md` files
+- **Phase B**: 5 methodology prompts rewritten (2-3 sentences →
+  15-30 sentences with genuine analytical procedures), synthesis
+  prompt expanded, confidence bands aligned to 5-tier system,
+  judge fallback changed to median, curmudgeon challenge added,
+  Tier 1 dims added to sprint contract emphasis, gestalt overlay
+  clamped so it cannot flip pass/fail
+- **Phase C**: Completeness floor 30→40, narrative coherence weight
+  0.05→0.08 (evaluative surprise 0.05→0.02), consistency check
+  contradiction vs tension guidance, WWHTB testability definition
+
+Owner decisions on all 10 design questions logged in
+`notes/PROMPT-DECISIONS-2026-04-21.md`.
+
+**UI v0.1 built (Codex):**
+
+FastAPI serving layer (`src/keystone/server/`) wrapping
+`Pipeline.run_with_events` with WebSocket event streaming.
+React+TS+Vite frontend (`frontend/`) with session sidebar, chat
+panel, event log, markdown result viewer. Architecture doc at
+`notes/UI-ARCHITECTURE.md` (1135 lines) with full API contracts
+and 4-phase build plan. UI is paused for competitive teardown
+research before v0.2.
+
+**L1 sub-agent architecture researched:**
+
+Deep research report at `research/external-sources/openclaw-
+claude-code/l1-architecture-research.md`. Two-tier
+orchestrator-worker pattern: LeadResearcher (FLAGSHIP, planning
++ synthesis) dispatches 3-5 SubResearcher workers (STANDARD) per
+task. Evidence-based from DeepMind 180-config study, NeurIPS 2025
+martingale proof, DMAD ICLR 2025. All 10 invariants preserved.
+Phase 1 implementation prompt ready. THIS IS THE HIGHEST-PRIORITY
+NEXT ENGINEERING WORK — directly determines output quality.
+
 **New workstream flagged:** Prompt audit and optimization. All 35
 pipeline prompts (27 `.md` + 8 inline Python in deliberation) were
 built without owner review. Added to TODO.md as active item. Full
 prompt catalog produced (9 L0 + 3 L1 + 8 L1.5 + 1 L2/L4 bridge +
 14 L4 + 0 L5). L1.5 deliberation prompts still inline in Python.
 
-**Test count:** 1421 passing (from 1404 baseline, +17 new).
+**Test count:** 1501 passing (from 1404 baseline, +97 new).
 
-**Tier 2 gaps (not started, need design sessions):**
-GAP-03 (evidence filtering), GAP-05 (Observation Library), GAP-09
-(evaluator calibration), GAP-13 (post-run write-back), GAP-15
-(deep-mode gateway), GAP-17 (checkpoint/resume).
+**Remaining gaps:**
+- GAP-09 (evaluator calibration) — blocked until first pipeline
+  run produces scored data to calibrate against
+- GAP-15 (deep-mode gateway) — blocked on GAP-14 (SDK transport)
+- GAP-04 Phase 2 (apply HITL modifications + resume) — unblocked
+  now that GAP-17 is implemented
 
 **Deferred:** GAP-14 (SDK transport), GAP-16 (prompt caching).
+
+**Next priority workstreams:**
+1. L1 sub-agent Phase 1 implementation (prompt ready, blocked on
+   nothing — launch in new CC session)
+2. Competitive teardown for UI design (deep research running)
+3. First actual pipeline run (unblocks GAP-09 calibration)
+4. UI v0.2 (after teardown completes)
 
 ## What Changed (Audit remediation pass, 2026-04-18 follow-up)
 
