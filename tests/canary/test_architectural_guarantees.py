@@ -467,7 +467,7 @@ async def _deliberation_llm(prompt: str) -> str:
 async def _two_round_shallow_llm(prompt: str) -> str:
     lower = prompt.lower()
 
-    if "round:" in lower and "synthesize findings" in lower:
+    if "round:" in lower and "synthesize" in lower and "claims" in lower:
         match = re.search(r"round:\s*(\d+)", prompt, flags=re.IGNORECASE)
         round_num = int(match.group(1)) if match else 1
         # Extract the first SRC ref from the prompt so the claim only references
