@@ -347,3 +347,82 @@ Ten items. Each is a day or less. Completing them brings Keystone from "architec
 ---
 
 *Generated 2026-04-19 from 78-article Nate Jones Substack corpus analysis + `notes/PIPELINE-ATLAS.md`. Per-article raw insights available in the originating subagent analyses; this document is the synthesis.*
+
+---
+
+## Verification Status
+
+*Verified 2026-04-21 against branch `codex/owner-triage-normalization` @ `bddc2b8`.*
+
+| ID | Status | Summary |
+|---|---|---|
+| GAP-01 | CONFIRMED | `task.assigned_model` is never read inside `AgentPool._run_single` or `ResearchAgent`; all agents share the pool-level `llm` |
+| GAP-02 | CONFIRMED | Three stubs confirmed: `tokens_used=0` in `mcp_gateway.py:404`, `// 4` heuristic in `research_agent.py:324,590`, L4 trajectory has no `tokens_consumed` capture |
+| GAP-03 | CONFIRMED | `records_for_task` returns all records when no `task_filter` is provided; already tracked in TODO.md |
+| GAP-04 | CONFIRMED | `GateStatus.MODIFIED` path sets `patch_applied=False` then raises `GateModificationRequiredError` at `gate.py:209`; modification JSON is never applied |
+| GAP-05 | CONFIRMED | `ObservationLibraryContract` is Protocol-only (`contracts.py:337`), `Pass 3` is a no-op placeholder (`three_pass.py:53`), `src/keystone/observation/` does not exist, no code ever `yield`s `ObservationRecorded`/`PatternPromoted`/`ConstraintEncoded` |
+| GAP-06 | CONFIRMED | After all MECE retries, `_decompose_with_validation` returns `(tree, False)` with a warning log; orchestrator does not inspect `spec.validation_report.scope_valid` or fire any governance flag |
+| GAP-07 | CONFIRMED | `research_agent.py:547` has a bare `except Exception` that logs a warning and continues; no `QualityFlag` is raised; `dead_letters` property exists on `MCPGateway` but is never polled by agent or orchestrator |
+| GAP-08 | CONFIRMED | `_execute_deep` docs explicitly state gateway mediation does not apply; `deep_llm(prompt)` call at `research_agent.py:316` bypasses `ToolAuthorizer`, rate limiter, and circuit breaker; already tracked in TODO.md |
+| GAP-09 | CONFIRMED | All three values present as hardcoded defaults: `evaluator_pass_threshold=60.0` (`config.py:312`), `evaluator_layer3_weight=0.8` (`config.py:318`), `l5_low_agreement_threshold=0.30` (`config.py:343`); already tracked in TODO.md |
+| GAP-10 | CONFIRMED | No prompt file in `src/keystone/specification/prompts/` or `src/keystone/evaluator/prompts/` contains model-version frontmatter or annotation |
+| GAP-11 | CONFIRMED | `src/keystone/research/prompts/` does not exist; `_build_synthesis_prompt` (`research_agent.py:891`) and `_build_deep_research_prompt` (`research_agent.py:774`) are pure f-string inline builders |
+| GAP-12 | CONFIRMED | Both `semantic_search` and `hybrid_search` handlers in `retrieval_bridge.py` call the same `_run_search` → `service.search` code path; already tracked in TODO.md |
+| GAP-13 | CONFIRMED | After `PipelineResult` is assembled at `orchestrator.py:616`, there is no write-back to any retrieval store; `ingest` calls only appear in `_wire_retrieval` for pre-run Lane E records |
+| GAP-14 | CONFIRMED | `standard_crossmodel` slot wires to `llm_factory(ModelTier.STANDARD)` at `orchestrator.py:1015` with explicit code comment "INTERIM slot"; already tracked in TODO.md |
+| GAP-15 | CONFIRMED | `MockMCPClient` instantiated at `mcp_gateway.py:256` as the default client; class defined at line 82 with canned responses; already tracked in TODO.md |
+| GAP-16 | CONFIRMED | No `cache_control`, `prompt_caching`, or related Anthropic caching fields appear anywhere in `llm_client.py`; already tracked in TODO.md |
+| GAP-17 | CONFIRMED | No checkpoint, intermediate persistence, or resume mechanism exists in `orchestrator.py`; pipeline state is pure in-memory; crash at any stage requires full restart from L0 |
+
+---
+
+### GAP-01: CONFIRMED
+`AgentPool._run_single` (`agent_pool.py:130-175`) constructs every `ResearchAgent` with the same pool-level `self._llm` and `self._current_tier`. The `task.assigned_model` field on `ResearchTask` is never read inside `_run_single` or anywhere in `ResearchAgent.execute`. The `current_tier` kwarg added in the audit-remediation pass is used only to set the fallback baseline for `ErrorRecovery`, not to select a different LLM callable per task. An operator who sets `task.assigned_model = ModelTier.FLAGSHIP` on high-priority tasks will find that all tasks still run at the pool-level tier.
+
+### GAP-02: CONFIRMED
+Three distinct stubs verified: (a) `mcp_gateway.py:404` hardcodes `tokens_used=0` with a `# Phase 1: not tracked at gateway level` comment; (b) `research_agent.py:590` accumulates `self._tokens_consumed += len(synthesis_prompt) // 4` (char-count / 4 heuristic) for shallow synthesis rounds, and line 324 does `(len(prompt) + len(raw_response)) // 4` for deep mode; (c) `layer4_trajectory.py` has no reference to `tokens_consumed` — the process-trajectory LLM call's token cost is silently uncounted. Already partially tracked in TODO.md ("L4 Layer 4: capture `tokens_consumed`...").
+
+### GAP-03: CONFIRMED
+`EvidenceContextProvider.records_for_task` (`evidence_context.py:223-242`): when `self._task_filter is None` (the default), it returns `list(self._records)` — all records up to the `max_passages_per_task` cap of 20. No category, source_family, or `required_sources` filtering is applied. The docstring explicitly notes this is "intentionally simple in this first iteration." Already tracked in TODO.md as "Task-aware evidence selection."
+
+### GAP-04: CONFIRMED
+`create_and_wait_for_gate` (`gate.py:175-210`): when `resolved.status == GateStatus.MODIFIED`, the `GateResolution` is built with `patch_applied=False` (line 178), a `ReviewGateModified` event is emitted, and then line 209-210 raises `GateModificationRequiredError` with the message "modifications are not yet supported in this phase." The reviewer's `decision.modifications` dict is present in memory but is never applied to the spec or deliberation output before the error is raised. The pipeline halts on modification rather than applying the patch.
+
+### GAP-05: CONFIRMED
+`ObservationLibraryContract` exists only as a `Protocol` in `contracts.py:337` — no implementation class exists anywhere in `src/keystone/`. The directory `src/keystone/observation/` does not exist. `ThreePassEvaluator.run` (`three_pass.py:49-55`) has a literal `# Pass 3: Observation Library scan (STUB for Phase 2)` comment and assigns `_observation_scan = None` before returning `dimensional_result` unchanged. The three events `ObservationRecorded`, `PatternPromoted`, and `ConstraintEncoded` are declared in `events.py:432-561` and included in `AnyPipelineEvent` but are never emitted by any code in `src/`.
+
+### GAP-06: CONFIRMED
+`spec_engine.py:307-332`: after `_MAX_DECOMPOSE_RETRIES + 1` attempts all fail MECE validation, the method logs a warning and returns `(tree, False)`. The caller at line 190 receives `mece_passed = False`, sets `ValidationReport(scope_valid=False)` on the spec, and the orchestrator proceeds directly to agent dispatch. Neither `spec_engine.py` nor `orchestrator.py` inspects `spec.validation_report.scope_valid` to fire a governance flag or halt. The `ProfileExecutionPolicy` has no method for L0 quality failures.
+
+### GAP-07: CONFIRMED
+`research_agent.py:547-554`: the `except Exception` block catches all tool-call failures, logs a `WARNING`, and silently continues to the next tool and round. The `MCPGateway.execute` path (`mcp_gateway.py:442-467`) appends a `DeadLetter` to `self._dead_letters` and re-raises `last_error`, but that re-raise is caught here. `MCPGateway.dead_letters` is a property that accumulates these records, but neither `AgentPool`, `ResearchAgent`, nor `orchestrator.py` ever reads it to emit a governance flag. No `l1_tool_dead_letter` gate or equivalent exists in `governance/policy.py`.
+
+### GAP-08: CONFIRMED
+`research_agent.py:265-293` and the docstring at lines 278-290 explicitly document that `_execute_deep` "bypasses MCPGateway for the tool calls themselves" — the `self._deep_llm(prompt)` call at line 316 is a direct LLM callable, not routed through `MCPGateway.execute`. `ToolAuthorizer`, `RateLimiter`, and `CircuitBreaker` are skipped. Audit logging is partially restored for per-source and session entries, but the structural safety controls do not apply. Already tracked in TODO.md as "Phase 2: route deep-mode tool calls through `MCPGateway.call_tool`."
+
+### GAP-09: CONFIRMED
+All three values confirmed as unvalidated defaults in `config.py`: `evaluator_pass_threshold: float = Field(default=60.0)` at line 311, `evaluator_layer3_weight: float = Field(default=0.8)` at line 317, `l5_low_agreement_threshold: float = Field(default=0.30)` at line 342. No calibration study, ground-truth dataset, or sensitivity analysis is referenced anywhere in the codebase. Already tracked in TODO.md ("calibrate the 10-point agreement-level threshold...against human-scored samples").
+
+### GAP-10: CONFIRMED
+Spot-checked `src/keystone/specification/prompts/classification.md` and `src/keystone/evaluator/prompts/intent_alignment.md` — both begin immediately with prose content, no YAML frontmatter, no `<!-- model: claude-opus-4 -->` comment, no model-version annotation of any kind. This applies uniformly to all 9 spec prompts and 15 evaluator prompts. There is no convention or tooling to detect prompt-model version drift.
+
+### GAP-11: CONFIRMED
+`src/keystone/research/prompts/` does not exist (directory lookup confirmed). Both prompt builders are inline f-string methods: `_build_deep_research_prompt` at `research_agent.py:774-864` (90 lines of inline f-string) and `_build_synthesis_prompt` at `research_agent.py:891-937`. These are the load-bearing L1 synthesis prompts but they cannot be audited, diffed, or versioned the way the L0 `.md` prompt files under `src/keystone/specification/prompts/` can.
+
+### GAP-12: CONFIRMED
+`retrieval_bridge.py:66-85`: `semantic_search` and `hybrid_search` are two thin closures that both call `_run_search(service=service, call=call, tool_name=..., event_sink=event_sink)`. The `_run_search` function calls `service.search(query)` identically for both. The module docstring at line 17-21 explicitly acknowledges "teasing the two paths apart at the service layer is a follow-up." Already tracked in TODO.md.
+
+### GAP-13: CONFIRMED
+After `_render_and_assemble` assembles `PipelineResult` at `orchestrator.py:616`, execution returns. No post-run write-back to the retrieval store occurs — there is no call to `service.ingest`, `service.ingest_institutional`, or any equivalent. The only ingest calls in the orchestrator are in `_wire_retrieval` (line 666), which runs at the start of Stage 1b to load pre-existing Lane E records into the per-run service. Engagement findings, citations, and evaluation results are returned to the caller and discarded.
+
+### GAP-14: CONFIRMED
+`orchestrator.py:1012-1015`: the `standard_crossmodel` slot explicitly calls `llm_factory(ModelTier.STANDARD)` — Sonnet — with an inline comment "INTERIM slot: swap to an external provider (GPT-5.4 / Gemini) when one is integrated." No HTTP transport, API key wiring, or second-provider SDK import exists anywhere in `src/keystone/`. Already tracked in TODO.md.
+
+### GAP-15: CONFIRMED
+`mcp_gateway.py:82` defines `class MockMCPClient` returning canned responses. `mcp_gateway.py:256` instantiates it as the default: `self._client: MCPClient = client or MockMCPClient()`. The `simple_client.py` file exists in the gateway package but does not implement a real FastMCP client. Already tracked in TODO.md.
+
+### GAP-16: CONFIRMED
+`llm_client.py` contains no references to `cache_control`, `prompt_caching`, or any Anthropic caching API. The `_client_cache` dict and `_cached_token` field are internal Python-object caches for reusing `AsyncOpenAI` client instances and auth tokens respectively — not Anthropic prompt caching. The `system` message and static per-round context blocks that would benefit most from caching are sent uncached on every call. Already tracked in TODO.md.
+
+### GAP-17: CONFIRMED
+`orchestrator.py` contains no checkpoint writes, intermediate persistence, or resume logic. `run_with_events` is a single async generator; all state (spec, findings, citations, confidence map, evaluation results) lives in local variables. If the process crashes after L1 completes but before L4 finishes (e.g., during a DEEP profile with 20+ minute research), the entire run must restart from L0. The HITL gate uses `aiosqlite` (via `HITLService`) for gate-review state, but that is gate-review state, not pipeline stage state.
