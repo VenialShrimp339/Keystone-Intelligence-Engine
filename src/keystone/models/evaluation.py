@@ -293,6 +293,13 @@ class Layer4Result(BaseModel):
         description="Specific concerns. Values come from ProcessFlag.",
     )
 
+    # --- Token accounting ---
+    tokens_consumed: int = Field(
+        default=0,
+        ge=0,
+        description="Tokens used by the Layer 4 LLM assessment call (char-based estimate).",
+    )
+
 
 class JudgeScore(BaseModel):
     """Per-judge Layer 3 result in a cross-model ensemble (Layer 5).

@@ -85,6 +85,7 @@ class PipelineResult(BaseModel):
     markdown_output: str
     total_tokens: int = Field(default=0, ge=0)
     total_events: int = Field(default=0, ge=0)
+    tokens_by_layer: dict[str, int] = Field(default_factory=dict)
 
 
 class Pipeline:
@@ -416,8 +417,10 @@ class Pipeline:
             yield search_event
 
         findings = c.agent_pool.get_successful_findings(agent_results)
+        l1_tokens = 0
         for f in findings:
-            total_tokens += f.tokens_consumed
+            l1_tokens += f.tokens_consumed
+        total_tokens += l1_tokens
         finding_by_task = {finding.task_id: finding for finding in findings}
         for task in spec.task_decomposition.tasks:
             policy.record_research_outcome(
@@ -425,6 +428,16 @@ class Pipeline:
                 task,
                 finding_by_task.get(task.id),
             )
+        # Cost ceiling check: fire a WARN gate for any agent that exceeded the threshold.
+        token_ceiling = self._pipeline_config.research_token_ceiling_per_task
+        for f in findings:
+            if f.tokens_consumed > token_ceiling:
+                policy.flag_cost_ceiling(
+                    governance,
+                    task_id=f.task_id,
+                    tokens_used=f.tokens_consumed,
+                    ceiling=token_ceiling,
+                )
         task_id_by_agent: dict[str, str] = {
             agent.agent_id: task_id for task_id, agent in agent_by_task.items()
         }
@@ -520,6 +533,7 @@ class Pipeline:
             len(spec.task_decomposition.tasks),
         )
         evaluation_results: list[EvaluationResult] = []
+        l4_tokens = 0
         for task in eval_tasks:
             # Find the finding for this task (if any)
             task_finding = next((f for f in findings if f.task_id == task.id), None)
@@ -574,6 +588,8 @@ class Pipeline:
 
             result = await evaluator.get_result()
             evaluation_results.append(result)
+            if result.layer4_results is not None:
+                l4_tokens += result.layer4_results.tokens_consumed
             policy.record_evaluation_outcome(governance, task, result)
 
         passed_count = sum(1 for r in evaluation_results if r.passed)
@@ -639,6 +655,7 @@ class Pipeline:
             markdown_output=markdown_output,
             total_tokens=total_tokens,
             total_events=0,  # Updated by run() after counting
+            tokens_by_layer={"l1": l1_tokens, "l4": l4_tokens},
         )
 
     async def get_result(self) -> PipelineResult:

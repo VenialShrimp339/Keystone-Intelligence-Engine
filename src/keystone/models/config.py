@@ -349,6 +349,16 @@ class PipelineConfig(BaseModel):
         ),
     )
 
+    # Cost governance knobs
+    research_token_ceiling_per_task: int = Field(
+        default=50_000,
+        ge=1,
+        description=(
+            "Token ceiling per L1 research agent task. Exceeding this fires an "
+            "l1_cost_ceiling WARN governance flag."
+        ),
+    )
+
 
 class EvaluationConfig(BaseModel):
     """Evaluator-specific configuration."""

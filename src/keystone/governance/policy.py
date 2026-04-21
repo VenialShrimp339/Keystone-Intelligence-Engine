@@ -99,6 +99,31 @@ class ProfileExecutionPolicy:
             ),
         )
 
+    def flag_cost_ceiling(
+        self,
+        state: GovernanceState,
+        *,
+        task_id: str,
+        tokens_used: int,
+        ceiling: int,
+    ) -> None:
+        """Fire the l1_cost_ceiling gate when a research agent exceeds the token ceiling."""
+        self.apply_flag(
+            state,
+            QualityFlag(
+                gate="l1_cost_ceiling",
+                action=EnforcementAction.WARN,
+                scope=EnforcementScope.TASK,
+                severity="warn",
+                message=(
+                    f"Task {task_id} agent used {tokens_used:,} tokens, "
+                    f"exceeding the ceiling of {ceiling:,}."
+                ),
+                task_id=task_id,
+            ),
+            task_id=task_id,
+        )
+
     def flag_tool_dead_letter(
         self,
         state: GovernanceState,

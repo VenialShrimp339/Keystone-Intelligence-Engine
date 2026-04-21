@@ -138,6 +138,7 @@ class Layer4Evaluator:
             skepticism_assessment=llm_assessment.skepticism_assessment,
             process_quality_score=process_quality_score,
             process_flags=[flag.value for flag in combined_flags],
+            tokens_consumed=llm_assessment.tokens_consumed,
         )
 
     async def _run_llm_assessment(
@@ -163,6 +164,7 @@ class Layer4Evaluator:
                 missed_inquiries=[],
                 skepticism_assessment="Unknown — LLM assessment could not be completed.",
                 flags=[],
+                tokens_consumed=0,
             )
 
         try:
@@ -179,6 +181,7 @@ class Layer4Evaluator:
                 missed_inquiries=[],
                 skepticism_assessment="Unknown — LLM output was not valid JSON.",
                 flags=[],
+                tokens_consumed=len(prompt) // 4,
             )
 
         if not isinstance(parsed_any, dict):
@@ -192,6 +195,7 @@ class Layer4Evaluator:
                 missed_inquiries=[],
                 skepticism_assessment="Unknown — LLM output shape was invalid.",
                 flags=[],
+                tokens_consumed=len(prompt) // 4,
             )
         parsed: dict[str, Any] = parsed_any
 
@@ -211,12 +215,15 @@ class Layer4Evaluator:
             except ValueError:
                 logger.debug("Ignoring unrecognized Layer 4 flag from LLM: %r", raw_flag)
 
+        tokens_consumed = len(prompt + raw) // 4
+
         return _LLMAssessment(
             score=score,
             rationale=rationale,
             missed_inquiries=missed,
             skepticism_assessment=skepticism,
             flags=llm_flags,
+            tokens_consumed=tokens_consumed,
         )
 
 
@@ -227,6 +234,7 @@ class _LLMAssessment:
     missed_inquiries: list[str]
     skepticism_assessment: str
     flags: list[ProcessFlag]
+    tokens_consumed: int = 0
 
 
 # ---------------------------------------------------------------------------

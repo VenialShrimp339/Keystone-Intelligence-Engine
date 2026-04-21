@@ -401,7 +401,8 @@ class MCPGateway:
                 return ToolResult(
                     result=raw_result,
                     citations=citations,
-                    tokens_used=0,  # Phase 1: not tracked at gateway level
+                    tokens_used=len(str(raw_result))
+                    // 4,  # Char-based estimate; real transport needed (GAP-14)
                     latency_ms=latency,
                 )
 
