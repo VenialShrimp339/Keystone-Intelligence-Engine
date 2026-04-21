@@ -4,6 +4,7 @@ import json
 
 import pytest
 
+from keystone.evaluator.retry import LLMCallable
 from keystone.gateway.audit_log import AuditLogger
 from keystone.gateway.auth import ToolAuthorizer
 from keystone.gateway.mcp_gateway import MCPGateway, MockMCPClient
@@ -270,10 +271,10 @@ async def test_all_agents_fail() -> None:
 
 
 def test_agent_result_success() -> None:
-    from keystone.models.research import FindingStatus, StructuredFinding
-    from keystone.models.citations import Citation, ConfidenceTier, SourceType
-    from keystone.models.research import FindingClaim
     from datetime import UTC, datetime
+
+    from keystone.models.citations import Citation, ConfidenceTier, SourceType
+    from keystone.models.research import FindingClaim, FindingStatus, StructuredFinding
 
     cit = Citation(
         citation_id="CIT-001",
@@ -342,3 +343,91 @@ async def test_events_collected_per_agent() -> None:
     event_types = {type(e).__name__ for e in results[0].events}
     assert "ResearchStarted" in event_types
     assert "ResearchComplete" in event_types
+
+
+# ---------------------------------------------------------------------------
+# GAP-01: per-task LLM routing via llm_factory
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.asyncio
+async def test_flagship_task_gets_different_llm_than_pool_default() -> None:
+    """Task with assigned_model=FLAGSHIP must use the factory-resolved LLM, not pool default."""
+    gateway, client = _build_gateway()
+    client.set_response("exa_search", {"url": "https://ex.com/a", "title": "A"})
+    client.set_response("brave_search", {"url": "https://ex.com/b", "title": "B"})
+    client.set_response("edgar_filings", {"url": "https://ex.com/c", "title": "C"})
+
+    called_tiers: list[ModelTier] = []
+
+    def tracking_factory(tier: ModelTier) -> LLMCallable:
+        called_tiers.append(tier)
+        return _mock_llm
+
+    pool = AgentPool(
+        llm=_mock_llm,
+        gateway=gateway,
+        llm_factory=tracking_factory,
+    )
+    spec = _make_spec()
+    flagship_task = _make_task("task_flagship", assigned_model=ModelTier.FLAGSHIP)
+
+    assignments = [(flagship_task, spec, _make_agent("agent_001"))]
+    results = await pool.execute_all(assignments)
+
+    assert results[0].success
+    # Factory must have been called with FLAGSHIP for this task
+    assert ModelTier.FLAGSHIP in called_tiers
+
+
+@pytest.mark.asyncio
+async def test_none_assigned_model_falls_back_to_pool_llm() -> None:
+    """When assigned_model is None, pool must use the shared self._llm, not the factory."""
+    gateway, client = _build_gateway()
+    client.set_response("exa_search", {"url": "https://ex.com/a", "title": "A"})
+    client.set_response("brave_search", {"url": "https://ex.com/b", "title": "B"})
+    client.set_response("edgar_filings", {"url": "https://ex.com/c", "title": "C"})
+
+    factory_calls: list[ModelTier] = []
+
+    def tracking_factory(tier: ModelTier) -> LLMCallable:
+        factory_calls.append(tier)
+        return _mock_llm
+
+    # Build a task with assigned_model explicitly set to None by bypassing the
+    # default so the fallback path is tested.
+    task = _make_task("task_none_model", assigned_model=ModelTier.STANDARD)
+    # Patch assigned_model to None after construction (field is not frozen)
+    task.assigned_model = None  # type: ignore[assignment]
+
+    pool = AgentPool(
+        llm=_mock_llm,
+        gateway=gateway,
+        llm_factory=tracking_factory,
+    )
+    spec = _make_spec()
+    assignments = [(task, spec, _make_agent("agent_001"))]
+    results = await pool.execute_all(assignments)
+
+    assert results[0].success
+    # Factory must NOT have been called because assigned_model was None
+    assert factory_calls == []
+
+
+@pytest.mark.asyncio
+async def test_pool_without_factory_always_uses_shared_llm() -> None:
+    """Backward compat: pool with no llm_factory must always use self._llm."""
+    gateway, client = _build_gateway()
+    client.set_response("exa_search", {"url": "https://ex.com/a", "title": "A"})
+    client.set_response("brave_search", {"url": "https://ex.com/b", "title": "B"})
+    client.set_response("edgar_filings", {"url": "https://ex.com/c", "title": "C"})
+
+    pool = AgentPool(llm=_mock_llm, gateway=gateway)  # no llm_factory
+    spec = _make_spec()
+    flagship_task = _make_task("task_flagship_nofc", assigned_model=ModelTier.FLAGSHIP)
+
+    assignments = [(flagship_task, spec, _make_agent("agent_001"))]
+    results = await pool.execute_all(assignments)
+
+    # Should still succeed — shared _mock_llm is used, no factory errors
+    assert results[0].success

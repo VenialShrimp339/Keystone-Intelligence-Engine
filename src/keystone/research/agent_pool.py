@@ -10,6 +10,10 @@ from __future__ import annotations
 import asyncio
 import logging
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 from keystone.evaluator.retry import LLMCallable
 from keystone.gateway.mcp_gateway import MCPGateway
@@ -71,6 +75,7 @@ class AgentPool:
         research_max_rounds: int = MAX_ROUNDS,
         research_quality_threshold: float = QUALITY_THRESHOLD,
         current_tier: ModelTier = ModelTier.STANDARD,
+        llm_factory: Callable[[ModelTier], LLMCallable] | None = None,
     ) -> None:
         self._llm = llm
         self._gateway = gateway
@@ -86,6 +91,10 @@ class AgentPool:
         # Tier that ``llm`` actually runs at. Forwarded to ResearchAgent so
         # ErrorRecovery's fallback chain walks from the correct baseline.
         self._current_tier = current_tier
+        # Optional factory for per-task LLM resolution. When provided and a
+        # task carries an explicit assigned_model, _run_single resolves a
+        # task-specific LLM callable instead of reusing the shared self._llm.
+        self._llm_factory = llm_factory
 
     async def execute_all(
         self,
@@ -134,8 +143,17 @@ class AgentPool:
         agent: AgentInstance,
     ) -> AgentResult:
         """Run a single agent, catching any exceptions."""
+        # Resolve per-task LLM when the task carries an explicit assigned_model
+        # and the pool has a factory. Otherwise fall back to the shared pool LLM.
+        if task.assigned_model is not None and self._llm_factory is not None:
+            task_llm = self._llm_factory(task.assigned_model)
+            task_tier = task.assigned_model
+        else:
+            task_llm = self._llm
+            task_tier = self._current_tier
+
         research_agent = ResearchAgent(
-            llm=self._llm,
+            llm=task_llm,
             gateway=self._gateway,
             deep_llm=self._deep_llm,
             finding_writer=self._finding_writer,
@@ -145,7 +163,7 @@ class AgentPool:
             max_rounds=self._research_default_rounds,
             max_rounds_cap=self._research_max_rounds,
             quality_threshold=self._research_quality_threshold,
-            current_tier=self._current_tier,
+            current_tier=task_tier,
         )
 
         events: list = []

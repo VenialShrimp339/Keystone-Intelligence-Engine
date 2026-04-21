@@ -288,6 +288,7 @@ class Pipeline:
                     "l1_research",
                     ModelTier.STANDARD,
                 ),
+                llm_factory=self._llm_factory,
             ),
             citation_processor=CitationProcessor(),
             deliberation=Deliberation(
