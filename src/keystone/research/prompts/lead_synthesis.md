@@ -28,6 +28,7 @@ You are performing CLAIM COLLATION, not averaging. Each claim retains its eviden
 3. UNION citations:
    - Collect all SRC-NNN and EV-NNN refs from all sub-agents.
    - Each claim's citation_refs must reference only the specific sources that support THAT claim.
+   - Do NOT include SUB-NNN identifiers in citation_refs — only SRC-NNN and EV-NNN references belong there. SUB identifiers are internal coordination markers and must not appear in the output.
 
 4. SYNTHESIZE an absence report:
    - Combine absence items from all sub-agents.

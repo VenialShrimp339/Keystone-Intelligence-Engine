@@ -426,6 +426,9 @@ export type PipelineEventType =
   | "CitationExtracted"
   | "FindingSynthesized"
   | "ResearchComplete"
+  | "SubAgentDispatched"
+  | "SubAgentCompleted"
+  | "PartialFindingMerged"
   | "CitationDeduped"
   | "CorroborationScored"
   | "URLVerified"
@@ -904,6 +907,9 @@ Priority definitions:
 | `SourceFound` | Observability, result citation drawer | Source count increments; high-quality source may appear in evidence detail | Informational |
 | `CitationExtracted` | Observability, citation detail | Citation count increments with title | Informational |
 | `FindingSynthesized` | Observability | Agent has synthesized claims; confidence range updates | Status |
+| `SubAgentDispatched` | Observability | Indented child of parent task's ResearchStarted; shows sub-agent methodology | Informational |
+| `SubAgentCompleted` | Observability | Sub-agent status (success/error/timeout), sources consulted, tokens used | Status |
+| `PartialFindingMerged` | Observability | Sub-agent findings merged; shows sub-count, total claims, contradiction count | Status |
 | `ResearchComplete` | Observability, sidebar | Agent row completes with source/token/absence counts | Status |
 | `CitationDeduped` | Observability, result citation drawer | Duplicate source merged; canonical citation count stabilizes | Informational |
 | `CorroborationScored` | Observability, result citation drawer | Corroboration pair added; evidence strength indicator updates | Informational |

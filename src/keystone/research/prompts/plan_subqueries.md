@@ -22,8 +22,8 @@ DECOMPOSITION INSTRUCTIONS:
 Break this task into exactly 3 sub-queries, each using a genuinely different analytical methodology. The goal is methodological diversity — not topic slicing. Each sub-query attacks the same research question from a different evidentiary angle so their findings can be triangulated.
 
 Methodology constraints:
-- Each sub-query MUST use a different evidence type (e.g., one uses financial filings, another uses market intelligence reports, a third uses academic/technical literature)
-- Source universes must be non-overlapping: if sub-query 1 targets SEC filings and earnings calls, sub-query 2 must NOT also target those
+- Each sub-query MUST use a genuinely different analytical reasoning procedure, not just a different topic label. Examples of distinct procedures: base-rate anchoring with reference-class comparison, competitive-force decomposition (Porter/value-chain), disconfirmation search (seek evidence against the leading hypothesis), quantitative triangulation (cross-validate numbers from independent sources), temporal trend analysis (identify inflection points and rate-of-change signals).
+- Each sub-query MUST target a different evidence type (e.g., one uses financial filings, another uses market intelligence reports, a third uses academic/technical literature). Source universes must be non-overlapping: if sub-query 1 targets SEC filings and earnings calls, sub-query 2 must NOT also target those.
 - Each sub-query gets a subset of the available tools appropriate to its methodology
 - Every tool from the available set must appear in at least one sub-query
 
