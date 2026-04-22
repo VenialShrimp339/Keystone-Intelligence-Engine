@@ -371,8 +371,35 @@ class PipelineConfig(BaseModel):
         default=False,
         description=(
             "Enable two-tier LeadResearcher/SubResearcher dispatch for eligible "
-            "task categories (competitive_landscape, market_sizing). When False, "
-            "all tasks use the single-agent ResearchAgent path."
+            "task categories. When False, all tasks use the single-agent "
+            "ResearchAgent path."
+        ),
+    )
+    l1_max_sub_agents: int = Field(
+        default=3,
+        ge=2,
+        le=6,
+        description="Maximum sub-agents dispatched per orchestrated task.",
+    )
+    l1_sub_researcher_rounds: int = Field(
+        default=2,
+        ge=1,
+        le=5,
+        description="Tool-call rounds each SubResearcher executes.",
+    )
+    l1_orchestrator_categories: list[str] = Field(
+        default_factory=lambda: ["competitive_landscape", "market_sizing"],
+        description=(
+            "Task categories eligible for sub-agent dispatch. "
+            "Values must match TaskCategory enum members."
+        ),
+    )
+    l1_sub_agent_timeout_s: int = Field(
+        default=300,
+        ge=30,
+        description=(
+            "Per-sub-agent timeout in seconds. Prevents a hanging "
+            "sub-agent from blocking the cohort."
         ),
     )
 
