@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING
 
 from keystone.events import (
     AnyPipelineEvent,
+    FindingSynthesized,
     PartialFindingMerged,
     ResearchComplete,
     ResearchStarted,
@@ -33,6 +34,7 @@ if TYPE_CHECKING:
     from keystone.evaluator.retry import LLMCallable
     from keystone.gateway.mcp_gateway import MCPGateway
     from keystone.models.agents import AgentInstance
+    from keystone.models.citations import Citation
     from keystone.models.research import EngagementSpec, StructuredFinding
     from keystone.models.tasks import ModelTier, ResearchTask
     from keystone.research.error_recovery import ErrorRecovery
@@ -71,6 +73,8 @@ class LeadResearcher:
         finding_writer: FindingWriter | None = None,
         flagship_tier: ModelTier | None = None,
         standard_tier: ModelTier | None = None,
+        max_sub_agents: int = PHASE_1_N,
+        sub_agent_timeout_s: int = 300,
     ) -> None:
         from keystone.models.tasks import ModelTier
         from keystone.research.error_recovery import ErrorRecovery
@@ -84,6 +88,8 @@ class LeadResearcher:
         self._finding_writer = finding_writer or FindingWriter()
         self._flagship_tier = flagship_tier or ModelTier.FLAGSHIP
         self._standard_tier = standard_tier or ModelTier.STANDARD
+        self._max_sub_agents = max_sub_agents
+        self._sub_agent_timeout_s = sub_agent_timeout_s
         self._finding: StructuredFinding | None = None
 
     async def execute(
@@ -137,6 +143,17 @@ class LeadResearcher:
 
         total_sources = sum(p.sources_consulted for p in partials)
         total_tokens = sum(p.tokens_consumed for p in partials)
+
+        conf_values = [c.confidence for c in self._finding.claims] if self._finding else []
+        conf_range = f"{min(conf_values):.2f}-{max(conf_values):.2f}" if conf_values else "N/A"
+        yield FindingSynthesized(
+            event_id=_make_event_id(),
+            engagement_id=eid,
+            client_id=cid,
+            agent_id=agent.agent_id,
+            claim_count=len(self._finding.claims) if self._finding else 0,
+            confidence_range=conf_range,
+        )
 
         n_contradictions = 0
         for claim in self._finding.claims if self._finding else []:
@@ -213,8 +230,9 @@ class LeadResearcher:
                 logger.error("Could not parse plan_subqueries response")
                 raise
 
+        n = self._max_sub_agents
         sub_queries = []
-        for i, item in enumerate(data[:PHASE_1_N]):
+        for i, item in enumerate(data[:n]):
             sq = SubQuery(
                 sub_id=item.get("sub_id", f"SUB-{i + 1:03d}"),
                 objective=item["objective"],
@@ -235,15 +253,15 @@ class LeadResearcher:
             )
             sub_queries.append(sq)
 
-        if len(sub_queries) < PHASE_1_N:
+        if len(sub_queries) < n:
             logger.warning(
                 "Plan produced %d sub-queries, expected %d. Padding with tool-split fallback.",
                 len(sub_queries),
-                PHASE_1_N,
+                n,
             )
             sub_queries = self._pad_subqueries(sub_queries, task)
 
-        return sub_queries[:PHASE_1_N]
+        return sub_queries[:n]
 
     def _validate_tools(self, requested: list[str], available: list[str]) -> list[str]:
         """Ensure sub-query tools are a subset of the parent task's tools."""
@@ -255,13 +273,14 @@ class LeadResearcher:
     def _pad_subqueries(self, existing: list[SubQuery], task: ResearchTask) -> list[SubQuery]:
         """Fill missing sub-queries by splitting tools across methodologies."""
         tools = task.assigned_tools
+        n = self._max_sub_agents
         methodologies = ["financial_data", "market_intelligence", "academic_technical"]
 
-        while len(existing) < PHASE_1_N:
+        while len(existing) < n:
             idx = len(existing)
             method = methodologies[idx % len(methodologies)]
-            tool_start = (idx * len(tools)) // PHASE_1_N
-            tool_end = ((idx + 1) * len(tools)) // PHASE_1_N
+            tool_start = (idx * len(tools)) // n
+            tool_end = ((idx + 1) * len(tools)) // n
             sub_tools = tools[tool_start:tool_end] or tools[:1]
 
             existing.append(
@@ -326,8 +345,28 @@ class LeadResearcher:
                     )
                 ]
 
+        timeout = self._sub_agent_timeout_s
+
+        async def run_with_timeout(
+            sq: SubQuery,
+        ) -> tuple[PartialFinding | None, list[AnyPipelineEvent]]:
+            try:
+                return await asyncio.wait_for(run_one(sq), timeout=timeout)
+            except TimeoutError:
+                logger.error("SubResearcher %s timed out after %ds", sq.sub_id, timeout)
+                return None, [
+                    SubAgentCompleted(
+                        event_id=_make_event_id(),
+                        engagement_id=eid,
+                        client_id=cid,
+                        task_id=task.id,
+                        sub_id=sq.sub_id,
+                        status="timeout",
+                    )
+                ]
+
         results = await asyncio.gather(
-            *(run_one(sq) for sq in sub_queries),
+            *(run_with_timeout(sq) for sq in sub_queries),
             return_exceptions=True,
         )
 
@@ -356,7 +395,7 @@ class LeadResearcher:
         spec: EngagementSpec,
         agent: AgentInstance,
     ) -> StructuredFinding:
-        sub_findings_block = self._render_partials_for_prompt(partials)
+        sub_findings_block, master_citations = self._render_partials_for_prompt(partials)
 
         engagement_context = (
             f"Title: {spec.research_spec.title}\n"
@@ -379,13 +418,32 @@ class LeadResearcher:
             description="lead_synthesis",
         )
 
-        return self._build_finding_from_merge(raw, partials, task, agent)
+        return self._build_finding_from_merge(raw, partials, task, agent, master_citations)
 
-    def _render_partials_for_prompt(self, partials: list[PartialFinding]) -> str:
-        blocks = []
+    def _render_partials_for_prompt(
+        self, partials: list[PartialFinding]
+    ) -> tuple[str, dict[str, Citation]]:
+        """Render partials for the synthesis prompt.
+
+        Re-numbers SRC-NNN refs globally across all sub-agents so the
+        Lead's LLM sees a single flat namespace. Returns the rendered
+        block and a master citation map for ref resolution at merge.
+        """
+        blocks: list[str] = []
+        master_citations: dict[str, Citation] = {}
+        global_counter = 0
+
         for p in partials:
+            ref_remap: dict[str, str] = {}
+            for old_ref, citation in p.citations.items():
+                global_counter += 1
+                new_ref = f"SRC-{global_counter:03d}"
+                ref_remap[old_ref] = new_ref
+                master_citations[new_ref] = citation
+
             claims_text = "\n".join(
-                f"  - [{c.confidence:.2f}] {c.text} (refs: {', '.join(c.citation_refs)})"
+                f"  - [{c.confidence:.2f}] {c.text} "
+                f"(refs: {', '.join(ref_remap.get(r, r) for r in c.citation_refs)})"
                 for c in p.claims
             )
             absence_text = "\n".join(f"  - {a}" for a in p.absence_items) or "  (none)"
@@ -395,7 +453,7 @@ class LeadResearcher:
                 f"Claims:\n{claims_text}\n"
                 f"Absence items:\n{absence_text}"
             )
-        return "\n\n".join(blocks)
+        return "\n\n".join(blocks), master_citations
 
     def _build_finding_from_merge(
         self,
@@ -403,11 +461,19 @@ class LeadResearcher:
         partials: list[PartialFinding],
         task: ResearchTask,
         agent: AgentInstance,
+        master_citations: dict[str, Citation] | None = None,
     ) -> StructuredFinding:
+        import re
         from datetime import UTC, datetime
 
         from keystone.models.citations import Citation, SourceType
         from keystone.models.research import FindingClaim, FindingStatus, StructuredFinding
+        from keystone.research.finding_writer import _tier_from_confidence
+
+        if master_citations is None:
+            master_citations = {}
+            for p in partials:
+                master_citations.update(p.citations)
 
         try:
             data = safe_llm_json(raw)
@@ -432,28 +498,33 @@ class LeadResearcher:
             else agent.definition.role.value
         )
 
+        sub_ref_pattern = re.compile(r"^SUB-\d{3}$")
         finding_claims: list[FindingClaim] = []
         dropped: list[dict] = []
 
         for i, rc in enumerate(raw_claims):
-            refs = rc.get("citation_refs", [])
+            refs = [r for r in rc.get("citation_refs", []) if not sub_ref_pattern.match(r)]
             if not refs:
                 dropped.append({"index": i, "text": rc.get("text", ""), "reasons": ["no refs"]})
                 continue
 
-            dummy_citations = [
-                Citation(
-                    citation_id=f"CIT-MERGE-{uuid.uuid4().hex[:8]}",
-                    engagement_id=agent.engagement_id,
-                    client_id=agent.client_id,
-                    url=f"ref://{ref}",
-                    title=ref,
-                    access_date=datetime.now(UTC),
-                    source_type=SourceType.REPORT,
-                    quality_score=0.7,
-                )
-                for ref in refs
-            ]
+            resolved: list[Citation] = []
+            for ref in refs:
+                if ref in master_citations:
+                    resolved.append(master_citations[ref])
+                else:
+                    resolved.append(
+                        Citation(
+                            citation_id=f"CIT-MERGE-{uuid.uuid4().hex[:8]}",
+                            engagement_id=agent.engagement_id,
+                            client_id=agent.client_id,
+                            url=f"unresolved://{ref}",
+                            title=ref,
+                            access_date=datetime.now(UTC),
+                            source_type=SourceType.REPORT,
+                            quality_score=0.3,
+                        )
+                    )
 
             caveats = rc.get("caveats", [])
             contradiction_note = rc.get("contradiction_note")
@@ -462,24 +533,22 @@ class LeadResearcher:
 
             confidence = rc.get("confidence", 0.5)
 
-            from keystone.research.finding_writer import _tier_from_confidence
-
             finding_claims.append(
                 FindingClaim(
                     text=rc["text"],
                     evidence=rc.get("evidence", ""),
-                    citations=dummy_citations,
+                    citations=resolved,
                     confidence=confidence,
                     confidence_tier=_tier_from_confidence(confidence),
                     caveats=caveats,
                     claim_id=f"{agent.engagement_id}_{task.id}_{uuid.uuid4().hex[:8]}",
-                    citation_ids=[c.citation_id for c in dummy_citations],
+                    citation_ids=[c.citation_id for c in resolved],
                 )
             )
 
         if not finding_claims:
             logger.warning("Lead synthesis produced 0 valid claims — using raw collation")
-            return self._build_raw_collation_finding(partials, task, agent)
+            return self._build_raw_collation_finding(partials, task, agent, master_citations)
 
         total_sources = sum(p.sources_consulted for p in partials)
         total_tokens = sum(p.tokens_consumed for p in partials)
@@ -521,6 +590,7 @@ class LeadResearcher:
         partials: list[PartialFinding],
         task: ResearchTask,
         agent: AgentInstance,
+        master_citations: dict[str, Citation] | None = None,
     ) -> StructuredFinding:
         """Emergency fallback: turn partials directly into a StructuredFinding."""
         data = self._raw_collation_fallback(partials)
@@ -529,6 +599,11 @@ class LeadResearcher:
         from keystone.models.citations import Citation, SourceType
         from keystone.models.research import FindingClaim, FindingStatus, StructuredFinding
         from keystone.research.finding_writer import _tier_from_confidence
+
+        if master_citations is None:
+            master_citations = {}
+            for p in partials:
+                master_citations.update(p.citations)
 
         agent_type = (
             agent.definition.research_type.value
@@ -539,30 +614,34 @@ class LeadResearcher:
         claims = []
         for rc in data["claims"]:
             refs = rc.get("citation_refs", [])
-            dummy_citations = [
-                Citation(
-                    citation_id=f"CIT-RAW-{uuid.uuid4().hex[:8]}",
-                    engagement_id=agent.engagement_id,
-                    client_id=agent.client_id,
-                    url=f"ref://{ref}",
-                    title=ref,
-                    access_date=datetime.now(UTC),
-                    source_type=SourceType.REPORT,
-                    quality_score=0.5,
-                )
-                for ref in refs
-            ]
+            resolved: list[Citation] = []
+            for ref in refs:
+                if ref in master_citations:
+                    resolved.append(master_citations[ref])
+                else:
+                    resolved.append(
+                        Citation(
+                            citation_id=f"CIT-RAW-{uuid.uuid4().hex[:8]}",
+                            engagement_id=agent.engagement_id,
+                            client_id=agent.client_id,
+                            url=f"unresolved://{ref}",
+                            title=ref,
+                            access_date=datetime.now(UTC),
+                            source_type=SourceType.REPORT,
+                            quality_score=0.3,
+                        )
+                    )
             confidence = rc.get("confidence", 0.5)
             claims.append(
                 FindingClaim(
                     text=rc["text"],
                     evidence=rc.get("evidence", ""),
-                    citations=dummy_citations,
+                    citations=resolved,
                     confidence=confidence,
                     confidence_tier=_tier_from_confidence(confidence),
                     caveats=rc.get("caveats", []),
                     claim_id=f"{agent.engagement_id}_{task.id}_{uuid.uuid4().hex[:8]}",
-                    citation_ids=[c.citation_id for c in dummy_citations],
+                    citation_ids=[c.citation_id for c in resolved],
                 )
             )
 

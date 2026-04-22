@@ -19,7 +19,7 @@ from keystone.evaluator.retry import LLMCallable
 from keystone.gateway.mcp_gateway import MCPGateway
 from keystone.models.agents import AgentInstance
 from keystone.models.research import EngagementSpec, StructuredFinding
-from keystone.models.tasks import ModelTier, ResearchTask, TaskCategory
+from keystone.models.tasks import ModelTier, ResearchTask
 from keystone.research.context_loader import ContextLoader
 from keystone.research.error_recovery import ErrorRecovery
 from keystone.research.evidence_context import EvidenceContextProvider
@@ -44,6 +44,7 @@ class AgentResult:
     finding: StructuredFinding | None = None
     error: Exception | None = None
     events: list = field(default_factory=list)
+    degraded_dispatch: bool = False
 
     @property
     def success(self) -> bool:
@@ -60,11 +61,6 @@ class AgentPool:
     When ``deep_llm`` is provided, agents use deep multi-turn web
     research mode instead of the shallow gateway-based approach.
     """
-
-    # Task categories eligible for sub-agent dispatch (Phase 1).
-    _ORCHESTRATOR_ELIGIBLE: frozenset[TaskCategory] = frozenset(
-        {TaskCategory.COMPETITIVE_LANDSCAPE, TaskCategory.MARKET_SIZING}
-    )
 
     def __init__(
         self,
@@ -83,6 +79,10 @@ class AgentPool:
         current_tier: ModelTier = ModelTier.STANDARD,
         llm_factory: Callable[[ModelTier], LLMCallable] | None = None,
         l1_orchestrator_enabled: bool = False,
+        l1_max_sub_agents: int = 3,
+        l1_sub_researcher_rounds: int = 2,
+        l1_orchestrator_categories: list[str] | None = None,
+        l1_sub_agent_timeout_s: int = 300,
     ) -> None:
         self._llm = llm
         self._gateway = gateway
@@ -95,14 +95,14 @@ class AgentPool:
         self._research_default_rounds = research_default_rounds
         self._research_max_rounds = research_max_rounds
         self._research_quality_threshold = research_quality_threshold
-        # Tier that ``llm`` actually runs at. Forwarded to ResearchAgent so
-        # ErrorRecovery's fallback chain walks from the correct baseline.
         self._current_tier = current_tier
-        # Optional factory for per-task LLM resolution. When provided and a
-        # task carries an explicit assigned_model, _run_single resolves a
-        # task-specific LLM callable instead of reusing the shared self._llm.
         self._llm_factory = llm_factory
         self._l1_orchestrator_enabled = l1_orchestrator_enabled
+        self._l1_max_sub_agents = l1_max_sub_agents
+        self._l1_sub_researcher_rounds = l1_sub_researcher_rounds
+        self._l1_sub_agent_timeout_s = l1_sub_agent_timeout_s
+        _cats = l1_orchestrator_categories or ["competitive_landscape", "market_sizing"]
+        self._orchestrator_eligible: frozenset[str] = frozenset(_cats)
 
     async def execute_all(
         self,
@@ -146,7 +146,7 @@ class AgentPool:
 
     def _should_use_orchestrator(self, task: ResearchTask) -> bool:
         """Check if this task should use the two-tier LeadResearcher dispatch."""
-        return self._l1_orchestrator_enabled and task.category in self._ORCHESTRATOR_ELIGIBLE
+        return self._l1_orchestrator_enabled and task.category.value in self._orchestrator_eligible
 
     async def _run_single(
         self,
@@ -167,7 +167,13 @@ class AgentPool:
     ) -> AgentResult:
         """Two-tier dispatch: LeadResearcher + SubResearchers."""
         flagship_llm = self._llm_factory(ModelTier.FLAGSHIP) if self._llm_factory else self._llm
-        standard_llm = self._llm
+
+        if task.assigned_model is not None and self._llm_factory is not None:
+            standard_llm = self._llm_factory(task.assigned_model)
+            standard_tier = task.assigned_model
+        else:
+            standard_llm = self._llm
+            standard_tier = self._current_tier
 
         lead = LeadResearcher(
             flagship_llm=flagship_llm,
@@ -177,7 +183,9 @@ class AgentPool:
             evidence_provider=self._evidence_provider,
             finding_writer=self._finding_writer,
             flagship_tier=ModelTier.FLAGSHIP if self._llm_factory else self._current_tier,
-            standard_tier=self._current_tier,
+            standard_tier=standard_tier,
+            max_sub_agents=self._l1_max_sub_agents,
+            sub_agent_timeout_s=self._l1_sub_agent_timeout_s,
         )
 
         events: list = []
@@ -197,7 +205,9 @@ class AgentPool:
                 "All sub-agents failed for task %s — falling back to single-agent path",
                 task.id,
             )
-            return await self._run_single_direct(task, spec, agent)
+            result = await self._run_single_direct(task, spec, agent)
+            result.degraded_dispatch = True
+            return result
         except Exception as exc:  # noqa: BLE001
             logger.error(
                 "Orchestrated agent %s failed on task %s: %s — falling back",
@@ -205,7 +215,9 @@ class AgentPool:
                 task.id,
                 exc,
             )
-            return await self._run_single_direct(task, spec, agent)
+            result = await self._run_single_direct(task, spec, agent)
+            result.degraded_dispatch = True
+            return result
 
     async def _run_single_direct(
         self,

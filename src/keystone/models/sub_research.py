@@ -10,6 +10,8 @@ from __future__ import annotations
 
 from pydantic import BaseModel, Field, field_validator
 
+from keystone.models.citations import Citation
+
 
 class SubQuery(BaseModel):
     """A methodologically-scoped sub-question dispatched to one SubResearcher.
@@ -91,4 +93,8 @@ class PartialFinding(BaseModel):
     absence_items: list[str] = Field(
         default_factory=list,
         description="What this sub-agent searched for but could not find",
+    )
+    citations: dict[str, Citation] = Field(
+        default_factory=dict,
+        description="SRC-NNN -> Citation map from tool results, for ref resolution at merge time",
     )

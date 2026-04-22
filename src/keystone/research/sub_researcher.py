@@ -81,6 +81,8 @@ class SubResearcher:
         self._sources: list[dict] = []
         self._tokens_consumed: int = 0
         self._citation_counter: int = 0
+        self._src_counter: int = 0
+        self._all_citations: dict[str, Citation] = {}
 
     async def execute(
         self,
@@ -171,7 +173,12 @@ class SubResearcher:
                         exc,
                     )
 
-            citation_table = {f"SRC-{i + 1:03d}": cit for i, cit in enumerate(round_cits)}
+            citation_table: dict[str, Citation] = {}
+            for cit in round_cits:
+                self._src_counter += 1
+                ref = f"SRC-{self._src_counter:03d}"
+                citation_table[ref] = cit
+                self._all_citations[ref] = cit
 
             synthesis_prompt = self._build_synthesis_prompt(
                 sub_query, task, round_num, citation_table
@@ -216,6 +223,7 @@ class SubResearcher:
             claims=partial_claims,
             sources_consulted=len(self._sources),
             tokens_consumed=self._tokens_consumed,
+            citations=dict(self._all_citations),
         )
 
         events.append(

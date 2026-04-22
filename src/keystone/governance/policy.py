@@ -124,6 +124,34 @@ class ProfileExecutionPolicy:
             task_id=task_id,
         )
 
+    def flag_degraded_dispatch(
+        self,
+        state: GovernanceState,
+        *,
+        task_id: str,
+    ) -> None:
+        """Fire l1_degraded_dispatch when orchestrated dispatch falls back."""
+        action = (
+            EnforcementAction.DEGRADE
+            if self.profile == PipelineProfile.DEEP
+            else EnforcementAction.WARN
+        )
+        self.apply_flag(
+            state,
+            QualityFlag(
+                gate="l1_degraded_dispatch",
+                action=action,
+                scope=EnforcementScope.TASK,
+                severity="warn",
+                message=(
+                    f"Task {task_id}: sub-agent dispatch failed, fell back to "
+                    "single-agent path. Output may have reduced depth."
+                ),
+                task_id=task_id,
+            ),
+            task_id=task_id,
+        )
+
     def flag_tool_dead_letter(
         self,
         state: GovernanceState,

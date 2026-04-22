@@ -43,6 +43,8 @@ from keystone.events import (
     ObservationRecorded,
     # L2
     OutlineGenerated,
+    # L1 sub-agent events
+    PartialFindingMerged,
     PatternPromoted,
     ProcessTrajectoryScored,
     ResearchComplete,
@@ -60,6 +62,8 @@ from keystone.events import (
     SourceFound,
     SpecificationGenerated,
     SprintContractProposed,
+    SubAgentCompleted,
+    SubAgentDispatched,
     # L3
     TasksDecomposed,
     URLVerified,
@@ -112,6 +116,9 @@ _ALL_EVENT_CLASSES: list[type[AnyPipelineEvent]] = [
     EnsembleJudgeScored,
     DissenterVetoTriggered,
     EnsembleEvaluationComplete,
+    SubAgentDispatched,
+    SubAgentCompleted,
+    PartialFindingMerged,
     ObservationRecorded,
     PatternPromoted,
     ConstraintEncoded,

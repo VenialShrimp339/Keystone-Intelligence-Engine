@@ -50,6 +50,7 @@ from keystone.models.confidence import ConfidenceMap
 from keystone.models.config import PipelineConfig
 from keystone.models.evaluation import EvaluationIntensity, EvaluationResult
 from keystone.models.research import EngagementSpec, PipelineProfile, StructuredFinding
+from keystone.models.structuring import StructuredOutline
 from keystone.models.tasks import ModelTier, ResearchTask
 from keystone.observation.store import ObservationStore
 from keystone.pipeline.markdown_renderer import MarkdownRenderer
@@ -64,7 +65,6 @@ from keystone.retrieval.parse_models import EvidencePrepRecord
 from keystone.retrieval.search.retrieval_service import RetrievalService
 from keystone.specification.spec_engine import SpecificationEngine
 from keystone.specification.template_registry import TemplateRegistry
-from keystone.models.structuring import StructuredOutline
 from keystone.structuring.content_structuring import (
     ContentStructurer,
     filter_outline_by_passed_tasks,
@@ -462,8 +462,12 @@ class Pipeline:
                 task,
                 finding_by_task.get(task.id),
             )
-        # Cost ceiling check: fire a WARN gate for any agent that exceeded the threshold.
-        token_ceiling = self._pipeline_config.research_token_ceiling_per_task
+        # Cost ceiling check: scale ceiling for orchestrated tasks.
+        base_ceiling = self._pipeline_config.research_token_ceiling_per_task
+        if self._pipeline_config.l1_orchestrator_enabled:
+            token_ceiling = base_ceiling * (1 + self._pipeline_config.l1_max_sub_agents)
+        else:
+            token_ceiling = base_ceiling
         for f in findings:
             if f.tokens_consumed > token_ceiling:
                 policy.flag_cost_ceiling(
@@ -472,6 +476,10 @@ class Pipeline:
                     tokens_used=f.tokens_consumed,
                     ceiling=token_ceiling,
                 )
+        # Degraded dispatch check: flag tasks that fell back from orchestrated to single-agent.
+        for ar in agent_results:
+            if ar.degraded_dispatch:
+                policy.flag_degraded_dispatch(governance, task_id=ar.task_id)
         task_id_by_agent: dict[str, str] = {
             agent.agent_id: task_id for task_id, agent in agent_by_task.items()
         }
@@ -889,7 +897,11 @@ class Pipeline:
             finding_by_task = {finding.task_id: finding for finding in findings}
             for task in spec.task_decomposition.tasks:
                 policy.record_research_outcome(governance, task, finding_by_task.get(task.id))
-            token_ceiling = self._pipeline_config.research_token_ceiling_per_task
+            base_ceiling = self._pipeline_config.research_token_ceiling_per_task
+            if self._pipeline_config.l1_orchestrator_enabled:
+                token_ceiling = base_ceiling * (1 + self._pipeline_config.l1_max_sub_agents)
+            else:
+                token_ceiling = base_ceiling
             for f in findings:
                 if f.tokens_consumed > token_ceiling:
                     policy.flag_cost_ceiling(
@@ -898,6 +910,9 @@ class Pipeline:
                         tokens_used=f.tokens_consumed,
                         ceiling=token_ceiling,
                     )
+            for ar in agent_results:
+                if ar.degraded_dispatch:
+                    policy.flag_degraded_dispatch(governance, task_id=ar.task_id)
             task_id_by_agent: dict[str, str] = {
                 agent.agent_id: task_id for task_id, agent in agent_by_task.items()
             }
