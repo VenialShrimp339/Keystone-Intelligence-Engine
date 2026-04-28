@@ -21,6 +21,11 @@ class ClassificationResult(BaseModel):
     pipeline_profile: PipelineProfile
     confidence: float = Field(ge=0.0, le=1.0)
     reasoning: str
+    domain: str = Field(
+        default="business_strategy",
+        description="Subject-area domain (e.g. technology_architecture, scientific_research). "
+        "Independent axis from engagement_type.",
+    )
 
 
 # Default profile mapping -- LLM can override based on question complexity
@@ -30,6 +35,8 @@ _DEFAULT_PROFILES: dict[EngagementType, PipelineProfile] = {
     EngagementType.EVALUATIVE: PipelineProfile.STANDARD,
     EngagementType.EXPLORATORY: PipelineProfile.LIGHT,
     EngagementType.STRATEGIC: PipelineProfile.DEEP,
+    EngagementType.DESIGN: PipelineProfile.DEEP,
+    EngagementType.SYNTHESIS: PipelineProfile.STANDARD,
 }
 
 
@@ -75,4 +82,5 @@ class EngagementClassifier:
             pipeline_profile=pipeline_profile,
             confidence=float(data.get("confidence", 0.8)),
             reasoning=data.get("reasoning", ""),
+            domain=data.get("domain", "business_strategy"),
         )

@@ -99,6 +99,7 @@ async def _call_claude_cli(
     model: str,
     effort: str,
     semaphore: asyncio.Semaphore,
+    timeout_s: int = 600,
 ) -> str:
     """Call Claude via the ``claude -p`` CLI.
 
@@ -125,9 +126,9 @@ async def _call_claude_cli(
             stderr=asyncio.subprocess.PIPE,
         )
         try:
-            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=300)
+            stdout, stderr = await asyncio.wait_for(proc.communicate(), timeout=timeout_s)
         except asyncio.TimeoutError:
-            raise RuntimeError(f"claude -p timed out after 300s (model={model})") from None
+            raise RuntimeError(f"claude -p timed out after {timeout_s}s (model={model})") from None
         finally:
             # Kill the subprocess if it is still running (TimeoutError,
             # CancelledError, or any other early exit).

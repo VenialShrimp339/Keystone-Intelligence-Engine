@@ -67,6 +67,8 @@ ENGAGEMENT_PROFILE_MAP: dict[EngagementType, EvaluationProfile] = {
     EngagementType.EVALUATIVE: EvaluationProfile.DEFAULT,
     EngagementType.EXPLORATORY: EvaluationProfile.DEFAULT,
     EngagementType.STRATEGIC: EvaluationProfile.STRATEGIC,
+    EngagementType.DESIGN: EvaluationProfile.DEFAULT,
+    EngagementType.SYNTHESIS: EvaluationProfile.DEFAULT,
 }
 
 # ---------------------------------------------------------------------------

@@ -21,7 +21,7 @@ from keystone.models.tasks import TaskDecomposition  # noqa: TC001
 
 
 class EngagementType(StrEnum):
-    """Five-type analytical taxonomy for pipeline routing.
+    """Analytical taxonomy for pipeline routing.
 
     Drives pipeline profile selection (Light/Standard/Deep),
     evaluation weight profiles, and template registry queries.
@@ -33,6 +33,8 @@ class EngagementType(StrEnum):
     EVALUATIVE = "evaluative"
     EXPLORATORY = "exploratory"
     STRATEGIC = "strategic"
+    DESIGN = "design"
+    SYNTHESIS = "synthesis"
 
 
 class PipelineProfile(StrEnum):
@@ -137,7 +139,7 @@ class ResearchSpec(BaseModel):
     # Section: Output Format & Quality
     output_format: str = Field(description="Expected deliverable format (markdown, slides, etc.)")
     quality_bar: str = Field(
-        default="Goldman-grade: would a domain expert call this solid on its own merits?",
+        default="Expert-grade: would a domain expert call this rigorous and well-sourced on its own merits?",
         description="Quality standard for this engagement",
     )
 
@@ -152,6 +154,11 @@ class ResearchSpec(BaseModel):
     engagement_type: EngagementType = Field(
         description="Classified engagement type. Drives pipeline depth, "
         "agent configuration, and evaluation profiles.",
+    )
+    domain: str | None = Field(
+        default=None,
+        description="Subject-area domain (e.g. technology_architecture, financial_analysis). "
+        "Independent of engagement_type — domain is *what* is analyzed, type is *how*.",
     )
     day_1_hypothesis: str | None = Field(
         default=None,
