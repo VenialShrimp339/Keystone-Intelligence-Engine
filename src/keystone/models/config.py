@@ -311,7 +311,7 @@ class PipelineConfig(BaseModel):
         description="Global ceiling on simultaneous deep-research ``claude -p`` sessions.",
     )
     deep_research_timeout_s: int = Field(
-        default=1200,
+        default=2400,
         ge=60,
         description="Timeout (seconds) for a deep-research ``claude -p`` call.",
     )

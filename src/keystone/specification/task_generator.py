@@ -300,7 +300,7 @@ class TaskGenerator:
                     "anti_confirmatory_framing", "Evaluate evidence both for and against"
                 ),
                 assigned_tools=self._resolve_tools(t, category, engagement_type),
-                assigned_model=ModelTier(t.get("assigned_model", "standard")),
+                assigned_model=self._resolve_model_tier(t.get("assigned_model", "standard")),
                 end_product=t.get("end_product", "Structured analysis with supporting evidence"),
                 dependencies=t.get("dependencies", []),
                 issue_tree_branch_id=branch_id,
@@ -343,6 +343,13 @@ class TaskGenerator:
             if any(kw in lower for kw in ("regulat", "compliance", "legal", "policy")):
                 return TaskCategory.REGULATORY
             return TaskCategory.STRATEGIC_POSITIONING
+
+    def _resolve_model_tier(self, raw: str) -> ModelTier:
+        """Coerce LLM-provided model tier to a valid ModelTier value."""
+        try:
+            return ModelTier(raw)
+        except ValueError:
+            return ModelTier.STANDARD
 
     def _resolve_tools(
         self,

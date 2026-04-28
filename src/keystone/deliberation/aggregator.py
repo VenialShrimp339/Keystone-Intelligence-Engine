@@ -267,8 +267,13 @@ class Aggregator:
         return None, "Fallback: judge parse failed, using median confidence"
 
     async def _consistency_check(self, claims: list[AggregatedClaim]) -> None:
-        """Screen selected claims for incoherence."""
-        high_conf = [c for c in claims if c.mean_confidence >= 0.6]
+        """Screen selected claims for incoherence.
+
+        Skips when fewer than 2 high-confidence claims exist or when all
+        claims are unscored (no analyst data). Gracefully handles LLM
+        failures so the pipeline can continue with consistency_passed=True.
+        """
+        high_conf = [c for c in claims if c.mean_confidence >= 0.6 and c.total_analysts > 0]
         if len(high_conf) < 2:
             return
 
@@ -280,7 +285,14 @@ class Aggregator:
             "consistency_check",
             summaries=summaries,
         )
-        response = await retry_llm_call(self._judge, prompt, description="consistency_check")
+        try:
+            response = await retry_llm_call(self._judge, prompt, description="consistency_check")
+        except RuntimeError:
+            logger.warning(
+                "Consistency check LLM call failed — all claims default to consistency_passed=True"
+            )
+            return
+
         try:
             parsed = safe_llm_json(response)
             contradictions = parsed.get("contradictions", [])

@@ -141,17 +141,27 @@ class Deliberation:
             )
 
         # --- Phase 2: Aggregation ---
+        if not analyst_outputs:
+            logger.warning(
+                "All %d analysts failed — building degraded confidence map from raw claims",
+                len(self._analyst_types),
+            )
+
         aggregator = Aggregator(
             judge_llm=self._judge_llm,
             dispute_variance_threshold=self._dispute_variance_threshold,
         )
         aggregated = await aggregator.aggregate(analyst_outputs, claims, manifest)
 
-        wwhtb_results = await run_wwhtb(
-            self._wwhtb_llm,
-            aggregated,
-            confidence_threshold=self._wwhtb_confidence_threshold,
-        )
+        try:
+            wwhtb_results = await run_wwhtb(
+                self._wwhtb_llm,
+                aggregated,
+                confidence_threshold=self._wwhtb_confidence_threshold,
+            )
+        except (RuntimeError, Exception):
+            logger.warning("WWHTB failed — proceeding without belief analysis")
+            wwhtb_results = {}
 
         gap_report = detect_gaps(findings, aggregated)
 

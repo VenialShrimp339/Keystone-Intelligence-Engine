@@ -215,8 +215,8 @@ class TestCallClaudeResearchSubprocess:
             )
 
     @pytest.mark.asyncio
-    async def test_default_timeout_is_1200_seconds(self) -> None:
-        """Regression: deep sessions legitimately take 5-10+ minutes."""
+    async def test_default_timeout_is_2400_seconds(self) -> None:
+        """Regression: deep sessions legitimately take 20-40+ minutes."""
         # We observe the env default by monkeypatching asyncio.wait_for
         # and capturing the timeout argument.
         fake_proc = _FakeProc(stdout=b"ok", returncode=0)
@@ -239,7 +239,7 @@ class TestCallClaudeResearchSubprocess:
                 semaphore=_research_semaphore,
             )
 
-        assert seen_timeouts == [1200]
+        assert seen_timeouts == [2400]
 
     @pytest.mark.asyncio
     async def test_decodes_stdout_as_utf8(self) -> None:

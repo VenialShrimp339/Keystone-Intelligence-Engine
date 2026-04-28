@@ -625,19 +625,22 @@ class ResearchAgent:
                     title=ev_citation.title,
                 )
 
-            # --- Emit synthesis event ---
+            # --- Emit synthesis event (only when new claims were added) ---
             new_claim_count = len(self._all_claims)
-            conf_values = [c["confidence"] for c in self._all_claims if "confidence" in c]
-            conf_range = f"{min(conf_values):.2f}-{max(conf_values):.2f}" if conf_values else "N/A"
+            if new_claim_count > prev_claim_count or round_num == 1:
+                conf_values = [c["confidence"] for c in self._all_claims if "confidence" in c]
+                conf_range = (
+                    f"{min(conf_values):.2f}-{max(conf_values):.2f}" if conf_values else "N/A"
+                )
 
-            yield FindingSynthesized(
-                event_id=_make_event_id(),
-                engagement_id=eid,
-                client_id=cid,
-                agent_id=agent.agent_id,
-                claim_count=new_claim_count,
-                confidence_range=conf_range,
-            )
+                yield FindingSynthesized(
+                    event_id=_make_event_id(),
+                    engagement_id=eid,
+                    client_id=cid,
+                    agent_id=agent.agent_id,
+                    claim_count=new_claim_count,
+                    confidence_range=conf_range,
+                )
 
             # --- Stopping criteria ---
             if conf_values and min(conf_values) >= self._quality_threshold:

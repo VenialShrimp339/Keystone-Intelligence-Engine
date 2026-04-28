@@ -62,8 +62,8 @@ class TestPipelineConfigDefaults:
         # Claude CLI concurrency (llm_client.py historic constants).
         assert pc.claude_cli_concurrency == 10
         assert pc.research_concurrency == 5
-        # Deep research timeout (legacy DEEP_RESEARCH_TIMEOUT default).
-        assert pc.deep_research_timeout_s == 1200
+        # Deep research timeout (increased from 1200 to 2400 after first pipeline run).
+        assert pc.deep_research_timeout_s == 2400
 
     def test_layer_effort_overrides_include_critical_layers(self):
         pc = PipelineConfig()
