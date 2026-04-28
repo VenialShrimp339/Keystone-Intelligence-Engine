@@ -37,7 +37,7 @@ Question → L0 Specification → L1 Research → Citation Processing → L1.5 D
 | L4 Evaluation | Not yet tested on real data |
 | Renderer | Not yet tested on real data |
 
-The system has not completed a full end-to-end run. L0 and L1 produce genuinely impressive output. The downstream layers are built and unit-tested (1,584 tests pass) but have not yet processed real research data due to timeout issues that are actively being fixed. See [`docs/deliverable/KNOWN-ISSUES.md`](docs/deliverable/KNOWN-ISSUES.md) for every issue with root cause analysis and lessons learned.
+The current version of the system has not completed a full end-to-end run. L0 and L1 decent outputs. The downstream layers are built and unit-tested (1,584 tests pass) but have not yet processed real research data due to timeout issues that are actively being fixed. See [`docs/deliverable/KNOWN-ISSUES.md`](docs/deliverable/KNOWN-ISSUES.md) for every issue with root cause analysis and lessons learned.
 
 ## The 10-Dimension Evaluation Rubric
 
