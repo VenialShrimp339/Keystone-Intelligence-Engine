@@ -368,6 +368,15 @@ class PipelineConfig(BaseModel):
         ),
     )
 
+    # Artifact output
+    output_dir: str = Field(
+        default="output",
+        description=(
+            "Base directory for intermediate pipeline artifacts. "
+            "Each run writes to output_dir/{engagement_id}/."
+        ),
+    )
+
     # Checkpoint knobs
     checkpoint_retention_days: int = Field(
         default=7,

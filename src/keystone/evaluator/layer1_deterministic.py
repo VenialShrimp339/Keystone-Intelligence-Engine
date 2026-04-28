@@ -34,6 +34,39 @@ def _load_prompt(name: str) -> str:
     return _strip_frontmatter((_PROMPTS_DIR / name).read_text())
 
 
+_FACT_CHUNK_MAX_WORDS = 800
+
+
+def _split_text_into_chunks(text: str, max_words: int = _FACT_CHUNK_MAX_WORDS) -> list[str]:
+    """Split text into chunks of approximately *max_words* words.
+
+    Splits on double-newline paragraph boundaries so claims are not
+    broken mid-sentence.
+    """
+    paragraphs = text.split("\n\n")
+    chunks: list[str] = []
+    current: list[str] = []
+    current_words = 0
+
+    for p in paragraphs:
+        p_stripped = p.strip()
+        if not p_stripped:
+            continue
+        p_words = len(p_stripped.split())
+        if current_words + p_words > max_words and current:
+            chunks.append("\n\n".join(current))
+            current = [p_stripped]
+            current_words = p_words
+        else:
+            current.append(p_stripped)
+            current_words += p_words
+
+    if current:
+        chunks.append("\n\n".join(current))
+
+    return chunks if chunks else [text]
+
+
 class Layer1Evaluator:
     """Deterministic verification layer.
 
@@ -71,18 +104,57 @@ class Layer1Evaluator:
         )
 
     async def _fact_check(self, output_text: str, manifest: CitationManifest) -> tuple[int, int]:
-        """FActScore decomposition and verification."""
+        """FActScore decomposition and verification.
+
+        When the output text exceeds ``_FACT_CHUNK_MAX_WORDS``, it is
+        split into chunks and each chunk is processed with only the
+        citations it references.  Results are aggregated.
+        """
         template = _load_prompt("fact_decomposition.md")
+        word_count = len(output_text.split())
+
+        if word_count <= _FACT_CHUNK_MAX_WORDS:
+            return await self._fact_check_chunk(template, output_text, manifest.citations)
+
+        chunks = _split_text_into_chunks(output_text)
+        logger.info(
+            "Fact decomposition: %d words -> %d chunks",
+            word_count,
+            len(chunks),
+        )
+
+        total_verified = 0
+        total_failed = 0
+        for chunk_idx, chunk in enumerate(chunks):
+            chunk_citations = [c for c in manifest.citations if c.citation_id in chunk]
+            if not chunk_citations:
+                chunk_citations = manifest.citations
+            v, f = await self._fact_check_chunk(
+                template, chunk, chunk_citations, chunk_label=f"chunk_{chunk_idx + 1}"
+            )
+            total_verified += v
+            total_failed += f
+
+        return total_verified, total_failed
+
+    async def _fact_check_chunk(
+        self,
+        template: str,
+        text: str,
+        citations: list,
+        *,
+        chunk_label: str = "fact_decomposition",
+    ) -> tuple[int, int]:
         citation_texts = "\n".join(
             f"[{c.citation_id}] {c.title} - {c.publication}"
             + (f"\nContent: {c.content_snippet}" if c.content_snippet else "")
-            for c in manifest.citations
+            for c in citations
         )
-        prompt = template.replace("{{output_text}}", output_text).replace(
+        prompt = template.replace("{{output_text}}", text).replace(
             "{{citation_texts}}", citation_texts
         )
 
-        raw = await retry_llm_call(self._llm, prompt, description="fact_decomposition")
+        raw = await retry_llm_call(self._llm, prompt, description=chunk_label)
         try:
             claims = safe_llm_json(raw, expect_list=True)
         except ParseError:

@@ -15,6 +15,7 @@ from keystone.models.tasks import TaskImportance
 from keystone.specification.decomposer import IssueTree, IssueTreeMetadata, IssueTreeNode
 from keystone.specification.priority_scorer import PriorityScore
 from keystone.specification.task_generator import (
+    TASK_GENERATION_BATCH_SIZE,
     TaskGenerator,
     _ensure_minimum_distinct_tools,
 )
@@ -403,3 +404,179 @@ class TestEnsureMinimumDistinctTools:
             if tool != "exa_search":
                 # Another baseline tool must have been used to pad.
                 break
+
+
+# ---------------------------------------------------------------------------
+# Batched task generation
+# ---------------------------------------------------------------------------
+
+
+def _make_tree_with_n_leaves(n: int) -> IssueTree:
+    """Build a tree with exactly *n* leaf nodes spread across branches."""
+    children: list[IssueTreeNode] = []
+    leaf_idx = 0
+    branch_idx = 0
+    while leaf_idx < n:
+        branch_idx += 1
+        leaves_in_branch = min(4, n - leaf_idx)
+        branch_children = [
+            IssueTreeNode(
+                id=f"branch_{branch_idx}.{j + 1}",
+                name=f"Leaf {leaf_idx + j + 1}",
+                description=f"Leaf node {leaf_idx + j + 1}",
+            )
+            for j in range(leaves_in_branch)
+        ]
+        children.append(
+            IssueTreeNode(
+                id=f"branch_{branch_idx}",
+                name=f"Branch {branch_idx}",
+                description=f"Branch {branch_idx}",
+                children=branch_children,
+            )
+        )
+        leaf_idx += leaves_in_branch
+
+    return IssueTree(
+        root=IssueTreeNode(
+            id="root",
+            name="Root",
+            description="Root",
+            children=children,
+        ),
+        metadata=IssueTreeMetadata(
+            depth=2,
+            leaf_count=n,
+            lenses_used=["financial", "operational"],
+            synthesis_rationale="Test tree.",
+        ),
+    )
+
+
+def _make_priorities_for_n(n: int) -> list[PriorityScore]:
+    """Build n priority scores mapping to leaf IDs from _make_tree_with_n_leaves."""
+    priorities: list[PriorityScore] = []
+    leaf_idx = 0
+    branch_idx = 0
+    while leaf_idx < n:
+        branch_idx += 1
+        leaves_in_branch = min(4, n - leaf_idx)
+        for j in range(leaves_in_branch):
+            priorities.append(
+                PriorityScore(
+                    branch_id=f"branch_{branch_idx}.{j + 1}",
+                    decision_relevance=0.9 - (leaf_idx + j) * 0.05,
+                    uncertainty_reduction=0.8 - (leaf_idx + j) * 0.04,
+                    priority_score=0.8 - (leaf_idx + j) * 0.05,
+                    reasoning=f"Score for leaf {leaf_idx + j + 1}.",
+                )
+            )
+            leaf_idx += 1
+    return priorities
+
+
+def _make_batch_llm(tasks_per_call: int = 5):
+    """Mock LLM that returns *tasks_per_call* tasks per invocation."""
+    call_count = 0
+
+    async def llm(prompt: str) -> str:
+        nonlocal call_count
+        call_count += 1
+        tasks = []
+        for i in range(1, tasks_per_call + 1):
+            tasks.append(
+                {
+                    "id": f"task_{i:03d}",
+                    "category": "market_sizing",
+                    "type": "current",
+                    "target_decision_usefulness": 4,
+                    "description": f"Task {i} from call {call_count}",
+                    "required_sources": ["industry_reports"],
+                    "acceptance_criteria": [f"Criterion {i}"],
+                    "deliverable_destination": f"Section {i}",
+                    "priority": i,
+                    "anti_confirmatory_framing": (
+                        "Evaluate whether this holds, including evidence both for and against"
+                    ),
+                    "assigned_tools": ["exa_search", "brave_search", "edgar_filings"],
+                    "assigned_model": "standard",
+                    "end_product": f"Analysis {i}",
+                    "dependencies": [],
+                    "issue_tree_branch_id": None,
+                    "custom_category": None,
+                }
+            )
+        return json.dumps({"decomposition_rationale": f"Batch call {call_count}.", "tasks": tasks})
+
+    return llm
+
+
+class TestBatchedTaskGeneration:
+    """Batched task generation for large issue trees."""
+
+    async def test_12_leaves_produces_3_batches(self):
+        n = 12
+        tree = _make_tree_with_n_leaves(n)
+        priorities = _make_priorities_for_n(n)
+        llm = _make_batch_llm(tasks_per_call=5)
+        registry = TemplateRegistry()
+        gen = TaskGenerator(llm, registry)
+
+        result = await gen.generate(tree, priorities, EngagementType.EVALUATIVE, _make_spec())
+
+        expected_batches = (n + TASK_GENERATION_BATCH_SIZE - 1) // TASK_GENERATION_BATCH_SIZE
+        assert expected_batches == 3
+        assert len(result.tasks) > 0
+        task_ids = [t.id for t in result.tasks]
+        assert len(task_ids) == len(set(task_ids))
+
+    async def test_4_leaves_no_batching(self):
+        n = 4
+        tree = _make_tree_with_n_leaves(n)
+        priorities = _make_priorities_for_n(n)
+        llm = _make_task_llm()
+        registry = TemplateRegistry()
+        gen = TaskGenerator(llm, registry)
+
+        result = await gen.generate(tree, priorities, EngagementType.EVALUATIVE, _make_spec())
+        assert result is not None
+        assert len(result.tasks) > 0
+
+    async def test_batched_dag_is_valid(self):
+        n = 12
+        tree = _make_tree_with_n_leaves(n)
+        priorities = _make_priorities_for_n(n)
+        llm = _make_batch_llm(tasks_per_call=4)
+        registry = TemplateRegistry()
+        gen = TaskGenerator(llm, registry)
+
+        result = await gen.generate(tree, priorities, EngagementType.EVALUATIVE, _make_spec())
+        task_ids = {t.id for t in result.tasks}
+        for task in result.tasks:
+            for dep in task.dependencies:
+                assert dep in task_ids
+
+    async def test_batched_priority_ordering_preserved(self):
+        n = 10
+        tree = _make_tree_with_n_leaves(n)
+        priorities = _make_priorities_for_n(n)
+        llm = _make_batch_llm(tasks_per_call=5)
+        registry = TemplateRegistry()
+        gen = TaskGenerator(llm, registry)
+
+        result = await gen.generate(tree, priorities, EngagementType.EVALUATIVE, _make_spec())
+        priorities_list = [t.priority for t in result.tasks]
+        assert priorities_list == sorted(priorities_list)
+
+    async def test_batched_ids_are_sequential(self):
+        n = 12
+        tree = _make_tree_with_n_leaves(n)
+        priorities = _make_priorities_for_n(n)
+        llm = _make_batch_llm(tasks_per_call=4)
+        registry = TemplateRegistry()
+        gen = TaskGenerator(llm, registry)
+
+        result = await gen.generate(tree, priorities, EngagementType.EVALUATIVE, _make_spec())
+        expected_ids = [f"task_{i + 1:03d}" for i in range(len(result.tasks))]
+        actual_ids = [t.id for t in result.tasks]
+        assert actual_ids == expected_ids

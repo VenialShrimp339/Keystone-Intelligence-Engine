@@ -1963,3 +1963,39 @@ class TestPipelineObservationStoreParam:
         store = ObservationStore(":memory:")
         pipeline = Pipeline(llm_factory=factory, gateway=gw, observation_store=store)
         assert pipeline._observation_store is store
+
+
+class TestWriteArtifact:
+    """Tests for _write_artifact intermediate output helper."""
+
+    def test_creates_directories_and_writes_file(self, tmp_path) -> None:
+        from keystone.pipeline.orchestrator import _write_artifact
+
+        target = tmp_path / "eng_001" / "subdir" / "test.json"
+        _write_artifact(target, '{"ok": true}')
+        assert target.exists()
+        assert target.read_text() == '{"ok": true}'
+
+    def test_overwrites_existing_file(self, tmp_path) -> None:
+        from keystone.pipeline.orchestrator import _write_artifact
+
+        target = tmp_path / "test.json"
+        target.write_text("old")
+        _write_artifact(target, "new")
+        assert target.read_text() == "new"
+
+    def test_does_not_raise_on_write_failure(self) -> None:
+        from pathlib import Path
+
+        from keystone.pipeline.orchestrator import _write_artifact
+
+        _write_artifact(Path("/nonexistent_root/eng/test.json"), "data")
+
+    def test_output_dir_in_pipeline_config(self) -> None:
+        from keystone.models.config import PipelineConfig
+
+        pc = PipelineConfig()
+        assert pc.output_dir == "output"
+
+        pc2 = PipelineConfig(output_dir="/tmp/custom")
+        assert pc2.output_dir == "/tmp/custom"

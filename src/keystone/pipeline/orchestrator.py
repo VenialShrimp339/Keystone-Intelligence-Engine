@@ -9,11 +9,13 @@ Yields AnyPipelineEvent throughout for observability.
 
 from __future__ import annotations
 
+import json
 import logging
 import os
 import uuid
 from collections.abc import AsyncIterator, Callable
 from dataclasses import dataclass
+from pathlib import Path
 from uuid import uuid4
 
 from pydantic import BaseModel, Field
@@ -409,6 +411,41 @@ class Pipeline:
         _raise_if_halted(governance)
         logger.info("L0 complete: %d tasks", len(spec.task_decomposition.tasks))
 
+        # Intermediate artifacts
+        out_dir = Path(self._pipeline_config.output_dir) / eid
+        _write_artifact(
+            out_dir / "l0_classification.json",
+            json.dumps(
+                {
+                    "engagement_type": spec.research_spec.engagement_type.value,
+                    "pipeline_profile": spec.research_spec.effective_pipeline_profile.value,
+                    "profile_source": spec.research_spec.profile_source,
+                },
+                indent=2,
+            ),
+        )
+        _write_artifact(
+            out_dir / "l0_intent_clarification.json",
+            json.dumps(
+                {
+                    "decision_context": spec.research_spec.decision_context,
+                    "surprising_finding": spec.research_spec.surprising_finding,
+                    "day_1_hypothesis": spec.research_spec.day_1_hypothesis,
+                    "questions": [q.model_dump() for q in spec.research_spec.questions],
+                },
+                indent=2,
+                default=str,
+            ),
+        )
+        _write_artifact(
+            out_dir / "l0_issue_tree.json",
+            json.dumps(spec.issue_tree, indent=2),
+        )
+        _write_artifact(
+            out_dir / "l0_tasks.json",
+            spec.task_decomposition.model_dump_json(indent=2),
+        )
+
         if self._checkpoint_store is not None:
             await self._checkpoint_store.save(
                 eid, "POST_SPEC", serialize_post_spec(spec, governance)
@@ -497,6 +534,12 @@ class Pipeline:
             len(agent_results),
         )
 
+        for finding in findings:
+            _write_artifact(
+                out_dir / "l1_findings" / f"{finding.task_id}.json",
+                finding.model_dump_json(indent=2),
+            )
+
         # --- Stage 3: CitationProcessor ---
         logger.info("CitProc: Processing %d findings", len(findings))
         async for event in c.citation_processor.process(findings, eid, client_id):
@@ -508,6 +551,11 @@ class Pipeline:
         # citation IDs (not source-instance IDs that may have been dedup-merged).
         findings = cit_result.canonicalized_findings
         logger.info("CitProc complete: %d citations", len(manifest.citations))
+
+        _write_artifact(
+            out_dir / "citation_manifest.json",
+            manifest.model_dump_json(indent=2),
+        )
 
         if self._checkpoint_store is not None:
             await self._checkpoint_store.save(
@@ -528,6 +576,11 @@ class Pipeline:
             "L1.5 complete: %d claims, %d tiers",
             confidence_map.total_claims,
             confidence_map.tiers_populated,
+        )
+
+        _write_artifact(
+            out_dir / "l15_confidence_map.json",
+            confidence_map.model_dump_json(indent=2),
         )
 
         if self._checkpoint_store is not None:
@@ -667,6 +720,15 @@ class Pipeline:
         passed_count = sum(1 for r in evaluation_results if r.passed)
         logger.info("L4 complete: %d/%d passed", passed_count, len(evaluation_results))
 
+        _write_artifact(
+            out_dir / "l4_evaluation.json",
+            json.dumps(
+                [r.model_dump() for r in evaluation_results],
+                indent=2,
+                default=str,
+            ),
+        )
+
         coverage_flag = policy.evaluate_coverage(governance)
         if coverage_flag is not None:
             policy.apply_flag(governance, coverage_flag)
@@ -722,6 +784,8 @@ class Pipeline:
             render_manifest,
             filtered_outline,
         )
+
+        _write_artifact(out_dir / "final_brief.md", markdown_output)
 
         self._result = PipelineResult(
             engagement_id=eid,
@@ -1306,6 +1370,15 @@ def _build_process_context(
         events=list(events),
         issue_tree=spec.issue_tree,
     )
+
+
+def _write_artifact(path: Path, content: str) -> None:
+    """Best-effort write of an intermediate pipeline artifact."""
+    try:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(content)
+    except Exception:
+        logger.warning("Failed to write artifact %s", path, exc_info=True)
 
 
 def _finding_to_text(finding: StructuredFinding) -> str:
