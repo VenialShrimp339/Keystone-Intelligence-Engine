@@ -296,12 +296,12 @@ class PipelineConfig(BaseModel):
         description="Global ceiling on simultaneous ``claude -p`` processes.",
     )
     claude_cli_timeout_s: int = Field(
-        default=600,
+        default=1200,
         ge=60,
         description=(
             "Per-call timeout in seconds for ``claude -p`` subprocess. "
-            "L0 task generation and decomposition synthesis can exceed "
-            "300s on complex questions. Default 600s (10 min)."
+            "Deliberation analysts processing 100+ claims and L0 task "
+            "generation need 10-20 min. Default 1200s (20 min)."
         ),
     )
     research_concurrency: int = Field(

@@ -99,7 +99,7 @@ async def _call_claude_cli(
     model: str,
     effort: str,
     semaphore: asyncio.Semaphore,
-    timeout_s: int = 600,
+    timeout_s: int = 1200,
 ) -> str:
     """Call Claude via the ``claude -p`` CLI.
 
@@ -446,6 +446,7 @@ class LayerAwareLLMFactory:
             effective_effort,
             self._config,
             claude_semaphore=self._claude_semaphore,
+            cli_timeout_s=self._pipeline_config.claude_cli_timeout_s,
         )
 
     def for_layer(self, layer_name: str) -> LLMCallable:
@@ -489,6 +490,7 @@ def _build_llm_callable(
     config: AppConfig,
     *,
     claude_semaphore: asyncio.Semaphore,
+    cli_timeout_s: int = 1200,
 ) -> LLMCallable:
     """Return an LLMCallable bound to the active provider transport.
 
@@ -507,7 +509,7 @@ def _build_llm_callable(
         model = _resolve_claude_model(tier, config)
 
         async def _call_claude(prompt: str) -> str:
-            return await _call_claude_cli(prompt, model, effort, claude_semaphore)
+            return await _call_claude_cli(prompt, model, effort, claude_semaphore, cli_timeout_s)
 
         return _call_claude
 

@@ -62,6 +62,8 @@ class TestPipelineConfigDefaults:
         # Claude CLI concurrency (llm_client.py historic constants).
         assert pc.claude_cli_concurrency == 10
         assert pc.research_concurrency == 5
+        # CLI timeout (increased from 600 to 1200 — deliberation on 100+ claims needs 10-20 min).
+        assert pc.claude_cli_timeout_s == 1200
         # Deep research timeout (increased from 1200 to 2400 after first pipeline run).
         assert pc.deep_research_timeout_s == 2400
 
