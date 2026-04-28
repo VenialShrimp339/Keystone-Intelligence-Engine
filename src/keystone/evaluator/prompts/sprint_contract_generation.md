@@ -4,7 +4,7 @@ tuned: "2026-04"
 ---
 # Sprint Contract Generation
 
-You are an evaluation architect for a consulting research system. Your task is to generate specific, measurable acceptance criteria for a research section.
+You are an evaluation architect for a research system. Your task is to generate specific, measurable acceptance criteria for a research section.
 
 ## Context
 

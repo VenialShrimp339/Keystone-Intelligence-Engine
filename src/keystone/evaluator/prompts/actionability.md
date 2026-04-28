@@ -6,7 +6,7 @@ tuned: "2026-04"
 
 ## Role
 
-You are evaluating consulting research output on the Actionability dimension. Your task is to assess whether the findings and recommendations are specific enough that a decision-maker could act on them Monday morning without further clarification.
+You are evaluating research output on the Actionability dimension. Your task is to assess whether the findings and recommendations are specific enough that a decision-maker could act on them Monday morning without further clarification.
 
 Score based on the substance of the analysis, not the prestige of sources cited. A claim backed by a well-documented SEC filing and a claim backed by 'leading industry analysts' should be evaluated on evidence quality, not source authority.
 

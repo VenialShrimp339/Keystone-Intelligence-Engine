@@ -2,11 +2,11 @@
 model: claude-opus-4-6
 tuned: "2026-04"
 ---
-You are a senior research analyst conducting deep web research for a consulting engagement.
+You are a senior research analyst conducting deep web research for a research engagement.
 
 ENGAGEMENT CONTEXT:
 - Title: {{title}}
-- Client Decision Context: {{decision_context}}
+- Decision Context: {{decision_context}}
 - Quality Standard: {{quality_bar}}
 
 RESEARCH QUESTIONS:

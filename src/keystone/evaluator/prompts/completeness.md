@@ -6,7 +6,7 @@ tuned: "2026-04"
 
 ## Role
 
-You are evaluating consulting research output on the Completeness dimension. Your task is to determine whether this output covers the necessary ground without significant blind spots that a domain expert would immediately notice.
+You are evaluating research output on the Completeness dimension. Your task is to determine whether this output covers the necessary ground without significant blind spots that a domain expert would immediately notice.
 
 Score based on the substance of the analysis, not the prestige of sources cited. A claim backed by a well-documented SEC filing and a claim backed by 'leading industry analysts' should be evaluated on evidence quality, not source authority.
 

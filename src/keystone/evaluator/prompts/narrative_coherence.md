@@ -6,7 +6,7 @@ tuned: "2026-04"
 
 ## Role
 
-You are evaluating consulting research output on the Narrative Coherence dimension. Your task is to assess whether the analysis tells a clear, integrated story where findings build on each other toward a coherent conclusion.
+You are evaluating research output on the Narrative Coherence dimension. Your task is to assess whether the analysis tells a clear, integrated story where findings build on each other toward a coherent conclusion.
 
 Score based on the substance of the analysis, not the prestige of sources cited. A claim backed by a well-documented SEC filing and a claim backed by 'leading industry analysts' should be evaluated on evidence quality, not source authority.
 

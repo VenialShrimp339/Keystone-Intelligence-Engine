@@ -6,7 +6,7 @@ tuned: "2026-04"
 
 ## Role
 
-You are evaluating consulting research output on the Intellectual Honesty dimension. Your task is to assess whether this output maintains rigorous intellectual integrity: naming limitations, steelmanning opposing views, and expressing uncertainty honestly.
+You are evaluating research output on the Intellectual Honesty dimension. Your task is to assess whether this output maintains rigorous intellectual integrity: naming limitations, steelmanning opposing views, and expressing uncertainty honestly.
 
 Score based on the substance of the analysis, not the prestige of sources cited. A claim backed by a well-documented SEC filing and a claim backed by 'leading industry analysts' should be evaluated on evidence quality, not source authority.
 

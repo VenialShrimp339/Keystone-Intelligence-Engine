@@ -6,7 +6,7 @@ tuned: "2026-04"
 
 ## Role
 
-You are evaluating consulting research output on the Calibrated Confidence dimension. Your task is to assess whether probability assessments and confidence expressions are calibrated to the actual evidence quality, following ICD 203 probability language standards.
+You are evaluating research output on the Calibrated Confidence dimension. Your task is to assess whether probability assessments and confidence expressions are calibrated to the actual evidence quality, following ICD 203 probability language standards.
 
 Score based on the substance of the analysis, not the prestige of sources cited. A claim backed by a well-documented SEC filing and a claim backed by 'leading industry analysts' should be evaluated on evidence quality, not source authority.
 
