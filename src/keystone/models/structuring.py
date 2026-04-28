@@ -18,7 +18,7 @@ from keystone.models.citations import (
 
 
 class AnalyticalFramework(StrEnum):
-    """Consulting analytical frameworks selectable by engagement type.
+    """Analytical frameworks selectable by engagement type and domain.
 
     The framework label is stamped on the section header and carried into
     the Evaluator's prompt context so rubric scoring can reward on-framework
@@ -32,6 +32,8 @@ class AnalyticalFramework(StrEnum):
     LANDSCAPE_MAPPING = "landscape_mapping"
     SCENARIO_PLANNING = "scenario_planning"
     SWOT = "swot"
+    TRADE_OFF_ANALYSIS = "trade_off_analysis"
+    SYSTEMATIC_REVIEW = "systematic_review"
 
 
 class OutlineSectionType(StrEnum):

@@ -202,8 +202,8 @@ def _make_full_mock_llm(
         if call_count == 8:
             return json.dumps(_make_priority_scores())
 
-        # Step 7: Task generation (call 9)
-        if call_count == 9:
+        # Step 7: Task generation (call 9+, may be multiple batches)
+        if call_count >= 9:
             return json.dumps(_make_tasks())
 
         # Fallback

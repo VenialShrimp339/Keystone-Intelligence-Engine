@@ -139,7 +139,10 @@ class ResearchSpec(BaseModel):
     # Section: Output Format & Quality
     output_format: str = Field(description="Expected deliverable format (markdown, slides, etc.)")
     quality_bar: str = Field(
-        default="Expert-grade: would a domain expert call this rigorous and well-sourced on its own merits?",
+        default=(
+            "Expert-grade: would a domain expert call this rigorous "
+            "and well-sourced on its own merits?"
+        ),
         description="Quality standard for this engagement",
     )
 

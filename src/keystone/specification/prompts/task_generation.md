@@ -24,7 +24,7 @@ For each leaf node in the issue tree, create a ResearchTask:
 
 1. **ID format:** `task_NNN` (e.g., task_001, task_002). Sequential, zero-padded to 3 digits.
 
-2. **Category:** One of: market_sizing, competitive_landscape, financial_analysis, technology_assessment, regulatory, strategic_positioning. Use the category that best matches the leaf node's analytical domain.
+2. **Category:** One of: market_sizing, competitive_landscape, financial_analysis, technology_assessment, regulatory, strategic_positioning. Use the category that best matches the leaf node's analytical domain. If none of these categories fits the task, set `custom_category` to a descriptive string (e.g., "architecture_design", "literature_synthesis", "process_analysis", "evaluation_methodology") and set `category` to the closest match from the standard list.
 
 3. **Type:** `estimative` for forward-looking probabilistic tasks, `current` for situation updates and factual mapping.
 

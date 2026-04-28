@@ -1,8 +1,8 @@
 """Engagement-type -> analytical framework selection for L2 structuring.
 
-Maps the five EngagementType values to consulting analytical frameworks.
-The selection is deterministic: the classifier in L0 has already chosen
-the engagement type, so L2 just honors that choice.
+Maps EngagementType values to analytical frameworks, with domain-aware
+overrides. The selection is deterministic: the classifier in L0 has
+already chosen the engagement type and domain, so L2 honors those choices.
 
 Callers can supply an ``override`` list of FrameworkHint to bypass the
 default mapping for novel engagements that don't fit the predefined
@@ -82,34 +82,106 @@ _FRAMEWORK_MAP: dict[EngagementType, list[FrameworkHint]] = {
             mandatory=False,
         ),
     ],
+    EngagementType.DESIGN: [
+        FrameworkHint(
+            framework=AnalyticalFramework.TRADE_OFF_ANALYSIS,
+            rationale=(
+                "Design engagements require structured evaluation of competing "
+                "requirements and architectural trade-offs."
+            ),
+            mandatory=True,
+        ),
+    ],
+    EngagementType.SYNTHESIS: [
+        FrameworkHint(
+            framework=AnalyticalFramework.SYSTEMATIC_REVIEW,
+            rationale=(
+                "Synthesis engagements aggregate prior findings; a systematic "
+                "review ensures coverage and reduces selection bias."
+            ),
+            mandatory=True,
+        ),
+    ],
 }
+
+_TECHNICAL_DOMAIN_KEYWORDS = frozenset(
+    {"technical", "technology", "architecture", "engineering", "software", "system"}
+)
+
+_TECHNICAL_FRAMEWORK_OVERRIDES: dict[EngagementType, list[FrameworkHint]] = {
+    EngagementType.EVALUATIVE: [
+        FrameworkHint(
+            framework=AnalyticalFramework.TRADE_OFF_ANALYSIS,
+            rationale=(
+                "Technical evaluations require structured trade-off analysis "
+                "across dimensions rather than industry-structure frameworks."
+            ),
+            mandatory=True,
+        ),
+    ],
+    EngagementType.STRATEGIC: [
+        FrameworkHint(
+            framework=AnalyticalFramework.TRADE_OFF_ANALYSIS,
+            rationale=(
+                "Technical strategy benefits from structured trade-off analysis "
+                "to surface architectural decision points."
+            ),
+            mandatory=True,
+        ),
+        FrameworkHint(
+            framework=AnalyticalFramework.LANDSCAPE_MAPPING,
+            rationale=(
+                "Mapping the technical landscape provides context for "
+                "strategic architectural decisions."
+            ),
+            mandatory=False,
+        ),
+    ],
+}
+
+
+def _is_technical_domain(domain: str | None) -> bool:
+    if domain is None:
+        return False
+    lower = domain.lower()
+    return any(kw in lower for kw in _TECHNICAL_DOMAIN_KEYWORDS)
 
 
 def frameworks_for_engagement(
     engagement_type: EngagementType,
     override: list[FrameworkHint] | None = None,
+    *,
+    domain: str | None = None,
 ) -> list[FrameworkHint]:
     """Return the ordered framework hints for an engagement type.
 
     When ``override`` is non-None it replaces the default mapping entirely,
     including the empty-list case — an explicit empty override yields an
     empty framework list (the caller has decided no framework applies).
+
+    When ``domain`` indicates a technical subject area, domain-specific
+    framework overrides take precedence over the business defaults for
+    the applicable engagement types.
     """
     if override is not None:
         return list(override)
+    if _is_technical_domain(domain) and engagement_type in _TECHNICAL_FRAMEWORK_OVERRIDES:
+        return list(_TECHNICAL_FRAMEWORK_OVERRIDES[engagement_type])
     return list(_FRAMEWORK_MAP.get(engagement_type, []))
 
 
 def primary_framework(
     engagement_type: EngagementType,
     override: list[FrameworkHint] | None = None,
+    *,
+    domain: str | None = None,
 ) -> AnalyticalFramework | None:
     """Return the mandatory (primary) framework for the engagement type.
 
     When ``override`` is non-None it is the selection source, using the
     same mandatory-first / first-listed fallback as the default mapping.
     """
-    hints = override if override is not None else _FRAMEWORK_MAP.get(engagement_type, [])
+    hints = frameworks_for_engagement(engagement_type, override, domain=domain)
     for hint in hints:
         if hint.mandatory:
             return hint.framework

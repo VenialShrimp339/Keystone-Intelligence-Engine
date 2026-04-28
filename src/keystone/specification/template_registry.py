@@ -83,13 +83,12 @@ _ACADEMIC_RESEARCHER = AgentDefinition(
     description="Academic literature, patent analysis, technology assessment, and expert consensus",
     role=AgentRole.RESEARCH,
     model=ModelTier.STANDARD,
-    # patent_search removed: no MCP server registered yet.
     tools=[
         ToolName.PAPER_SEARCH,
         ToolName.DOI_VERIFY,
         ToolName.EXA_SEARCH,
         ToolName.BRAVE_SEARCH,
-        ToolName.EDGAR_FILINGS,
+        ToolName.FRED_DATA,
     ],
     system_prompt=(
         "You are an academic research analyst. Your methodology prioritizes "
@@ -135,8 +134,8 @@ _GENERALIST = AgentDefinition(
         ToolName.EXA_SEARCH,
         ToolName.BRAVE_SEARCH,
         ToolName.PAPER_SEARCH,
-        ToolName.EDGAR_FILINGS,
-        ToolName.FINNHUB_MARKET,
+        ToolName.DOI_VERIFY,
+        ToolName.FRED_DATA,
     ],
     system_prompt=(
         "You are a generalist research analyst. Your methodology is breadth-first: "
@@ -157,8 +156,8 @@ _CONTRARIAN_ANALYST = AgentDefinition(
         ToolName.EXA_SEARCH,
         ToolName.BRAVE_SEARCH,
         ToolName.PAPER_SEARCH,
-        ToolName.EDGAR_FILINGS,
-        ToolName.FINNHUB_MARKET,
+        ToolName.DOI_VERIFY,
+        ToolName.FRED_DATA,
     ],
     system_prompt=(
         "You are a contrarian research analyst. Your methodology specifically "
@@ -180,8 +179,8 @@ _HISTORICAL_ANALYST = AgentDefinition(
         ToolName.PAPER_SEARCH,
         ToolName.EXA_SEARCH,
         ToolName.BRAVE_SEARCH,
-        ToolName.FINNHUB_MARKET,
-        ToolName.EDGAR_FILINGS,
+        ToolName.DOI_VERIFY,
+        ToolName.FRED_DATA,
     ],
     system_prompt=(
         "You are a historical analogy analyst. Your methodology identifies "
@@ -194,6 +193,32 @@ _HISTORICAL_ANALYST = AgentDefinition(
     research_type=ResearchAgentType.HISTORICAL_ANALOGY,
 )
 
+_TECHNICAL_RESEARCHER = AgentDefinition(
+    name="technical_researcher",
+    description=(
+        "Technical architecture, system design, prior art survey, and implementation assessment"
+    ),
+    role=AgentRole.RESEARCH,
+    model=ModelTier.STANDARD,
+    tools=[
+        ToolName.PAPER_SEARCH,
+        ToolName.DOI_VERIFY,
+        ToolName.EXA_SEARCH,
+        ToolName.BRAVE_SEARCH,
+    ],
+    system_prompt=(
+        "You are a technical research analyst. Your methodology prioritizes "
+        "primary technical sources: official documentation, peer-reviewed papers, "
+        "reference implementations, and benchmark results. Evaluate architectural "
+        "trade-offs rigorously — name what you gain and what you give up with each "
+        "design choice. Distinguish between proven patterns and speculative claims. "
+        "When assessing systems, check maintenance trajectory (recent commits, "
+        "community health) alongside technical merit."
+    ),
+    source="builtin",
+    research_type=ResearchAgentType.QUALITATIVE,
+)
+
 _SEED_TEMPLATES: list[AgentDefinition] = [
     _QUANTITATIVE_ANALYST,
     _MARKET_RESEARCHER,
@@ -202,6 +227,7 @@ _SEED_TEMPLATES: list[AgentDefinition] = [
     _GENERALIST,
     _CONTRARIAN_ANALYST,
     _HISTORICAL_ANALYST,
+    _TECHNICAL_RESEARCHER,
 ]
 
 # Category -> preferred template name mapping
@@ -209,7 +235,7 @@ _CATEGORY_TEMPLATE_MAP: dict[TaskCategory, str] = {
     TaskCategory.MARKET_SIZING: "market_researcher",
     TaskCategory.COMPETITIVE_LANDSCAPE: "market_researcher",
     TaskCategory.FINANCIAL_ANALYSIS: "quantitative_analyst",
-    TaskCategory.TECHNOLOGY_ASSESSMENT: "academic_researcher",
+    TaskCategory.TECHNOLOGY_ASSESSMENT: "technical_researcher",
     TaskCategory.REGULATORY: "regulatory_analyst",
     TaskCategory.STRATEGIC_POSITIONING: "generalist_researcher",
 }
@@ -317,6 +343,7 @@ class TemplateRegistry:
                 "generalist_researcher": 0.5,
                 "contrarian_analyst": 0.3,
                 "historical_analyst": 0.3,
+                "technical_researcher": 0.2,
             },
             EngagementType.DIAGNOSTIC: {
                 "quantitative_analyst": 0.7,
@@ -326,6 +353,7 @@ class TemplateRegistry:
                 "generalist_researcher": 0.6,
                 "contrarian_analyst": 0.7,
                 "historical_analyst": 0.5,
+                "technical_researcher": 0.6,
             },
             EngagementType.EVALUATIVE: {
                 "quantitative_analyst": 0.7,
@@ -335,6 +363,7 @@ class TemplateRegistry:
                 "generalist_researcher": 0.6,
                 "contrarian_analyst": 0.8,
                 "historical_analyst": 0.6,
+                "technical_researcher": 0.6,
             },
             EngagementType.EXPLORATORY: {
                 "quantitative_analyst": 0.3,
@@ -344,6 +373,7 @@ class TemplateRegistry:
                 "generalist_researcher": 1.0,
                 "contrarian_analyst": 0.4,
                 "historical_analyst": 0.5,
+                "technical_researcher": 0.5,
             },
             EngagementType.STRATEGIC: {
                 "quantitative_analyst": 0.6,
@@ -353,6 +383,27 @@ class TemplateRegistry:
                 "generalist_researcher": 0.7,
                 "contrarian_analyst": 0.8,
                 "historical_analyst": 0.9,
+                "technical_researcher": 0.5,
+            },
+            EngagementType.DESIGN: {
+                "quantitative_analyst": 0.3,
+                "market_researcher": 0.3,
+                "academic_researcher": 0.6,
+                "regulatory_analyst": 0.2,
+                "generalist_researcher": 0.5,
+                "contrarian_analyst": 0.5,
+                "historical_analyst": 0.4,
+                "technical_researcher": 1.0,
+            },
+            EngagementType.SYNTHESIS: {
+                "quantitative_analyst": 0.4,
+                "market_researcher": 0.5,
+                "academic_researcher": 0.8,
+                "regulatory_analyst": 0.3,
+                "generalist_researcher": 0.7,
+                "contrarian_analyst": 0.4,
+                "historical_analyst": 0.5,
+                "technical_researcher": 0.8,
             },
         }
         return fits.get(engagement_type, {}).get(template.name, 0.3)

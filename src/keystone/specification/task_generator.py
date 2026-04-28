@@ -33,6 +33,8 @@ from keystone.tool_names import ALL_TOOLS, BASELINE_AGENT_TOOLS, SYSTEM_OWNED_TO
 
 logger = logging.getLogger(__name__)
 
+TASK_GENERATION_BATCH_SIZE = 5
+
 
 def _ensure_minimum_distinct_tools(tools: list[str]) -> list[str]:
     """Pad a tool list to 3-5 distinct entries drawn from BASELINE_AGENT_TOOLS.
@@ -87,24 +89,34 @@ class TaskGenerator:
     ) -> TaskDecomposition:
         """Generate a TaskDecomposition from the issue tree.
 
+        When the issue tree has more than ``TASK_GENERATION_BATCH_SIZE``
+        leaves, the priorities are partitioned into batches and each
+        batch is processed with a separate LLM call.  Results are merged,
+        IDs are reassigned sequentially by priority, and cross-batch
+        dependency references are cleaned.
+
         If the LLM produces cyclic dependencies, catches ValidationError
-        and retries (max 2 retries).
+        and retries (max 2 retries per batch).
         """
         priority_ranks = self._build_priority_ranks(priorities)
 
-        _system_owned = set(SYSTEM_OWNED_TOOLS)
-        _assignable_tools = [t for t in ALL_TOOLS if t not in _system_owned]
-        prompt = load_prompt(
-            "task_generation",
-            question=spec.questions[0].question if spec.questions else "",
-            engagement_type=engagement_type.value,
-            engagement_id=spec.engagement_id,
-            client_id=spec.client_id,
-            issue_tree=json.dumps(tree.model_dump(), indent=2),
-            priorities=json.dumps([p.model_dump() for p in priorities], indent=2),
-            day_1_hypothesis=spec.day_1_hypothesis or "",
-            available_tools=", ".join(_assignable_tools),
-        )
+        if len(priorities) > TASK_GENERATION_BATCH_SIZE:
+            return await self._generate_batched(
+                tree, priorities, engagement_type, spec, priority_ranks
+            )
+
+        return await self._generate_single(tree, priorities, engagement_type, spec, priority_ranks)
+
+    async def _generate_single(
+        self,
+        tree: IssueTree,
+        priorities: list[PriorityScore],
+        engagement_type: EngagementType,
+        spec: ResearchSpec,
+        priority_ranks: dict[str, int],
+    ) -> TaskDecomposition:
+        """Original single-call generation path for small trees."""
+        prompt = self._build_prompt(tree, priorities, engagement_type, spec)
 
         last_error: Exception | None = None
         for attempt in range(3):
@@ -113,15 +125,10 @@ class TaskGenerator:
                     self._llm, prompt, description=f"task_generation_attempt_{attempt}"
                 )
                 data = safe_llm_json(raw, required_keys=("tasks",))
-                tasks = self._parse_tasks(
-                    data,
-                    spec,
-                    engagement_type,
-                    priority_ranks,
-                )
+                tasks = self._parse_tasks(data, spec, engagement_type, priority_ranks)
                 if not tasks:
                     raise ValueError("LLM returned empty tasks list")
-                decomposition = TaskDecomposition(
+                return TaskDecomposition(
                     project=spec.title,
                     engagement_id=spec.engagement_id,
                     client_id=spec.client_id,
@@ -133,13 +140,124 @@ class TaskGenerator:
                     ),
                     tasks=tasks,
                 )
-                return decomposition
             except (ParseError, ValidationError, ValueError, KeyError) as exc:
                 last_error = exc
                 logger.warning("Task generation attempt %d failed: %s", attempt + 1, exc)
 
-        msg = f"Task generation failed after 3 attempts: {last_error}"
-        raise RuntimeError(msg)
+        raise RuntimeError(f"Task generation failed after 3 attempts: {last_error}")
+
+    async def _generate_batched(
+        self,
+        tree: IssueTree,
+        priorities: list[PriorityScore],
+        engagement_type: EngagementType,
+        spec: ResearchSpec,
+        priority_ranks: dict[str, int],
+    ) -> TaskDecomposition:
+        """Multi-batch task generation for large issue trees."""
+        sorted_priorities = sorted(
+            priorities,
+            key=lambda p: (
+                -p.priority_score,
+                -p.decision_relevance,
+                -p.uncertainty_reduction,
+                p.branch_id,
+            ),
+        )
+        batches = [
+            sorted_priorities[i : i + TASK_GENERATION_BATCH_SIZE]
+            for i in range(0, len(sorted_priorities), TASK_GENERATION_BATCH_SIZE)
+        ]
+        logger.info(
+            "Task generation: %d leaves -> %d batches of <=%d",
+            len(priorities),
+            len(batches),
+            TASK_GENERATION_BATCH_SIZE,
+        )
+
+        all_tasks: list[ResearchTask] = []
+        for batch_idx, batch in enumerate(batches):
+            batch_leaf_ids = [p.branch_id for p in batch]
+            prompt = self._build_prompt(tree, batch, engagement_type, spec)
+            prompt += (
+                f"\n\n## Batch Context\n"
+                f"This is batch {batch_idx + 1} of {len(batches)}. "
+                f"Generate tasks ONLY for these leaf nodes: "
+                f"{', '.join(batch_leaf_ids)}. "
+                f"Dependencies should only reference task IDs within this batch."
+            )
+
+            last_error: Exception | None = None
+            for attempt in range(3):
+                try:
+                    raw = await retry_llm_call(
+                        self._llm,
+                        prompt,
+                        description=f"task_generation_b{batch_idx + 1}_attempt_{attempt}",
+                    )
+                    data = safe_llm_json(raw, required_keys=("tasks",))
+                    tasks = self._parse_tasks(data, spec, engagement_type, priority_ranks)
+                    if not tasks:
+                        raise ValueError("LLM returned empty tasks list")
+                    all_tasks.extend(tasks)
+                    break
+                except (ParseError, ValidationError, ValueError, KeyError) as exc:
+                    last_error = exc
+                    logger.warning(
+                        "Task generation batch %d attempt %d failed: %s",
+                        batch_idx + 1,
+                        attempt + 1,
+                        exc,
+                    )
+            else:
+                raise RuntimeError(
+                    f"Task generation batch {batch_idx + 1} failed after 3 attempts: {last_error}"
+                )
+
+        all_tasks.sort(key=lambda t: t.priority)
+        id_map: dict[str, str] = {}
+        for i, task in enumerate(all_tasks):
+            new_id = f"task_{i + 1:03d}"
+            id_map[task.id] = new_id
+            task.id = new_id
+
+        valid_ids = set(id_map.values())
+        for task in all_tasks:
+            task.dependencies = [id_map.get(d, d) for d in task.dependencies]
+            task.dependencies = [d for d in task.dependencies if d in valid_ids]
+
+        return TaskDecomposition(
+            project=spec.title,
+            engagement_id=spec.engagement_id,
+            client_id=spec.client_id,
+            research_md_path=f"engagements/{spec.engagement_id}/RESEARCH.md",
+            specification_version=spec.specification_version,
+            decomposition_rationale=(
+                f"Multi-batch generation ({len(batches)} batches, {len(all_tasks)} tasks)"
+            ),
+            tasks=all_tasks,
+        )
+
+    def _build_prompt(
+        self,
+        tree: IssueTree,
+        priorities: list[PriorityScore],
+        engagement_type: EngagementType,
+        spec: ResearchSpec,
+    ) -> str:
+        _system_owned = set(SYSTEM_OWNED_TOOLS)
+        _assignable_tools = [t for t in ALL_TOOLS if t not in _system_owned]
+        return load_prompt(
+            "task_generation",
+            question=spec.questions[0].question if spec.questions else "",
+            engagement_type=engagement_type.value,
+            engagement_id=spec.engagement_id,
+            client_id=spec.client_id,
+            issue_tree=json.dumps(tree.model_dump(), indent=2),
+            priorities=json.dumps([p.model_dump() for p in priorities], indent=2),
+            day_1_hypothesis=spec.day_1_hypothesis or "",
+            available_tools=", ".join(_assignable_tools),
+        )
 
     def _parse_tasks(
         self,
@@ -193,10 +311,37 @@ class TaskGenerator:
         return sorted(tasks, key=lambda task: task.priority)
 
     def _resolve_category(self, raw: str) -> TaskCategory:
-        """Map raw category string to TaskCategory, defaulting gracefully."""
+        """Map raw category string to TaskCategory, defaulting gracefully.
+
+        For unknown values, attempts semantic matching before falling back
+        to STRATEGIC_POSITIONING. The caller preserves the original string
+        via custom_category on the ResearchTask.
+        """
         try:
             return TaskCategory(raw)
         except ValueError:
+            lower = raw.lower()
+            if any(
+                kw in lower
+                for kw in (
+                    "tech",
+                    "architecture",
+                    "engineering",
+                    "software",
+                    "system",
+                    "design",
+                    "implementation",
+                )
+            ):
+                return TaskCategory.TECHNOLOGY_ASSESSMENT
+            if any(kw in lower for kw in ("market", "sizing", "tam", "sam")):
+                return TaskCategory.MARKET_SIZING
+            if any(kw in lower for kw in ("compet", "landscape", "rival")):
+                return TaskCategory.COMPETITIVE_LANDSCAPE
+            if any(kw in lower for kw in ("financ", "revenue", "cost", "valuation")):
+                return TaskCategory.FINANCIAL_ANALYSIS
+            if any(kw in lower for kw in ("regulat", "compliance", "legal", "policy")):
+                return TaskCategory.REGULATORY
             return TaskCategory.STRATEGIC_POSITIONING
 
     def _resolve_tools(

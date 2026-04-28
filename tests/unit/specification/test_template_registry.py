@@ -54,14 +54,14 @@ class TestTemplateRegistry:
         assert result.template.name == "quantitative_analyst"
         assert isinstance(result, TemplateMatch)
 
-    def test_academic_task_matches_academic(self):
+    def test_tech_assessment_matches_technical(self):
         registry = TemplateRegistry()
         task = _make_task(
             category=TaskCategory.TECHNOLOGY_ASSESSMENT,
             required_sources=["academic", "patents"],
         )
         result = registry.match(task, EngagementType.EVALUATIVE)
-        assert result.template.name == "academic_researcher"
+        assert result.template.name == "technical_researcher"
 
     def test_regulatory_task_matches_regulatory(self):
         registry = TemplateRegistry()

@@ -56,7 +56,7 @@ if TYPE_CHECKING:
 
 logger = logging.getLogger(__name__)
 
-# Default methodology per engagement type
+# Default methodology per engagement type (business-domain fallback)
 _DEFAULT_METHODOLOGY: dict[EngagementType, list[MethodologyRequirement]] = {
     EngagementType.SIZING: [
         MethodologyRequirement(
@@ -98,12 +98,145 @@ _DEFAULT_METHODOLOGY: dict[EngagementType, list[MethodologyRequirement]] = {
             rationale="Structural competitive analysis",
         ),
     ],
+    EngagementType.DESIGN: [
+        MethodologyRequirement(
+            framework="Requirements Analysis and Trade-off Evaluation",
+            mandatory=True,
+            rationale="Design engagements require structured requirements and trade-off analysis",
+        ),
+    ],
+    EngagementType.SYNTHESIS: [
+        MethodologyRequirement(
+            framework="Systematic Review and Integration",
+            mandatory=True,
+            rationale="Synthesis engagements require structured aggregation of prior findings",
+        ),
+    ],
 }
 
-_DEFAULT_SOURCES: list[SourceRequirement] = [
+_TECHNICAL_DOMAIN_KEYWORDS = frozenset(
+    {"technical", "technology", "architecture", "engineering", "software", "system"}
+)
+_SCIENTIFIC_DOMAIN_KEYWORDS = frozenset(
+    {"scientific", "science", "literature", "academic", "research", "synthesis"}
+)
+
+_DOMAIN_METHODOLOGY_OVERRIDES: dict[str, dict[EngagementType, list[MethodologyRequirement]]] = {
+    "technical": {
+        EngagementType.EVALUATIVE: [
+            MethodologyRequirement(
+                framework="Trade-off Analysis",
+                mandatory=True,
+                rationale=(
+                    "Technical evaluations require structured trade-off analysis across dimensions"
+                ),
+            ),
+        ],
+        EngagementType.STRATEGIC: [
+            MethodologyRequirement(
+                framework="Architecture Decision Records",
+                mandatory=True,
+                rationale="Technical strategy requires structured decision documentation",
+            ),
+        ],
+    },
+    "scientific": {
+        EngagementType.EVALUATIVE: [
+            MethodologyRequirement(
+                framework="Systematic Literature Review",
+                mandatory=True,
+                rationale="Scientific evaluation requires systematic evidence review",
+            ),
+        ],
+        EngagementType.EXPLORATORY: [
+            MethodologyRequirement(
+                framework="Systematic Literature Review",
+                mandatory=True,
+                rationale="Scientific exploration requires structured literature mapping",
+            ),
+        ],
+    },
+}
+
+_BUSINESS_SOURCES: list[SourceRequirement] = [
     SourceRequirement(source_type="news", minimum_count=5, quality_threshold=0.5),
     SourceRequirement(source_type="industry_reports", minimum_count=2, quality_threshold=0.7),
 ]
+
+_TECHNICAL_SOURCES: list[SourceRequirement] = [
+    SourceRequirement(
+        source_type="technical_documentation", minimum_count=3, quality_threshold=0.7
+    ),
+    SourceRequirement(source_type="academic", minimum_count=2, quality_threshold=0.7),
+]
+
+_SCIENTIFIC_SOURCES: list[SourceRequirement] = [
+    SourceRequirement(source_type="academic", minimum_count=5, quality_threshold=0.7),
+]
+
+_GENERIC_SOURCES: list[SourceRequirement] = [
+    SourceRequirement(source_type="web", minimum_count=3, quality_threshold=0.5),
+]
+
+_BUSINESS_NON_GOALS: list[str] = [
+    "Political positioning and recommendation framing",
+    "Client relationship management",
+]
+
+
+_BUSINESS_DOMAIN_KEYWORDS = frozenset(
+    {
+        "business",
+        "financial",
+        "market",
+        "m_and_a",
+        "due_diligence",
+        "operations",
+        "organizational",
+    }
+)
+
+
+def _classify_domain_group(domain: str | None) -> str:
+    """Map a free-text domain to a coarse group for methodology/source selection.
+
+    Check order matters: business before scientific, because domains like
+    "market_research" contain "research" but are business domains.
+    """
+    if domain is None:
+        return "unknown"
+    lower = domain.lower()
+    if any(kw in lower for kw in _TECHNICAL_DOMAIN_KEYWORDS):
+        return "technical"
+    if any(kw in lower for kw in _BUSINESS_DOMAIN_KEYWORDS):
+        return "business"
+    if any(kw in lower for kw in _SCIENTIFIC_DOMAIN_KEYWORDS):
+        return "scientific"
+    return "unknown"
+
+
+def _resolve_methodology(
+    engagement_type: EngagementType, domain: str | None
+) -> list[MethodologyRequirement]:
+    """Select methodology based on domain first, then engagement type fallback."""
+    group = _classify_domain_group(domain)
+    overrides = _DOMAIN_METHODOLOGY_OVERRIDES.get(group, {})
+    if engagement_type in overrides:
+        return overrides[engagement_type]
+    return _DEFAULT_METHODOLOGY.get(engagement_type, [])
+
+
+def _resolve_sources(domain: str | None) -> list[SourceRequirement]:
+    """Select source requirements based on domain."""
+    group = _classify_domain_group(domain)
+    if group == "business":
+        return _BUSINESS_SOURCES
+    if group == "technical":
+        return _TECHNICAL_SOURCES
+    if group == "scientific":
+        return _SCIENTIFIC_SOURCES
+    return _GENERIC_SOURCES
+
 
 _MAX_DECOMPOSE_RETRIES = 2
 
@@ -351,12 +484,12 @@ class SpecificationEngine:
             if boundary and not boundary.startswith("No ")
         ]
 
-        methodology = _DEFAULT_METHODOLOGY.get(classification.engagement_type, [])
+        domain = classification.domain
+        methodology = _resolve_methodology(classification.engagement_type, domain)
+        sources = _resolve_sources(domain)
 
-        non_goals = [
-            "Political positioning and recommendation framing",
-            "Client relationship management",
-        ]
+        domain_group = _classify_domain_group(domain)
+        non_goals: list[str] = list(_BUSINESS_NON_GOALS) if domain_group == "business" else []
         for boundary in intent.scope_boundaries:
             if boundary not in non_goals:
                 non_goals.append(boundary)
@@ -371,10 +504,11 @@ class SpecificationEngine:
             surprising_finding=intent.surprising_finding,
             questions=[primary_q] + secondary_qs,
             methodology=methodology,
-            source_requirements=_DEFAULT_SOURCES,
+            source_requirements=sources,
             output_format="markdown",
             non_goals=non_goals,
             engagement_type=classification.engagement_type,
+            domain=domain,
             day_1_hypothesis=intent.day_1_hypothesis,
             recommended_pipeline_profile=classification.pipeline_profile,
             effective_pipeline_profile=classification.pipeline_profile,
