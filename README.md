@@ -24,23 +24,8 @@ Question → L0 Specification → L1 Research → Citation Processing → L1.5 D
 
 **Markdown Renderer** produces the final brief from evaluated, filtered findings.
 
-## What It Produces (Real Output)
 
-The first pipeline run used this question:
-
-> *"Evaluate the competitive landscape of the US auto body repair industry across the top 10 metropolitan areas by population. Identify the largest chains, their market share, and whether the market is consolidating or fragmenting. What would a new entrant need to know?"*
-
-**Before any research, the system generated this hypothesis:**
-
-> "The US auto body repair industry in the top 10 MSAs is in mid-stage PE-driven consolidation, with the top 4 chains (led by Caliber Collision) collectively controlling 20-30% of metro-level collision repair revenue but facing a durable independent-shop majority sustained by insurer DRP breadth requirements and rising OEM certification specialization — making acquisition-based entry viable but at elevated multiples (10-14x EBITDA) while de novo entry is prohibitively capital-intensive for any single metro."
-
-That hypothesis was inferred entirely from the question. The L1 research agents then found real evidence bearing on every one of those claims.
-
-**Research results:** 6 of 13 agents completed (before hitting the Claude Max daily limit), producing **155 structured claims** across **173 real URLs** from **107 unique domains** — including SEC filings, industry trade publications, state regulatory databases, and M&A advisory reports. Zero fabricated citations.
-
-See the actual output: [`output/eng_74e67db162c7/`](output/eng_74e67db162c7/)
-
-## Current Status of testing on the updated components:
+## Current Status of testing on the **updated** components:
 
 | Layer | Real Data Status |
 |-------|-----------------|
