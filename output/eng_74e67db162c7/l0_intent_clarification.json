@@ -1,0 +1,27 @@
+{
+  "decision_context": "The decision-maker is a Keystone Group partner or engagement lead deciding whether to pursue \u2014 and how to scope \u2014 a consulting engagement for a client (most likely a PE firm or strategic acquirer) evaluating investment or entry into the US auto body repair industry. The timeline is near-term: this pre-engagement landscape research must be actionable within 1-2 weeks to inform the client pitch or proposal scope. This decision context is inferred rather than stated; the inference is grounded in the question's 'new entrant' framing, the evaluative engagement type, and the explicit note that the research 'informs a potential client engagement' for a boutique consulting firm.",
+  "surprising_finding": "Despite a decade of aggressive PE-backed roll-up activity by Caliber, Service King, and Gerber, the combined top-5 chain share in the largest US metros has plateaued near 20-25% since 2022 because the three largest auto insurers have actively counter-consolidated their DRP networks \u2014 expanding preferred-shop panels to include more independents as a deliberate check on chain pricing leverage \u2014 while simultaneously, OEM-certified independent shops have captured a disproportionate share of the fastest-growing EV and ADAS-equipped vehicle repair segments, effectively bifurcating the market into a commodity tier where chains dominate on volume and a premium tier where specialized independents are winning on technical capability, undermining the thesis that national scale alone drives consolidation economics.",
+  "day_1_hypothesis": "The US auto body repair industry in the top 10 MSAs is in mid-stage PE-driven consolidation, with the top 4 chains (led by Caliber Collision) collectively controlling 20-30% of metro-level collision repair revenue but facing a durable independent-shop majority sustained by insurer DRP breadth requirements and rising OEM certification specialization \u2014 making acquisition-based entry viable but at elevated multiples (10-14x EBITDA) while de novo entry is prohibitively capital-intensive for any single metro.",
+  "questions": [
+    {
+      "question": "Evaluate the competitive landscape of the US auto body repair industry across the top 10 metropolitan areas by population. Identify the largest chains, their market share, and whether the market is consolidating or fragmenting. What would a new entrant need to know?",
+      "is_primary": true,
+      "parent_question": null
+    },
+    {
+      "question": "This research produces a competitive landscape assessment only \u2014 it will NOT deliver a go-to-market strategy, financial model, entry business case, or implementation roadmap",
+      "is_primary": false,
+      "parent_question": "Evaluate the competitive landscape of the US auto body repair industry across the top 10 metropolitan areas by population. Identify the largest chains, their market share, and whether the market is consolidating or fragmenting. What would a new entrant need to know?"
+    },
+    {
+      "question": "Geographic scope is limited to the top 10 US MSAs by population; national aggregates are used for context only, and rural, exurban, and non-US markets are excluded",
+      "is_primary": false,
+      "parent_question": "Evaluate the competitive landscape of the US auto body repair industry across the top 10 metropolitan areas by population. Identify the largest chains, their market share, and whether the market is consolidating or fragmenting. What would a new entrant need to know?"
+    },
+    {
+      "question": "Adjacent verticals (mechanical repair, aftermarket parts distribution, glass-only or PDR-only operators) are excluded unless they directly compete for collision repair revenue within the scoped metros",
+      "is_primary": false,
+      "parent_question": "Evaluate the competitive landscape of the US auto body repair industry across the top 10 metropolitan areas by population. Identify the largest chains, their market share, and whether the market is consolidating or fragmenting. What would a new entrant need to know?"
+    }
+  ]
+}

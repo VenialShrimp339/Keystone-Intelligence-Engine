@@ -1,0 +1,1395 @@
+{
+  "task_id": "task_005",
+  "agent_id": "agent_task_005_d2a885",
+  "engagement_id": "eng_74e67db162c7",
+  "client_id": "client_keystone_internal",
+  "agent_type": "qualitative",
+  "claims": [
+    {
+      "text": "Tesla Body Repair Program (TACC) certification requires capital investment of $200,000–$300,000 per structural location, with specific required tooling including a Fronius-class spot welder (~$40,000), aluminum MIG welder (~$15,000), aluminum dent repair station (~$6,300), and self-piercing/flow-form rivet systems ($1,500–$3,000), plus a frame bench with Tesla-specific fixtures ($800–$25,000+ depending on optional electronic bench).",
+      "evidence": "Two independent TACC shop owners disclosed investment levels: Cape Auto Body reported exceeding $200,000 and Advantage Autoworks owner Chris Recker reported $250,000–$300,000. Tesla's publicly available Global Master Tooling List confirms required equipment including Fronius cold metal transfer welder (factory equipment), blind rivet gun ($2,000), basic aluminum dent station ($6,300), riveting combination tools ($1,500–$3,000), frame bench fixtures ($800–$25,000), and optional electronic bench ($20,000–$50,000). Lifts must accommodate a minimum 10,000 lb capacity for Cybertruck. Training costs are approximately $900/technician per I-CAR course, with 4 technicians required to attend in-person EV training and 40 online modules to complete.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENC7A2-001",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/tesla-certification-how-body-shops-navigate-ev-repairs-and-meet-oem-expectations",
+          "doi": null,
+          "title": "Tesla Certification: How Body Shops Navigate EV Repairs and Meet OEM Expectations - Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.311449Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Chris Recker, owner of Advantage Autoworks, has been in the collision repair industry since 1990. Tesla work now accounts for roughly 25% of his monthly revenue, generating around $500,000. Tesla certification requires a hefty financial commitment — Recker stated he has 'invested between $250,000 and $300,000 in equipment.' Cape Auto Body Collision Center's spot welder cost $40,000, MIG welder $15,000.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN4BCB-002",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.collisionrepairmag.com/news/collision-repair/article/15717802/the-costs-for-a-shop-to-be-tesla-certified",
+          "doi": null,
+          "title": "The costs for a shop to be Tesla certified | Collision Repair Mag",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.312301Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Blind rivet gun: $2,000 USD. Combination of riveting tools (Bollhoff and Huck 254 or complete Xpress kit): $1,500 to $3,000 USD. Basic aluminum dent station for repairing external body panels: $6,300 USD. Fixtures: $800 to $25,000 USD. Optional Electronic Bench: $20,000 to $50,000 USD.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.82,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Equipment pricing cited originates from a 2018 source; current market prices may be 30-50% higher",
+        "Total investment varies by existing shop capabilities; shops with prior aluminum certification face lower incremental costs",
+        "Tesla simplified tooling requirements in 2024, approving 8 additional aluminum welders and eliminating mandatory instructor-led training"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_86fe2f20",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENC7A2-001",
+        "CIT-ENG74E67-AGEN4BCB-002"
+      ]
+    },
+    {
+      "text": "Rivian Certified Collision Centers must meet specific facility minimum thresholds: paint booth height of at least 12 feet (entry door ≥9.8 ft), a dedicated ADAS calibration space of at least 18 feet by 44.3 feet, and a lift system rated at minimum 9,900 lbs — requirements that disqualify most existing collision shops without capital investment in facility modification.",
+      "evidence": "Rivian's official certified center requirements documentation specifies exact facility dimensions. The 18' × 44.3' ADAS calibration space requirement is particularly restrictive; this floor footprint (~800 sq ft) must be dedicated and meet Rivian's target specifications. Combined with paint booth height requirements (most existing booths are 8-10 ft), these thresholds require either purpose-built facilities or significant retrofitting. Rivian also requires aluminum-specific repair areas with contamination controls, factory-approved welding/riveting equipment, and ADAS calibration tooling that can only be purchased through the Rivian certification channel post-enrollment.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN8937-003",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.uniqueautobody.com/certifications/rivian",
+          "doi": null,
+          "title": "Rivian Collision Repair: Unique Auto Body Certified in 2025",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.312530Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The paint booth must be at least 12' high with an entry door at least 9.8' tall, the lift weight system must fit at least 9,900 lbs., and the shop must have an ADAS calibration space of at least 18' by 44.3'. The facility must also feature a secure parking lot, dedicated workshop and paint areas, and use equipment from approved brands and manufacturers.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN367F-004",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://harryscollision.com/can-you-repair-rivian-at-any-body-shop/",
+          "doi": null,
+          "title": "Can You Repair a Rivian at Any Body Shop?",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.312667Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Only Rivian-approved tooling may be used to calibrate ADAS components. Rivian-approved calibration tooling can only be purchased by a Rivian Certified Network Location after enrollment is confirmed. Rivian Certified status is not simply a badge — it is a comprehensive authorization that Rivian grants only to collision repair facilities that demonstrate exceptional skill, proper equipment, and an unwavering commitment to quality.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.85,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "No independent cost estimate found for retrofitting an existing shop to meet all Rivian facility specifications",
+        "Rivian's requirements cover only R1T/R1S passenger vehicles; Fleet center requirements for commercial vans may differ"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_84f51d72",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN8937-003",
+        "CIT-ENG74E67-AGEN367F-004"
+      ]
+    },
+    {
+      "text": "BMW Certified Collision Repair Center (CCRC) certification requires approximately $300,000 in equipment, training, and fees for a shop starting from zero, with 120+ hours of vehicle-specific technician training required; BMW has since 2023 expanded aluminum structural parts restrictions, making certified status a gating requirement for purchasing key structural parts on multiple models.",
+      "evidence": "An industry analysis in FenderBender confirms that at least one OEM brand — described in context alongside BMW — costs 'roughly $300,000 in equipment, training, and fees' to achieve certification from scratch. BMW's CCRC program documentation explicitly states 'substantial investment' in tools and training is required, with ongoing tool updates required to maintain certification. BMW expanded restricted parts list in 2023-2024 to include X5/X5M (GO5/F95) structural aluminum, 5 Series/M5 (G60) structural aluminum, iX (I20) structural carbon fibre, and XM (G09) structural aluminum — all exclusively available to CCRC-certified shops. BMW notes that 'repairs at a BMW CCRC may be 10-20% more expensive' due to OEM parts and specialized labor, indicating a documented rate premium over non-certified shops.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN2527-005",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.fenderbender.com/running-a-shop/operations/article/33035760/the-state-of-oem-certification-programs",
+          "doi": null,
+          "title": "The state of OEM certification programs | Fender Bender",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.312775Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Annual fees, software fees, equipment costs, and training costs are all much higher than in the past. In fact, at least one vehicle brand will cost roughly $300,000 in equipment, training, and fees to become certified if a shop starts from scratch.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENFAB2-006",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.collisionrepairmag.com/news/collision-repair/article/15732546/structuring-access-bmw-expands-structural-parts-restrictions-to-include-aluminum",
+          "doi": null,
+          "title": "Structuring Access: BMW expands structural parts restrictions to include aluminum | Collision Repair Mag",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.312868Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "BMW has expanded its structural parts restrictions and will only sell certain aluminum parts to authorized repairers or facilities that have undergone special training and acquired the right tools. The additions include: X5/X5M (GO5/F95) structural aluminum; 5'/M5 (G60) structural aluminum; iX (I20) structural carbon fibre; and XM (G09) structural aluminum. 'Due to complexity of repair and the requirement of highly specialized tools, training, & repair procedures, BMW of North America restricts the provision of these parts.'",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.72,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "The $300,000 figure is attributed to 'one vehicle brand' and not confirmed to be specifically BMW in available sources",
+        "BMW's online CCRC documentation does not publish specific line-item equipment costs",
+        "The 10-20% cost premium reflects retail price to consumer, not labor rate premium to shop"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_618fb738",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN2527-005",
+        "CIT-ENG74E67-AGENFAB2-006"
+      ]
+    },
+    {
+      "text": "Mercedes-Benz EV (EQ-series) collision certification requires 17 days of training to achieve Battery Specialist designation, must be layered atop Elite certification (which already requires aluminum structural welding capability), and as of 2023 only 10 shops nationwide held full EQ certification with approximately 65 applications pending — representing an extremely thin certified network with high first-mover value in EV-dense metros.",
+      "evidence": "Repairer Driven News (August 2023) reported that Mercedes was seeing increased EQ certification applications, with only 10 nationally certified shops. The certification requires 17 days of training (some online), Elite tier prerequisite, and at least one on-staff Battery Specialist. Mercedes operates five U.S. training centers and covers flight costs for shops more than 320 miles away, subsidizing the training but not the time cost. Critical vulnerability: if the only certified Battery Specialist at a shop departs, that shop's EV certification is suspended until a replacement is trained — creating staffing dependency as a de facto barrier. This scarcity creates significant first-mover advantage in EV-dense markets; with only ~75 shops (10 certified + 65 pending) in the entire U.S., certified shops in LA, SF, and Seattle face virtually no local competition from other MB EV-certified facilities.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENDBC0-007",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.repairerdrivennews.com/2023/08/22/mercedes-sees-rise-in-ev-certification-applications/",
+          "doi": null,
+          "title": "Mercedes sees rise in EV certification applications | Repairer Driven News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.312949Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "As of the most recent reporting, there were 10 shops throughout the nation with EQ certification, with about another 65 having submitted applications to obtain the designation. 17 days of training are required to become a certified battery specialist. Mercedes has five training centers throughout the U.S., each hosting EQ training sessions at no cost to shops. If a shop's only EQ-certified battery specialist quits, its certification is suspended until a replacement is found.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENAE88-008",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.mbusa.com/en/certified-collision-repair-center",
+          "doi": null,
+          "title": "Certified Collision Repair Centers | Mercedes-Benz USA",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.313037Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Electric vehicle certification authorizes repairs on all Mercedes-Benz Electric vehicles, but the facility must be Elite certified and have a minimum of 1 Mercedes-Benz trained Battery Specialist. Elite certification authorizes facilities to perform collision repair to all Mercedes-Benz vehicles, including aluminum structural repairs.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.8,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "10 certified / 65 pending figure is from August 2023; the current certified network may be 50-100+ shops given time elapsed",
+        "Training costs are partially subsidized by MB (flight covered) but technician time away from shop is uncompensated lost production",
+        "Elite certification prerequisite investment (aluminum welding equipment, training) is not separately quantified in sources"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_85a2e193",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENDBC0-007",
+        "CIT-ENG74E67-AGENAE88-008"
+      ]
+    },
+    {
+      "text": "Toyota/Lexus Certified Collision Center (TCCC) program carries a documented initial certification visit cost of $6,500 and a $5,500 recertification fee, representing the most transparent entry cost structure among major OEM programs; Toyota's expansion into auto insurance in approximately 40 states creates a structured routing advantage directing post-accident claims to TCCC facilities.",
+      "evidence": "TCCC program documents (updated January 2024) explicitly list the $6,500 initial certification visit and $5,500 recertification visit as the primary program fees. This is distinct from equipment and training costs, which are additional. Toyota requires dealer-ownership or dealer-sponsorship with at least 15% dealer ownership of the collision center, or operation within the dealer's Primary Market Area (PMA). Toyota's insurance expansion (~40 states) creates an FNOL routing pathway: when Toyota Insurance detects a collision on a connected vehicle, it can direct referrals to TCCC facilities. Toyota also eased requirements in recent years to expand its network (previously restricted to dealer-owned shops; now includes dealer-sponsored independents), reducing the certification moat somewhat by expanding network access.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN7CE2-009",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://tccc-online.com/wp-content/uploads/2024/04/TCCC-Requirements.pdf",
+          "doi": null,
+          "title": "TCCC Program Requirements - Last Updated 01.01.24",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.313117Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The program costs are related to the annual certification visit to your location where the certification process takes place: $6,500 – Initial Certification Visit; $5,500 – Re-Certification Visit.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEND1E2-010",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.cbtnews.com/toyota-eases-requirements-for-certified-collision-repair-shops/",
+          "doi": null,
+          "title": "Toyota eases requirements for certified collision repair shops - CBT News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.313197Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Toyota's expansion into insurance services in around 40 states means that when an accident occurs, referrals will likely be directed to Toyota Certified Collision Centers. Lowering the requirements of financial involvement aids dealers who were previously unable to invest in the infrastructure necessary for a body shop.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.78,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "The $6,500 certification fee covers the audit visit cost only; equipment, training, and tools are separate expenses not fully quantified in available sources",
+        "Toyota Insurance routing to TCCC shops is described as expanding but specific volume percentages routed are not publicly disclosed",
+        "Easing of dealer-ownership requirements reduces concentration advantages but increases network breadth"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_52b1640c",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN7CE2-009",
+        "CIT-ENG74E67-AGEND1E2-010"
+      ]
+    },
+    {
+      "text": "Ford Certified Collision Network (FCCN) provides certified shops with structured routing access via the FordPass app, Ford Roadside Assistance, Ford and Lincoln Owner websites, and the Collision.Ford.com locator — representing omni-channel digital routing that is consumer-directed rather than insurance-mandatory — and offers a 4% rebate on eligible OEM parts purchases as a volume incentive tied to quarterly growth targets.",
+      "evidence": "Ford's published FCCN program overview explicitly lists five consumer-facing referral channels: Collision.Ford.com, Ford and Lincoln Owner websites, Ford Roadside Assistance, FordPass app, and Lincoln Way app. Separately, Ford offers FCCN Collision Rewards giving shops up to 4% back on all eligible Ford collision parts purchases after reaching quarterly growth targets — a margin enhancement mechanism that incentivizes certified shops to use OEM parts exclusively. Ford requires I-CAR Gold Class certification as a prerequisite plus separate ADAS certification with both online and a two-day hands-on course. Aluminum structural repair training is also required. The program is consumer-directed, not insurer-enforced, meaning no evidence was found of Ford mandating specific insurers to route to FCCN shops.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN7BE9-011",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.ford.com/ford-certified-collision-network/",
+          "doi": null,
+          "title": "Become a Ford Certified Shop | Collision Network | Ford.com",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.313273Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "FCCN Collision Rewards – earn up to 4% back on all eligible Ford collision part purchases after reaching quarterly growth targets. Ford Collision Locator Services – guiding customers to FCCN facilities via Collision.Ford.com, Ford and Lincoln Owner websites, Ford Roadside Assistance, FordPass App, and Lincoln Way App.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENB656-012",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.vdm.ford.com/content/dam/brand_ford/en_us/brand/B2B-Collision/PDF/FCCNProgramOverviewR2.pdf",
+          "doi": null,
+          "title": "Ford Certified Collision Network Program Overview",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.313490Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "This Ford-managed initiative supports the commitment to provide an 'Extraordinary Repair Experience' through quality, safe collision repairs utilizing Original Equipment repair procedures and parts. This coverage creates the basis for a consumer referral program.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.75,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "No quantified routing volume data found (% of total Ford claims going to FCCN shops)",
+        "The 4% parts rebate is a margin enhancer on parts, not a direct labor rate premium",
+        "Routing through consumer-facing apps requires consumer awareness of the program, which limits capture rate"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_8789daa6",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN7BE9-011",
+        "CIT-ENG74E67-AGENB656-012"
+      ]
+    },
+    {
+      "text": "Tesla's routing to certified shops is consumer-directed and app-facilitated, not mandatory, with documented app failures directing customers away from certified shops; evidence from real-owner experience shows Tesla Certified shops charging roughly $95/hr versus non-certified shops at $54/hr for comparable cosmetic work — a 76% labor rate differential — yet this premium is unenforceable absent consumer preference for certified repair.",
+      "evidence": "A CleanTechnica analysis of a real Tesla collision repair scenario (November 2024) documented the Tesla app routing unreliability: 'Customers are better off looking for Tesla-approved body shops and calling them directly to schedule an appointment, rather than solely relying on the app.' The same analysis compared estimates directly: Tesla Certified shop quoted $95/hr labor and $5,140.50 total vs. a regular shop at $54/hr and $827.54 total for comparable cosmetic damage. Additionally, Tesla forum posts document users receiving messages from Tesla service centers saying 'they don't have a paint shop,' being redirected to find approved body shops from Tesla's list. Certified shops cannot enforce routing — insurance companies retain the right to direct claimants to DRP shops, and in states where insurers pay prevailing market rates rather than OEM-certified rates, the premium is absorbed as an out-of-pocket gap by the consumer.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENF534-013",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://cleantechnica.com/2024/11/23/my-tesla-got-hit-fix-it-at-a-tesla-certified-repair-or-regular-body-shop/",
+          "doi": null,
+          "title": "My Tesla Got Hit — Fix It At A Tesla Certified Repair Or \"Regular\" Body Shop? - CleanTechnica",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.313609Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Tesla certified shop quoted $95/hr labor and $5,140.50 total vs. regular shop at $54/hr and $827.54 for comparable cosmetic damage. For a collision, customers are better off looking for Tesla-approved body shops and calling them directly to schedule an appointment, rather than solely relying on the app.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN6312-014",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://teslamotorsclub.com/tmc/threads/insurance-rejecting-rates-for-tesla-approved-body-shop.218159/",
+          "doi": null,
+          "title": "Insurance rejecting rates for Tesla approved body shop | Tesla Motors Club",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.313696Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The Tesla-approved body shop in their area was not a 'participating provider,' and they were told up front they'd be responsible for the difference between the shop's labor charges and what State Farm reimburses — estimated to be about $20-something per hour difference.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.82,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "The $95/hr vs $54/hr comparison reflects one market (author not specified by geography); rate differentials vary significantly by MSA",
+        "The 6x total cost difference cited reflects scope-of-repair differences, not purely a labor rate gap",
+        "Tesla Insurance (operating in select states) may route claimants more systematically to certified shops"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_e6dcf874",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENF534-013",
+        "CIT-ENG74E67-AGEN6312-014"
+      ]
+    },
+    {
+      "text": "OEM-certified collision shops command an estimated $20–$40/hour labor rate premium over standard DRP-contracted independents, with EV and luxury specialty certified shops achieving 20–30% above market averages; however, insurer pushback on certified-shop rates is intensifying, with some certified shop owners reporting rate approvals that 'five years ago is now much harder' and considering volume-based rate cuts.",
+      "evidence": "Industry benchmark data indicates dealership-affiliated and OEM-certified shops typically charge $20–$40/hr more than nearby standard independents, with EV-specialized certified shops in the 20–30% premium range. CCC data shows average labor rates increased 3.2% YoY in Q1 2025, slowing from 7.5% in 2023, with 2024 at 4.5% — compression trend unfavorable to premium-price strategies. Chris Recker (Advantage Autoworks, Tesla-certified) explicitly stated that rates that were approved without resistance five years ago are 'now much harder' to get insurance companies to approve. He noted his shop 'quit doing work for some insurance companies' and is 'considering a rate cut to increase volume.' Regional labor rate ranges in 2025: West Coast/Mountain states $130–$200/hr; Northeast $115–$180/hr; Midwest $110–$150/hr; South $85–$160/hr — EV-dense coastal metros sit at the upper end of these ranges.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN8390-015",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/tesla-certification-how-body-shops-navigate-ev-repairs-and-meet-oem-expectations",
+          "doi": null,
+          "title": "Tesla Certification: How Body Shops Navigate EV Repairs and Meet OEM Expectations",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.313782Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Recker: 'Rates vary greatly depending on what each insurance company is willing to pay. What we charged without resistance five years ago is now much harder...We quit doing work for some insurance companies, which led to a smaller repair count per month.' He is also considering a rate cut to increase volume.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENE212-016",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://reluxcollision.com/blog/how-much-does-auto-body-work-cost/",
+          "doi": null,
+          "title": "How Much Does Auto Body Work Cost in 2025? A Complete Guide",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.313857Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Labor prices at OEM-certified body shops may be higher to account for their investment required to achieve certification. Specialty/Certified Shops: Luxury, hybrid, and EV-focused shops often charge 20–30% above standard ranges. Dealerships typically charge $20–$40/hour more than nearby independent shops.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.7,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "No single published benchmark exists quantifying OEM-certified vs non-certified labor rate differentials specifically",
+        "The $20-$40/hr figure conflates dealership-owned vs independent differences with OEM certification status",
+        "Legislative action in Vermont and other states to mandate minimum insurer reimbursement rates could structurally alter this dynamic"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_8b808052",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN8390-015",
+        "CIT-ENG74E67-AGENE212-016"
+      ]
+    },
+    {
+      "text": "OEM structural parts restrictions create a hard technical barrier to repair for non-certified shops: BMW restricts key aluminum structural components (X5, 5-Series, iX, XM) to CCRC-certified shops only; Mercedes-Benz restricts restricted OEM parts access to certified centers; and Rivian's ADAS calibration tooling can only be purchased after enrollment confirmation — meaning non-certified shops literally cannot complete certain structural repairs regardless of skill level.",
+      "evidence": "BMW's documented parts restrictions cover multiple 2023-2024 model-year vehicles with aluminum and carbon fibre structural components; BMW states these are restricted 'due to complexity of repair and the requirement of highly specialized tools, training, & repair procedures.' Mercedes-Benz certified centers have access to 'restricted OEM parts — parts which non-certified shops simply do not have access to.' Rivian's ADAS calibration tooling is sold exclusively through its enrollment portal; non-certified shops cannot purchase these tools and thus cannot certify a repaired Rivian's ADAS systems. This creates a qualitative barrier that transcends mere certification preference: even a willing insurer and consenting customer cannot get a structurally complete repair on these vehicles at a non-certified shop. This is the strongest form of routing moat documented in this research.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENA8E0-017",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.collisionrepairmag.com/news/collision-repair/article/15732546/structuring-access-bmw-expands-structural-parts-restrictions-to-include-aluminum",
+          "doi": null,
+          "title": "Structuring Access: BMW expands structural parts restrictions | Collision Repair Mag",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.313935Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "BMW has expanded its structural parts restrictions and will only sell certain aluminum parts to authorized repairers. 'Due to complexity of repair and the requirement of highly specialized tools, training, & repair procedures, BMW of North America restricts the provision of these parts.' Only collision centers that successfully complete specific training requirements and who possess the required tooling will be approved.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN80DF-018",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://kniesels.com/certifications/mercedes/",
+          "doi": null,
+          "title": "Mercedes-Benz Certified Collision Repair | Kniesel's Collision",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314011Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Certified shops also have the authority to purchase restricted OEM parts — parts which non-certified shops simply do not have access to.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.88,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "BMW notes that a shop can access restricted parts by obtaining specific aluminum training and tooling without full CCRC certification — partial pathway exists",
+        "Parts restriction enforcement depends on OEM's ability to verify buyer certification status in their parts ordering system",
+        "Rivian's restriction applies specifically to ADAS calibration tools; other body repair parts may be more accessible"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_f286119e",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENA8E0-017",
+        "CIT-ENG74E67-AGEN80DF-018"
+      ]
+    },
+    {
+      "text": "No OEM collision certification program examined — Tesla, Rivian, BMW, Mercedes-Benz, Ford/Lincoln, or Toyota/Lexus — grants geographic exclusivity zones; multiple certified shops can and do operate in the same metropolitan market, fundamentally limiting the first-mover benefit to market-awareness, brand-relationship, and operational-excellence advantages rather than protected territory.",
+      "evidence": "No evidence of geographic exclusivity was found across all OEM program documentation reviewed. BMW's IRF CCRC program states only that shops must be located within the sponsoring dealer's Primary Market Area (PMA), with no limit on how many CCRCs can operate within a single PMA. Toyota/Lexus TCCC similarly requires PMA alignment but does not restrict certification count per market. The OEC Collision Performance Network (CPN) — which administers programs for Kia, Nissan, INFINITI, Hyundai, Genesis, and Fiat Chrysler — explicitly describes its network of 'over 2,200 Collision Care Providers' without any territorial protection mention. Industry sources consulted uniformly describe certification programs as selective (requiring standards compliance) rather than exclusive (restricting to one shop per territory). This absence is analytically significant: in markets like Los Angeles, where Tesla has 238 certified shops and the California market represents 31% of the national Tesla TACC network, first-mover advantage has materially eroded.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENBFE3-019",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.miniwholesaleconnect.com/content/pdf/ccrc/BMW_CCRC_program_elements_M1A.pdf",
+          "doi": null,
+          "title": "BMW OF NORTH AMERICA, LLC IRF CCRC PROGRAM ELEMENTS",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314082Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "No IRF CCRC may be located or relocate outside the sponsoring BMW Center's Primary Market Area. Under the IRF CCRC Program, no ownership interest is required. This opportunity does not affect the independent repair facility's ability to repair non-BMW vehicles.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENFA96-020",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://oeconnection.com/products/cpn/",
+          "doi": null,
+          "title": "Collision Performance Network - OEC",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314154Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The OEC Collision Performance Network is part of the largest network of OEM Certified repair providers in North America, with over 2,200 Collision Care Providers participating, and administers U.S. OEM Certification Programs for Fiat Chrysler, Kia, Nissan, INFINITI, Hyundai, and Genesis.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.85,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Absence of documented exclusivity provisions does not rule out informal 'preferred partner' arrangements for individual dealers/MSOs",
+        "Some OEM dealer-sponsored programs limit certification to shops within the dealer's PMA, which can create practical geographic concentration",
+        "BMW's program limits IRF CCRCs to their sponsor dealer's PMA, which may provide practical area exclusivity if only one BMW dealer sponsors in a given zone"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_14df1194",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENBFE3-019",
+        "CIT-ENG74E67-AGENFA96-020"
+      ]
+    },
+    {
+      "text": "Tesla's certified collision network has expanded to approximately 800 total locations (745 third-party TACCs + 55 Tesla-owned) as of April 2025, with California accounting for 238 TACCs (32% of all third-party certified shops) — a scale that has substantially reduced first-mover scarcity advantages in EV-dense California metros while creating capacity gaps in non-EV-dense markets.",
+      "evidence": "ScrapeHero data from April 23, 2025 shows 745 Tesla Collision Support (third-party TACC) locations in the U.S. and 55 Tesla-owned Collision Centers. California alone hosts 238 TACCs, representing ~31% of the entire network. Industry sources note that 'Tesla also planned to add nearly 100 retail, delivery, and service locations globally' with 'multi-shift operations' at company-owned facilities. Tesla committed to adding 300 approved shops and culling underperformers in an earlier documented expansion push. The scale and density of the California network means that in Los Angeles and the Bay Area, the pool of certified shops has grown large enough that individual certified independents face competition from other TACCs for Tesla referrals — undermining scarcity-based moat logic specifically in the two highest EV-density metros.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN0B94-021",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.scrapehero.com/location-reports/Tesla%20Collision%20Support-USA/",
+          "doi": null,
+          "title": "Number of Tesla Collision Support locations in the USA in 2025 | ScrapeHero",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314233Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "There are 745 Tesla Collision Support locations in the United States as of April 23, 2025. California leads at 238 locations, representing about 31% of the total. There are 55 Tesla Collision Centers (first-party) locations in the United States.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN8DE8-022",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.bodyshopbusiness.com/tesla-owned-collision-repair-shops-coming-later-year/",
+          "doi": null,
+          "title": "Tesla-Owned Collision Repair Shops: Coming Later this Year",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314315Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Tesla CEO Elon Musk and CFO Deepak Ahuja stated: 'To significantly improve the customer experience with out-of-warranty body repairs, we intend to open the first Tesla-owned body repair shops later this year and expand the existing network of third-party Tesla-certified body shops.' Tesla planned to add nearly 100 retail, delivery, and service locations globally.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.87,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "ScrapeHero data counts total network locations but does not distinguish between structural (full) and satellite (cosmetic-only) certification levels",
+        "Density within California is not granular to MSA level; LA vs SF Bay Area vs Sacramento shares are not broken out",
+        "Tesla's expansion trajectory may be slowing given 2025 brand headwinds (sales decline, CEO controversy)"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_4f5da3c3",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN0B94-021",
+        "CIT-ENG74E67-AGEN8DE8-022"
+      ]
+    },
+    {
+      "text": "BMW integrates with CCC Intelligent Solutions via CCC OEM NET to provide consumer-facing shop referrals — allowing BMW CCRC shops enrolled in CCC Engage to offer direct appointment booking and photo estimates through BMW's official Shop Locator — while General Motors mandates Mitchell for estimate compliance within its certified network, and Tesla previously required Audatex but now accepts CCC and Mitchell as alternatives.",
+      "evidence": "Body Shop Business reported that CCC was selected by BMW to 'connect consumers to certified collision shops' through CCC OEM Net Refer; BMW CCRCs with CCC Engage can offer appointment booking and photo estimates through BMW's locator. CCC also enables a Repair Cost Predictor powered by AI for BMW's locator. GM's mandate for Mitchell emerged from a 2018 OEM Summit decision, with GM confirming it 'had to pick a partner' and selected Mitchell because 'it's the only one that can meet our criteria.' For Tesla, Repairer Driven News noted a 2015 demand for Audatex use, but current guidance allows CCC and Mitchell. Market share data: CCC ~55-83% of shops, Audatex ~25%, Mitchell ~18%; 82.9% of surveyed shops have CCC installed. GM's Mitchell mandate effectively required shops to purchase a secondary platform, adding workflow complexity and cost estimated at $2,000-$5,000/year for software subscriptions.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN5A9F-023",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.bodyshopbusiness.com/ccc-selected-by-bmw-to-connect-consumers-to-certified-collision-shops/",
+          "doi": null,
+          "title": "CCC Selected by BMW to Connect Consumers to Certified Collision Shops",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314390Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "CCC's technology has been integrated into BMW's Certified Shop Locator. Through CCC OEM Net Refer, BMW CCRCs with CCC Engage can now offer drivers the ability to request a photo estimate or book an appointment directly through the locator. Through CCC Promote, the number of eligible promotionally priced BMW parts available in 2025 has tripled.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN53C4-024",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.repairerdrivennews.com/2018/11/05/gm-to-require-certified-shops-to-use-mitchell-for-estimates/",
+          "doi": null,
+          "title": "GM to require certified shops to use Mitchell | Repairer Driven News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314460Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "GM determined that 'Mitchell's the only one that can meet our criteria' of measuring a correct repair and placing it in an environment that meets our standards. GM told the OEM Summit it had to pick a partner. Market data puts Mitchell's repair facility market share at 18.1%, compared to Audatex's 25.2% and CCC's 55.7%, with 82.9% of surveyed shops having CCC installed.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.78,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Tesla's current estimating platform requirement is not definitively confirmed as platform-agnostic; 2015 Audatex mandate may have evolved",
+        "Mercedes-Benz, Ford/Lincoln, Rivian, and Toyota/Lexus estimating platform mandates were not found in reviewed sources",
+        "GM Mitchell mandate is documented but GM is not among the OEM programs specifically assigned to this research task"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_5243999e",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN5A9F-023",
+        "CIT-ENG74E67-AGEN53C4-024"
+      ]
+    },
+    {
+      "text": "California (EV-dense metros including Los Angeles and San Francisco Bay Area) has the highest OEM certification portfolio leverage of any state in the top-10 MSA set: Los Angeles alone generated 180,000+ new EV registrations in 2024, the San Jose-San Francisco corridor holds ZEV penetration rates of 10-12% of registered vehicles, and California represents 31.5% of all U.S. EV registrations in Q3 2025 — making multi-OEM EV certification portfolios (Tesla + Mercedes EQ + Rivian) materially more valuable here than in Chicago, Dallas, or Houston.",
+      "evidence": "Alliance for Automotive Innovation Q3 2025 data shows California at 31.5% of national EV market share. California new vehicle registration data confirms ZEVs exceeded hybrids for the first time in 2024 (1.9M vs 1.76M). Los Angeles-Long Beach-Anaheim led California in 2024 with 180,000+ new retail EV registrations and 116% EVSE growth from 2020-2025. San Jose-Sunnyvale-Santa Clara leads California ZEV penetration at 11.8% of all registered vehicles; San Francisco-Oakland-Hayward at 10.0%. Seattle generated 35,000+ new retail EV registrations in 2023 and ranks in the top 5 U.S. DMAs. By contrast, Chicago, Dallas-Fort Worth, and Houston are substantially lower-penetration markets where EV collision volume is insufficient to justify the $200K-$300K incremental investment in EV-specific certification. The leverage differential is not merely cosmetic — EV repair ASPs run materially higher (OEM parts-only requirements, ADAS calibration adds $250-600/RO), meaning portfolio ROI in LA/SF/Seattle is structurally superior.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN499E-025",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autosinnovate.org/posts/press-release/2025-q3-get-connected-press-release",
+          "doi": null,
+          "title": "Alliance for Automotive Innovation Q3 2025 EV Data",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314534Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "EVs represented 12.6% of new light-duty vehicle sales in Q3 2025, up from 9.5% in Q2 2025. California (31.5%) led the country in EV registrations in Q3 2025, with every state and Washington, D.C., increasing EV market share quarter-over-quarter.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN64CD-026",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.cncda.org/wp-content/uploads/Cal-Covering-4Q-23.pdf",
+          "doi": null,
+          "title": "California Auto Outlook - CNCDA",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314604Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Los Angeles accounting for more than 180,000 new retail EV registrations in 2024. San Jose–Sunnyvale–Santa Clara leads the state with ZEVs accounting for 11.8% of registered vehicles, followed by San Francisco–Oakland–Hayward at 10.0%. For the first time in 2024, the number of ZEVs registered in California exceeded the number of hybrid vehicles registered.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.82,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "MSA-level EV registration data for Dallas, Houston, Chicago, and Phoenix was not found; state-level averages are used as proxies",
+        "Tesla TACC density in California (238 shops) may be eroding per-shop volume advantages relative to less-certified markets like Phoenix or Dallas",
+        "EV repair volumes lag EV sales by 3-5 years (newer vehicles have lower collision frequency)"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_a0c5db8b",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN499E-025",
+        "CIT-ENG74E67-AGEN64CD-026"
+      ]
+    },
+    {
+      "text": "Lucid Motors' EV certification program, as a proxy for emerging EV OEM certification economics, requires approximately $117,000 in total investment (annual fee $4,000, proprietary toolset ~$40,000, ADAS setup ~$40,000, battery/subframe lift ~$5,000, diagnostic software ~$5,000, training ~$23,000) and has a documented approval timeline of up to 180 days — while targeting rapid network doubling from ~95 to ~190 shops in 2026, which illustrates the tension between high entry barriers and aggressive network expansion eroding first-mover scarcity.",
+      "evidence": "Autobody News research on Lucid's EV certification program documented the full cost stack and timeline. Lucid requires ~45 proprietary custom tools developed by ex-Formula 1 engineers, sold exclusively through the certification channel — representing a strong tooling barrier. The 180-day approval timeline (6 months) limits rapid competitive response. However, Lucid's plan to double its certified network from ~95 to ~190 shops within approximately one year signals that scarcity is intentionally temporary, not a long-term design feature. Lucid also calibrates technician requirements to local vehicle density, suggesting it is optimizing for network coverage over exclusivity. This pattern — high entry cost, short approval window, deliberate network expansion — mirrors what can be expected as Tesla, Rivian, and other EV OEMs scale their certified networks.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENAFCE-027",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/automakers-expand-ev-certification-programs-as-oem-repair-requirements-intensify",
+          "doi": null,
+          "title": "Automakers Expand EV Certification Programs as OEM Repair Requirements Intensify - Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314673Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Lucid Motors estimated total ~$117,000 (assuming prior aluminum certification): Annual program fee $4,000; Proprietary toolset (~45 tools) $40,000; John Bean ADAS setup $40,000; Battery/subframe lifting table ~$5,000; Diagnostic software + laptop ~$5,000; Technician training ~$23,000. Approval timeline: up to 180 days. Lucid targets doubling network from ~95 to ~190 shops.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.73,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Lucid is not one of the primary OEM programs specified in the research brief; data is included as a methodologically valid analog for emerging EV OEM certification economics",
+        "Lucid's vehicle sales volumes are a fraction of Tesla's and Rivian's, so per-shop revenue implications differ materially",
+        "The $117,000 cost assumes prior aluminum certification; greenfield entry from zero would cost more"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_f3e11213",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENAFCE-027"
+      ]
+    },
+    {
+      "text": "Well-capitalized MSO chains are actively and rapidly replicating OEM certification portfolios across their multi-location footprints using a hub-and-spoke model — transporting vehicles from non-certified satellite locations to a certified hub shop — reducing the competitive moat for independently certified shops to geographic reach advantages rather than certification scarcity.",
+      "evidence": "FenderBender's analysis of MSO OEM certification strategy explicitly documents the hub-and-spoke replication model: MSOs 'can transport vehicles to the certified shop — even 10 or 20 miles away — perform the proper repair, and deliver the vehicle back to the drop-off location.' Caliber Collision (1,800+ locations) is already approved by leading manufacturers and actively markets OEM certification. Gerber Collision (part of Boyd Group's 1,301-shop enterprise after acquiring Joe Hudson's) participates in the Tesla TACC network across its U.S. locations. The Big Five MSOs (Caliber, Classic Collision, Crash Champions, Gerber, Joe Hudson's) generated $15.6B in combined revenue and ~30% market share in 2024. VIVE Collision and Quality Collision Group specifically target OEM-certified shops for acquisition, effectively buying into certification portfolios rather than building them organically. This acquisition strategy means a well-capitalized chain can replicate an independently certified shop's certification advantage within months of acquisition.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN8BC7-028",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.fenderbender.com/running-a-shop/operations/article/33035760/the-state-of-oem-certification-programs",
+          "doi": null,
+          "title": "The state of OEM certification programs | Fender Bender",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314745Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "MSOs can transport vehicles to the certified shop — even 10 or 20 miles away — perform the proper repair, and deliver the vehicle back to the drop-off location. A call center can suggest that customers go to the certified shop when convenient, or the MSO will transport if not. A key advantage for an MSO becoming certified is the ability to spread out different brand certifications and load-level accordingly.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN8C3C-029",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.caliber.com/services/collision/oem-certification",
+          "doi": null,
+          "title": "OEM Certified Collision Repair | Caliber Collision",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314816Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Caliber Collision is approved by leading manufacturers to repair vehicles to factory standards using genuine parts. Some consolidators, such as VIVE Collision and Quality Collision Group, specifically seek out shops known for high-quality repairs and OEM certification.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.83,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Hub-and-spoke model requires vehicle transport cost and logistics coordination, which is operationally complex",
+        "Some OEM programs (e.g., BMW CCRC) require shops to be within the sponsoring dealer's PMA, which may constrain how far satellites can be from hubs",
+        "Customer experience degradation from transport-based repair may reduce routing capture rates versus in-market certified facilities"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_d9e274cb",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN8BC7-028",
+        "CIT-ENG74E67-AGEN8C3C-029"
+      ]
+    },
+    {
+      "text": "OEM-certified collision shops command a meaningful M&A valuation premium: shops with extensive OEM certifications can achieve EBITDA multiples of approximately 6.5x, compared to 3x–4.5x for volume-driven DRP-centric shops — a differential that makes certification portfolio a direct financial asset in a consolidating market where private equity has deployed over $9 billion since late 2023.",
+      "evidence": "Quality Collision Group's industry analysis documents the valuation gap: OEM-certified shops at ~6.5x EBITDA vs. volume-driven MSOs at 3x-4.5x. This differential reflects market pricing of the incremental routing, rate, and complexity advantages that certification confers. The collision repair M&A market has attracted over $9 billion in PE investment since late 2023, creating a structured acquirer pool that specifically bids up OEM-certified platforms. Focus Advisors' 2025 mid-year report confirms that the top 10 largest independent MSOs grew revenue by 33% in 2024. Some consolidators — explicitly named are VIVE Collision and Quality Collision Group — have differentiated their acquisition strategies around high OEM certification density rather than pure shop count, implying a belief that certification creates durable margin and referral advantages worth paying a premium for.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENB5A5-030",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.qualitycollisiongroup.com/news/scale-is-not-strategy-the-collision-repair-consolidation-crisis",
+          "doi": null,
+          "title": "Scale Is Not Strategy: The Collision Repair Consolidation Crisis | Quality Collision Group",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314892Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Shops with extensive OEM certifications can now command 6.5x EBITDA multiples, while volume-driven MSOs are stuck at 3x–4.5x. Investors are clearly rewarding specialization over size. Private equity has deployed over $9 billion since late 2023.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.75,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "EBITDA multiples in private transactions are not uniformly disclosed; the 6.5x vs 3x-4.5x figure appears in one primary analysis (Quality Collision Group)",
+        "Certification quality matters: checkbox certifiers vs. operationally excellent certified shops may trade at different multiples",
+        "Valuation premiums reflect current market sentiment; certification may become table-stakes if adoption broadens"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_f8caed4b",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENB5A5-030"
+      ]
+    },
+    {
+      "text": "OEM routing through consumer apps and manufacturer locators constitutes a 'soft' referral mechanism — consumer-directed but not insurer-enforced — with the notable exception of OEM-affiliated insurance programs (Tesla Insurance, Toyota Insurance in ~40 states) and OnStar (GM), which create a harder routing pathway that bypasses insurer DRP networks and could represent a genuinely durable referral moat as connected vehicle FNOL capabilities expand.",
+      "evidence": "BMW's integration with CCC Accident Advisor (which operates within OEM consumer apps) enables post-accident referrals to BMW CCRCs. Toyota Insurance's expansion to ~40 U.S. states creates a routing channel where Toyota as insurer can direct first-party claims to TCCC facilities without insurer DRP interference. OnStar (GM) 'actively directs accident victims to GM-certified shops' — described in industry sources as 'steering on steroids' — representing the most documented example of systematic OEM-controlled post-accident routing. Tesla Insurance, operating in select states, similarly routes claims to Tesla-preferred shops. The distinction matters strategically: consumer-directed routing (MB, BMW, Ford) captures self-selected, brand-loyal customers; OEM-controlled insurance routing (GM OnStar, Toyota Insurance, Tesla Insurance) captures all first-party claims regardless of customer initiative, producing a more durable and predictable referral volume advantage.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEND5B6-031",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.bodyshopbusiness.com/oem-certification-the-wave-of-the-future/",
+          "doi": null,
+          "title": "OEM Certification: The Wave of the Future? | Body Shop Business",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.314967Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "OnStar actively directs accident victims to GM-certified shops. Subscription apps from luxury brands (BMW, Cadillac, Lexus, Volvo) restrict repairs to certified facilities only. Anderson describes this as 'steering on steroids' — a potential replacement for traditional DRP models.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN8060-032",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.cbtnews.com/toyota-eases-requirements-for-certified-collision-repair-shops/",
+          "doi": null,
+          "title": "Toyota eases requirements for certified collision repair shops - CBT News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.315043Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Toyota's expansion into insurance services in around 40 states means that when an accident occurs, referrals will likely be directed to Toyota Certified Collision Centers. Connected cars are going to change how the insurance and collision repair industries work; the OEM and, subsequently, the dealer will be among the first to receive notice of a collision.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.72,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Tesla Insurance state-by-state coverage is limited and not all states are enabled; routing mechanisms are not publicly detailed",
+        "Toyota Insurance routing specifically to TCCC shops is described as directional, not confirmed as hard-routing",
+        "OnStar routing to GM-certified shops is cited in one trade editorial; quantified volume uplift not documented"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_d2cbc2ba",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEND5B6-031",
+        "CIT-ENG74E67-AGEN8060-032"
+      ]
+    },
+    {
+      "text": "The Rivian Certified Collision Network comprised approximately 135 shops as of May 2023 and has expanded since; it is a genuinely scarce network relative to the vehicle parc — with approximately 80,000+ Rivian vehicles in service as of 2024 — creating acute repair backlogs and a material routing advantage for certified shops in markets where Rivian density is high (coastal metros, Mountain West).",
+      "evidence": "Autobody News (May 2023) documented 135 Rivian Certified Collision shops at that date. Rivian began its first certifications in July 2020 (Oregon). The network serves R1T, R1S (passenger) and Commercial Vans (EDV) through distinct certification tiers. Quality Collision Group's certified Rivian locations span California, Florida, Illinois, Kansas, Minnesota, Missouri, New Jersey, North Carolina, Pennsylvania, Texas, Utah, Virginia, and Washington. Given that Rivian produced 30,000+ vehicles by the time the 135-shop count was reported, and has since produced substantially more (cumulative deliveries exceed 80,000 as of late 2024), the certified shop-to-vehicle ratio creates genuine supply-side scarcity. Rivian's mandatory parts-channel restriction (ADAS tools available only post-enrollment) and proprietary repair procedures mean non-certified shops effectively cannot complete structural Rivian repairs, creating a de facto routing hard-stop unlike Tesla's softer consumer-preference model.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENFAD4-033",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/rivian-expands-its-certified-collision-network-as-production-increases-on-adventure-evs",
+          "doi": null,
+          "title": "Rivian Expands its Certified Collision Network as Production Increases on Adventure EVs - Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.315120Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Since the first collision repair facility joined Rivian's Certified Collision Network (RCCN) in Oregon in July 2020, more than 30,000 Rivian electric adventure vehicles have been manufactured, and 135 shops are part of the RCCN program.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.73,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "The 135-shop figure is from May 2023; current count is likely higher but not publicly confirmed",
+        "Rivian's total vehicle parc is still small; even in best-case MSAs, monthly Rivian collision volume per shop may be 1-3 vehicles",
+        "Rivian's financial challenges could affect program continuity"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_130cbee9",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENFAD4-033"
+      ]
+    },
+    {
+      "text": "ADAS calibration has become a significant revenue uplift component at certified shops — adding $250–$600 per repair order — and OEM certification programs are the gating mechanism for accessing OEM-specific calibration procedures; as of Q1 2024, calibrations appeared on more than 31% of DRP estimates (up from 23.9% a year prior), with 87% of DRP estimates including a scan, making ADAS certification capability a structurally growing revenue stream.",
+      "evidence": "CCC Intelligent Solutions Q1 2024 Crash Course report documented calibration inclusion on 31%+ of DRP estimates, up from 23.9% — a 30% increase YoY. ADAS calibration adds $250–$600 per repair order. Rivian, Tesla, BMW, and Mercedes-Benz all require ADAS calibration using OEM-approved tools; at Rivian and Tesla, these tools are exclusively available to certified shops. Practically, this means certified shops can bill for ADAS calibration on affected vehicles while non-certified shops must subcontract or decline those jobs. The trend line — calibration appearing on 31% of estimates and growing — means that the per-shop revenue advantage of ADAS certification capability is compounding annually. This is distinct from and additive to the labor rate premium; certified shops both charge more per hour and perform more billable operations per repair order.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN50C8-034",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.cccis.com/news-and-insights/posts/crash-course-q1-2024-press-release",
+          "doi": null,
+          "title": "Crash Course Q1 2024 | CCCIS",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.315190Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "CCC reported calibrations appeared on more than 31% of DRP estimates, up from 23.9% a year earlier, while nearly 87% of DRP estimates included a scan. ADAS calibration adds USD $250–600 to each repair order and raises tooling requirements, lifting average repair severity even as collision frequency gradually declines.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.83,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "The $250-$600 ADAS calibration figure is an industry range, not OEM-certified-shop-specific; both certified and non-certified shops can bill for calibration on vehicles where they have the capability",
+        "The 31% calibration inclusion rate is for DRP estimates broadly, not limited to OEM-certified shops"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_6c3bb48d",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN50C8-034"
+      ]
+    },
+    {
+      "text": "Tesla lowered its certification barriers materially in 2024 by eliminating mandatory instructor-led on-site training (now entirely online) and expanding the approved aluminum welder list from a narrow set to 8+ models — reducing a key early barrier to entry and enabling more shops to achieve certification without specialized instructor visits, consistent with aggressive network expansion at the cost of network exclusivity.",
+      "evidence": "Body Shop Business reported that 'Tesla told shops that it is simplifying the tooling and training requirements for the Tesla Approved Body Shop program. Tesla said it no longer will require onsite, instructor-led training for certification and has approved eight of the most popular aluminum welders as part of an effort to explore promising alternatives.' This is analytically significant as a counterfactual to the durable-moat hypothesis: the OEM that most directly relies on routing advantages (consumer referral via app, parts channel) proactively lowered its certification barrier to scale network coverage. This decision suggests Tesla is prioritizing supply-side capacity for an expanding vehicle fleet over protecting certification as an exclusive advantage for incumbent certified shops.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN3051-035",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.bodyshopbusiness.com/updated-tesla-collision-repair-standards-establish-structural-satellite-certification/",
+          "doi": null,
+          "title": "Updated Tesla Collision Repair Standards | Body Shop Business",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.315262Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Tesla told shops that it is simplifying the tooling and training requirements for the Tesla Approved Body Shop program. Tesla said it no longer will require onsite, instructor-led training for certification and has approved eight of the most popular aluminum welders as part of an effort to explore 'promising alternatives' to equipment for which limited options were previously offered.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.87,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Barrier reduction in training and tooling does not remove capital investment requirements; physical equipment costs remain",
+        "Simplification may represent operational optimization rather than a strategic signal about certification moat depth"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_33e8a0db",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN3051-035"
+      ]
+    },
+    {
+      "text": "Tesla-certified body shops that achieve 'Preferred' status generate documented, consistent volume: Cape Auto Body repairs 8–10 Teslas per month, and Advantage Autoworks generates approximately $500,000 in monthly revenue from Tesla work alone (representing 25% of total shop revenue) — but this volume advantage reflects early-mover timing in markets with high Tesla density, not universal certification economics.",
+      "evidence": "Two certified shop owners disclosed actual Tesla work volume and revenue in Autobody News: Cape Auto Body in Plymouth, MA reports 8-10 Teslas/month; Advantage Autoworks in North Richland Hills, TX reports ~25% of monthly revenue from Tesla work at a shop generating $500K monthly. The geographic contrast is important: Texas has lower EV density than California or the Pacific Northwest. The Texas shop's strong Tesla revenue likely reflects scarcity of certified shops in its market area rather than Tesla's routing system generating systematic referrals. At $250K-$300K investment to achieve certification, breakeven on the equipment investment at an 8-10 vehicle/month volume requires approximately 2-3 years, assuming Tesla collision ASPs averaging $3,000-$5,000 and standard shop margins.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENEE96-036",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/tesla-certification-how-body-shops-navigate-ev-repairs-and-meet-oem-expectations",
+          "doi": null,
+          "title": "Tesla Certification: How Body Shops Navigate EV Repairs and Meet OEM Expectations",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.315619Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Cape Auto Body Collision Center in Plymouth, MA repairs eight to ten Teslas per month. Chris Recker's shop (Advantage Autoworks) now has Tesla work accounting for roughly 25% of his monthly revenue, generating around $500,000. The transition paid off, bringing in steady revenue and increasing their ability to service high-end vehicles.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.77,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Sample of two shops is insufficient for generalizing per-location economics across the 800-shop TACC network",
+        "The $500K/month revenue figure for Advantage Autoworks may reflect total shop revenue, not Tesla-only",
+        "Monthly volume is sensitive to Tesla registration density in local market area and number of competing TACCs within driving distance"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_b0b7afad",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENEE96-036"
+      ]
+    },
+    {
+      "text": "OEM certification is increasingly becoming a prerequisite for insurance DRP participation, not merely a consumer-facing differentiator — with industry forecasters projecting that the DRP model will evolve to require OEM certification as a baseline qualification for insurer networks, which would convert certification from a voluntary premium to a mandatory compliance investment.",
+      "evidence": "Multiple industry sources document this trajectory. Body Shop Business (2024) states: 'It's possible that the industry will see a transformation in the DRP model in the future that will require an OEM certification to be part of an insurer's program.' CCC's data shows OE-certified outlets commanded 49.12% of collision repair revenue in 2024. Industry observers note that 'more and more car manufacturers are rolling out OE certifications in a push to make sure shops are equipped with the right tools and I-CAR training.' If certification becomes a DRP prerequisite rather than a differentiator, the moat logic inverts: certification becomes table-stakes to retain existing volume, not a moat to capture incremental volume. This scenario is analytically important — it means certified shops' advantage window is time-bounded, and new entrants who delay certification face revenue concentration risk as DRP channels tighten.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN509B-037",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.bodyshopbusiness.com/when-will-oem-referrals-replace-drp-referrals/",
+          "doi": null,
+          "title": "When Will OEM Referrals Replace DRP Referrals? | Body Shop Business",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.315738Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "It's possible that the industry will see a transformation in the DRP model in the future that will require an OEM certification to be part of an insurer's program. Collision repairers will need to invest in their own future by looking ahead and obtaining the required equipment and training to move them into the next age of collision.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN86C5-038",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.mordorintelligence.com/industry-reports/north-america-automotive-collision-repair-market",
+          "doi": null,
+          "title": "North America Automotive Collision Repair Market - Mordor Intelligence",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.315826Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "By service channel, OE-certified outlets commanded 49.12% revenue in 2024. The North America automotive collision repair market size reached USD 46.17 billion in 2025 and is projected to grow to USD 54.22 billion by 2030.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.65,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Transition from 'preferred' to 'required' for DRP participation is hypothetical and may not occur within a 5-year horizon",
+        "Insurance companies have economic incentives to resist requirements that increase reimbursement rates",
+        "The 49.12% OE-certified revenue share may reflect channel revenue shares (dealer channels) rather than strictly OEM-program-certified independent shops"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_0fb8d420",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN509B-037",
+        "CIT-ENG74E67-AGEN86C5-038"
+      ]
+    },
+    {
+      "text": "Staffing dependency is the most acute operational vulnerability of OEM certification moats: OEM certification is person-dependent, not facility-dependent, meaning a single technician's departure can trigger immediate suspension of a certification (documented for Mercedes-Benz EV) and violate program requirements at Tesla (which requires two certified welding technicians per structural facility), creating a recurring operational risk that well-funded MSOs with in-house training academies are better positioned to manage than independent shops.",
+      "evidence": "Mercedes-Benz explicitly documents that if a shop's only Battery Specialist departs, EV certification is suspended until a replacement is trained (17-day training cycle minimum). Tesla requires two certified I-CAR welding technicians per structural facility, with certifications renewable every three years; if either departs, the shop may be out of compliance on structural repairs. Industry sources note: 'body techs tend to be transient...there's such high demand' for trained technicians. Industry-wide technician shortage is acute — fewer than 10% of technicians are currently qualified to work on EV batteries. MSOs with centralized training academies (Caliber Collision, Gerber/Boyd Group) can redeploy certified technicians across locations when attrition occurs; independent shops cannot. This creates a structural advantage for MSOs in maintaining certification compliance under technician churn, further undermining the independent shop's certification moat durability.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN9B85-039",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.repairerdrivennews.com/2023/08/22/mercedes-sees-rise-in-ev-certification-applications/",
+          "doi": null,
+          "title": "Mercedes sees rise in EV certification applications | Repairer Driven News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.315904Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "If a shop's only EQ-certified battery specialist quits, its certification is suspended until a replacement is found. In the interim, they can work with Mercedes dealerships on EVs needing repairs.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENE1C5-040",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/tesla-certification-how-body-shops-navigate-ev-repairs-and-meet-oem-expectations",
+          "doi": null,
+          "title": "Tesla Certification: How Body Shops Navigate EV Repairs and Meet OEM Expectations",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.315978Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Tesla has its training programs, but body techs tend to be transient. The challenge of finding qualified technicians is real. With only about 3% of automotive technicians currently proficient in EV maintenance and fewer than 10% qualified to work directly on EV batteries, a significant skills gap exists.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.82,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Tesla's two-technician requirement enables some redundancy buffer; the risk materializes on simultaneous departures",
+        "High technician wages at certified shops partly address retention risk, but compress the margin benefit of certification",
+        "The scope of certifications suspended from a single departure differs: MB EV is a full program suspension; Tesla welding is a structural repair scope restriction"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_d0109f14",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN9B85-039",
+        "CIT-ENG74E67-AGENE1C5-040"
+      ]
+    },
+    {
+      "text": "In non-EV-dense metros among the top 10 MSAs (Chicago, Dallas-Fort Worth, Houston, Philadelphia, Phoenix), OEM EV certification portfolio value is substantially lower than in LA/SF/Seattle due to lower EV penetration and thinner certified-shop competition, creating a window for strategic certification investment ahead of EV adoption growth — but near-term volume economics at $200K-$300K investment do not support certification for EV OEMs unless shops serve substantial Tesla parc from adjacent geographies.",
+      "evidence": "EV registration data shows California (31.5% of U.S. EV registrations) and Washington State lead dramatically over non-coastal states. Midwest and Southern metros (Chicago, Dallas, Houston) have materially lower EV penetration. The North American collision repair market is $46.17B, growing to $54.22B by 2030 — driven partly by EV repair complexity premiums. For non-EV-dense metros, the most leverageable OEM certifications are luxury ICE programs (BMW, Mercedes-Benz) where the vehicle parc in affluent suburbs supports certification economics without EV-specific investment. Phoenix (Scottsdale corridor), Miami (Brickell, Coral Gables), and Dallas (Highland Park) have significant luxury vehicle concentrations that could support BMW/MB certification ROI even with low EV density. The optionality play: certifying early in non-coastal metros ahead of EV adoption positions shops for volume growth without current competition — but requires a 5-7 year investment horizon.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN2CE5-041",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autosinnovate.org/posts/press-release/2025-q3-get-connected-press-release",
+          "doi": null,
+          "title": "Alliance for Automotive Innovation Q3 2025 EV Data",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.316048Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "California (31.5%) led the country in EV registrations in Q3 2025, with every state increasing EV market share quarter-over-quarter. EVs represented 12.6% of new light-duty vehicle sales in Q3 2025, up from 9.5% in Q2 2025.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN0392-042",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.mordorintelligence.com/industry-reports/north-america-automotive-collision-repair-market",
+          "doi": null,
+          "title": "North America Automotive Collision Repair Market",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.316118Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The North America automotive collision repair market size reached USD 46.17 billion in 2025 and is projected to grow to USD 54.22 billion by 2030. OEM certifications are increasingly sought by consolidators seeking high-barrier-to-entry positioning.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.7,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Phoenix has growing EV adoption, partly driven by Tesla's Gigafactory Nevada proximity and Southwestern solar adoption",
+        "Per-MSA luxury vehicle registration data was not found in sources; the luxury vehicle density assumption is inferred from demographic data",
+        "EV adoption curves are sensitive to policy (IRA tax credits), fuel prices, and charging infrastructure build-out — all uncertain"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_381abfe5",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN2CE5-041",
+        "CIT-ENG74E67-AGEN0392-042"
+      ]
+    },
+    {
+      "text": "Insurance company pushback on OEM-certified repair rates represents a structural countervailing force to certification pricing power: a Tesla owner reported being told they would pay approximately $20/hour out of pocket at a Tesla Approved shop versus State Farm's DRP rate; Progressive ultimately paid a Tesla-certified shop's quote of 'nearly twice' the insurer's original figure only after consumer refusal of a cash settlement — demonstrating that rate premiums are realizable but require consumer advocacy, not automatic insurer enforcement.",
+      "evidence": "Multiple documented insurance conflicts emerged in research: a Tesla owner reported State Farm's reimbursement gap of ~$20/hr at a certified shop they would have borne out of pocket. A separate case with Progressive showed the insurer initially offering a cash settlement at far below the certified shop's quote; the consumer's refusal ultimately resulted in Progressive paying approximately 2x its original estimate. Tesla's own program documentation notes that 'any charge that exceeds those rates [set in the TACC Rate Addendum] is considered grounds for removal' — indicating Tesla itself caps rates for Tesla-paid work, with insurers setting a separate market rate. This three-way tension (OEM rate cap, insurer DRP rate, certified shop desired rate) means certified shops' rate premiums are frequently contested and may require consumer advocacy to realize, adding friction and uncertainty to the moat.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN7FCB-043",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://teslamotorsclub.com/tmc/threads/insurance-rejecting-rates-for-tesla-approved-body-shop.218159/",
+          "doi": null,
+          "title": "Insurance rejecting rates for Tesla approved body shop | Tesla Motors Club",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.316189Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The Tesla-approved body shop was not a 'participating provider,' and they were told up front they'd be responsible for the difference between the shop's labor charges and what State Farm reimburses — estimated to be about $20-something per hour difference. Progressive adjuster immediately approved increased labor rates but initially offered far less than the body shop's quote of nearly twice the insurer's original figure.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENC04B-044",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://service.tesla.com/docs/Public/TeslaApprovedCollisionCenters/Tesla_Body_Repair_Program_Operating_Standards.pdf",
+          "doi": null,
+          "title": "Tesla Approved Collision Center Operating Standards",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:34:25.316259Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The labor rates for all Tesla-paid work — covering body, paint, structural, and mechanical work — are set forth in the TACC's Rate Addendum. Any charge that exceeds those rates is considered grounds for removal from the TACC program.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.8,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Individual anecdotes from consumer forums are not representative data; systematic data on insurer approval rates for certified-shop premiums is not publicly available",
+        "State-specific right-to-repair laws and insurer practices vary significantly; California and Massachusetts have stronger consumer protections than Texas",
+        "Some insurers have formal DRP relationships with certified shops that may pre-negotiate rates and eliminate friction"
+      ],
+      "claim_id": "eng_74e67db162c7_task_005_fb9df47a",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN7FCB-043",
+        "CIT-ENG74E67-AGENC04B-044"
+      ]
+    }
+  ],
+  "status": "complete",
+  "gaps": [],
+  "artifact_path": null,
+  "absence_report": [
+    "Specific dollar-denominated equipment cost breakdowns for BMW CCRC certification were not found in publicly accessible sources; BMW directs shops to its dealer-facing wholesale portal (bmwwholesaleconnect.com) for current equipment requirements, which requires credentialed access.",
+    "Quantified routing volume uplift (e.g., percentage increase in monthly repair orders attributable to OEM referral channels) was not found for any OEM program; available data is anecdotal (8-10 Teslas/month at one shop) rather than network-average.",
+    "Tesla TACC approval timeline (calendar days from application submission to certification placard issuance) was not found in any source; Tesla's operating standards confirm a 2-year validity period post-certification but do not disclose onboarding duration.",
+    "Mercedes-Benz specific equipment cost list for the EV (EQ) certification tier was not found in publicly accessible sources; MB publishes program standards in PDFs behind their dealer/collision center portal.",
+    "Geographic exclusivity zone documentation was completely absent across all OEM programs reviewed — suggesting OEM certifications uniformly lack territorial protection; however, absence of documentation does not rule out informal preferred-partner arrangements undisclosed in public sources.",
+    "Labor rate premiums specifically authorized or contractually sanctioned by OEM programs were not found; OEMs decline to publish rate schedules for independent shops, and insurance reimbursement rates are negotiated bilaterally between shops and carriers.",
+    "Quantified volume uplift from BMW CCRC or Mercedes-Benz certified referral programs was not found; no published benchmarks exist showing percentage of BMW or MB claims routed specifically to certified shops vs. non-certified.",
+    "Rivian's current certified network size (2024-2025 count beyond the May 2023 figure of 135 shops) was not confirmed in publicly indexed sources; the ITAS network locator requires real-time access to retrieve the current count.",
+    "MSA-level EV registration data for Chicago, Dallas-Fort Worth, Houston, Philadelphia, and Miami was not found; state-level aggregates are used as proxies, which understate metro-level concentration in core cities.",
+    "Systematic data on OEM certification decertification rates (how frequently shops lose certification and why) was not found; individual anecdotes about suspension triggers (technician departure, audit failure) are available but aggregate data is absent.",
+    "Specific integration costs (software subscription fees, workflow integration time) for CCC One, Mitchell, or Audatex compliance requirements under OEM certification programs were not found; GM/Mitchell requirement was documented but costs not quantified.",
+    "Ford/Lincoln FCCN equipment cost breakdown was not publicly disclosed; Ford directs shops to its application portal rather than publishing itemized requirements.",
+    "Evidence of any OEM collision certification program creating insurance-backed mandatory routing (insurer contractually required to route to certified shops) was not found for any program other than OEM-affiliated insurance products (Tesla Insurance, Toyota Insurance); traditional third-party insurers appear free to route to any shop regardless of certification status."
+  ],
+  "sources_consulted": 44,
+  "tokens_consumed": 20690,
+  "dropped_claims": []
+}

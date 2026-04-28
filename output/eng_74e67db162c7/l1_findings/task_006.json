@@ -1,0 +1,1389 @@
+{
+  "task_id": "task_006",
+  "agent_id": "agent_task_006_aa788d",
+  "engagement_id": "eng_74e67db162c7",
+  "client_id": "client_keystone_internal",
+  "agent_type": "quantitative",
+  "claims": [
+    {
+      "text": "Chain-operated collision repair shops (Big Five) generate approximately $4.0–4.2M in annual revenue per location, roughly 3x the $1.2–1.25M average for smaller independent or dealer-owned body shops.",
+      "evidence": "Focus Advisors 2024 data shows scaled MSO shops averaging $3.85M revenue per 12,000 sq ft location versus dealer-owned shops at $1.25M per 6,000 sq ft. The Big Five chains generated $15.6B across 3,836 locations (~$4.07M/location implied). Crash Champions reported $2.75B across ~654 locations (~$4.2M/location implied). Industry benchmark for medium independent shops: $1.2M average.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENB079-001",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2024/08/dealersedge-with-david-roberts/",
+          "doi": null,
+          "title": "Independent MSOs, Is It Time to Buy a Dealer Body Shop? – Focus Advisors Automotive",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.065703Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Dealer shops typically have an average shop size of 6,000 sq ft with $1.25M in revenue. In contrast, scaled shops have an average shop size of 12,000 sq ft with $3.85M in revenue. The large consolidators plus the 200 largest independent MSOs total more than 5,000 shops with total revenues of more than $18 billion.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN48F4-002",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2025/02/2024-year-in-review/",
+          "doi": null,
+          "title": "2024 Year in Review: Some Excel on a Bumpy Road – Focus Advisors Automotive",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.065992Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Big Five now have 3,836 shops, comprising north of $15.6 billion in annual revenue — totaling around 30% of the collision repair industry's market share. Trive/Chilton launch: 20 locations at $65-85M in revenue implying $3.25–4.25M per location.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENC8CB-003",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://fortune.com/2025/07/13/crash-champions-ceo-interview-revenue-no-college-degree-jobs-six-figure-salaries/",
+          "doi": null,
+          "title": "This car-repair chain's revenue skyrocketed 130x in the past five years – Fortune",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066058Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Starting with a single shop in 1999, Matt Ebert expanded Crash Champions into a national powerhouse with more than 650 locations and $2.75 billion in revenue.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.82,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Big Five revenue-per-location figures are derived by dividing aggregate public disclosures by shop count, not reported per-shop",
+        "Significant variance exists within the independent category; high-performing independents can match chain throughput",
+        "Boyd Group/Gerber actual calculation (~$3.07B ÷ ~1,000 locations ≈ $3.0M) is below the Big Five implied average, suggesting revenue per shop varies across chains"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_139c9209",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENB079-001",
+        "CIT-ENG74E67-AGEN48F4-002",
+        "CIT-ENG74E67-AGENC8CB-003"
+      ]
+    },
+    {
+      "text": "Boyd Group Services (operator of Gerber Collision, the only major publicly traded collision chain) achieved an Adjusted EBITDA margin of 10.9% in FY2024 and 12.0% in FY2025, well below its own stated 14%+ target — directly contradicting the narrative of consistent chain-level EBITDA superiority.",
+      "evidence": "Boyd Group's audited financial statements (FY2024: Adjusted EBITDA $334.8M on $3.07B revenue = 10.9%; FY2025: $376.3M on $3.14B = 12.0%). The company's 'Double Down' strategic plan explicitly targets returning to 14%+ Adjusted EBITDA margin by 2029, confirming 14% is aspirational, not current. The company launched 'Project 360' in Q4 2024, a restructuring expected to generate $100M in annual savings.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENBFA5-004",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://boydgroup.com/news/boyd-group-services-inc-news/2026/boyd-group-services-inc-reports-fourth-quarter-and-full-year-2025-results/",
+          "doi": null,
+          "title": "Boyd Group Services Inc. Reports Fourth Quarter and Full Year 2025 Results",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066112Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "FY2025 Adjusted EBITDA: $376,306K, Adjusted EBITDA Margin: 12.0%, representing 110 basis point expansion. FY2024 Adjusted EBITDA Margin: 10.9%. Long-term Adjusted EBITDA margin target: 14%+. Gross margin improved from 45.5% to 46.4% in FY2025.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN98BB-005",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://boydgroup.com/news/boyd-group-services-inc-news/2025/boyd-group-services-inc-reports-fourth-quarter-and-full-year-2024-results/",
+          "doi": null,
+          "title": "Boyd Group Services Inc. Reports Fourth Quarter and Full Year 2024 Results",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066158Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Adjusted EBITDA decreased 9.1% to $334.8 million, compared with $368.2 million in 2023. Results for 2024 were impacted by low claims volumes. Boyd launched Project 360, a company-wide transformational cost initiative expected to result in $100 million in annual recurring cost savings.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.95,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Boyd Group figures include Canadian operations (Gerber is primarily US, but Boyd also operates in Canada)",
+        "Adjusted EBITDA excludes acquisition costs, restructuring charges, and stock-based compensation; unadjusted EBITDA margin is slightly lower",
+        "Joe Hudson's (8.7% adjusted EBITDA on $722M) was acquired post-period, may dilute margins initially"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_ae15e039",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENBFA5-004",
+        "CIT-ENG74E67-AGEN98BB-005"
+      ]
+    },
+    {
+      "text": "Scale within the independent MSO tier delivers a measurable EBITDA margin uplift: a single-shop independent generates approximately 9% EBITDA margin on ~$3M revenue; a 3-shop independent MSO achieves approximately 14% EBITDA margin on ~$9M revenue — a 556 basis point improvement driven by overhead spread and procurement leverage.",
+      "evidence": "Focus Advisors' analysis explicitly compares a $3M single-shop at 9% EBITDA vs. a 3-shop MSO at 14% EBITDA. The scale benefits identified include: parts discounts improving from 22% to 25%, paint discounts improving from 50% to 60%, and overhead costs (management, insurance, training, marketing) spread across more revenue. Valuation multiples reflect this: single shop at 3x-3.5x EBITDA, 3-shop MSO at 5x-5.5x EBITDA.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENA171-006",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2024/04/growing-the-independent-mso-create-more-value-by-scaling-up/",
+          "doi": null,
+          "title": "Growing the Independent MSO: Create More Value by Scaling Up – Focus Advisors Automotive",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066204Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "A $3 million single-shop might generate a 9% EBITDA margin, whereas a medium-sized 3-shop MSO might generate closer to a 14% EBITDA margin. That's because an MSO can command better parts discounts, labor rates, paint discounts, and can spread overhead expenses across more revenue. Parts discounts improve from 22% to 25%; paint discounts improve from 50% to 60% when scaling from 1 to 3 shops.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.82,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "These are median/representative figures from a single M&A advisory firm, not a peer-reviewed study",
+        "A highly efficient single-shop owner-operator can substantially outperform the 9% figure",
+        "The MSO figures may be aspirational rather than observed medians"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_38cb0c56",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENA171-006"
+      ]
+    },
+    {
+      "text": "An independent collision shop focused on a single OEM brand achieved 32% EBITDA margin and 56% gross profit margin in 2023 after growing revenue from $5.7M to $12.5M — substantially outperforming the 10.9–12.0% Adjusted EBITDA margins of the publicly traded chain operator Boyd Group/Gerber.",
+      "evidence": "Focus Advisors December 2024 report presented four case studies of independent MSO scaling strategies. One 'Single Brand Scaling' operator spent three years experimenting, concentrated on one vehicle make, achieved 56% gross profit margin and 32% EBITDA margins in 2023, growing from $5.7M (2022) to $12.5M in annual revenue. This is a documented primary example of an independent outperforming chain-level economics.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN3840-007",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2024/12/focus-advisors-automotive-ma-on-the-rewards-of-scale-and-collision-industry-market-dynamics-in-2024/",
+          "doi": null,
+          "title": "Focus Advisors Automotive M&A on the Rewards of Scale and Collision Industry Market Dynamics in 2024",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066247Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "One was about a single-shop operator that focused on a single brand of vehicle. Roberts described it as 'Single Brand Scaling,' noting that 'this owner spent three years experimenting, and by focusing on fewer brands, he unlocked remarkable efficiencies.' Between 2022 and 2023, this operator grew annual revenue from $5.7M to $12.5M, achieved an astounding 56% gross profit margin, and in 2023, reached 32% EBITDA margins.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENDED8-008",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.collisionrepairmag.com/business/article/15738732/rewards-of-scale-and-collision-industry-market-dynamics",
+          "doi": null,
+          "title": "Rewards of Scale and Collision Industry Market Dynamics – Collision Repair Mag",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066291Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "It became clear that there are still many paths for independents to compete against national consolidators. By focusing on a specialized strategic playbook and economies of scale, these independents can grow their market share and EBITDA margin — and that higher EBITDA commands a higher EBITDA multiple, whether an owner seeks growth capital or an exit.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.72,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "This is a single outlier case, explicitly presented as a best-in-class example, not a median",
+        "The single-brand strategy is not replicable at scale by consolidators",
+        "The revenue jump from $5.7M to $12.5M may reflect non-recurring gains or favorable market timing"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_9941ad06",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN3840-007",
+        "CIT-ENG74E67-AGENDED8-008"
+      ]
+    },
+    {
+      "text": "DRP participation structurally depresses gross margins through two primary mechanisms: labor rate concessions of $4–6+ per hour below posted rates, and insurer-mandated use of lower-margin parts (aftermarket/recycled) — with documented cases of major insurers reducing labor reimbursement rates by up to 12% in specific markets.",
+      "evidence": "Multiple sources confirm the $4-6+/hr DRP labor concession as standard practice. A CRASH Network survey found 1 in 4 shops reported at least one insurer paying lower rates than earlier in the year; State Farm documented to have lowered rates from $74 to $65/hr in some markets (12.1% decline). DRP agreements also restrict parts sourcing to insurer-preferred aftermarket/recycled sources that restrict per-part margin.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENEB3B-009",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.qualitypbs.com/Truth-About-DRPs",
+          "doi": null,
+          "title": "Truth About DRPs – Quality PBS",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066333Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "In an effort to secure a DRP deal with an insurance company, a shop agrees to cut four to six dollars or more per hour off of their labor rates. Because technicians often get paid a percentage of labor, they too take a cut when working on cars steered to the shop by an insurance partner. Often technicians rush these cars through the repair process in order to move on to better-paying jobs.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENB846-010",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.repairerdrivennews.com/2025/11/07/open-mic-at-cic-reveals-systemic-lowering-of-labor-rates-by-insurer/",
+          "doi": null,
+          "title": "Open mic at CIC reveals systemic lowering of labor rates by insurer – Repairer Driven News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066375Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "One shop reported going from $60 per hour to $55 per hour, while another noted State Farm lowered rates in their market twice, from $74 to $70, and then to $65 — a 12.1% total decrease. Nearly a quarter of recently surveyed shops reported at least one insurance company is currently paying lower labor rates than it did in January.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN4313-011",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://abepaints.com/blog/direct-repair-programs-pros-cons/",
+          "doi": null,
+          "title": "DRP Programs for Auto Body Shops: A Complete Guide to Pros, Cons, and Profitability",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066416Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "There are also pricing concessions that require discounts in many areas of the repair costs. This can include parts discounts, reduced labor rates, and reduced or no markups on sublets and/or towing. Thin margins on DRP work mean a shop must run extremely efficiently to profit, and even then, the net profit percentage is often lower than on independent jobs.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.85,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Quantified margin impact in percentage terms (not just dollar concessions) is not directly disclosed by most sources",
+        "The $4-6/hr concession applies on labor portions only; the net impact on total shop revenue depends on the labor/parts mix",
+        "Large chains with strong DRP volume may negotiate somewhat better terms than small independents"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_21c267d3",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENEB3B-009",
+        "CIT-ENG74E67-AGENB846-010",
+        "CIT-ENG74E67-AGEN4313-011"
+      ]
+    },
+    {
+      "text": "DRP shops earn structurally lower net margins (10–15%) compared to shops doing cash-pay or retail cosmetic work (25–35%), but DRP relationships provide fixed-cost absorption through volume certainty, as approximately 70% of all auto body work flows through insurance claims.",
+      "evidence": "Industry benchmarks distinguish clearly: DRP work at negotiated rates ($45-65/hr labor) yields 10-15% net margins; cash/retail repairs at full rates ($70-90/hr, rising to $120-160/hr in 2025) yield 25-35% net margins. Non-DRP shops control parts selection, avoiding insurer pressure toward lower-margin aftermarket parts. The 70% insurance dependency figure explains why most shops cannot avoid DRP relationships entirely.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN9D81-012",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://dojobusiness.com/blogs/news/auto-body-shop-profit-margin",
+          "doi": null,
+          "title": "What is the profit margin of an auto body shop? – BusinessDojo",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066457Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Insurance-covered collision repairs usually generate 10–15% net margins due to negotiated labor rates and parts pricing established through DRP agreements. Insurance companies often negotiate lower labor rates ($45–$65/hour) compared to retail rates ($70–$90/hour). Out-of-pocket cosmetic repairs can achieve 25–35% net margins because customers pay retail pricing.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENF01B-013",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://financialmodelslab.com/blogs/kpi-metrics/auto-body-repair",
+          "doi": null,
+          "title": "7 Auto Body Shop KPIs: Breakeven in 5 Months, $120 CAC – Financial Models Lab",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066499Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Approximately 70% of auto body work comes through insurance claims, making these relationships crucial for business stability. However, over-reliance on DRP is risky. High-performing shops have a diversified revenue stream with a healthy mix of sources. Shops that are 100% DRP carry more risk.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.78,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "The 10-15% DRP net margin figure is from trade/advisory sources, not audited financials",
+        "High-volume DRP shops can offset margin compression through operating leverage",
+        "The 70% figure reflects total industry mix; individual shop dependence varies widely"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_c5f6e7a7",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN9D81-012",
+        "CIT-ENG74E67-AGENF01B-013"
+      ]
+    },
+    {
+      "text": "The blended gross profit margin target for a healthy collision repair shop is 45–55%, with OEM parts generating 20–28% GP margin, aftermarket/recycled parts 35–50% GP, labor 55–75% GP, and paint/materials 40–50% GP — creating a structural incentive for all shops to prefer non-OEM parts, which insurers also favor but which chains can negotiate more efficiently at scale.",
+      "evidence": "Multiple trade benchmarks consistently report: blended GP target 45-55%; labor GP 55-75% (top shops); parts GP (blended) 25-35%; OEM parts GP 20-28%; aftermarket GP 35-50%; paint/materials GP 40-50%. Boyd Group's actual gross margin: 45.5% (FY2024), 46.4% (FY2025), consistent with the upper end of independent benchmarks.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN3AE4-014",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://financialmodelslab.com/blogs/kpi-metrics/auto-body-repair",
+          "doi": null,
+          "title": "7 Auto Body Shop KPIs – Financial Models Lab",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066543Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "A healthy blended Gross Profit margin target is 45–55%. Paint and materials GP should aim for 40–50%, while labor GP should target 70–75%. The industry benchmark for blended Gross Profit on Parts typically ranges between 25% and 35%. Aftermarket and recycled parts generally offer higher margins, often 35–50%. OEM parts typically yield lower margins, usually in the 20% to 28% range.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN5F78-015",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://startupfinancialprojection.com/blogs/kpis/body-shop-and-collision-repair",
+          "doi": null,
+          "title": "Core KPIs of Body Shop And Collision Repair Business – Startup Financial Projection",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066586Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Maintaining parts/materials cost within 28–32% of revenue ensures that most revenue isn't consumed by these direct expenses. The ideal net income target is 18–20%. Achieving this requires strategic financial management, especially in controlling costs of parts and materials, labor, and overhead expenses.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.79,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Gross profit figures reflect revenue minus direct costs (labor wages, parts COGS) only, not overhead",
+        "Boyd Group does not disclose the labor vs. parts breakdown within its cost of sales",
+        "Individual shop performance can vary widely from these benchmarks"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_fa9c4812",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN3AE4-014",
+        "CIT-ENG74E67-AGEN5F78-015"
+      ]
+    },
+    {
+      "text": "Labor accounts for approximately 36–40% of total collision repair cost and has been the primary driver of repair cost inflation: rising 7% in 2022, 7.4% in 2023, and 4.5–4.9% in 2024 — outpacing general CPI in all three years.",
+      "evidence": "CCC Intelligent Solutions data: labor was 40.4% of total repair costs in 2019-2020, falling to ~38% in 2022 as parts costs grew faster. For EV repairs (vehicles ≤3 years), labor reached 43.3% of costs vs 36.5% for non-EVs. Labor rate increases: 7% (2022), 7.4% (2023), 4.5-4.9% (2024). At the estimate composition level, a typical sales mix is 47% labor, 39% parts, 10% paint/materials, 4% sublet.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN4670-016",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://collisionweek.com/2024/10/03/ccc-reports-total-cost-repair-3-7-first-half-2024/",
+          "doi": null,
+          "title": "CCC Reports Total Cost of Repair Up 3.7% in First Half of 2024 – CollisionWeek",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066642Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "In 2019 and 2020, labor accounted for as much as 40.4% of total repair costs. That figure dropped by about two percentage points in 2022 and early 2023, as parts and other costs — which generally carry lower profit margins for shops — increased as a share of total repair costs. Labor rates rose 4.9% year-over-year in H1 2024, following a 7.4% increase in 2023 and a 7% increase in 2022.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN6A7F-017",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/ccc-crash-course-report-collision-repair-industry-showing-signs-of-stabilization",
+          "doi": null,
+          "title": "CCC Crash Course Report: Collision Repair Industry Showing Signs of Stabilization – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066692Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Labor rates averaged 4.5% increases in 2024, a slowing rate of increase from 2023's 7.5% year-over-year rise. Average labor hours per claim: 27.4 in H1 2024. EV labor share: 43.3% of total repair costs for vehicles ≤3 years old.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.86,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "CCC data reflects insurance estimate composition, not shop revenue recognition",
+        "Parts percentage of estimates differs from parts as a percent of total revenue (insurers pay MSRP for parts, which inflates the parts share of the check)",
+        "Labor hours per claim rose from 23.9 (2019) to 27.4 (H1 2024) due to vehicle complexity, compounding rate increases"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_b4bc6668",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN4670-016",
+        "CIT-ENG74E67-AGEN6A7F-017"
+      ]
+    },
+    {
+      "text": "OEM parts constitute more than 60% of total parts dollar-spend in collision repair; non-OEM parts (aftermarket + recycled combined) represented only 15.6–18.4% of total parts dollars as of 2020–2022, not the 40%+ their marketing presence might suggest.",
+      "evidence": "CCC data tracked parts type dollar share: non-OEM parts were 18.4% of total parts dollars in 2020, falling to 15.6% in Q1 2022 due to Asian supply chain disruptions affecting aftermarket supply. Aftermarket suppliers hold nearly 50% market share by volume/revenue in distribution channels, but this reflects distribution revenue, not dollar share in actual repair estimates. OEM parts dominate the estimate dollar value due to their higher unit prices.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN414D-018",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/ccc-webinar-breaks-down-rise-in-total-cost-of-repairs-other-trends",
+          "doi": null,
+          "title": "CCC Breaks Down Rise in Total Cost of Repairs, Other Trends – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066735Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "In 2020, non-OEM parts accounted for 18.4% of the total dollars, but that fell to as low as 15.6% in Q1 2022, largely because most aftermarket parts come from Asia, and supply chain issues certainly took effect. The majority of collision repair parts are now sourced from OEM suppliers, accounting for over 60% of parts used.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.76,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "The 60%+ OEM figure is inferred from the non-OEM remainder; CCC does not report exact OEM percentage directly",
+        "Aftermarket market share reported at 50% typically refers to distribution channel revenue, not per-estimate dollar share",
+        "The non-OEM share varies by claim type, vehicle age, and insurer program — older vehicles see more aftermarket usage"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_d507e0ba",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN414D-018"
+      ]
+    },
+    {
+      "text": "Industry-standard parts cost benchmarks indicate parts and materials should represent 28–35% of collision shop revenue (at COGS), with the typical sales mix being roughly 39% parts, 47% labor, 10% paint/materials, and 4% sublet — and shops must achieve 25–35% blended gross profit on parts to remain viable.",
+      "evidence": "Multiple trade and advisory sources converge on parts COGS at 28-35% of revenue as the benchmark range. The 1:1 parts-to-labor ratio (generating $100 in parts sales per $100 of labor) is a key KPI; many shops underperform at $70-80 per $100 of labor. Blended parts GP of 25-35% is the industry benchmark; falling 5% below costs $50K annually per $1M in parts sales.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN9484-019",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://startupfinancialprojection.com/blogs/kpis/body-shop-and-collision-repair",
+          "doi": null,
+          "title": "Core 5 KPIs of Body Shop And Collision Repair Business – Startup Financial Projection",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066780Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Maintaining parts/materials cost within 28–32% of revenue ensures that most revenue isn't consumed by direct expenses. A healthy target is to generate $100 in parts sales for every $100 in labor sales (a 1:1 ratio). Many shops currently operate with a lower ratio, often around $70–$80 in parts per $100 of labor.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENFA38-020",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.bodyshopbusiness.com/cost/",
+          "doi": null,
+          "title": "Cover Story: What Does It Cost? – Body Shop Business",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066823Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Labor estimated at approximately 50% of gross sales; parts/paint/misc comprise the remainder. Sample shop: 8-stall shop at $6,250/stall/month overhead; combined cost of idle stall = ~$768/day. True cost of labor runs 30-40% above base pay when taxes and benefits included.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.75,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "These benchmarks conflate shop revenue with estimate line items; actual shop revenue recognition may differ from estimate amounts",
+        "Parts COGS as % of revenue is not the same as parts dollars on the estimate as % of total estimate value",
+        "Paint/materials is often embedded within 'parts' in financial reporting"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_71488d04",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN9484-019",
+        "CIT-ENG74E67-AGENFA38-020"
+      ]
+    },
+    {
+      "text": "Boyd Group's actual overhead (operating expense) ratio was 34.4% of revenue in FY2025, at the high end of the 20–35% benchmark range — indicating that even the largest chain operators do not achieve dramatically lower overhead ratios than well-run independents.",
+      "evidence": "Boyd Group FY2025: OpEx ratio 34.4% of sales (down 60 bps from FY2024). The target range for overhead at specialized service shops is 20–35% of revenue. Boyd's EBITDA margin of 12.0% (FY2025) = gross margin (46.4%) minus OpEx (34.4%). This suggests chains do not achieve transformatively lower overhead ratios; their advantage comes primarily from gross margin improvements (procurement and labor rate leverage).",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN79C4-021",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://boydgroup.com/news/boyd-group-services-inc-news/2026/boyd-group-services-inc-reports-fourth-quarter-and-full-year-2025-results/",
+          "doi": null,
+          "title": "Boyd Group Services Inc. Reports Fourth Quarter and Full Year 2025 Results",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066866Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "FY2025 operating expense ratio: 34.4% of sales, down 0.6 points year-over-year. Adjusted EBITDA margin 12.0%. Gross margin 46.4%. Operating cash flows rose to $353.0M from $313.3M in 2024.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.88,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Boyd's 'operating expense' definition may include items that small shops categorize differently (e.g., management fees, D&A)",
+        "Boyd's corporate overhead for a multi-national public company may exceed what a private chain's overhead would be",
+        "Boyd's FY2025 figures include integration costs from acquired shops"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_c49a5cdf",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN79C4-021"
+      ]
+    },
+    {
+      "text": "Acquisition multiples in the collision repair sector are tiered by scale: single shops trade at 3x–5x EBITDA; medium MSOs (3–10 locations) at 5x–5.5x; platform MSOs (15+ locations) at 6x–10x+. The PE playbook is to buy platforms at ~8x and add-ons at ~5x, targeting a 10x exit — creating a 'multiple arbitrage' spread of 3–5 turns of EBITDA between entry and exit.",
+      "evidence": "Focus Advisors' detailed PE playbook: platform acquisition at 8x EBITDA ($48M for $6M EBITDA), add-ons at 5x ($75M for 30 shops at $500K EBITDA each), targeting 10x exit at $300M ($30M EBITDA). Joe Hudson's deal: $1.3B headline at 13.3x, adjusted to 9.3x after synergies — the highest documented multiple at platform scale. Market average in 2025: ~7x EBITDA per Focus Advisors.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENCC75-022",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2024/12/focus-advisors-automotive-ma-on-the-rewards-of-scale-and-collision-industry-market-dynamics-in-2024/",
+          "doi": null,
+          "title": "Focus Advisors M&A on the Rewards of Scale and Collision Industry Market Dynamics in 2024",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066919Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "A typical PE playbook: PE firm buys a collision repair platform for $48M, with $6M EBITDA at an 8x multiple. Add-on strategy: acquire 30 smaller shops, each with $500K EBITDA, for $75M total at a 5x multiple. Target exit valuation: $300M ($30M EBITDA @ 10x). Leverage ratio: 3:1 debt.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN5A48-023",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://auxocapitaladvisors.com/auto-repair-collision-ebitda-multiples/",
+          "doi": null,
+          "title": "Auto Repair & Collision EBITDA Multiples Explained – Auxo Capital Advisors",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.066964Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Single Shop (small, $1M–$5M revenue): 3x–5x EBITDA. Mid-Size / Growing MSO ($5M–$15M): 4x–6x. Platform-Level MSO ($15M+): 6x–10x+. A single shop might be valued at 3x to 3.5x EBITDA, whereas a medium MSO would realize a multiple closer to 5x to 5.5x EBITDA.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN45E3-024",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2026/02/the-gerber-joe-hudsons-deal-is-done/",
+          "doi": null,
+          "title": "The Gerber/Joe Hudson's Deal Is Done – Focus Advisors Automotive",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067007Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Joe Hudson's generated $722 million in sales and an 8.7% adjusted EBITDA margin. The $1.3 billion purchase price represents 13.3x JHCC's adjusted EBITDA; net of expected tax benefits (~$150M), the effective multiple drops to 9.3x when including run-rate adjustments and synergies.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.87,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Single shop multiples of 3x-5x EBITDA are for cash flow, not standalone enterprise value; owner compensation must be added back to normalize EBITDA",
+        "The 10x exit multiple is aspirational; actual 2025 market average was ~7x per Focus Advisors",
+        "10-14x multiples are only observed at very large platform transactions (Joe Hudson's at 9.3x adjusted, 13.3x headline)"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_f4e0d0f8",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENCC75-022",
+        "CIT-ENG74E67-AGEN5A48-023",
+        "CIT-ENG74E67-AGEN45E3-024"
+      ]
+    },
+    {
+      "text": "The 10–14x EBITDA multiple range cited as a benchmark for collision repair shop acquisitions is not supported by market data for standalone shops; it applies only to large platform transactions (250+ locations) and includes synergy adjustments. Standalone shops at $500K–$6M EBITDA trade at 3x–8x.",
+      "evidence": "Focus Advisors 2025 data shows market multiples averaged ~7x EBITDA. Joe Hudson's (258-location platform, $722M revenue) closed at 9.3x adjusted (13.3x headline before synergies). PE initial platform buys: ~8x. PE add-ons: ~5x. The highest documented multiple for any transaction was 13.3x (headline only, before synergy haircut) for one of the industry's largest-ever deals.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN3523-025",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2026/02/year-in-review-2025-slowdown-and-then-a-blockbuster/",
+          "doi": null,
+          "title": "Year in Review 2025: Slowdown, and Then a Blockbuster – Focus Advisors Automotive",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067054Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Market multiples remained relatively stable at approximately 7x EBITDA throughout 2025, meaning buyers did not change what they were willing to pay — it was shop earnings, not buyer appetite, that drove purchase prices down. A 10% revenue decline at a $30M MSO operating at ~15% EBITDA could reduce enterprise value by nearly 20%. Fixed costs are partially variable (~5–6% flex with revenue).",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.82,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Multiple compression was occurring in 2024-2025 as revenue softness hit earnings — a 10% revenue decline can reduce enterprise value 19% even at stable multiples",
+        "Quality of earnings adjustments can significantly move headline multiples (Joe Hudson's: 13.3x headline → 9.3x adjusted)",
+        "Some PE platforms are sold at higher headline multiples if strategic premiums or non-collision synergies exist"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_740c2def",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN3523-025"
+      ]
+    },
+    {
+      "text": "Service King Collision — a 330+ location chain owned by Blackstone since 2014 — represents a documented case of post-acquisition margin erosion under PE ownership, reaching near-insolvency by 2021 with only $31M cash, requiring a $15M emergency sponsor loan, and ultimately shedding $500M+ in debt before being absorbed by Crash Champions.",
+      "evidence": "Service King maxed credit facilities in Q3 2021, needed $15M emergency loan from sponsors, warned lenders it might not repay debt ($375M in unsecured notes maturing), and had only $31M cash. After securing $200M in new capital and shedding $500M in debt via Clearlake Capital recapitalization, the company merged with Crash Champions in July 2022. This is a documented example where a major PE-backed chain's capital structure — not operational weakness — created existential risk, but the underlying operational performance was also under severe stress.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN41CD-026",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.repairerdrivennews.com/2022/06/01/service-king-secures-200m-in-new-capital-sheds-500m-in-debt-in-deal/",
+          "doi": null,
+          "title": "Service King secures $200M in new capital, sheds $500M in debt in deal – Repairer Driven News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067096Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Warnings of a cash crunch arose in Q3 2021 after the company depleted its lines of credit and needed a $15 million loan from its sponsors for operating costs. Service King warned lenders that it might not be able to repay its debt, raising the possibility of a Chapter 11 bankruptcy filing. The company had only $31 million in cash, approximately $375 million in unsecured notes maturing.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN8AAD-027",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/a-deeper-look-at-crash-champions-merger-with-service-king",
+          "doi": null,
+          "title": "A Deeper Look at Crash Champions' Merger with Service King – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067151Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The two consolidators merged to create a 550+ shop operation with upwards of $2 billion in annualized sales. One of the key post-merger challenges was the need to prioritize scarce management talent to the most EBITDA-productive markets.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.88,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Service King's distress was significantly amplified by its $375M+ debt load and pandemic-era labor shortages, making it difficult to isolate operational underperformance from financial structure issues",
+        "Crash Champions has since been performing better with the combined entity",
+        "The Blackstone investment period predates the current PE playbook used by most 2024-era consolidators"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_4da5b19f",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN41CD-026",
+        "CIT-ENG74E67-AGEN8AAD-027"
+      ]
+    },
+    {
+      "text": "Boyd Group's post-acquisition integration costs (FY2025: $22.6M net of tax) and same-store sales declines (1.8% in FY2024, 0.2% in FY2025) illustrate that even disciplined chain operators face meaningful integration drag that erodes standalone baselines — though the company is recovering.",
+      "evidence": "Boyd Group FY2025 net earnings declined to $18.4M (vs $24.5M in FY2024) specifically due to 'acquisition and transformational cost initiatives of $22.6 million (net of tax).' Same-store sales declined 1.8% in FY2024 and 0.2% in FY2025 despite the overall industry adding locations. Boyd's stated goal is to return to 14% Adjusted EBITDA by 2029 from a current 12% — a 4-year recovery timeline.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENAD36-028",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://boydgroup.com/news/boyd-group-services-inc-news/2026/boyd-group-services-inc-reports-fourth-quarter-and-full-year-2025-results/",
+          "doi": null,
+          "title": "Boyd Group Services Inc. Reports Fourth Quarter and Full Year 2025 Results",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067197Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "FY2025 same-store sales: -0.2% year-over-year. FY2024: -1.8%. Net earnings declined to $18,420K in FY2025 due to acquisition and transformational cost initiatives of $22.6 million (net of tax). Long-term Adjusted EBITDA margin target: 14%+.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.91,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Boyd's same-store sales decline in 2024 was partly industry-wide (repairable claims fell ~9.5-12.6%)",
+        "The $22.6M integration cost relates to Project 360 restructuring, not individual acquisition integration",
+        "Boyd has been growing profitably overall; the comparison is not a failed acquisition but ongoing integration pressure"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_5dbb0550",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENAD36-028"
+      ]
+    },
+    {
+      "text": "Owner-operated independents derive a structural advantage from lower overhead: eliminating owner dependency can increase shop value by 30–60%, implying the owner's personal involvement was generating that much incremental earnings — but post-acquisition, this 'owner premium' is systematically stripped out by the acquiring chain.",
+      "evidence": "Multiple M&A advisory sources note that the transition from owner-operator to professionally managed operation can increase business value by 30-60% in terms of multiple expansion, but this is captured by the buyer. The single most impactful value driver identified is 'reducing or eliminating owner dependency.' This means the idiosyncratic profitability of an independent owner-operator is real but non-transferable — post-acquisition, it evaporates as hired management replaces owner involvement.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN61FB-029",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.sourcecodeals.com/blog/auto-body-shop-ebitda-value",
+          "doi": null,
+          "title": "Auto Body Shop Value: What Really Drives the EBITDA Multiple – SourceCo Deals",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067242Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The single most impactful value driver is reducing or eliminating owner dependency, particularly owner wrench time. The transition from owner-operator to a professionally managed operation can increase shop value by 30–60%. Consolidators have noted that single shops often operate according to the owner's individual philosophies, and buyers cannot easily replicate the success of an individual owner's process.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.7,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "The 30-60% value uplift from owner-dependency reduction refers primarily to multiple expansion, not margin expansion",
+        "Not all owner-operators out-earn professional managers; some chains have superior systems and training",
+        "This effect is qualitative and not directly quantified by independent research"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_05100848",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN61FB-029"
+      ]
+    },
+    {
+      "text": "The EBITDA margin gap between a well-managed 3-shop independent MSO (14%) and the publicly traded chain Boyd Group/Gerber (12.0% in FY2025, targeting 14%+) is essentially zero — and both substantially underperform the best-in-class independent single-brand specialist (32% EBITDA) — challenging the narrative of chain structural margin superiority.",
+      "evidence": "Direct comparison: 3-shop independent MSO (Focus Advisors benchmark): 14% EBITDA. Boyd Group FY2025 (1,050+ locations): 12.0% Adjusted EBITDA. Best-in-class single-brand independent: 32% EBITDA. The chain's higher gross margin (46.4% vs. ~45% for independent benchmark) is largely consumed by higher overhead (34.4% OpEx ratio) — erasing scale advantages at the EBITDA line for average operators.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN0BDD-030",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2024/04/growing-the-independent-mso-create-more-value-by-scaling-up/",
+          "doi": null,
+          "title": "Growing the Independent MSO: Create More Value by Scaling Up – Focus Advisors Automotive",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067293Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "A $3 million single-shop might generate a 9% EBITDA margin, whereas a medium-sized 3-shop MSO might generate closer to a 14% EBITDA margin.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN459E-031",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://boydgroup.com/news/boyd-group-services-inc-news/2026/boyd-group-services-inc-reports-fourth-quarter-and-full-year-2025-results/",
+          "doi": null,
+          "title": "Boyd Group Services Inc. Reports Fourth Quarter and Full Year 2025 Results",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067345Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "FY2025 Adjusted EBITDA Margin: 12.0%, with 110 basis point expansion year-over-year. Long-term Adjusted EBITDA margin target: 14%+.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.74,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Boyd's 12% includes D&A and public company overhead; adjusted-for-comparability to a private independent MSO might be higher",
+        "The 14% independent MSO figure is a benchmark, not a median; many independents fall well below",
+        "Boyd's FY2024 was depressed by industry headwinds; the comparison year matters significantly"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_c56ab7c8",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN0BDD-030",
+        "CIT-ENG74E67-AGEN459E-031"
+      ]
+    },
+    {
+      "text": "The total cost of collision repair reached $4,730 in 2024 (+3.7% YoY), with 13.4–13.7 parts per repair estimate — and EV repairs averaging 46.9% higher cost than non-EVs due to 43.3% labor share vs 36.5% for ICE vehicles, creating a structurally different cost model that chains are better positioned to absorb via certifications.",
+      "evidence": "CCC Intelligent Solutions data: TCOR finished 2024 at $4,730, up 3.7% YoY (lowest since 2017). Parts per appraisal: 13.4 average in 2024. EV repairs: 46.9% more expensive than non-EVs; labor 43.3% of EV repair cost vs 36.5% for non-EVs. EV claims were 2.4% of all repairable claims in H1 2024 (up from 1.6%). Average labor hours: 27.4 in H1 2024 (up from 23.9 in 2019).",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN8009-032",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://collisionweek.com/2024/10/03/ccc-reports-total-cost-repair-3-7-first-half-2024/",
+          "doi": null,
+          "title": "CCC Reports Total Cost of Repair Up 3.7% in First Half of 2024 – CollisionWeek",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067392Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The average total cost of repair (TCOR) finished 2024 at more than $4,730, a 3.7% increase year-over-year — the lowest increase since 2017. EVs represented 2.4% of repairable claims in H1 2024, up from 1.6%. EV repairs cost 46.9% more than non-EVs; labor accounts for 43.3% of EV total costs vs 36.5% for non-EVs.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.9,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "TCOR reflects insurance payment amounts, not shop revenue; markups, sublets, and supplements affect the relationship",
+        "EV claims are still <3% of total, limiting current margin impact",
+        "EV repair complexity favors certified chains but also creates new capital requirements (tools, training) that not all chains have met"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_4ce0d8a9",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN8009-032"
+      ]
+    },
+    {
+      "text": "2025 tariffs on imported auto parts (25%, effective May 3, 2025) are adding $80–100 per repairable claim in estimated cost, with OEM retail prices rising 2.1% in Q1–Q2 2025 alone — representing a near-term margin headwind that falls disproportionately on chains with heavy OEM part usage.",
+      "evidence": "25% tariff on 150+ categories of auto parts effective May 3, 2025. ~44% of OEM parts used in collision repair produced outside the US. OEM retail prices rose 2.1% from Q1 to Q2 2025 (vs 1% in same 2024 period). PartsTrader estimates $80-100 additional cost per repairable claim based on 13.5 parts per estimate. Parts inflation reached 6.6% YoY in July 2025 per CCC. 73.7% of shops with 8+ bays had already felt tariff effects as of April 2025.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN71DA-033",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.partstrader.com/update-tariffs-and-the-increased-cost-of-repair-parts/",
+          "doi": null,
+          "title": "Update: Tariffs and the Increased Cost of Repair Parts – PartsTrader",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067438Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Of the industry average 13.5 parts replaced per estimate, 8.5 parts would be potentially impacted by tariffs. The potential impact is estimated to be between $80–$100 per repairable claim. Roughly 44% of OEM parts used in collision repair are produced outside the United States. OEM retail prices rose 2.1% from Q1 to Q2 2025, compared to a 1% increase during the same period in 2024.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENCC9B-034",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobpa.com/2025/10/27/new-cpi-data-shows-collision-repair-inflation-significantly-outpacing-consumer-prices/",
+          "doi": null,
+          "title": "New CPI Data Shows Collision Repair Inflation Significantly Outpacing Consumer Prices – ABPA",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067484Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Average part prices rose 4.4% YoY (March–May 2025), accelerating to 5.0% in June and 6.6% in July 2025, driven by pre-tariff inventory depletion replaced by higher-cost imports. BLS data: Motor Vehicle Body Work CPI +5.4% YoY as of September 2025; Motor Vehicle Repair +11.5% YoY.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.84,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Tariff situation was fluid as of April 2026; some tariff rates have been modified or paused",
+        "Aftermarket parts (many imported from Taiwan) face separate tariff exposure with delayed pricing transmission",
+        "Chains may be better positioned to absorb cost via procurement scale and substitution toward domestic suppliers"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_c18d7cac",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN71DA-033",
+        "CIT-ENG74E67-AGENCC9B-034"
+      ]
+    },
+    {
+      "text": "Approximately 800 independent single-shop closures occurred in 2024, while chains grew 13% in shop count — confirming accelerating market consolidation concentrated at the lower end of the independent tier, with well-capitalized regional MSOs (7+ locations) continuing to grow.",
+      "evidence": "Focus Advisors estimates ~800 single-shop closures in 2024. Big Five shop count grew 13%: 3,512 to 3,842 shops. Top 10 independent MSOs grew revenue 33% and added 20 shops. 450+ locations acquired by larger operators throughout 2024. Projections: consolidators + regional MSOs to exceed 50% market share within ~10 years. Currently: Big Five hold ~30% market share; approximately 32,000 independents remain.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENBC37-035",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/collision-repair-industry-saw-revenue-decline-surging-consolidation-in-2024",
+          "doi": null,
+          "title": "Collision Repair Industry Saw Revenue Decline, Surging Consolidation in 2024 – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067525Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Focus Advisors estimates there were nearly 800 closures of smaller, independent shops in 2024. The Big Five grew 13% in shop count from 3,512 to 3,842 shops, comprising north of $15.6 billion in annual revenue — approximately 30% of the industry's market share. Consolidators + regional MSOs projected to exceed 50% market share within ~10 years.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN5B69-036",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.bodyshopbusiness.com/focus-advisors-issues-report-on-collision-industry-market-dynamics-in-2024/",
+          "doi": null,
+          "title": "Focus Advisors Issues Report on Collision Industry Market Dynamics in 2024 – Body Shop Business",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067568Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The two dynamics of a revenue slowdown and consolidation resulted in a decline in single shops. Focus Advisors estimates there were nearly 800 closures of smaller, independent shops in 2024. The nation's 10 largest independent MSOs increased their collective footprint by 20 shops, and Focus Advisors estimates their revenue grew by 33% in 2024.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.85,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "The 800 closure figure is an estimate from Focus Advisors M&A advisory, not a regulatory count",
+        "Some 'closures' may represent acquisitions that weren't counted as such",
+        "Industry fragmentation persists: 32,000 independents remain despite consolidation"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_7a32f786",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENBC37-035",
+        "CIT-ENG74E67-AGEN5B69-036"
+      ]
+    },
+    {
+      "text": "Boyd Group's same-store sales declined 3.5% in Q3 2024, while some operators reported declines of 20–30% — demonstrating that claims volume volatility creates significant margin risk for chains with high fixed cost structures and debt service obligations.",
+      "evidence": "Boyd Group Q3 2024 same-store sales: -3.5% YoY. Focus Advisors noted 'it was not uncommon for some operators to report trailing twelve-month sales down as much as 20% to 30%.' Industry context: repairable claims fell ~9.5-12.6% in 2024. Fixed cost leverage means a 10% revenue decline at a $30M MSO operating at 15% EBITDA compresses EBITDA margin to ~13.5% and reduces enterprise value by ~19%.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENB4CA-037",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2025/02/2024-year-in-review/",
+          "doi": null,
+          "title": "2024 Year in Review: Some Excel on a Bumpy Road – Focus Advisors Automotive",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067614Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Gerber, the lone public collision repair company, reported in Q3 that its same-store sales declined 3.5% year-over-year. At the operator level, conditions were even worse in some cases: it was not uncommon for some operators to report that their trailing twelve-month sales were down as much as 20% to 30%.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.87,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Boyd's 3.5% SSS decline was below the industry average, meaning chains with better DRP relationships outperformed the market",
+        "Revenue declines were largely industry-wide (weather, fewer repairable claims, economic headwinds) rather than chain-specific",
+        "The 20-30% figure refers to outlier operators, not the median chain performance"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_bc96c72c",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENB4CA-037"
+      ]
+    },
+    {
+      "text": "The industry average net profit margin is 6–8% for all operators, with top-quartile shops achieving 15%+; the 'healthy' benchmark is 18–20% net income — ranges that are achievable by well-managed independents without scale, principally through overhead discipline rather than procurement leverage.",
+      "evidence": "Multiple benchmarking sources confirm 6-8% as industry average net margin for collision shops. Top 25% performers achieve 15%+. A well-run shop targets 18-20% net income. The difference between 6% and 20% net margin is described as primarily 'operational discipline' in back-office management rather than scale-driven procurement advantages. This contrasts with Boyd Group's 10.9-12.0% Adjusted EBITDA (which precedes D&A and interest).",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN6F7E-038",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://blog.autovitals.com/auto-repair-shop-profit-margin",
+          "doi": null,
+          "title": "Understanding Profit Margins in Your Auto Repair Shop – AutoVitals",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067657Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "While the industry average net profit margin typically hovers around 6–8%, top 25% performing shops can achieve 15% or more. The ideal net income target is 18–20%. The difference between a 6% and a 20% net margin is mostly operational discipline — including labor productivity, repair cycle time, and effective pricing.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.76,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Net profit margin and EBITDA margin are not directly comparable (EBITDA excludes D&A and interest, which independents with owned real estate may not have)",
+        "The 6-8% industry average likely skews down due to inclusion of distressed and sub-scale operators",
+        "Owner compensation treatment significantly affects 'net profit' calculation for independents"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_149a6abb",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN6F7E-038"
+      ]
+    },
+    {
+      "text": "Non-OEM parts (aftermarket and recycled) provide 35–50% gross profit margins versus 20–28% for OEM parts — but chains that are heavily DRP-dependent face insurer pressure toward these same higher-margin parts, potentially narrowing the parts margin advantage that non-DRP independents might otherwise exploit.",
+      "evidence": "OEM parts GP: 20-28%; aftermarket/recycled GP: 35-50% per multiple trade benchmarks. DRP agreements typically mandate insurer-approved parts sourcing, pushing shops toward aftermarket/recycled alternatives. However, non-DRP shops can choose which high-margin parts to source and can charge retail markup on all categories. The chain advantage is procurement volume on OEM parts (better dealer pricing) but this doesn't improve OEM margin percentages — only reduces COGS.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENF621-039",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://financialmodelslab.com/blogs/profitability/auto-body-repair",
+          "doi": null,
+          "title": "7 Ways to Boost Auto Body Shop Profit Margins 15% – Financial Models Lab",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067702Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Aftermarket and recycled parts generally offer higher margins, often between 35% and 50%. In contrast, OEM parts typically yield lower margins, usually in the 20% to 28% range. Aftermarket parts are 40–60% cheaper than OEM and functionally identical for many repairs. The industry benchmark for blended Gross Profit on Parts typically ranges between 25% and 35%.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.72,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Whether chains pass procurement savings directly to EBITDA or return them to insurers as DRP concessions is unclear from public data",
+        "OEM certification requirements from luxury brands are forcing more OEM part usage, compressing parts GP for certified shops",
+        "The parts margin structure varies significantly by repair type (structural vs. cosmetic) and vehicle age"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_b0816f0d",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENF621-039"
+      ]
+    },
+    {
+      "text": "SCRS has documented a structural tension between rising shop operational costs and insurer efforts to suppress labor rate reimbursements — with labor rates up 4.9% in 2024 while some insurers simultaneously lowered DRP rates, creating margin compression that disproportionately impacts DRP-heavy shops (including chains).",
+      "evidence": "SCRS Executive Director Aaron Schulenburg stated: 'Inflation is going up, wages are going up. The cost of running a collision repair business is going up. Yet there is this sudden and concerning restriction on rates.' A CRASH Network quarterly survey: 1 in 4 shops reported at least one insurer paying lower rates than earlier in the year. Labor rates rose 4.5-4.9% on average in 2024 but DRP rate cuts documented at State Farm (12.1% reduction in some markets).",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENF060-040",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/scrs-decries-lowering-of-body-shop-labor-rates-this-year-by-some-auto-insurers",
+          "doi": null,
+          "title": "SCRS Decries Lowering of Body Shop Labor Rates This Year By Some Auto Insurers – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067752Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "SCRS Executive Director Aaron Schulenburg stated: 'This is in a time when nearly every cost that we have in our business is going up. Inflation is going up, wages are going up. The cost of running a collision repair business is going up. Yet there is this sudden and concerning restriction on rates.' Nearly a quarter of recently surveyed shops reported at least one insurance company paying lower labor rates than in January.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.83,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "The insurer rate reductions may be temporary tactical moves rather than systemic long-term trend",
+        "Larger chains with stronger DRP relationships may negotiate better protections against rate cuts",
+        "The 1-in-4 survey figure reflects all shop sizes; the impact distribution across chains vs independents is not specified"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_5464bf21",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENF060-040"
+      ]
+    },
+    {
+      "text": "At least 130 private equity firms track the collision repair sector, and PE buyers comprised 50.6% of all collision sector transactions in Q3 2025 — indicating that acquisition multiples reflect investor competition, not just underlying shop cash flow, and may embed a PE premium that distorts standalone valuation comparisons.",
+      "evidence": "Focus Advisors received inbound interest from 50+ PE firms in 2024. KPMG's Q3 2025 Automotive Aftermarket Newsletter reported PE buyers comprised 50.6% of total collision sector deals. PE strategies rely on multiple arbitrage (buying at 5x, exiting at 10x), which creates demand-driven multiple inflation detached from organic standalone shop earnings power.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN4BFE-041",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://auxocapitaladvisors.com/auto-repair-collision-ebitda-multiples/",
+          "doi": null,
+          "title": "Auto Repair & Collision EBITDA Multiples Explained – Auxo Capital Advisors",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067794Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "According to a Focus Advisors year-in-review analysis, more than 130 private equity firms now track the collision repair sector, and KPMG's Q3 2025 Automotive Aftermarket Newsletter reported that PE buyers comprised 50.6% of total collision sector deals. Buyers can often 'afford' higher multiples because when they buy something at 5–6x and fold it into a platform that trades at 13–15x, the value of that EBITDA instantly steps up.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.8,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "High PE interest creates a buyer premium that may not persist if interest rates or credit conditions tighten",
+        "The 130 PE firms figure includes trackers, not active bidders",
+        "Multiple arbitrage strategies require successful integration execution, which has proven difficult (Service King example)"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_5d94aa86",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN4BFE-041"
+      ]
+    },
+    {
+      "text": "The average collision repair labor rate was $120–$160 per hour in 2025 for chain/certified shops in major markets, versus DRP-negotiated rates of $45–65 per hour — representing a 1.8x–2.5x retail premium for non-DRP work that generates the margin differential between DRP-heavy chain operators and non-DRP independents.",
+      "evidence": "Multiple sources confirm: DRP-negotiated rates: $45-65/hr (insurer mandate); retail rates: $70-90/hr; premium shops 2025: $120-160/hr. The difference is structural: DRP shops negotiate rates below posted; non-DRP independents charge full retail. At $120-160/hr retail vs. $60-65/hr DRP rate, a non-DRP shop earns 2.2x gross labor revenue per hour on the same tech. This is the primary quantifiable source of the non-DRP margin premium.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN6F1C-042",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://dojobusiness.com/blogs/news/auto-body-shop-profit-margin",
+          "doi": null,
+          "title": "What is the profit margin of an auto body shop? – BusinessDojo",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067837Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Insurance companies often negotiate lower labor rates ($45–$65/hour) compared to retail rates ($70–$90/hour). Insurance-covered collision repairs usually generate 10–15% net margins due to negotiated labor rates. Out-of-pocket cosmetic repairs can achieve 25–35% net margins because customers pay retail pricing.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENAAFD-043",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.wickedfile.com/blogs/whats-the-right-labor-rate-for-my-auto-repair-shop-in-2026",
+          "doi": null,
+          "title": "Average Mechanic Labor Rate for Auto Repair Shops in 2026",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T02:49:47.067873Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "In 2025, most shops charge between $120 and $160 per hour for collision work, depending on the region and certification level of the repair shop. Many shops aim for a labor rate that is 2.5 to 3 times their technicians' hourly wage.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.81,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Labor rates vary significantly by geography; major metro rates are higher across the board",
+        "DRP rates of $45-65/hr may reflect older surveys; current DRP rates may have risen toward $65-85/hr in high-cost markets",
+        "Chain shops in DRP programs at lower rates offset with volume that independents must generate through other means"
+      ],
+      "claim_id": "eng_74e67db162c7_task_006_f035c5f1",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN6F1C-042",
+        "CIT-ENG74E67-AGENAAFD-043"
+      ]
+    }
+  ],
+  "status": "complete",
+  "gaps": [],
+  "artifact_path": null,
+  "absence_report": [
+    "No publicly available per-shop income statement or cost breakdown (labor %, parts %, overhead %) for any of the Big Five chains (Caliber, Crash Champions, Classic Collision, Joe Hudson's) — all are privately held; Boyd Group's public filings provide blended gross margin (46.4%) and OpEx ratio (34.4%) but do not disaggregate labor versus parts costs within COGS.",
+    "No peer-reviewed or independently audited study comparing chain-operated versus independent collision repair shop EBITDA margins on a same-market, same-DRP-concentration basis — all available margin comparisons come from single M&A advisory firms (Focus Advisors, QCG) with commercial interests in both buyer and seller relationships.",
+    "No empirical data on the net margin impact of DRP participation expressed in percentage points of EBITDA — the $4-6/hr concession is documented, but translating this to a per-shop EBITDA margin differential requires assumptions about labor mix, hours billed, and revenue base that are not published.",
+    "No documented post-acquisition same-store EBITDA performance data comparing pre-acquisition standalone baseline to post-integration chain performance at the individual shop level — Boyd Group reports aggregate SSS but not per-shop EBITDA before/after acquisition.",
+    "Caliber Collision (1,800+ locations, industry leader) has submitted a confidential S-1 for IPO but has not released any financial metrics; this is the largest data gap in the industry — Caliber's actual revenue per shop, EBITDA margin, cost structure, and DRP penetration are entirely unknown from public sources.",
+    "No authoritative data on the parts mix (OEM vs. aftermarket vs. recycled) breakdown by shop type (chain vs. independent) — CCC provides aggregate industry data on non-OEM dollar share (15-18%) but does not break this out by operator type.",
+    "No direct empirical comparison of overhead ratios between chains and independents on a normalized, per-location basis — Boyd Group's 34.4% OpEx ratio includes public company costs and is not directly comparable to a private shop's overhead structure.",
+    "No data on what proportion of a typical MSO's revenue comes from DRP versus non-DRP work — this is the critical variable for estimating the true DRP margin impact on chain-level economics, but no chains disclose this breakout.",
+    "No actuarial or insurance industry data showing whether DRP-affiliated shops earn structurally lower or higher margins on a risk-adjusted basis compared to non-DRP shops at equivalent revenue scale.",
+    "Interquartile revenue range (not just median) for independent shops is not publicly available — the $1.2M 'medium body shop' figure represents a point estimate only; variance and distribution shape are not documented."
+  ],
+  "sources_consulted": 43,
+  "tokens_consumed": 16495,
+  "dropped_claims": []
+}

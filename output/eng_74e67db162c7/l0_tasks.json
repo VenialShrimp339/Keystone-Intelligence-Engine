@@ -1,0 +1,593 @@
+{
+  "project": "Evaluate the competitive landscape of the US auto body repair industry across the top 10 metropolitan areas by population. Identify the largest chains, their market share, and whether the market is co",
+  "engagement_id": "eng_74e67db162c7",
+  "client_id": "client_keystone_internal",
+  "research_md_path": "engagements/eng_74e67db162c7/RESEARCH.md",
+  "specification_version": 1,
+  "decomposition_rationale": "Multi-batch generation (3 batches, 13 tasks)",
+  "tasks": [
+    {
+      "id": "task_001",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "competitive_landscape",
+      "type": "current",
+      "target_decision_usefulness": 5,
+      "description": "Assess market share distribution between chain operators (Caliber Collision, Gerber/Boyd Group, Service King/Crash Champions, Fix Auto, CARSTAR) and independent shops across the top 10 US MSAs by population (New York, Los Angeles, Chicago, Dallas–Fort Worth, Houston, Washington DC, Miami, Philadelphia, Atlanta, Phoenix). Quantify five-year revenue share trends (2019–2024), compute or credibly estimate HHI concentration indices by MSA, map PE acquisition cadence by geography and vintage, and render a consolidation stage classification (early/mid/late) for each metro with evidence-based rationale.",
+      "required_sources": [
+        "CCC Crash Course annual collision industry reports",
+        "IBISWorld auto body repair industry reports (NAICS 811121)",
+        "Boyd Group Services annual reports and MD&A (TSX: BYD)",
+        "Driven Brands SEC filings (NYSE: DRVN) for any collision-adjacent segment disclosures",
+        "PitchBook and Mergermarket transaction data as cited in trade and financial press",
+        "Repairer Driven News, BodyShop Business, and CRASH Network trade press"
+      ],
+      "acceptance_criteria": [
+        "Market share estimates (chain vs independent, % of estimated revenue) provided for all 10 MSAs with explicit confidence tiers and sourcing methodology described",
+        "HHI concentration index calculated or credibly estimated for at least 6 of 10 MSAs using available shop count or revenue proxy data",
+        "Five-year trend data (2019–2024) for chain/independent revenue split documented for at least 4 major MSAs with directional momentum (accelerating/stable/plateauing) assessed",
+        "Consolidation stage classification (early/mid/late) assigned to each MSA with rationale citing acquisition cadence, HHI trajectory, and chain shop density relative to total MSA shop count",
+        "PE acquisition cadence by geography documented from at least 2 verifiable sources covering 2021–2024, with any geographic variation in pace noted",
+        "Evidence both supporting and contradicting the Day-1 Hypothesis claim that top-4 chains control 20–30% of metro-level revenue is explicitly surfaced, catalogued, and weighed"
+      ],
+      "deliverable_destination": "Section 1: Market Concentration & Consolidation Trajectory",
+      "passes": false,
+      "priority": 1,
+      "importance": "primary",
+      "anti_confirmatory_framing": "Evaluate whether the top collision repair chains collectively hold 20–30% of metro-level revenue as the Day-1 Hypothesis claims and whether the industry is genuinely in 'mid-stage' consolidation — testing both the consolidation-acceleration and consolidation-plateau hypotheses across all ten MSAs with explicit evidence for and against each position, including alternative share estimates that fall materially outside the hypothesized 20–30% range and metros where consolidation may be more advanced or more nascent than mid-stage.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "edgar_filings",
+        "paper_search",
+        "edgar_company_facts"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [],
+      "end_product": "10-MSA competitive share matrix (chain vs independent by estimated revenue % with confidence tiers), five-year HHI trend table by MSA, per-metro consolidation stage classification (early/mid/late) with supporting rationale, PE acquisition cadence summary by geography and vintage (2019–2024), and a structured evidence register of findings supporting vs contradicting the 20–30% chain share hypothesis",
+      "issue_tree_branch_id": "branch_1.2",
+      "custom_category": null
+    },
+    {
+      "id": "task_002",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "financial_analysis",
+      "type": "current",
+      "target_decision_usefulness": 5,
+      "description": "Research and validate current EBITDA acquisition multiples for collision repair platform and tuck-in transactions (2019–2024), document PE leverage ratios and debt structures applied by leading consolidators (Hellman & Friedman/Caliber, Solera/Service King predecessor entity, Driven Brands collision vehicles, Boyd Group), and assess whether prevailing shop-level free cash flow generation and debt service coverage ratios under current interest rate environments make continued roll-up activity financially sustainable or are imposing a structural pace constraint on further consolidation.",
+      "required_sources": [
+        "PitchBook and Mergermarket transaction comps as cited in trade and financial press",
+        "Driven Brands SEC filings (NYSE: DRVN) — 10-K, 10-Q, credit facility and debt covenant disclosures",
+        "Boyd Group Services annual reports, MD&A, and investor presentations (TSX: BYD)",
+        "FRED federal funds effective rate, leveraged loan spread indices, and SOFR term rates",
+        "S&P LCD leveraged finance market research and Moody's or Fitch collision repair sector reports",
+        "PE sponsor public deal announcements (Hellman & Friedman, Leonard Green, Goldman Sachs Merchant Banking, Harvest Partners)"
+      ],
+      "acceptance_criteria": [
+        "Transaction multiple ranges (EV/EBITDA basis) documented separately for platform deals and tuck-in deals with at least 6 total transaction data points spanning 2019–2024 and median/range reported",
+        "Leverage ratios (total Debt/EBITDA at close) documented for at least 3 major PE-backed collision repair platforms with deal vintage and prevailing rate environment noted",
+        "Debt service coverage ratio (DSCR) modeled under at least 3 interest rate scenarios (prevailing rate as of research date, +200bps stress, –200bps relief) using sourced or derived shop-level free cash flow assumptions",
+        "Evidence both supporting (multiples within 10–14x range) and contradicting (multiples materially above or below range, rate-driven compression signals, slowing deal flow) the Day-1 Hypothesis multiple claim is explicitly documented",
+        "Roll-up financial sustainability verdict rendered with specific quantitative rationale and contrary evidence catalogued in a structured register",
+        "Any documented signals of PE sponsors slowing acquisition pace, encountering debt market friction, or extending hold periods captured with sourcing"
+      ],
+      "deliverable_destination": "Section 5: Entry Economics & PE Roll-Up Sustainability",
+      "passes": false,
+      "priority": 2,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate whether collision repair acquisition multiples genuinely sit at 10–14x EBITDA as the Day-1 Hypothesis specifies and whether PE-backed roll-up financial structures remain viable under current interest rate conditions — including evidence that multiples may be compressing below or expanding above this range, that leverage ratios are creating structural constraints on further acquisition pace, that debt service coverage is eroding shop-level FCF, or that deal flow has materially slowed, alongside evidence confirming the hypothesis's multiple range and continued roll-up viability.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "edgar_financials",
+        "finnhub_market",
+        "fred_data"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [
+        "task_006"
+      ],
+      "end_product": "Transaction comparable table (platform vs tuck-in multiple ranges, 2019–2024, with deal count, median, and range), PE sponsor leverage ratio benchmarks (Debt/EBITDA by platform with vintage), 3-scenario DSCR sensitivity analysis table with shop-level FCF assumptions stated, roll-up sustainability verdict with structured supporting and contrary evidence register, and a flag table of any documented friction signals in the PE deal pipeline",
+      "issue_tree_branch_id": "branch_5.2",
+      "custom_category": null
+    },
+    {
+      "id": "task_003",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "competitive_landscape",
+      "type": "current",
+      "target_decision_usefulness": 5,
+      "description": "Map the volume allocation mechanics, breadth requirements, qualification thresholds, pricing constraints, cycle-time mandates, and net margin economics of the four major insurer Direct Repair Programs — State Farm Select Service, GEICO Auto Repair Xpress, Progressive Service Center, and Allstate Good Hands Repair Network — and evaluate whether DRP breadth requirements (minimum participating shop counts per metro or geographic coverage mandates) structurally protect independent shops from full chain consolidation by preventing any single chain from satisfying an insurer's network coverage requirements through its own shops alone.",
+      "required_sources": [
+        "State Farm, GEICO, Progressive, and Allstate public DRP program documentation, vendor agreements summaries, and press materials",
+        "CRASH Network Insurer Report Cards (annual grade surveys of shop owner satisfaction with insurer DRP programs)",
+        "SCRS (Society of Collision Repair Specialists) survey data and position papers on DRP participation economics",
+        "Repairer Driven News and BodyShop Business trade press coverage of DRP qualification changes and economics",
+        "Academic or policy research on insurer–repairer vertical relationships and referral economics",
+        "CCC One and Mitchell Cloud Estimating platform compliance documentation referenced in DRP agreements"
+      ],
+      "acceptance_criteria": [
+        "DRP qualification criteria and threshold requirements documented for all 4 major insurers including labor rate caps, cycle time targets, CSI score thresholds, and certification prerequisites",
+        "Volume allocation mechanics described for at least 2 of 4 major insurers with specificity on how referral volume is steered between chain shops and independents",
+        "Breadth requirement evidence — minimum shop count per metro, geographic coverage ratios, or equivalent network density mandates — either documented with sourcing or explicitly refuted with evidence for at least 3 major insurers",
+        "Net margin differential between DRP-participating and non-DRP shops quantified from at least 2 industry benchmark sources with labor rate concession and pricing constraint components separated",
+        "DRP onboarding timeline (months from new shop qualification application to first volume referral) benchmarked from at least 2 sources — this is a critical input to task_004",
+        "Evidence both supporting and contradicting the hypothesis that DRP breadth requirements constitute a structural protection mechanism for independents explicitly surfaced and assessed"
+      ],
+      "deliverable_destination": "Section 2: Demand Routing Architecture — Insurer DRP",
+      "passes": false,
+      "priority": 3,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate whether DRP breadth requirements — minimum participating shop count mandates or geographic network coverage constraints per metro — structurally protect independents from consolidation as the Day-1 Hypothesis claims, including evidence that chains may already satisfy or soon satisfy breadth requirements through their own growing shop networks, that breadth requirements may be weaker or more easily waived than assumed, that DRP economics may be eroding independent willingness to participate, or that insurer consolidation of DRP vendors is accelerating rather than limiting chain dominance, alongside evidence confirming the structural protection mechanism.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "paper_search",
+        "edgar_filings",
+        "doi_verify"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [],
+      "end_product": "DRP qualification requirements matrix (4 insurers × key criteria: labor rate cap, cycle time target, CSI threshold, certification requirements, network density mandate), net margin differential table (DRP vs non-DRP with cost component breakdown and sourcing), DRP onboarding timeline benchmark table (by insurer, with range), breadth requirement analysis with evidence quality rating per insurer, and structural independence-protection verdict with supporting and contrary evidence register",
+      "issue_tree_branch_id": "branch_2.1",
+      "custom_category": null
+    },
+    {
+      "id": "task_004",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "financial_analysis",
+      "type": "current",
+      "target_decision_usefulness": 5,
+      "description": "Quantify and compare the all-in capital requirements for acquisition-based versus greenfield entry into collision repair across the top-10 MSAs, itemizing real estate or lease capitalization, equipment procurement, OEM certification investment, working capital, DRP onboarding ramp losses, time-to-competitive-parity for greenfield operations, and any regulatory compliance capital. Compute implied payback periods for each entry path under base and bear case throughput assumptions and identify which of the top-10 MSAs offer the most and least favorable entry economics by mode of entry.",
+      "required_sources": [
+        "Commercial real estate lease rate databases by MSA (CoStar, LoopNet data as cited in industry analyses)",
+        "Collision repair equipment supplier pricing: Chief Automotive Technologies, Car-O-Liner, Hunter Engineering, Pro Spot",
+        "SBA loan program documentation and any franchise disclosure documents for Fix Auto, CARSTAR, or similar collision networks",
+        "Trade press capital requirement benchmarks from BodyShop Business, Repairer Driven News, and Autobody News",
+        "FRED commercial real estate price indices and lease cost proxies by MSA",
+        "I-CAR certification fee schedules and OEM program enrollment costs"
+      ],
+      "acceptance_criteria": [
+        "All-in capital stack itemized line-by-line for acquisition entry in at least 2 representative top-10 MSAs spanning the cost spectrum (e.g., Los Angeles or New York as high-cost; Phoenix or Atlanta as lower-cost)",
+        "All-in capital stack itemized line-by-line for greenfield entry in the same representative MSAs with each line item sourced or methodology stated",
+        "Payback period calculated for each entry path (acquisition vs greenfield) in each representative MSA under base case and bear case throughput assumptions with assumptions stated explicitly",
+        "DRP onboarding timeline benchmark (months from facility opening or acquisition close to first DRP volume referral) incorporated as a ramp-loss line item with sourcing drawn from task_003 outputs",
+        "MSA-level entry economics variance assessed across at least 3 metros with materially different land, lease, and labor cost profiles, with the most and least favorable MSAs identified per entry mode",
+        "Evidence both supporting and contradicting the Day-1 Hypothesis claim that greenfield entry is prohibitively capital-intensive relative to acquisition explicitly documented, including any metros or scenarios where greenfield economics may be comparatively viable"
+      ],
+      "deliverable_destination": "Section 5: Entry Economics & Capital Requirements",
+      "passes": false,
+      "priority": 4,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate whether greenfield entry is genuinely prohibitively capital-intensive relative to acquisition-based entry across the top-10 MSAs as the Day-1 Hypothesis claims — including evidence that specific metros, favorable lease markets, or lower equipment costs may make greenfield entry more viable than assumed, that payback periods may converge between modes under certain throughput scenarios, or that greenfield operators have successfully entered at lower cost than industry benchmarks suggest, alongside evidence confirming prohibitive upfront costs, extended payback periods, and DRP access barriers for new greenfield entrants.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "edgar_financials",
+        "fred_data",
+        "paper_search"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [
+        "task_006",
+        "task_008"
+      ],
+      "end_product": "Side-by-side capital stack comparison table (acquisition vs greenfield, itemized by cost component: real estate/lease, equipment, OEM certifications, working capital, ramp-up losses, DRP delay cost) for at least 2 representative MSAs, payback period analysis matrix (entry mode × MSA × scenario), DRP onboarding ramp-loss quantification, MSA entry economics ranking from most to least favorable by entry mode, and mode-of-entry recommendation framework with decision criteria",
+      "issue_tree_branch_id": "branch_5.1",
+      "custom_category": null
+    },
+    {
+      "id": "task_005",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "competitive_landscape",
+      "type": "current",
+      "target_decision_usefulness": 4,
+      "description": "Assess whether OEM collision repair certification programs — Tesla Body Repair Program, Rivian Certified Collision, BMW Certified Collision Repair Center, Mercedes-Benz Certified Collision, Toyota/Lexus Certified, and Ford/Lincoln Certified — create durable routing advantages, premium labor rate authorization, and meaningful barriers to imitation for certified shops, and quantify the capital investment in equipment, training, facility upgrades, and estimating platform integrations (CCC One, Mitchell, Audatex) required to build a competitively leverageable certification portfolio in the EV-dense and luxury-vehicle-dense metros among the top 10 MSAs.",
+      "required_sources": [
+        "Tesla Body Repair Program and Rivian Certified Collision Network program documentation (public-facing)",
+        "BMW Group and Mercedes-Benz USA certified collision center program requirements and enrollment specifications",
+        "SCRS (Society of Collision Repair Specialists) OEM certification research, position papers, and member survey data",
+        "I-CAR OEM-specific training program fee schedules and certification pathway documentation",
+        "CCC One, Mitchell Cloud Estimating, and Audatex OEM integration and compliance documentation",
+        "Repairer Driven News and BodyShop Business OEM certification investment analyses and shop owner case studies"
+      ],
+      "acceptance_criteria": [
+        "Capital investment requirements (equipment + training + facility minimum upgrades) documented with sourcing for at least 4 OEM certification programs, including at least one EV OEM (Tesla or Rivian) and at least one European luxury OEM (BMW or Mercedes-Benz)",
+        "Routing advantage quantification attempted — volume uplift from mandatory referrals or labor rate premium authorized under OEM program — for at least 2 OEM programs with sourced benchmarks or credible estimates with stated methodology",
+        "Barriers to imitation assessed with specific evidence (minimum facility size requirements, proprietary tooling exclusivity windows, OEM approval process duration, geographic exclusivity zones) for at least 3 OEM programs",
+        "Certification portfolio leverage ranked or scored across at least 3 EV-dense metros (Los Angeles, San Francisco Bay Area, Seattle) versus 3 non-EV-dense metros among the top 10, reflecting EV registration density differentials",
+        "Estimating platform integration requirements (CCC One, Mitchell, Audatex) mapped to at least 3 OEM certification programs with compliance cost or workflow burden noted",
+        "Evidence both supporting (certifications as durable routing moats with high replication barriers) and contradicting (certifications as low-barrier compliance exercises easily replicated by well-capitalized chains, or with inconsistently enforced routing) the Day-1 Hypothesis claim explicitly surfaced and assessed"
+      ],
+      "deliverable_destination": "Section 2: Demand Routing Architecture — OEM Certification",
+      "passes": false,
+      "priority": 5,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate whether OEM collision certification programs create genuinely durable routing moats and premium labor rate authorization that constitute meaningful barriers to imitation — including evidence that certifications may be easily replicated by well-capitalized chain operators, that mandatory routing advantages are inconsistently enforced or commercially overstated, that the certified shop network is expanding rapidly and eroding first-mover advantages, or that EV certification economics differ materially by metro, alongside evidence confirming that certifications create defensible and durable competitive advantages for early-mover certified shops in EV-dense and luxury-dense metros.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "paper_search",
+        "edgar_filings",
+        "doi_verify"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [],
+      "end_product": "OEM certification investment requirements table (equipment + training + facility per OEM program, with low/high cost ranges and sourcing), routing advantage quantification summary (volume and rate premiums by OEM program with confidence rating), competitive moat durability assessment matrix (barrier type × durability rating per OEM program), certification portfolio leverage ranking by MSA category (EV-dense vs non-EV-dense) for top-10 metros, estimating platform integration requirements map (OEM × platform), and structured evidence register of findings supporting vs contradicting the durable-moat hypothesis",
+      "issue_tree_branch_id": "branch_2.2",
+      "custom_category": null
+    },
+    {
+      "id": "task_006",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "financial_analysis",
+      "type": "current",
+      "target_decision_usefulness": 5,
+      "description": "Benchmark shop-level revenue throughput, labor and parts cost structures, and EBITDA margins for chain-operated versus independent collision repair shops in US markets, and decompose the drivers of any structural margin gap between the two operating models — including DRP pricing concessions, labor rate differentials, OEM vs aftermarket parts mix, and overhead allocation — to establish the financial denominator against which acquisition multiples and scale economy claims must be evaluated.",
+      "required_sources": [
+        "IBISWorld NAICS 811121 collision repair industry reports",
+        "Driven Brands / Caliber Collision SEC and EDGAR filings and investor presentations",
+        "SCRS (Society of Collision Repair Specialists) cost-of-doing-business surveys",
+        "CIC (Collision Industry Conference) market and benchmarking data",
+        "Repairer Driven News and Autobody News trade publications covering margin and cost structure",
+        "LKQ Corporation annual reports and investor days for parts cost benchmarking context"
+      ],
+      "acceptance_criteria": [
+        "Median and interquartile range of annual gross revenue per shop location for chain-operated vs independent operators with documented source attribution",
+        "Labor cost as percentage of revenue for both operating models with chain vs independent comparison and at least 2 independent data sources",
+        "Parts cost as percentage of revenue broken out by category (OEM, LKQ/recycled, aftermarket) with chain vs independent comparison",
+        "Shop-level EBITDA margin range for both operating models sourced from at least 3 independent references",
+        "Identification and quantification of the top 3 cost-side drivers explaining any chain vs independent margin differential",
+        "Explicit treatment of DRP pricing concessions: whether DRP shops earn structurally lower gross margins offset by volume certainty, with margin impact estimate",
+        "Assessment of owner-operator efficiency as a potential independent shop margin advantage with at least one documented counterexample to chain superiority"
+      ],
+      "deliverable_destination": "Section 3: Unit Economics & Margin Architecture",
+      "passes": false,
+      "priority": 6,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate whether chain-operated collision repair shops achieve structurally superior EBITDA margins relative to independents, examining evidence both for chain margin advantages driven by procurement leverage, overhead amortization, and DRP volume guarantees and for conditions under which owner-operated independents match or exceed chain-level profitability through lower overhead structures, DRP-avoidance pricing flexibility, and direct customer relationships — including any documented cases where post-acquisition integration costs erode margins relative to pre-acquisition standalone baselines.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "edgar_financials",
+        "edgar_filings",
+        "finnhub_market"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [],
+      "end_product": "Comparative financial benchmarking table with revenue per shop per year, labor cost %, parts cost % by category, overhead %, and EBITDA margin ranges for chain vs independent operators; margin gap decomposition waterfall identifying the dollar-per-revenue-dollar contribution of each cost driver; narrative assessment of whether the structural margin gap is of sufficient magnitude to support the hypothesis's 10-14x acquisition multiple range on standalone shop cash flows",
+      "issue_tree_branch_id": "branch_3.1",
+      "custom_category": null
+    },
+    {
+      "id": "task_007",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "strategic_positioning",
+      "type": "estimative",
+      "target_decision_usefulness": 4,
+      "description": "Map the post-acquisition integration playbooks deployed by leading collision repair consolidators including estimating platform migration, DRP compliance re-credentialing, cycle-time and quality auditing, and financial reporting consolidation; assess documented failure modes — cycle time degradation, quality score erosion, technician turnover spikes, DRP program suspension — and estimate the probability and revenue severity of each execution risk as a function of acquisition pace, to determine whether integration execution risk undermines the hypothesis's conclusion that acquisition-based entry is viable.",
+      "required_sources": [
+        "Repairer Driven News and Autobody News investigative coverage of consolidator post-acquisition integration experiences",
+        "SCRS and CIC conference proceedings and presentations on post-acquisition operational integration",
+        "Driven Brands SEC filings, 10-K risk factor disclosures, and investor day presentations",
+        "PE sponsor (OMERS, Hellman & Friedman, Blackstone) portfolio company operational disclosures and case studies",
+        "Academic and practitioner literature on multi-unit service industry M&A integration failure modes",
+        "Insurer DRP qualification and compliance documentation for major programs (State Farm Select Service, GEICO ARX, Progressive Service Center)"
+      ],
+      "acceptance_criteria": [
+        "Integration playbook components mapped across at least 3 leading consolidators with documented timelines for each phase (estimating platform migration, DRP re-credentialing, quality auditing, financial consolidation)",
+        "Typical time-to-operational-standardization documented with range across best-case, typical, and challenged integration scenarios",
+        "At least 4 distinct documented failure modes with estimated frequency of occurrence and recovery timeline",
+        "Quantified impact of DRP suspension risk: estimated revenue loss per shop per month and re-qualification timeline based on documented cases or insurer program requirements",
+        "Technician turnover spike data: pre- vs post-acquisition attrition rates with at least 2 documented reference cases",
+        "Assessment of whether integration execution risk compounds at higher acquisition pace, with evidence for or against a pace-dependent failure threshold",
+        "Identification of at least one case where rapid acquisition pace demonstrably degraded portfolio-level operational metrics with magnitude of degradation"
+      ],
+      "deliverable_destination": "Section 5: Entry Economics & Roll-Up Execution Risk",
+      "passes": false,
+      "priority": 7,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate whether PE-backed collision repair consolidators have developed reliable post-acquisition integration playbooks that deliver consistent operational standardization at pace, examining evidence both for successful integration track records and systematic execution frameworks and for documented failure modes — including cycle time degradation, DRP program suspension, quality score erosion, and technician turnover spikes — that may reveal structural execution risk capable of undermining the hypothesis's conclusion that acquisition-based entry is viable at current consolidation pace.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "edgar_filings",
+        "paper_search",
+        "finnhub_market"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [
+        "task_006"
+      ],
+      "end_product": "Integration risk matrix mapping each documented failure mode against estimated frequency of occurrence, revenue severity ($ impact per shop per month), recovery timeline, and known mitigating practices deployed by leading consolidators; timeline chart showing typical phase-by-phase standardization sequence with documented variance ranges; narrative assessment of whether current consolidator acquisition paces are approaching integration capacity limits that would challenge the hypothesis's 'viable acquisition-based entry' conclusion",
+      "issue_tree_branch_id": "branch_5.3",
+      "custom_category": null
+    },
+    {
+      "id": "task_008",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "financial_analysis",
+      "type": "estimative",
+      "target_decision_usefulness": 4,
+      "description": "Quantify the scale economies in parts procurement, paint and materials purchasing, shared G&A, and labor utilization that accrue to multi-location collision repair platforms at thresholds of 5, 50, and 500+ locations; estimate the per-unit cost gap between large chains and independents for each procurement category; and model the incremental EBITDA margin lift as a roll-up platform grows, to assess whether documented scale advantages justify the premium acquisition multiples paid in PE-driven consolidation.",
+      "required_sources": [
+        "LKQ Corporation SEC filings, investor day presentations, and analyst transcripts on volume pricing tiers",
+        "Driven Brands and Caliber Collision investor presentations disclosing procurement scale advantages",
+        "SCRS cost-of-doing-business benchmarking surveys for independent operator procurement costs",
+        "Paint and materials supplier volume discount structures via Axalta, PPG, and BASF trade publications and investor disclosures",
+        "Academic research on multi-unit service business scale economies using restaurant, automotive service, or healthcare analogues",
+        "Private equity portfolio company operational benchmarks from publicly disclosed sources"
+      ],
+      "acceptance_criteria": [
+        "Parts procurement cost differential between a large chain platform (500+ locations) and a standalone independent operator, quantified as percentage of parts spend, with at least 2 documented reference points",
+        "Paint and materials cost differential with documented volume discount tier structure from at least one major supplier",
+        "G&A leverage curve: estimated shared overhead as percentage of revenue at 5, 50, and 500+ shop counts with stated assumptions",
+        "Incremental EBITDA margin lift estimate at each scale threshold (5, 50, 500+) with base case, upside, and downside assumptions and sensitivity ranges",
+        "Identification of the scale threshold at which procurement advantages become 'financially material,' defined as greater than 100 basis points of EBITDA impact, with documented basis for this threshold",
+        "Assessment of whether documented scale advantages are sufficient to justify a 10-14x acquisition multiple relative to standalone shop cash flow under base case assumptions",
+        "Comparison to at least one analogous multi-unit service industry (auto repair, restaurant, healthcare) where scale economy data is more publicly available to validate order-of-magnitude assumptions"
+      ],
+      "deliverable_destination": "Section 3: Unit Economics & Margin Architecture",
+      "passes": false,
+      "priority": 8,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate whether multi-location scale economies in collision repair — across parts procurement, paint and materials purchasing, shared G&A, and labor utilization — create materially superior unit economics for roll-up platforms that justify acquisition premium multiples, examining evidence both for documented procurement cost advantages at scale and for structural limitations (fragmented shop geographies, insurer DRP pricing constraints, technician market localization, and parts supplier countervailing power) that may prevent scale benefits from flowing through to shop-level EBITDA at the magnitudes implied by current transaction multiples.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "edgar_financials",
+        "edgar_filings",
+        "paper_search"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [
+        "task_006"
+      ],
+      "end_product": "Scale economy curve table showing estimated incremental EBITDA margin lift at 5, 50, and 500+ shop counts with procurement discount ranges by supplier type (OEM parts, LKQ/recycled, aftermarket, paint and materials) and G&A leverage estimates; three-scenario sensitivity table (optimistic, base, pessimistic procurement discount assumptions) showing implied EBITDA margin range at each scale tier; narrative assessment of whether documented scale advantages support or challenge the 10-14x multiple sustainability claim in the hypothesis under current interest rate and debt service conditions",
+      "issue_tree_branch_id": "branch_3.2",
+      "custom_category": null
+    },
+    {
+      "id": "task_009",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "market_sizing",
+      "type": "current",
+      "target_decision_usefulness": 4,
+      "description": "Estimate total collision repair market revenue in each of the top-10 US MSAs by population (New York, Los Angeles, Chicago, Dallas, Houston, Washington DC, Miami, Philadelphia, Atlanta, Phoenix), segment by claim type (insurance-driven vs cash-pay), vehicle class, and repair complexity tier where data permits, and rank metros by revenue density and addressable opportunity to identify the most attractive markets for new entrant evaluation.",
+      "required_sources": [
+        "IBISWorld NAICS 811121 industry size and regional breakdown reports",
+        "CCC Information Services annual collision repair market reports and industry trends",
+        "NAIC (National Association of Insurance Commissioners) auto insurance claim frequency and severity data by state",
+        "Federal Highway Administration and state DMV vehicle registration data disaggregated by MSA",
+        "Mitchell International and Audatex industry trend and market reports",
+        "US Census Bureau MSA population, household income, and vehicle ownership statistics",
+        "FRED economic data for regional indicators including vehicle fleet age and insurance penetration proxies"
+      ],
+      "acceptance_criteria": [
+        "Total collision repair revenue estimate for each of the 10 MSAs with documented sizing methodology (top-down and/or bottom-up) and explicit statement of assumptions",
+        "Insurance-driven vs cash-pay revenue split for each metro with source attribution and confidence level",
+        "Revenue per registered vehicle metric calculated for each MSA to enable density-normalized inter-metro comparison",
+        "Segmentation of revenue by at least two dimensions: vehicle class (passenger, light truck, luxury, EV), repair complexity tier (minor, moderate, major), or claim severity bucket",
+        "Ranking of all 10 MSAs by total revenue pool size and separately by revenue per registered vehicle density, with divergences between the two rankings noted and explained",
+        "Identification of data gaps and confidence level by metro with distinction between directly sourced and proxy-estimated figures",
+        "Flagging of any metro where structural market characteristics — high EV penetration, luxury vehicle concentration, above-average uninsured driver rates — materially differentiate the opportunity or risk profile"
+      ],
+      "deliverable_destination": "Section 1: Market Size, Segmentation & Competitive Concentration",
+      "passes": false,
+      "priority": 9,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate the total addressable collision repair revenue in each of the top-10 US MSAs using multiple sizing approaches, examining evidence both for metros that represent outsized addressable opportunities and for metros where market saturation, lower vehicle density, regulatory constraints, or competitive concentration may make entry less attractive than population rank alone suggests — including any evidence that the hypothesis's implicit uniform-market framing obscures material inter-metro variation in opportunity quality or entry attractiveness.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "fred_data",
+        "edgar_filings",
+        "paper_search"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [],
+      "end_product": "Revenue pool sizing table for all 10 MSAs with total estimated collision repair revenue, insurance vs cash-pay split, revenue per registered vehicle, and relative market density ranking; segmentation breakdown by claim type and at least one additional dimension (vehicle class or complexity tier); data gap log by metro with confidence-level flags (high / medium / proxy-estimated); narrative identifying the 3 highest-priority entry metros based on revenue density and competitive white space, with explicit caveats where data quality limits confidence",
+      "issue_tree_branch_id": "branch_1.1",
+      "custom_category": null
+    },
+    {
+      "id": "task_010",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "strategic_positioning",
+      "type": "current",
+      "target_decision_usefulness": 3,
+      "description": "Assess the supply, geographic distribution, wage dynamics, and retention rates of I-CAR Gold Class and ASE-certified body technicians and painters across the top-10 US MSAs; evaluate whether technician scarcity constitutes a binding constraint on acquisition-based scaling pace in each metro; and identify which MSAs face the most acute labor market tightness as an execution risk factor for any roll-up entrant.",
+      "required_sources": [
+        "I-CAR Gold Class certified shop density data by metropolitan area",
+        "Bureau of Labor Statistics Occupational Employment and Wage Statistics for automotive body and related repairers (SOC 49-3021) by MSA",
+        "FRED regional labor market indicators for relevant MSAs",
+        "ASE certification statistics, technician pipeline reports, and workforce development publications",
+        "SCRS and CIC workforce development research and conference proceedings",
+        "Repairer Driven News and Autobody News coverage of technician shortage severity by market",
+        "Vocational, trade school, and community college automotive body repair program enrollment and completion data"
+      ],
+      "acceptance_criteria": [
+        "BLS employment count and median wage data for automotive body repairers (SOC 49-3021) in each of the 10 MSAs with a 3-to-5-year wage growth trend",
+        "Wage rate benchmarks at the 10th, 50th, and 90th percentile for certified technicians and painters in each metro where BLS data is available at MSA level",
+        "I-CAR Gold Class certified shop density (certified shops per 100,000 registered vehicles) calculated for each MSA as a proxy for certified technician concentration",
+        "Identification of the 3 MSAs with the most acute technician scarcity based on wage growth rate, vacancy indicators, or supply-demand imbalance evidence with documented basis",
+        "Assessment of whether technician scarcity constrains acquisition-based scaling pace: specifically whether acquirers can staff newly integrated shops without triggering wage inflation that erodes post-acquisition margins, with evidence from at least 2 documented cases",
+        "Pipeline assessment: I-CAR training enrollment trends and vocational program completion rates as leading indicators of future supply relief or continued tightening",
+        "At least one documented instance where technician supply demonstrably constrained a consolidator's acquisition pace or post-acquisition operational performance"
+      ],
+      "deliverable_destination": "Section 4: Workforce Constraints & Operational Capability Barriers",
+      "passes": false,
+      "priority": 10,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate whether I-CAR Gold Class and ASE-certified body technician and painter scarcity represents a binding operational constraint on collision repair consolidation in the top-10 MSAs, examining evidence both for markets where labor shortages demonstrably limit scaling pace or inflate post-acquisition labor costs and for markets where technician supply is adequate, training pipeline programs are expanding, or wage growth has not materially compressed acquirer returns — including any evidence that technician scarcity is a surmountable rather than structural barrier through proprietary training programs or apprenticeship pipelines.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "fred_data",
+        "paper_search"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [],
+      "end_product": "MSA-level technician supply assessment table with BLS employment counts, 3-to-5-year wage CAGR, estimated I-CAR Gold Class certified shop density per 100,000 registered vehicles, and qualitative labor tightness rating (tight / moderate / adequate) for each of the 10 metros; identification of the 3 highest-risk MSAs for labor-constrained scaling with supporting evidence; pipeline assessment narrative evaluating whether current vocational training enrollment and I-CAR certification trends suggest future supply relief or continued tightening over a 3-to-5-year horizon",
+      "issue_tree_branch_id": "branch_4.1",
+      "custom_category": "workforce_analysis"
+    },
+    {
+      "id": "task_011",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "financial_analysis",
+      "type": "estimative",
+      "target_decision_usefulness": 3,
+      "description": "Analyze how collision claim frequency, average repair ticket size, and ADAS/EV-driven labor and parts complexity uplift are trending across the top 10 MSAs to determine whether the underlying collision repair revenue pool is net expanding or contracting over a 3–5 year investment horizon, and quantify the net directional effect on shop-level throughput and revenue growth projections.",
+      "required_sources": [
+        "insurance_industry_annual_reports_CCC_Mitchell_Audatex",
+        "NHTSA_and_IIHS_claim_frequency_datasets",
+        "ADAS_repair_cost_and_complexity_studies",
+        "public_company_investor_presentations_collision_sector",
+        "macro_vehicle_miles_traveled_and_accident_rate_series"
+      ],
+      "acceptance_criteria": [
+        "Collision claim frequency trend quantified with a 5-year directional CAGR range supported by at least 3 independent data sources",
+        "Average repair order value trajectory reported with directional trend and at least 2 data points spanning the measurement window",
+        "ADAS and EV complexity uplift quantified in incremental labor hours and parts cost per average repair event with at least one primary source citation",
+        "Net expansion or contraction verdict rendered for the 3–5 year horizon with a directional confidence range and at least two scenario sensitivities (e.g., high-ADAS-penetration vs. low-ADAS-penetration)",
+        "MSA-level variation in claim frequency or ticket size trends identified where data permits, even if qualitative characterization only"
+      ],
+      "deliverable_destination": "Section 6: Revenue Growth & Technology Disruption",
+      "passes": false,
+      "priority": 11,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate whether the US collision repair revenue pool is net expanding or contracting across the top 10 MSAs over a 3–5 year horizon, assessing evidence both for expansion (rising average ticket values from ADAS and EV complexity uplift on labor hours and parts cost per repair) and for contraction (ADAS-driven accident frequency reduction, longer vehicle replacement cycles, and telematics-linked behavioral shifts reducing incident rates), and quantify the net directional effect on shop-level throughput and revenue growth with explicit acknowledgment of countervailing data.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "fred_data",
+        "paper_search",
+        "finnhub_market"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [],
+      "end_product": "Revenue pool trend brief comprising: (1) claim frequency CAGR summary table with source citations and confidence notes, (2) average repair order value growth trajectory with directional range and supporting data points, (3) ADAS and EV labor-hour and parts-cost uplift quantification per average repair event, (4) net expansion/contraction verdict with probability-weighted scenario range over a 3–5 year horizon (at minimum base and bear cases), and (5) MSA-level variation notes where data permits.",
+      "issue_tree_branch_id": "branch_6.1",
+      "custom_category": null
+    },
+    {
+      "id": "task_012",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "technology_assessment",
+      "type": "estimative",
+      "target_decision_usefulness": 3,
+      "description": "Evaluate how ADAS calibration complexity, EV-specific body repair specialization requirements (high-voltage battery safety, aluminum and composite unibody structures), and longer-term autonomous vehicle penetration trajectories will reshape shop capability thresholds, competitive structure, and repair economics across the top 10 MSAs, and assess whether these technological forces compress or extend the viable entry window for a new collision repair platform entrant.",
+      "required_sources": [
+        "OEM_certification_program_technical_documentation",
+        "ADAS_calibration_cost_and_labor_time_studies",
+        "EV_body_repair_capability_investment_case_studies",
+        "autonomous_vehicle_penetration_and_collision_reduction_forecasts",
+        "public_company_10K_and_investor_disclosures_on_EV_repair_investment"
+      ],
+      "acceptance_criteria": [
+        "ADAS calibration requirements mapped for at least 4 major OEMs with incremental labor cost and time-per-repair estimates for each",
+        "EV-specific repair capability requirements described with capital investment thresholds for at least Tesla and one additional OEM certification program",
+        "Competitive structure assessment rendered: chains vs. specialized independents advantage scored as high, medium, or low across ADAS, EV, and AV vectors separately, with supporting evidence and counterevidence cited for each vector",
+        "Entry timing window verdict rendered as compressed, neutral, or extended relative to pre-ADAS/EV baseline, with explicit rationale and acknowledgment of alternative interpretation",
+        "Autonomous vehicle penetration collision demand impact modeled across at least two scenarios (base and bear) over a 5–10 year horizon with source-cited penetration rate assumptions"
+      ],
+      "deliverable_destination": "Section 6: Revenue Growth & Technology Disruption",
+      "passes": false,
+      "priority": 12,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate whether ADAS calibration requirements, EV repair specialization demands, and autonomous vehicle penetration trajectories structurally advantage scaled chain operators or specialized independents across the top 10 MSAs—examining evidence for each directional outcome—and assess whether these technological vectors compress or extend the viable entry window for a new collision repair platform entrant, including evidence that entry conditions are improving as well as deteriorating under each technology scenario.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "paper_search",
+        "finnhub_market",
+        "edgar_filings"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [
+        "task_011"
+      ],
+      "end_product": "Technology disruption impact brief comprising: (1) ADAS calibration cost and complexity matrix by OEM (minimum 4 OEMs) with incremental labor hours and equipment requirements, (2) EV repair capability investment threshold table by certification tier, (3) chain vs. specialized-independent competitive advantage scorecard across ADAS, EV, and AV vectors with evidence ratings, (4) entry timing window verdict with directional rationale and alternative-interpretation acknowledgment, and (5) AV penetration collision demand impact scenario table (base and bear cases) with collision volume reduction ranges and penetration rate assumptions.",
+      "issue_tree_branch_id": "branch_6.2",
+      "custom_category": null
+    },
+    {
+      "id": "task_013",
+      "engagement_id": "eng_74e67db162c7",
+      "client_id": "client_keystone_internal",
+      "category": "regulatory",
+      "type": "current",
+      "target_decision_usefulness": 3,
+      "description": "Assess whether the proprietary training programs, apprenticeship pipelines, and vocational partnerships built by leading consolidators constitute a durable operational moat relative to independents and new entrants, and evaluate the magnitude and interstate variability of EPA VOC emissions, hazardous waste disposal, state automotive repair licensing, and zoning compliance burdens as secondary barriers to entry and multi-site expansion across the top 10 MSAs.",
+      "required_sources": [
+        "chain_training_program_public_disclosures_Caliber_Gerber_Boyd",
+        "I_CAR_Gold_Class_and_ASE_certification_program_documentation",
+        "EPA_VOC_and_hazardous_waste_regulatory_guidance_40_CFR",
+        "state_automotive_repair_licensing_and_registration_databases",
+        "academic_or_industry_environmental_compliance_cost_studies"
+      ],
+      "acceptance_criteria": [
+        "At least 2 leading chain proprietary training programs described with scope, estimated technician throughput capacity, and cost structure where publicly disclosed",
+        "Training infrastructure moat durability assessed as high, medium, or low with balanced evidence cited for and against durability, including replicability via third-party alternatives",
+        "EPA VOC and hazardous waste compliance cost estimates provided for both capex (e.g., spray booth upgrades) and annual opex components, with at least one quantified dollar range",
+        "State automotive repair licensing requirements mapped for at least 8 of the 10 target MSA jurisdictions with a comparative stringency characterization",
+        "Zoning constraint characterization provided across target metros, identifying at least one market with materially more restrictive or permissive industrial-zoning conditions for body shop siting"
+      ],
+      "deliverable_destination": "Section 4: Workforce & Operational Barriers",
+      "passes": false,
+      "priority": 13,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate whether proprietary training infrastructure and EPA/licensing/zoning regulatory compliance burdens represent durable, high-magnitude barriers to entry for new collision repair platform entrants in the top 10 MSAs—examining evidence that these factors constitute meaningful and hard-to-replicate moats as well as evidence that they are surmountable with sufficient capital or replicable through third-party training providers, environmental consultants, and phased facility upgrades—and assess the relative contribution of each factor to the overall entry barrier stack with calibrated magnitude ratings.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "paper_search",
+        "edgar_filings",
+        "doi_verify"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [],
+      "end_product": "Operational moat and compliance barrier brief comprising: (1) chain training program benchmarking table (program name, estimated technician throughput, cost-per-graduate estimate where available, DRP or OEM certification credit linkage), (2) moat durability scorecard with evidence-for and evidence-against ratings and a replicability assessment, (3) regulatory compliance cost table by state/MSA pairing EPA capex and annual opex estimates with state licensing fees and renewal cadence, and (4) zoning constraint characterization across target metros with a relative restrictiveness tier (high/medium/low) for industrial body shop siting.",
+      "issue_tree_branch_id": "branch_4.2",
+      "custom_category": null
+    }
+  ]
+}

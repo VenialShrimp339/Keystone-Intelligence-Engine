@@ -1,0 +1,211 @@
+{
+  "root": {
+    "id": "root",
+    "name": "US Auto Body Repair Competitive Landscape Across Top-10 MSAs",
+    "description": "Unified MECE decomposition evaluating competitive structure, consolidation trajectory, chain vs independent dynamics, demand routing architecture, unit economics, operational barriers, entry viability, and forward-looking disruption forces in the US collision repair industry across the ten largest metropolitan areas by population",
+    "children": [
+      {
+        "id": "branch_1",
+        "name": "Market Size, Segmentation & Competitive Concentration",
+        "description": "How large is the addressable collision repair market in each top-10 MSA, how is competitive share distributed between chains and independents, and what is the consolidation trajectory",
+        "children": [
+          {
+            "id": "branch_1.1",
+            "name": "Metro-Level Revenue Pool Sizing & Segmentation",
+            "description": "What is the total collision repair revenue in each top-10 MSA, how does volume segment by claim type (insurance-driven vs cash-pay), vehicle class, and repair complexity tier, and which metros represent the largest addressable opportunity by revenue density?",
+            "children": [],
+            "lens_annotations": {
+              "financial": "Total revenue pool quantification and chain vs independent dollar split",
+              "market": "Segmentation by claim type, vehicle class, and complexity tier per metro"
+            }
+          },
+          {
+            "id": "branch_1.2",
+            "name": "Chain vs Independent Market Share & Consolidation Trajectory",
+            "description": "What market share do the top chains (Caliber Collision, Gerber/Boyd, Service King) hold in each MSA relative to independents, is consolidation accelerating or plateauing at the metro level, what HHI concentration levels exist, and how has the chain/independent split trended over the past five years?",
+            "children": [],
+            "lens_annotations": {
+              "financial": "Five-year chain vs independent revenue share trending",
+              "market": "HHI concentration levels, PE acquisition cadence variation across geographies, consolidation stage assessment"
+            }
+          }
+        ],
+        "lens_annotations": {
+          "financial": "Revenue pool sizing, chain/independent revenue split and five-year trending",
+          "market": "Metro-level segmentation by claim type and vehicle class, HHI concentration levels, PE acquisition cadence by geography"
+        }
+      },
+      {
+        "id": "branch_2",
+        "name": "Demand Routing Architecture: Insurer & OEM Intermediary Power",
+        "description": "Who controls where damaged vehicles get repaired \u2014 mapping the insurer DRP and OEM certification structures that determine volume allocation and competitive advantage beyond shop-level quality or proximity",
+        "children": [
+          {
+            "id": "branch_2.1",
+            "name": "Insurer DRP Volume Allocation, Breadth Requirements & Economics",
+            "description": "How do major insurer Direct Repair Programs (State Farm, GEICO, Progressive, Allstate) allocate repair volume across chains and independents? Do DRP breadth requirements \u2014 minimum participating shop counts per metro \u2014 structurally protect independents from full consolidation? What are DRP qualification thresholds, preferred-vendor economics, pricing constraints, and the net margin impact of DRP participation vs non-DRP operation?",
+            "children": [],
+            "lens_annotations": {
+              "financial": "DRP revenue predictability, throughput volume impact, pricing constraints, net margin differential vs non-DRP shops",
+              "market": "DRP breadth requirements as structural protection for independents, qualification thresholds, volume allocation mechanics across chains and independents"
+            }
+          },
+          {
+            "id": "branch_2.2",
+            "name": "OEM Certification as Routing Mechanism, Capability Gate & Competitive Moat",
+            "description": "How do OEM certification programs (Tesla, Rivian, BMW, Mercedes-Benz) create mandatory routing advantages, premium labor rate authorization, and barriers to imitation? What capital investment in equipment, training, facility upgrades, and estimating platform integrations (CCC One, Mitchell, Audatex) do certifications require? Which certification portfolios yield the highest competitive leverage in EV-dense or luxury-vehicle-dense metros among the top 10?",
+            "children": [],
+            "lens_annotations": {
+              "operational": "Equipment, diagnostic tool, and facility investment requirements for OEM certifications; estimating platform integration mandates",
+              "market": "Routing advantages, premium labor rate authorization, barriers to imitation, certification portfolio leverage in EV- and luxury-dense metros"
+            }
+          }
+        ],
+        "lens_annotations": {
+          "financial": "DRP contract economics: revenue predictability, pricing constraints, net margin impact",
+          "operational": "OEM certification investment requirements, technology platform integrations, diagnostic tool mandates",
+          "market": "DRP breadth requirements protecting independents, OEM routing advantages creating barriers to imitation"
+        }
+      },
+      {
+        "id": "branch_3",
+        "name": "Shop-Level Unit Economics & Multi-Location Scale Advantages",
+        "description": "How profitable is a collision repair shop, what drives margin differentials between chain and independent operators, and at what scale do multi-location advantages become financially material",
+        "children": [
+          {
+            "id": "branch_3.1",
+            "name": "Shop-Level Revenue, Cost Structure & EBITDA Margins",
+            "description": "What are typical annual revenues, labor and parts cost structures, and shop-level EBITDA margins for chain-operated vs independent shops? What cost-side factors (labor rates, parts mix, overhead allocation, DRP pricing concessions) account for any structural margin gap between the two operating models?",
+            "children": [],
+            "lens_annotations": {
+              "financial": "Revenue throughput per shop, labor and parts cost ratios, EBITDA margin benchmarking between chain and independent operators"
+            }
+          },
+          {
+            "id": "branch_3.2",
+            "name": "Multi-Location Scale Economies in Procurement, Overhead & Labor Utilization",
+            "description": "At what shop count do scale advantages in parts procurement, shared G&A, and labor utilization become financially material? What volume-based pricing advantages do top chains achieve with parts suppliers and paint vendors relative to independents, how large is the per-unit cost gap, and what is the incremental EBITDA margin lift as a roll-up platform grows from 5 to 50 to 500+ locations?",
+            "children": [],
+            "lens_annotations": {
+              "financial": "Threshold shop counts for material scale advantages, incremental EBITDA margin lift curves across platform size",
+              "operational": "Procurement volume pricing gaps with OEM, LKQ/recycled, and aftermarket suppliers; paint and materials vendor discount structures"
+            }
+          }
+        ],
+        "lens_annotations": {
+          "financial": "Revenue throughput, labor and parts cost structures, EBITDA margins, scale-driven margin uplift thresholds",
+          "operational": "Procurement volume discounts from OEM, LKQ/recycled, and aftermarket parts suppliers; shared G&A and labor utilization efficiencies"
+        }
+      },
+      {
+        "id": "branch_4",
+        "name": "Workforce Constraints & Operational Capability Barriers",
+        "description": "How technician availability, certification pipelines, training infrastructure, and regulatory compliance create operational barriers to entry and binding constraints on scaling for both incumbents and new entrants",
+        "children": [
+          {
+            "id": "branch_4.1",
+            "name": "Certified Technician Supply, Wage Dynamics & Retention by MSA",
+            "description": "How does I-CAR Gold Class and ASE-certified body technician and painter supply vary across the top 10 MSAs? What wage escalation, retention challenges, and labor market tightness do chains and independents face competing for this constrained talent pool, and does technician scarcity represent a binding constraint on acquisition-based scaling pace?",
+            "children": [],
+            "lens_annotations": {
+              "operational": "Technician supply variation across MSAs, wage escalation trends, retention rates, labor market tightness as a scaling constraint"
+            }
+          },
+          {
+            "id": "branch_4.2",
+            "name": "Training Infrastructure, Workforce Development & Regulatory Compliance Barriers",
+            "description": "What proprietary training programs, apprenticeship pipelines, and vocational partnerships have leading chains built to structurally address technician scarcity \u2014 and does this represent a durable operational moat relative to independents and new entrants? What EPA VOC emissions, hazardous waste disposal, state licensing, and zoning compliance burdens create additional operational cost and barriers to entry or multi-site expansion across target metros?",
+            "children": [],
+            "lens_annotations": {
+              "operational": "Proprietary training programs and apprenticeship pipelines as competitive moats; environmental compliance costs, state-level licensing regimes, and zoning constraints as secondary entry barriers"
+            }
+          }
+        ],
+        "lens_annotations": {
+          "operational": "Technician supply by MSA, I-CAR/ASE certification pipelines, wage dynamics, proprietary training programs, apprenticeship infrastructure, EPA/VOC compliance, state licensing and zoning regimes"
+        }
+      },
+      {
+        "id": "branch_5",
+        "name": "Entry Economics, Acquisition Valuation & Roll-Up Execution",
+        "description": "What capital is required to enter or expand in the top-10 MSAs, at what financial terms are transactions occurring, and what operational risks attend rapid acquisition-based scaling",
+        "children": [
+          {
+            "id": "branch_5.1",
+            "name": "Entry Capital Requirements: Acquisition vs Greenfield Comparison",
+            "description": "What is the all-in capital requirement to acquire a going-concern collision shop vs build greenfield in a top-10 MSA \u2014 including real estate or lease capitalization, equipment, OEM certifications, working capital, ramp-up losses, DRP onboarding timelines, and time to competitive parity? What payback periods does each path imply, and which metros offer the most favorable entry economics?",
+            "children": [],
+            "lens_annotations": {
+              "financial": "Total capital stack: real estate/lease, equipment, OEM certifications, working capital, ramp-up losses to breakeven",
+              "market": "DRP onboarding timelines, facility footprint requirements, competitive parity gap duration for new entrants"
+            }
+          },
+          {
+            "id": "branch_5.2",
+            "name": "Acquisition Multiples, PE Leverage & Roll-Up Financial Sustainability",
+            "description": "At what EBITDA multiples are leading consolidators acquiring shops (platform vs tuck-in), what leverage ratios do PE sponsors apply, how does current debt service coverage constrain the pace and financial viability of continued roll-up activity, and is the 10-14x multiple range sustainable given current interest rate environments and shop-level free cash flow generation?",
+            "children": [],
+            "lens_annotations": {
+              "financial": "Platform vs tuck-in EBITDA multiples, leverage ratios, debt service coverage ratios, roll-up arbitrage sustainability under current rate environments"
+            }
+          },
+          {
+            "id": "branch_5.3",
+            "name": "Post-Acquisition Integration Playbooks & Rapid-Scaling Execution Risk",
+            "description": "What operational integration systems do leading chains deploy post-acquisition (estimating platform migration, DRP compliance re-credentialing, cycle-time and quality auditing, financial reporting consolidation), what is the typical timeline to full operational standardization, and what documented failure modes \u2014 cycle time degradation, quality score erosion, technician turnover spikes, DRP program suspension \u2014 attend rapid acquisition-based scaling?",
+            "children": [],
+            "lens_annotations": {
+              "operational": "Integration playbook components, standardization timelines, execution failure modes at pace including cycle time degradation, quality erosion, technician turnover, and DRP suspension risk"
+            }
+          }
+        ],
+        "lens_annotations": {
+          "financial": "All-in entry capital stacks, EBITDA multiples, leverage ratios, debt service coverage, roll-up financial sustainability",
+          "operational": "Integration playbooks, estimating platform migration, DRP re-credentialing, cycle-time and quality auditing, execution failure modes",
+          "market": "Entry path payback periods, structural barrier assessment, competitive parity timelines"
+        }
+      },
+      {
+        "id": "branch_6",
+        "name": "Revenue Growth Dynamics & Technology Disruption Vectors",
+        "description": "What forces are expanding or contracting the collision repair revenue pool, and how will ADAS, EV, and autonomous vehicle penetration reshape competitive structure, shop capability requirements, and the new-entrant timing window",
+        "children": [
+          {
+            "id": "branch_6.1",
+            "name": "Claim Frequency, Ticket Size & Repair Complexity Growth Drivers",
+            "description": "How are collision claim frequency, average repair ticket size, and ADAS-driven labor and parts complexity uplift trending across the top MSAs? Is the revenue pool net expanding (rising ticket sizes and more complex repairs) or contracting (ADAS reducing accident frequency, longer vehicle replacement cycles), and what is the net effect on shop-level throughput and revenue growth over a 3-5 year horizon?",
+            "children": [],
+            "lens_annotations": {
+              "financial": "Claim frequency trends, average repair order value growth, ADAS and EV complexity uplift on labor hours and parts cost per repair"
+            }
+          },
+          {
+            "id": "branch_6.2",
+            "name": "ADAS, EV & Autonomous Vehicle Impact on Competitive Structure & Entry Timing",
+            "description": "How will ADAS calibration complexity, EV-specific body repair specialization (high-voltage battery safety, aluminum/composite unibody structures), and longer-term autonomous vehicle penetration reshape shop capability requirements, repair economics, and competitive structure across the top MSAs? Do these vectors structurally favor scaled chain operators or specialized independents, and do they compress or extend the viable entry window for a new platform entrant?",
+            "children": [],
+            "lens_annotations": {
+              "financial": "EV transition effect on repair economics and shop equipment eligibility thresholds",
+              "market": "Structural competitive implications for chain vs independent advantage, entry timing window compression or extension"
+            }
+          }
+        ],
+        "lens_annotations": {
+          "financial": "Claim frequency trends, average repair ticket growth, ADAS/EV complexity uplift on labor and parts cost, revenue pool expansion or contraction",
+          "market": "ADAS calibration as capability gate, EV specialization as competitive filter, autonomous vehicle penetration effect on long-term repair demand, entry timing window implications"
+        }
+      }
+    ],
+    "lens_annotations": {}
+  },
+  "metadata": {
+    "depth": 2,
+    "leaf_count": 13,
+    "lenses_used": [
+      "financial",
+      "operational",
+      "market"
+    ],
+    "synthesis_rationale": "The market/competitive lens was selected as the structural backbone given the evaluative engagement type, with its three-branch framework (market structure, demand routing, new entrant viability) providing the clearest alignment to the Day-1 Hypothesis claims about consolidation stage, chain share levels, and entry economics. Six major merges were performed across lenses: (1) revenue pool sizing from the financial lens (fin_1_1) and market lens (mkt_1_1) were merged into branch_1.1; (2) chain/independent share trending (fin_1_1) and consolidation trajectory analysis (mkt_1_2) were merged into branch_1.2; (3) DRP contract economics (fin_2_2) and DRP breadth/volume allocation structure (mkt_2_1) were merged into branch_2.1; (4) OEM certification equipment and platform requirements (ops_1_1) and OEM routing/moat analysis (mkt_2_2) were merged into branch_2.2; (5) multi-location scale economies (fin_2_3) and procurement volume advantages (ops_3_1) were merged into branch_3.2; and (6) entry capital requirements (fin_3_1) and entry barrier assessment (mkt_3_1) were merged into branch_5.1, while revenue growth drivers (fin_1_2) and technology disruption vectors (mkt_3_2) were merged into branch_6 with two sub-branches separating near-term revenue dynamics from structural competitive reshaping. Three nodes were promoted as hypothesis-critical: branch_2.1 (DRP breadth requirements) directly tests the 'durable independent-shop majority' claim, branch_5.2 (acquisition multiples) directly tests the '10-14x EBITDA' claim, and branch_1.2 (consolidation trajectory) directly tests the 'mid-stage' consolidation claim. Environmental regulatory compliance (ops_1_2) was folded into branch_4.2 alongside training infrastructure rather than standing as a separate leaf, as it represents a secondary operational cost burden rather than a primary competitive differentiator for this evaluative question. The operational lens's acquisition integration and execution risk nodes (ops_4_1, ops_4_2) were preserved intact as branch_5.3, as roll-up execution risk is analytically central to assessing whether PE-driven consolidation can sustain its current pace \u2014 a direct test of whether the market is truly 'mid-stage' or approaching integration capacity limits."
+  }
+}

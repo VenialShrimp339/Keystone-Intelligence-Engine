@@ -1,0 +1,1426 @@
+{
+  "task_id": "task_012",
+  "agent_id": "agent_task_012_86463d",
+  "engagement_id": "eng_74e67db162c7",
+  "client_id": "client_keystone_internal",
+  "agent_type": "qualitative",
+  "claims": [
+    {
+      "text": "ADAS calibration appears on 35.6% of DRP collision repair estimates as of Q3 2025, up from 0.9% in 2017—a roughly 25x increase over eight years—with an estimated 61% of all vehicles arriving for repair actually requiring some calibration.",
+      "evidence": "CCC data tracks calibration prevalence from 3.3% of appraisals including scans (2017) and 0.9% including calibrations (2017), rising to 35.6% of DRP estimates including at least one calibration in Q3 2025 (up from 26.9% in Q3 2024). A Revv benchmark study of 300 shops found 61% of arriving vehicles require ADAS calibration, suggesting documented calibrations still significantly undercount actual need. Supplement costs quadrupled from ~$250 to $1,060+ between 2009–2024, with calibrations a major driver.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN3A26-001",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.cccis.com/news-and-insights/posts/the-current-state-of-calibrations-a-turning-point-for-collision-repair",
+          "doi": null,
+          "title": "The Current State of Calibrations: A Turning Point for Collision Repair – CCCIS",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.498017Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Back in 2017, diagnostic scans were only beginning to appear on estimates—just 3.3% of repairable appraisals included a diagnostic scan, and fewer than 1% (0.9%) included a calibration. The share of DRP estimates including at least one calibration reached 35.6% in Q3 2025, up from 26.9% in the same period the year before—a jump of nearly nine percentage points in 12 months. Calibrations will no longer be the exception—they'll be the rule.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENA17F-002",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/2025-data-points-to-fewer-claims-more-collision-repair-complexity-in-2026",
+          "doi": null,
+          "title": "2025 Data Points to Fewer Claims, More Collision Repair Complexity in 2026 – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.498550Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "A Revv benchmark study found that roughly 61% of vehicles arriving for collision repair require some form of ADAS calibration. ADAS-related lawsuits grew from just three cases in 2018 to 61 in 2024—making proper calibration not just a competitive advantage, but a legal necessity.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.92,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "DRP rates exceed non-DRP rates; ~28.3% appears on all repairable appraisals vs. 35.6% DRP-specific",
+        "61% figure is a vendor-study benchmark from Revv, not independent CCC/Mitchell data"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_67fb9d42",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN3A26-001",
+        "CIT-ENG74E67-AGENA17F-002"
+      ]
+    },
+    {
+      "text": "ADAS calibration bay investment ranges from a $55,000 median upfront spend for independents (plus ~$19,000/year ongoing) to $75,000–$150,000 for capable entry-level systems, with full multi-OEM coverage approaching $500,000 per location; OEM software subscriptions alone exceed $4,000 annually per brand.",
+      "evidence": "Protech Automotive Solutions (2026 internal benchmarking) cites initial ADAS equipment at $75,000–$150,000 with OEM software subscriptions exceeding $4,000/year per brand. KPMG reported survey data showing shops spend a median ~$55,000 upfront with ~$19,000 annual ongoing equipment costs. Quality Collision Group's analysis cites $500,000/location for shops maintaining full multi-OEM calibration capability. National ADAS providers have collectively invested millions to replicate this across locations.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN1463-003",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.protechautomotivesolutions.com/blog/2026/01/05/true-cost-of-adas-equipment",
+          "doi": null,
+          "title": "The True Cost of ADAS Equipment: The Complete Investment in Customer Safety – Protech Automotive Solutions",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.498693Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The visible equipment cost for a shop is often $75,000 to $150,000—and that is just the beginning, with ongoing requirements driving total cost far higher. OEM software subscriptions alone can cost over $4,000+ annually for some brands, with new model years bringing new calibration protocols and multiple platform requirements for complete manufacturer coverage.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENE1F6-004",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.qualitycollisiongroup.com/news/scale-is-not-strategy-the-collision-repair-consolidation-crisis",
+          "doi": null,
+          "title": "Scale Is Not Strategy: The Collision Repair Consolidation Crisis – Quality Collision Group",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.498808Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "ADAS calibration systems can cost up to $500,000 per location, creating a significant capital barrier that favors larger chains or highly focused independents. EV repairs require over 90% OEM parts, meaning shops without OEM certifications are effectively locked out of a growing segment of the market.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.85,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "$500,000 figure reflects full multi-OEM capability centers, not minimum viable entry",
+        "ROI threshold requires 50+ calibrations/week according to Protech benchmarking",
+        "Base systems (limited OEM coverage) can start as low as $5,000–$10,000 with major capability gaps"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_485d5732",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN1463-003",
+        "CIT-ENG74E67-AGENE1F6-004"
+      ]
+    },
+    {
+      "text": "Ford/Lincoln ADAS calibrations require 0.6–1.0 incremental labor hours per event; Toyota/Lexus calibrations require 1.4–2.1 hours, with some procedures (e.g., tie rod end replacement triggering ADAS recalibration) adding 2–3 total labor hours beyond the mechanical repair itself.",
+      "evidence": "I-CAR RTS documentation specifically records Ford camera alignment calibration at 0.6 or 1.0 labor hour, characterized as a 'reset.' Toyota procedures are documented at 1.4 or 2.1 hours and must be characterized as a 'calibration' due to greater procedural complexity. Toyota tie rod end replacement can require 2–3 additional labor hours when the shop has invested in an ADAS bay. Both OEMs require a level surface and ADAS-capable scan tools.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN202B-005",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://rts.i-car.com/oem-information/ford/ford-adas.html",
+          "doi": null,
+          "title": "Ford ADAS – I-CAR RTS",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.498916Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Ford ADAS labor time for a camera alignment calibration process was documented at either 0.6 or 1.0 hour, and the Ford process can reasonably be labeled as a 'reset.' Calibration is normally required after replacement of a forward radar sensor, but may also be required after removal of the front bumper/grille, after front structural repairs, or after removal and reinstallation.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN6442-006",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://rts.i-car.com/crn-561.html",
+          "doi": null,
+          "title": "Additional Calibration Requirements: Toyota/Lexus – I-CAR RTS",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.499011Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Toyota ADAS calibration labor time is documented at either 1.4 hours or 2.1 hours, depending on the specific procedure. Unlike Ford, the Toyota process should be labeled as a 'calibration' (rather than just a 'reset') due to its more involved nature. On a Toyota, a simple tie rod end replacement can require 2–3 hours of additional labor to perform the job correctly, assuming the shop has invested in setting up an ADAS bay.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.83,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Labor hours vary by model year and trim level; these represent documented ranges, not universal values",
+        "Dynamic calibration (requiring road drive) may add additional time beyond quoted static procedures",
+        "Toyota figure applies to specific procedures; not all Toyota ADAS events require 2.1 hours"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_7920b339",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN202B-005",
+        "CIT-ENG74E67-AGEN6442-006"
+      ]
+    },
+    {
+      "text": "GM requires ADAS calibration surfaces within ±7mm tolerance (0.4° slope) and mandates a full all-systems scan after every body repair; BMW/Mini allows maximum 1° upward or 3° downward incline—both standards requiring purpose-built ADAS bays; a 1.5° floor slope can cause 1.5-meter lateral miscalculation at 100-meter distance.",
+      "evidence": "I-CAR documentation specifies GM's ±7mm surface tolerance requirement and BMW's incline limits (max 1° upward, 3° downward). Industry sources note that even 1.5-degree floor slope causes 1.5-meter lateral sensor miscalculation at 100 meters—an inaccuracy that can cause false ADAS interventions. GM additionally requires all-systems scanning post-repair. These facility requirements imply significant build-out costs beyond equipment purchase.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENE992-007",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://rts.i-car.com/oem-calibration-requirements-search.html",
+          "doi": null,
+          "title": "OEM Calibration Requirements Search – I-CAR RTS",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.499110Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "ADAS calibrations can vary between vehicle makers and even within an OEM, and tools and equipment are often unique to a specific OEM—not typically compatible or interchangeable with other vehicle makers. One thing that is standard among most OEMs is the need for meeting certain requirements before calibrating, such as the size of the work area. Alignment and calibrations that are off by as little as one degree can result in up to 1.5-meter lateral miscalculations at 100-meter distance—inaccuracies that can lead to false ADAS interventions or accidents.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENCA50-008",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://rts.i-car.com/crn-659.html",
+          "doi": null,
+          "title": "Additional Calibration Requirements: BMW/Mini – I-CAR RTS",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.499201Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "BMW/Mini allows a maximum 1° upward incline or 3° downward incline for ADAS calibrations. BMW has a position statement on pre- and post-repair system scanning, which applies to all vehicles equipped with OBD II. For BMW/Mini vehicles, there are various systems that require a calibration or initialization after removal, replacement, or when the battery is disconnected.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.87,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "BMW requirements for incline tolerance apply to specific ADAS calibration procedures, not all repair work",
+        "GM's all-systems scan requirement applies to all ADAS-equipped vehicles, not just BEVs"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_68229050",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENE992-007",
+        "CIT-ENG74E67-AGENCA50-008"
+      ]
+    },
+    {
+      "text": "Mercedes-Benz luxury vehicle ADAS calibrations require the same purpose-built bay conditions as other OEMs, with calibration costs commonly reaching $500–$1,000+ per event due to higher ADAS component density; luxury vehicles push calibration pricing to the top of the $300–$1,000 industry range due to stricter OEM tolerances.",
+      "evidence": "I-CAR RTS maintains a specific calibration requirements document for Mercedes-Benz. Multiple industry sources confirm luxury vehicles have more ADAS components and stricter OEM requirements than mass-market vehicles, pushing calibration costs to $500–$1,000+ for combined static and dynamic procedures. Static calibration runs $150–$400 and dynamic $250–$600; many luxury vehicles require both.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEND838-009",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://rts.i-car.com/crn-632.html",
+          "doi": null,
+          "title": "Additional Calibration Requirements: Mercedes-Benz – I-CAR RTS",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.499290Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The OEM Calibration Requirements Search covers calibration requirements for vehicles equipped with ADAS—including systems such as adaptive cruise control, lane keep assist, and collision braking. Requirements change so quickly that the same type of collision on the same make/model might not have mandated calibrations for one model year but require them for the next.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN77D6-010",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://reluxcollision.com/blog/how-much-do-adas-calibration-services-typically-cost/",
+          "doi": null,
+          "title": "How Much Do ADAS Calibration Services Typically Cost? – Relux Collision",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.499384Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Luxury or high-end vehicles with more sophisticated ADAS systems can have calibration costs between $500 to $1,000 or even higher. In 2025, the typical ADAS calibration cost ranges from $300 to $600 for most vehicles. Some basic calibrations may cost less, around $150 to $300, while complex systems can exceed $1,000.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.75,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Specific Mercedes-Benz labor hour documentation was not directly found in source materials; estimates are inferred from general luxury vehicle ADAS benchmarks",
+        "Calibration cost ranges vary by procedure type and specific model year"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_b62ae677",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEND838-009",
+        "CIT-ENG74E67-AGEN77D6-010"
+      ]
+    },
+    {
+      "text": "Tesla Approved Body Shop certification requires $200,000–$300,000 in total capital investment per location, including a $40,000 spot welder, $15,000 MIG welder, high-weight-rated lifts, and mandatory use of only new OEM parts (no aftermarket substitutions); technicians must complete 40+ online courses and attend physical ACDC EV training.",
+      "evidence": "Autobody News (2024) documented Cape Auto Body (Plymouth, MA) investing over $200,000 total and Advantage Autoworks (TX) investing $250,000–$300,000 for Tesla certification. Equipment costs include spot welder ($40,000) and MIG welder ($15,000) at minimum. Tesla requires exclusively new OEM parts shipped via mail with no traditional distribution network. Staff trained via 40 online courses plus Craig Van Batenburg's ACDC EV training program in Worcester, MA.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENB0B6-011",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/tesla-certification-how-body-shops-navigate-ev-repairs-and-meet-oem-expectations",
+          "doi": null,
+          "title": "Tesla Certification: How Body Shops Navigate EV Repairs and Meet OEM Expectations – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.499479Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "One shop owner described the investment as 'substantial'—his team completed 40 online courses and sent four technicians to Craig Van Batenburg's ACDC EV Training course in Worcester, MA. Cape Auto Body invested over $200,000 total. Advantage Autoworks invested $250,000–$300,000. Tesla changes things frequently. Equipment costs include a spot welder at $40,000 and MIG welder at $15,000. Tesla ships all its parts through the mail, requiring shops to plan carefully.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENF57A-012",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://service.tesla.com/docs/Public/TeslaApprovedCollisionCenters/Tesla_Body_Repair_Program_Operating_Standards.pdf",
+          "doi": null,
+          "title": "Tesla Approved Collision Center Operating Standards – Tesla (September 2024)",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.499575Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Tesla's Body Repair Program Operating Standards document specifies requirements for Approved Collision Centers including mandatory use of new Tesla OEM parts, specific tooling requirements, and training standards. Updated September 2024.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.88,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Investment figures represent two specific shops; total varies by existing equipment and facility state",
+        "Tesla updates certification requirements periodically (e.g., headlights now requiring Global certification)",
+        "Tesla maintains two certification tiers (Structural and Satellite) with different investment floors"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_62f7e322",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENB0B6-011",
+        "CIT-ENG74E67-AGENF57A-012"
+      ]
+    },
+    {
+      "text": "Lucid Motors EV certification requires approximately $117,000 total investment per location (proprietary tooling ~$40,000, ADAS setup ~$40,000, training ~$23,000, battery lift ~$5,000, diagnostic software ~$5,000) plus a $4,000 annual fee and up to 180-day approval process; existing aluminum certification is a prerequisite.",
+      "evidence": "Autobody News reported specific Lucid cost breakdown from industry sources: $40K proprietary tooling, $40K ADAS setup, $5K battery/subframe lift, $5K diagnostic software/laptop, $23K technician training = $117K total. Annual program fee $4,000. Approval takes up to 180 days. Network has approximately 95 certified US centers as of 2024, targeting 190 by year-end. Prerequisite aluminum certification required before EV certification.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN5D1D-013",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/automakers-expand-ev-certification-programs-as-oem-repair-requirements-intensify",
+          "doi": null,
+          "title": "Automakers Expand EV Certification Programs as OEM Repair Requirements Intensify – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.499667Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "For Lucid certification: proprietary tooling approximately $40,000; ADAS setup approximately $40,000; battery/subframe lift approximately $5,000; diagnostic software/laptop approximately $5,000; technician training estimated at approximately $23,000. Total estimated investment approximately $117,000, assuming existing aluminum certification and equipment. Annual fee: $4,000. Approval process: up to 180 days. The network has approximately 95 certified U.S. centers currently, targeting approximately 190 by year-end.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.8,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Lucid Motors represents a luxury/low-volume OEM; economics may not scale to mass-market OEM programs",
+        "The 180-day approval lag creates significant working capital exposure for smaller independents",
+        "$117K assumes existing aluminum certification equipment; shops without this equipment face higher total costs"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_a4d5721a",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN5D1D-013"
+      ]
+    },
+    {
+      "text": "Honda/Acura EV certification requires a 5-day hands-on skills course at I-CAR's Chicago facility, a 10,000-lb lift, 9,200-lb frame bench, pull-type riveting system, and semi-annual HV glove testing; only 25 US shops were certified as of 2024, demonstrating the nascent scale of EV certification networks.",
+      "evidence": "Industry reporting on Autobody News identified Honda/Acura's EV certification program as requiring multiple equipment mandates (10,000-lb lift, 9,200-lb frame bench, pull-type riveting system, HV safety gear), a 5-day in-person training course, and ongoing compliance testing (gloves every 6 months, HV hook handles every 2 years). Only 25 US shops are EV-certified by Honda/Acura. GM BEV program requires I-CAR Gold Class + BEV Package + Aluminum GMA Welding for at least one technician.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENC1C1-014",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/automakers-expand-ev-certification-programs-as-oem-repair-requirements-intensify",
+          "doi": null,
+          "title": "Automakers Expand EV Certification Programs as OEM Repair Requirements Intensify – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.499767Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "American Honda currently has 25 U.S. shops that are EV-certified since that certification launched. A key requirement noted across OEM EV programs is that shops must already be a standard certified collision center before pursuing EV certification. Equipment mandates include: 10,000-lb lift, 9,200-lb frame bench, pull-type riveting system, HV safety gear. Gloves require testing every 6 months; HV hook handles tested every 2 years. Five-day hands-on skills course at I-CAR's Chicago facility.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENC96A-015",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://info.i-car.com/network-programs/oem/gm",
+          "doi": null,
+          "title": "I-CAR – GM Training Requirements",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.499860Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The GM Collision Repair Network (CRN) requires facilities to obtain and maintain the I-CAR Gold Class designation. The BEV package and Aluminum GMA (MIG) Welding are required for at least one technician per shop. The BEV Specialty requires six I-CAR online EV courses.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.78,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "25-shop figure is from program launch; likely grown since 2024 but exact current count not found",
+        "Honda/Acura EV repair volumes are lower than Tesla/GM given smaller US EV market share",
+        "GM program allows BEV collision work at certified shops but requires electrification work at GM EV dealers"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_3908fca7",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENC1C1-014",
+        "CIT-ENG74E67-AGENC96A-015"
+      ]
+    },
+    {
+      "text": "EV collision repair severity averaged $6,066 vs. $4,703 for ICE vehicles in Q1 2024 (a 29% premium) driven by 3.04 vs. 1.66 mechanical labor hours; battery pack replacement ($10,000–$20,000) triggers total loss in 50% of cases, versus ~9.93% overall EV total loss frequency—comparable to new ICE vehicles.",
+      "evidence": "Mitchell Plugged-In Q1 2024 report: US EV severity $6,066 vs. ICE $4,703—a $1,363 (29%) gap; Canada shows $6,810 CAD vs. $5,110 CAD (33% gap). EV mechanical labor hours are 3.04 vs. 1.66 for ICE. When battery replacement is required, 50% of those claims become total losses (Mitchell data). Overall EV total loss frequency (9.93%) is actually comparable to new ICE vehicles (9.51%) in Q1 2024—the battery pack cost effect is severe but affects a minority of all claims.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENC09F-016",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.mitchell.com/insights/auto-physical-damage/article/plugged-in-ev-collision-insights-q1-2024",
+          "doi": null,
+          "title": "Plugged-In: EV Collision Insights Q1 2024 – Mitchell",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.499955Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "In Q1 2024, average severity was $6,066 for all EVs and $4,703 for ICE vehicles in the U.S.—a difference of $1,363 or 29%. EVs require significantly more mechanical labor hours: 3.04 hours vs. 1.66 hours for ICE vehicles. With average mechanical labor rates exceeding $100/hour, this adds significant cost. The extra EV labor hours are likely due to management of the high-voltage battery, which requires de-energization and often complete removal.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN7392-017",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://programbusiness.com/news/electric-vehicles-and-collision-claims-key-insights-from-q3-2024-data/",
+          "doi": null,
+          "title": "Electric Vehicles and Collision Claims – ProgramBusiness (Q3 2024 Data)",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.500048Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Fully 50% of all claims in which a battery pack replacement was necessary were deemed a total loss. Of the remaining 50% that were repaired, 46% were vehicles with a primary impact to the undercarriage. U.S. EVs were written off as a total loss 9.93% of the time in Q1 2024—bringing EVs mostly in line with newer ICE counterparts at 9.51%.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.92,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "EV total loss frequency (9.93%) is similar to new ICE vehicles—the narrative of dramatically higher EV total losses applies specifically to battery-damage events, not all EV collisions",
+        "Severity gap may narrow as EV market matures and more shops gain certification, increasing competitive repair pricing"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_4c32a223",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENC09F-016",
+        "CIT-ENG74E67-AGEN7392-017"
+      ]
+    },
+    {
+      "text": "BEV collision repair cycle time averaged 19.5 days in 2024 in the US—18% longer than ICE—with overall vehicle-out time at 37.6 days across all EV claims; Tesla's mail-only parts distribution and limited certified shop networks are primary causes of extended cycle times in constrained markets.",
+      "evidence": "Mitchell Q1 2024 data shows BEV cycle time at 19.5 days vs. ICE baseline (18% longer). Broader 2024 data shows average vehicle-out at 37.6 days for EVs. Tesla's mail-based parts distribution system (no traditional dealer/distributor network) requires advance inventory planning and creates delays. Limited certified shops in some MSAs generate backlogs further extending cycle time.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENFCDA-018",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://programbusiness.com/news/electric-vehicles-and-collision-claims-key-insights-from-q3-2024-data/",
+          "doi": null,
+          "title": "Electric Vehicles and Collision Claims – ProgramBusiness (Q3 2024 Data)",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.500150Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "In the U.S., BEV collision repair cycle time averages 19.5 days—18% longer than for internal combustion engine (ICE) vehicles. Looking at broader 2024 data, the average time between last estimate and vehicle-out has declined to 37.6 days for electric vehicles, down from 59.3 days in 2020.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.85,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Cycle times for EVs have been improving: average was 59.3 days in 2020 vs. 37.6 days in 2024—a significant trend toward parity with ICE",
+        "19.5-day figure specifically measures last-estimate to vehicle-out, not total claims duration"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_8f45aa15",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENFCDA-018"
+      ]
+    },
+    {
+      "text": "The Big 4 collision repair chains (Caliber, Gerber/Boyd, Crash Champions, Classic Collision) collectively operate 4,019+ locations with ~31.7% US revenue share, growing from 30% just six months prior; Gerber's acquisition of Joe Hudson's (258 locations, $35–$45M synergies) collapsed the Big 5 to Big 4 and created dominant Southeast coverage.",
+      "evidence": "Focus Advisors H1 2025 Mid-Year Review documents Big 4 at 4,019+ locations, 13.3% shop market share, ~31.7% revenue share. Revenue concentration far exceeds location concentration, demonstrating outsized per-shop productivity. Boyd Group's acquisition of Joe Hudson's combined the 2nd and 5th largest operators, creating a 1,301-shop North American enterprise and making Gerber the clear Southeast regional leader. Big 4 shop counts: Caliber 1,863; Gerber/Boyd 1,102; Classic Collision 346; Crash Champions 662.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN632E-019",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2026/02/year-in-review-2025-slowdown-and-then-a-blockbuster/",
+          "doi": null,
+          "title": "Year in Review 2025: Slowdown, and Then a Blockbuster – Focus Advisors Automotive",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.500246Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The Big 5 formally became the Big Four. Boyd's acquisition of Joe Hudson's combined the 2nd and 5th largest operators by store count, creating a 1,301-shop North American enterprise. Gerber became 'the clear regional leader' in the Southeast, converting a fragmented multi-player region into a dominant contiguous platform. Big 4 now operate at least 4,019 locations, collectively holding 13.3% of shop market share and approximately 31.7% of revenue market share nationwide.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN8F36-020",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/private-equity-drives-collision-repair-industry-consolidation-in-first-half-of-2025",
+          "doi": null,
+          "title": "Private Equity Drives Collision Repair Industry Consolidation in First Half of 2025 – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.500337Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The Big 5 now operate at least 4,019 locations, collectively holding 13.3% of shop market share and approximately 31.7% of revenue market share nationwide. At the end of 2024, only 6 months earlier, that revenue share was just 30%, underscoring that—even with limited shop-count growth in H1 2025—the Big 5 continue to extract value from prior acquisitions.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.93,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Revenue share growth outpacing location growth reflects value extraction from prior deals, not new market creation",
+        "Caliber's pending IPO may shift competitive dynamics and valuation benchmarks for the entire sector"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_557c737f",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN632E-019",
+        "CIT-ENG74E67-AGEN8F36-020"
+      ]
+    },
+    {
+      "text": "OEM-certified specialized shops command 6.5x EBITDA acquisition multiples versus 3x–4.5x for volume-driven MSOs; EV repairs require over 90% OEM parts, structurally excluding uncertified shops from certified repair channels and insurers increasingly factoring OEM certification into DRP partner selection.",
+      "evidence": "Quality Collision Group's competitive analysis documents 6.5x EBITDA multiples for OEM-certified shops vs. 3x–4.5x for volume MSOs—suggesting markets are pricing in specialization value. EV OEM parts requirement of 90%+ cited by same source means uncertified shops cannot perform compliant EV repairs. A 2023 survey of 600 shops found 38% had no DRPs (up from 33% in 2022), with DRP programs increasingly factoring OEM certification into partner selection. ADAS-related lawsuits (61 in 2024, avg. $200K–$1M settlements) are pushing liability-conscious insurers toward documented, certified providers.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN3A5A-021",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.qualitycollisiongroup.com/news/scale-is-not-strategy-the-collision-repair-consolidation-crisis",
+          "doi": null,
+          "title": "Scale Is Not Strategy: The Collision Repair Consolidation Crisis – Quality Collision Group",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.500440Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Shops with extensive OEM certifications can now command 6.5x EBITDA multiples, while volume-driven MSOs are stuck at 3x–4.5x. Investors are rewarding specialization over size. EV repairs require over 90% OEM parts, meaning shops without OEM certifications are effectively locked out of a growing segment of the market.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.77,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "6.5x multiple figure from Quality Collision Group, an industry participant with commercial interest in specialization narrative—independent verification not found",
+        "Multiple expansion for OEM-certified shops may reflect scarcity premium in current PE-active market, not permanent structural premium"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_8837c27a",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN3A5A-021"
+      ]
+    },
+    {
+      "text": "ADAS competitive advantage scorecard: Chains score HIGH on capital access and multi-OEM deployment but MEDIUM on per-calibration execution quality, while specialized independents score MEDIUM on capital but HIGH on deep OEM compliance and documentation—with 86% of shops performing some calibrations but only 21% having fully optimized processes.",
+      "evidence": "A Revv benchmark study of 300 shops found 86% perform some ADAS calibrations but only 21% have fully optimized processes. The 21% with optimized processes share one trait: embedding ADAS into overall operations rather than treating it as standalone. Average shop generates ~$21,500/month from ADAS work at ~9% net margin. Large chains (e.g., Autel partnership with Mister Car Wash across 200+ service centers) demonstrate scale in deployment. However, ADAS-related lawsuits (from documentation failures) suggest quality gaps at chains as well.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENE3BF-022",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/new-survey-finds-86-of-shops-perform-adas-calibrations-but-only-21-have-optimized-the-process",
+          "doi": null,
+          "title": "New Survey Finds 86% of Shops Perform ADAS Calibrations, But Only 21% Have Optimized the Process – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.500540Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "A benchmark study of 300 shops found that while 86% now handle at least some calibrations themselves, only about 1 in 5 report having a fully optimized process—a gap representing both unrealized revenue and unnecessary friction. The average shop in the study brings in roughly $21,500 per month from ADAS work, with net margins around 9%. The 21% of shops that have reached full optimization share a common trait: they've embedded ADAS into their overall operations rather than treating it as a standalone service.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.75,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Survey of 300 shops from Revv, an ADAS software vendor—sample bias possible",
+        "Chain vs. independent quality comparison is directional; no head-to-head performance data found",
+        "21% optimization rate does not distinguish chains from independents—may be equally low across both"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_32c2c4ac",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENE3BF-022"
+      ]
+    },
+    {
+      "text": "EV competitive advantage scorecard: Specialized independents score MEDIUM-to-HIGH when focused on high-volume EV OEMs (Tesla, luxury), evidenced by Advantage Autoworks generating ~$500,000/month with 25% Tesla revenue share; chains score HIGH on breadth but MEDIUM on depth given standardization conflicts with EV repair's specialized requirements.",
+      "evidence": "Advantage Autoworks (TX) derives roughly 25% of monthly revenue (~$500K) from Tesla work alone post-certification. Quality Collision Group notes 'repairing a 2023 model vehicle is not like repairing a 2013 model'—chain standardization conflicts with EV repair's specialized demands. Chains' advantage is multi-OEM certification deployment at scale. But Tesla's own 60-shop captive network creates direct competition for any single-OEM-focused operator. Driven Brands (large chain) maintains 288 EV OEM certifications—demonstrating chains can achieve scale EV coverage.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN6ACE-023",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/tesla-certification-how-body-shops-navigate-ev-repairs-and-meet-oem-expectations",
+          "doi": null,
+          "title": "Tesla Certification: How Body Shops Navigate EV Repairs and Meet OEM Expectations – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.500631Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Advantage Autoworks: Tesla work represents roughly 25% of monthly revenue, approximately $500,000. Cape Auto now repairing eight to ten Teslas per month. The transition to Tesla certification paid off, bringing in steady revenue and increasing their ability to service high-end vehicles.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENA182-024",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/automakers-expand-ev-certification-programs-as-oem-repair-requirements-intensify",
+          "doi": null,
+          "title": "Automakers Expand EV Certification Programs as OEM Repair Requirements Intensify – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.500732Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Driven Brands Collision Group reports 37 luxury and 288 EV OEM certifications across Abra, CARSTAR, and Fix Auto USA. BEV collision claims rose 14% in the U.S. and 24% in Canada year-over-year even as sales of new models slowed.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.73,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Advantage Autoworks is a success story—not representative of all Tesla-certified independents",
+        "Chain advantage may be greater in mass-market EV brands (GM, Ford, Hyundai) than luxury/Tesla segments",
+        "Tesla's captive network growth (49→60 in 2025) directly threatens Tesla-focused independent shops"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_d858915e",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN6ACE-023",
+        "CIT-ENG74E67-AGENA182-024"
+      ]
+    },
+    {
+      "text": "Tesla expanded its company-owned US collision center network from 49 to 60 locations in 2025 (concentrated in CA 25%, TX 16%, FL 7%), bypassing traditional DRP channels through captive insurance FNOL notification—creating direct channel competition with the $200,000–$300,000 investment that certified independent shops made to serve Tesla customers.",
+      "evidence": "Focus Advisors 2025 Year in Review documented Tesla's network expansion from 49 to 60 US locations in 2025, with California holding 14 locations. ScrapeHero confirmed 51 locations as of April 2025 growing to 55 as of September 2025. Tesla's captive insurance product and direct vehicle FNOL notification bypasses traditional DRP channels. Facilities are multi-shift, standardized, and operate between 'large-scale MSO and dealer network.' Independent certified shops who invested $200K–$300K now face competition from OEM-captive centers.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN2459-025",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2026/02/year-in-review-2025-slowdown-and-then-a-blockbuster/",
+          "doi": null,
+          "title": "Year in Review 2025: Slowdown, and Then a Blockbuster – Focus Advisors Automotive",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.500822Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Tesla expanded from 49 to 60 U.S. collision locations in 2025. Facilities are larger, multi-shift, and standardized—operating between a 'large-scale MSO and a dealer network.' Primary referral source is Tesla's captive insurance and direct vehicle FNOL notification, bypassing traditional DRP channels. This creates tension: independent certified shops 'have invested heavily in equipment and training to earn Tesla certifications' but now face direct competition from Tesla's own network.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN949A-026",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.scrapehero.com/location-reports/Tesla%20Collision%20Centers-USA/",
+          "doi": null,
+          "title": "Number of Tesla Collision Centers Locations in the USA in 2025 – ScrapeHero",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.500908Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Tesla.com lists 51 Tesla collision centers across 21 states as of April 22, 2025. California leads at 14 locations, representing about 25% of all U.S. Tesla Collision Centers. Texas accounts for about 16% and Florida about 7% of total locations.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.85,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Tesla's captive network remains small relative to total Tesla fleet size; certified independents serve the vast majority of Tesla repairs",
+        "Some Tesla collision centers are in markets without significant independent certified shop coverage—geographic complementarity still exists"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_a6d3eb7e",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN2459-025",
+        "CIT-ENG74E67-AGEN949A-026"
+      ]
+    },
+    {
+      "text": "AV competitive advantage scorecard: Chains score LOW vs. specialized independents on autonomous vehicle preparedness because L4 fleet penetration will be <2.5% by 2030; robotaxi fleets (Waymo) generate captive repair streams bypassing both operator types; and neither chains nor independents have disclosed strategic preparation for robotaxi fleet repair contracts.",
+      "evidence": "L4 AV penetration globally is projected at ~1% in 2025, rising to ~2.5% by 2030. Waymo's 170M+ miles across Phoenix, SF, and LA generate repair demand managed through Waymo's own supply chain. No major collision chain (Caliber, Gerber, Crash Champions) has disclosed OEM agreements with Waymo, Cruise, or other robotaxi operators. This represents a strategic blind spot for both chains and independents—though chains' scale may confer first-mover advantage in capturing future fleet contracts.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN64AC-027",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.statista.com/statistics/875080/av-market-penetration-worldwide-forecast/",
+          "doi": null,
+          "title": "Penetration Rate of Autonomous Vehicles Globally 2030 – Statista",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.500990Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Level 4 light autonomous vehicles are expected to reach a penetration rate of 1% in 2025 and slowly increase their share of the market in the following years. Up to 10% of new global sales may reach Level 3 autonomy, while only about 2.5% could achieve Level 4 by 2030.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENF082-028",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://waymo.com/safety/impact/",
+          "doi": null,
+          "title": "Waymo Safety Impact – Waymo",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.501096Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Across 56.7 million rider-only miles, Waymo's vehicles demonstrated 88% reduction in property damage claims and 92% reduction in bodily injury claims versus human driver benchmarks. Through September 2025, Waymo has driven 170.7 million rider-only miles without a human driver across Phoenix, San Francisco, Los Angeles, and Austin.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.68,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Absence of disclosed robotaxi repair contracts does not prove they don't exist—some may be proprietary/undisclosed",
+        "Chains' scale and standardization could be advantageous for fleet repair contracts (consistent processes, national coverage)",
+        "AV penetration timeline uncertainty is high; this scorecard could shift significantly if AV adoption accelerates post-2030"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_8f059aaf",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN64AC-027",
+        "CIT-ENG74E67-AGENF082-028"
+      ]
+    },
+    {
+      "text": "Entry timing window verdict: NEUTRAL relative to the pre-ADAS/EV baseline, with a lean toward EXTENDED for credentialed, capital-backed entrants; 2025's compressed multiples (10% revenue declines translated to ~20% EV compression), 130+ PE firms competing for 1–3 shop platforms, and rising ADAS/EV complexity creating durable demand moat—but the window is narrowing as Big 4 revenue share grows and OEM certification accumulation requires 2+ year lead time.",
+      "evidence": "Focus Advisors 2025 Year in Review: '2026 presents a moderate-to-favorable entry window.' PE firms moved downstream to 1–3 shop platforms vs. prior 5+ shop requirement. At least 3 new PE entrants expected in 2026 (vs. 3 new entrants in 2025). EBITDA multiples remained relatively stable despite compression, suggesting disciplined but not punitive pricing. Countervailing: Big 4 revenue share grew from 30% to 31.7% in just 6 months; OEM EV cert approval takes up to 180 days with prerequisite chains; over $9B capital entered industry since Nov 2023; FMVSS 305a (Dec 2025) raises HV compliance costs.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN6C25-029",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2026/02/year-in-review-2025-slowdown-and-then-a-blockbuster/",
+          "doi": null,
+          "title": "Year in Review 2025: Slowdown, and Then a Blockbuster – Focus Advisors Automotive",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.501178Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Window Assessment: 2026 presents a moderate-to-favorable entry window—performance stabilization is expected, seller supply is increasing, and capital competition remains robust. However, geography and DRP relationships will be critical differentiators; undifferentiated platforms face tougher underwriting scrutiny. Multiples remained relatively stable despite EBITDA compression—disciplined but not punitive pricing.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN3DFF-030",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://focusadvisors.com/2025/09/the-first-half-of-2025-year-in-review-consolidation-continues-despite-headwinds/",
+          "doi": null,
+          "title": "2025 Mid-Year Review: Consolidation Continues Despite Headwinds – Focus Advisors Automotive",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.501262Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The Big 5 now operate at least 4,019 locations, collectively holding 13.3% of shop market share and approximately 31.7% of revenue market share nationwide. At the end of 2024, only 6 months earlier, that revenue share was just 30%. Focus Advisors notes the Big 5 slowdown will be 'short-lived.'",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.72,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "'Neutral to extended' verdict applies specifically to capability-credentialed entrants; undifferentiated platform entrants face a clearly compressed window",
+        "Geographic selection matters enormously: Southeast dynamics post-Gerber/Joe Hudson's are unfavorable; other regions (Pacific Northwest, Mountain West) may be more attractive",
+        "Entry window assessment is contested: the same data supports both 'now or never' (consolidation accelerating) and 'favorable entry timing' (compressed multiples, stabilizing performance) narratives"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_20c89749",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN6C25-029",
+        "CIT-ENG74E67-AGEN3DFF-030"
+      ]
+    },
+    {
+      "text": "Alternative interpretation supporting COMPRESSED entry window: The Big 4's growing market power (31.7% revenue share), OEM manufacturers increasingly controlling FNOL and repair channel access, Tesla's captive network bypassing independents, new FMVSS 305a EV regulations (December 2025) raising capital barriers, and 130+ PE firms competing for the same 1–3 shop platforms all suggest structural barriers are accelerating faster than valuation compression creates opportunity.",
+      "evidence": "Over $9B capital entered the collision repair industry since November 2023. PE firms now number 130+ expressing interest. New FMVSS No. 305a (effective December 2025) imposes high-voltage protocols raising capital requirements. Tesla's growing captive network (49→60 shops in 2025) demonstrates OEM channel capture. Manufacturers are 'increasingly seeking to control repair capacity, certifications, and parts availability'—threatening independent shop access to OE parts and calibration tools. Analysts project Big 5 will reach 50% market share within 7 years.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENEE96-031",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/private-equity-drives-collision-repair-industry-consolidation-in-first-half-of-2025",
+          "doi": null,
+          "title": "Private Equity Drives Collision Repair Industry Consolidation in First Half of 2025 – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.501346Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Starting in November 2023, more than $9 billion of capital entered the industry, primarily through debt refinancings or recapitalizations of some of the largest operators. More than 129 private equity firms have approached Focus Advisors in the last two years to express interest in launching a platform acquisition. Analysts believe the large MSOs will attain 50% market share within seven years.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.74,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "130+ PE firms competing does not automatically mean the market is closed—it means capital is abundant and targeting this sector",
+        "OEM channel capture (Tesla) is OEM-specific; most mass-market OEMs (Toyota, GM, Ford) still rely on independent certified networks"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_30270de9",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENEE96-031"
+      ]
+    },
+    {
+      "text": "Base AV scenario (5–10 year horizon): Frost & Sullivan projects 14% collision rate reduction in North America by 2030 from combined ADAS+AV adoption; ADAS fleet penetration of 82% of VIO by 2030 is the primary driver; full L4/L5 fleet penetration at less than 2.5% of new sales means collision volume impact from autonomy alone is likely 1–3% over the period.",
+      "evidence": "Frost & Sullivan estimates 14% collision rate reduction by 2030 in North America from intelligent mobility (ADAS + AV combined). ADAS vehicles are projected at 82% of vehicle-in-operation by 2030 (from 9% in 2017). L4 penetration globally at ~2.5% of new sales by 2030 means fleet-level penetration is <1% given ~15-year average vehicle age. The collision repair market is projected to still grow at 4.65% CAGR to $7.66B by 2030 despite volume headwinds, because per-repair cost inflation from ADAS complexity more than offsets volume decline.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN7F19-032",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.globenewswire.com/news-release/2025/05/28/3089294/28124/en/Automotive-Collision-Repair-Market-Forecast-Report-2025-2030-A-7-66-Billion-Global-Opportunity-Led-by-Caliber-Collision-Service-King-Collision-Repair-Centers-and-ABRA-Auto-Body-Gla.html",
+          "doi": null,
+          "title": "Automotive Collision Repair Market Forecast Report 2025–2030: A $7.66 Billion Global Opportunity – GlobeNewsWire",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.501428Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "The Automotive Collision Repair Market grew from USD $5.83 billion in 2024 to $6.11 billion in 2025, and is expected to continue growing at a CAGR of 4.65%, reaching $7.66 billion by 2030. Despite overall market growth driven by complexity and ADAS calibration needs, as smart-driving software continues to improve, a reduction in accidents and higher vehicle safety could lower the frequency of collision repairs.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGENF6AE-033",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.statista.com/statistics/1238242/impact-of-vehicle-automation-on-collision-rates/",
+          "doi": null,
+          "title": "Vehicle Automation: Reduction in Collision Rates 2030 – Statista",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.501514Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Frost & Sullivan estimates collision rates to decrease by 14% by 2030 in North America as a result of AV/ADAS adoption. It is estimated that once in full operation—approximately in 2030—Level 4/5 autonomous vehicles will be some 76% less likely to be involved in a traffic accident than non-automated vehicles.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.76,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "Frost & Sullivan 32% revenue loss projection (widely cited) assumes far more aggressive AV penetration and requires significant assumptions not supported by current penetration data",
+        "The 14% collision rate reduction and 4.65% market CAGR appear to be based on different model assumptions—they can coexist if per-repair cost increases sufficiently"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_709eb30f",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN7F19-032",
+        "CIT-ENG74E67-AGENF6AE-033"
+      ]
+    },
+    {
+      "text": "Bear AV scenario (5–10 year horizon): IIHS analysis indicates AVs could prevent only approximately 34% of all crashes without safety-prioritized programming; L4 penetration remains below 2% of new vehicle sales by 2030; practical fleet-level collision volume reduction from autonomous vehicles alone is likely under 1% in the 2025–2030 window, with significant impacts delayed to the 2040s–2060s.",
+      "evidence": "IIHS research found AVs could prevent ~34% of crashes if programmed for safety—but only 23% of crashes are attributable to sensing/perception errors that AVs would definitively prevent, plus ~10% from incapacitation. The remaining 66% require behavioral reprogramming to address. AV penetration in the 5–10 year window: ~1% in 2025, ~2.5% L4 by 2030 globally. Fleet turnover rate (~15-year average vehicle age) means even 10% new-car L4 share by 2030 implies <2% of total VIO. Most analysts place significant AV collision impact in the 2040s–2060s.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENEA3E-034",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.iihs.org/news/detail/self-driving-vehicles-could-struggle-to-eliminate-most-crashes",
+          "doi": null,
+          "title": "Self-Driving Vehicles Could Struggle to Eliminate Most Crashes – IIHS",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.501591Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Autonomous vehicles might prevent only around a third of all crashes if automated systems drive too much like people, according to a study from IIHS. Crashes due to only sensing and perceiving errors accounted for 23% of the total, and incapacitation accounted for 10%. The remaining two-thirds might still occur unless autonomous vehicles are also specifically programmed to avoid other types of predicting, decision-making, and performance errors.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN17FD-035",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://vtpi.org/avip.pdf",
+          "doi": null,
+          "title": "Autonomous Vehicle Implementation Predictions – Victoria Transport Policy Institute",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.501677Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Regardless of when vehicles equipped with high levels of automation become available to consumers, it will be decades before most vehicles on the road drive themselves—as it takes a long time for new vehicle features to penetrate the vehicle fleet. Most broader AV impacts will only become significant when autonomous vehicles become common and affordable, probably in the 2040s to 2060s.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.8,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Waymo's real-world data (88% property damage claim reduction over 25.3M miles) contradicts IIHS's more conservative theoretical estimate—the difference is behavioral programming and technology deployment philosophy",
+        "Bear scenario assumes no major acceleration in L4 adoption (no regulatory mandate, no technological breakthrough)"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_93cd01e6",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENEA3E-034",
+        "CIT-ENG74E67-AGEN17FD-035"
+      ]
+    },
+    {
+      "text": "Waymo's real-world L4 autonomy data across 56.7 million rider-only miles demonstrates 88% fewer property damage claims and 92% fewer bodily injury claims than human benchmarks—but this applies only within Waymo's specific urban/temperate operating domains; a May 2025 software recall of 1,212 vehicles confirms L4 systems are not yet collision-free.",
+      "evidence": "Swiss Re/Waymo study across 25.3M autonomous miles showed 88% property damage and 92% bodily injury reduction. Expanded 56.7M mile study (published 2025) confirms these levels across four cities. Through September 2025, Waymo has driven 170.7M rider-only miles. However, Waymo issued a recall in May 2025 for 1,212 vehicles due to software causing minor collisions with roadside barriers. Operations limited to Phoenix, SF, LA, Austin—all temperate/urban markets without snow.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN297E-036",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.tandfonline.com/doi/full/10.1080/15389588.2025.2499887",
+          "doi": null,
+          "title": "Comparison of Waymo Rider-Only Crash Rates by Crash Type to Human Benchmarks at 56.7 Million Miles – Traffic Injury Prevention",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.501759Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "In an analysis of 56.7 million rider-only miles across four cities, Waymo's vehicles demonstrated statistically significant lower crashed vehicle rates for all crash types. Vehicle-to-vehicle intersection crash events showed 96% reduction in any-injury-reported crashes and 91% reduction in airbag deployment events. At the aggregate crash level: 79% reduction in any-injury-reported outcomes and 81% reduction in airbag deployment outcomes.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        },
+        {
+          "citation_id": "CIT-ENG74E67-AGEN286F-037",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://waymo.com/safety/impact/",
+          "doi": null,
+          "title": "Waymo Safety Impact – Waymo",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.501920Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "A Swiss Re study found 88% reduction in property damage claims and 92% reduction in bodily injury claims for the Waymo Driver compared with a human-driven benchmark over 25.3 million miles. Through September 2025, Waymo has driven 170.7 million rider-only miles without a human driver.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.88,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "AV operators must report any physical contact as a crash; human crash data requires police-reportable damage—comparison methodology differences may overstate AV advantage",
+        "Waymo's 170M miles remains a small fraction of human driving exposure, limiting statistical significance for rare event types",
+        "Operating domain restriction (no snow, no highways, limited geographies) means body of evidence cannot be generalized to top-10 MSA winter markets"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_8553c98a",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN297E-036",
+        "CIT-ENG74E67-AGEN286F-037"
+      ]
+    },
+    {
+      "text": "Rising ADAS complexity is increasing per-repair cost faster than volume declines: ADAS sensors approximately double minor collision damage costs (adding ~$3,000 per repair); supplement costs quadrupled from ~$250 to $1,060+ between 2009–2024; and IIHS projects 8 ADAS systems will reach 50%+ fleet penetration by 2029, sustaining calibration demand growth.",
+      "evidence": "Industry data shows ADAS sensors approximately double minor collision damage costs, adding ~$3,000 to a typical repair bill. CCC supplement costs quadrupled from ~$250 to over $1,060 between 2009 and 2024, with ADAS calibrations a primary driver. IIHS/HLDI projects 8 ADAS systems at 50%+ fleet presence by 2029 (vs. 3 systems at 50% by 2027). KPMG projects US ADAS calibration market from ~$1.2B (2025) to $3.0B by 2030—a 12.8% CAGR driven by ADAS penetration, not AV adoption.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENB577-038",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.cccis.com/news-and-insights/posts/the-current-state-of-calibrations-a-turning-point-for-collision-repair",
+          "doi": null,
+          "title": "The Current State of Calibrations: A Turning Point for Collision Repair – CCCIS",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.502082Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Supplement costs quadrupled between 2009–2024, from ~$250 to over $1,060. By 2029, eight ADAS systems will be present in half or more of registered vehicles, compared to just three by 2027. Advanced driver assistance system sensors approximately double minor collision damage costs, typically adding $3,000 to a repair bill.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.85,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "$3,000 ADAS sensor addition figure is from general industry sources, not a controlled study isolating ADAS from other repair cost drivers",
+        "Calibration revenue growth projections from KPMG assumed the industry's ability to capture reimbursement—insurer resistance could compress realized growth"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_87a793d5",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENB577-038"
+      ]
+    },
+    {
+      "text": "Hybrid vehicle repair claims surged 21% year-over-year in mid-2025; following the September 2025 expiration of US federal EV tax credits, BEV sales collapsed sharply (Ioniq 5 -59%, Ford EVs -61%), while hybrid sales hit records—making hybrid repair capability a more durable near-term investment priority than full BEV specialization in most top-10 MSAs.",
+      "evidence": "Mitchell Q2 2025 data shows mild hybrid claims up 21% YoY. After federal EV tax credit expiration September 30, 2025, Ioniq 5 sales fell 59%, Solterra -78.3%, Ford EVs -60.8%. Hyundai recorded its best-ever hybrid month (+42%); Kia hybrids up 70% in H1 2025. Ford took a $19.5B EV write-down and ended F-150 Lightning production. Hybrid vehicles typically require HV safety protocols but lower capital investment than full BEV programs.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN9160-039",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/2025-data-points-to-fewer-claims-more-collision-repair-complexity-in-2026",
+          "doi": null,
+          "title": "2025 Data Points to Fewer Claims, More Collision Repair Complexity in 2026 – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.502197Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Post-tax-credit-expiration (Sept. 30, 2025), EV sales collapsed sharply: Ioniq 5 down 59%, Solterra down 78.3%, Ford EVs down 60.8%. Hybrid sales surged simultaneously—Hyundai recorded its best-ever hybrid month (+42%); Kia hybrids up 70% in H1 2025. Ford took a $19.5B write-down and ended current F-150 Lightning production. Mild hybrid claims rose 21% from prior year.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.82,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "EV tax credit expiration effect may be partially reversed by future policy; hybrid surge may reflect temporary substitution rather than permanent shift",
+        "BEV installed base continues growing even if new sales slowed—repair demand lags sales by several years",
+        "The EV tax credit expiration date (September 30, 2025) reflects a specific policy moment that could change"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_739d8da1",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN9160-039"
+      ]
+    },
+    {
+      "text": "EV collision claims from the installed base are growing independent of new-vehicle sales: Driven Brands (ABRA, CARSTAR, Fix Auto) reports BEV claims up 14% (US) and 24% (Canada) year-over-year despite slower EV sales growth—supporting investment in EV certification based on the maturing EV parc rather than new-vehicle purchase rates.",
+      "evidence": "Driven Brands Collision Group, which maintains 288 EV OEM certifications, reports 14% US and 24% Canada YoY BEV claim growth. This lag effect reflects the aging of EVs sold 2020–2023 now entering the collision repair stream at higher rates. The installed EV base generates growing repair demand even if new EV sales slow, creating a durable investment thesis for EV certification that is not dependent on near-term EV sales momentum.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENC9EE-040",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/automakers-expand-ev-certification-programs-as-oem-repair-requirements-intensify",
+          "doi": null,
+          "title": "Automakers Expand EV Certification Programs as OEM Repair Requirements Intensify – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.502289Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "BEV collision claims rose 14% in the U.S. and 24% in Canada year-over-year even as sales of new models slowed. Driven Brands Collision Group reports 37 luxury and 288 EV OEM certifications across Abra, CARSTAR, and Fix Auto USA. With the percentage of EV collision claims growing, automakers are growing their shop certification programs for EVs.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.78,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "14%/24% claims growth figures from Driven Brands, an industry participant with commercial interest in EV certification",
+        "Claims growth in percentage terms is large partly because the base was small; absolute EV claim volume remains a fraction of total ICE claims"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_ac29dbf3",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENC9EE-040"
+      ]
+    },
+    {
+      "text": "ADAS-related lawsuits grew from 3 cases in 2018 to 61 in 2024 with average settlement costs of $200,000–$1,000,000+, creating escalating liability risk for shops that miss required calibrations; this liability moat increasingly favors documented, certified operators—both chains and capable independents—over uncertified volume shops.",
+      "evidence": "Industry tracking via Autobody News documents 3 ADAS lawsuits in 2018 growing to 61 in 2024. Average lawsuit/settlement cost cited at $200K–$1M+. Nearly half of all US shops miss required post-repair calibrations. Bipartisan federal ADAS Functionality & Integrity Act legislation was introduced in December 2025, signaling regulatory tightening. CCC data shows only 45.5% of calibrations captured on initial estimates (remaining 54.5% added as supplements), creating documentation risk.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN9638-041",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/2025-data-points-to-fewer-claims-more-collision-repair-complexity-in-2026",
+          "doi": null,
+          "title": "2025 Data Points to Fewer Claims, More Collision Repair Complexity in 2026 – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.502375Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "ADAS-related lawsuits grew from just three cases in 2018 to 61 in 2024—making proper calibration not just a competitive advantage, but a legal necessity. An average lawsuit or settlement can cost $200,000 to $1 million or more. Nearly half of all U.S. shops miss required post-repair calibrations. Bipartisan federal legislation (ADAS Functionality & Integrity Act) introduced December 2025.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.82,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Lawsuit count of 61 may undercount total ADAS-related litigation (some cases may not be categorized under ADAS)",
+        "$200K–$1M+ settlement range is industry-cited, not from court records—actual distribution may vary significantly"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_7389ae79",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN9638-041"
+      ]
+    },
+    {
+      "text": "Parts tariff pass-through (6%+ in Q2–Q3 2025) and OEM parts sourcing dependency (44% of US collision parts manufactured overseas) are compounding EV and ADAS repair costs, disproportionately impacting smaller shops without scale to absorb or renegotiate supplier pricing, reinforcing chains' procurement advantages.",
+      "evidence": "Autobody News 2025 data shows parts prices up 6%+ in Q2–Q3 2025. 44% of OEM collision parts sold in the US are manufactured overseas. Tariff pass-through adds roughly $100 to the average repair order. 38.6% of shops reported direct tariff impact; among shops with 8+ bays, that figure jumped to 70%. GM absorbed $1.1B tariff charge in Q2; Ford absorbed $800M; Stellantis flagged $1.7B. AI-driven DRAM shortages are adding pressure on automotive electronics used in ADAS systems.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENADB0-042",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/2025-data-points-to-fewer-claims-more-collision-repair-complexity-in-2026",
+          "doi": null,
+          "title": "2025 Data Points to Fewer Claims, More Collision Repair Complexity in 2026 – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.502463Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Parts prices rose more than 6% in Q2–Q3 2025 as tariffs and overseas sourcing costs flowed through the supply chain. 44% of OEM collision parts sold in the U.S. are manufactured overseas. Tariffs add roughly $100 to the parts line of an average repair order. 38.6% of shops reported direct tariff impact; among shops with 8+ bays, that figure jumped to 70%.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.82,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Tariff policy is subject to change—the 2025 tariff environment may not persist",
+        "Larger shops (8+ bays) reporting higher tariff impact suggests the problem is not simply a size disadvantage—larger shops may be more exposed due to higher OEM parts dependency"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_5fc65d21",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENADB0-042"
+      ]
+    },
+    {
+      "text": "Repairable collision claims fell 10.4% year-over-year through August 2025 while total loss frequency hit a record 22.8%; small-damage appraisals (≤$2,000) collapsed from 41.5% to 25.5% of all claims since 2019—ADAS complexity is structurally eliminating low-margin small-ticket work and concentrating revenue in complex, high-credential repairs.",
+      "evidence": "Autobody News reporting on 2025 CCC/industry data: repairable claims -10.4% YoY through Aug 2025; total loss frequency at record 22.8% through Oct 2025 (second consecutive record). Small-damage appraisals (≤$2,000) fell from 41.5% (2019) to 25.5% (mid-2025). 26% of auto insurance customers now carry $1,000+ deductibles; 7% avoided filing. ADAS complexity is causing previously repairable vehicles to become total losses as sensor damage pushes costs over thresholds.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGENF5DD-043",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/2025-data-points-to-fewer-claims-more-collision-repair-complexity-in-2026",
+          "doi": null,
+          "title": "2025 Data Points to Fewer Claims, More Collision Repair Complexity in 2026 – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.502543Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "Repairable claims fell 10.4% through August 2025 year-over-year, and total claims volume dropped 8.5% through July 2025. Total loss frequency hit 22.8% through October 2025—on pace for a second consecutive record. Small-damage appraisals (≤$2,000) collapsed from 41.5% (2019) to 25.5% by mid-2025. The collision repair industry enters 2026 facing a changed landscape: fewer vehicles in the repair stream, more complexity on each one.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.88,
+      "confidence_tier": "high_above_80",
+      "caveats": [
+        "Claim volume decline may be partially cyclical (weather, economic conditions) not purely structural (ADAS/EV)",
+        "Total loss frequency increase reflects both complexity and declining used vehicle values—as used EV prices fell 30%+, total loss thresholds became easier to reach"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_60159370",
+      "citation_ids": [
+        "CIT-ENG74E67-AGENF5DD-043"
+      ]
+    },
+    {
+      "text": "KPMG projects the US ADAS calibration services market to grow from approximately $1.2 billion in 2025 to $3.0 billion by 2030 at a 12.8% CAGR—making calibration services a faster-growing segment than the broader collision repair market (4.65% CAGR)—representing a distinct investable sub-segment within collision repair.",
+      "evidence": "KPMG Corporate Finance 'From Niche to Necessity: The Rise of ADAS Calibration in the US' (2025) estimates North American calibration services at ~$1.2B with US revenues projected at $3.0B by 2030 at 12.8% annual growth. The global ADAS calibration service market is estimated at $4.8B in 2025, projected to reach $11.58B by 2032 (13.4% CAGR per Coherent Market Insights). This far exceeds the 4.65% CAGR for overall collision repair market.",
+      "citations": [
+        {
+          "citation_id": "CIT-ENG74E67-AGEN47DB-044",
+          "engagement_id": "eng_74e67db162c7",
+          "client_id": "client_keystone_internal",
+          "url": "https://www.autobodynews.com/news/new-survey-finds-86-of-shops-perform-adas-calibrations-but-only-21-have-optimized-the-process",
+          "doi": null,
+          "title": "New Survey Finds 86% of Shops Perform ADAS Calibrations, But Only 21% Have Optimized the Process – Autobody News",
+          "authors": [],
+          "publication": "",
+          "date_published": null,
+          "access_date": "2026-04-28T03:11:11.502623Z",
+          "source_type": "report",
+          "quality_score": 0.7,
+          "url_live": null,
+          "crossref_verified": null,
+          "found_by_agents": [],
+          "content_snippet": "KPMG estimates the size of the North American calibration services market reached approximately US$1.2 billion and projects U.S. revenues of US$3.0 billion by 2030, with expected annual growth of 12.8% between 2025 and 2033. The global ADAS calibration service market size is estimated at $4.8 billion in 2025 and is expected to expand at a CAGR of 13.4%, reaching USD $11.58 billion by 2032.",
+          "content_hash": null,
+          "metadata_hash": null,
+          "merged_from_ids": []
+        }
+      ],
+      "confidence": 0.78,
+      "confidence_tier": "moderate_60_80",
+      "caveats": [
+        "KPMG is a financial advisory firm with advisory interest in this market; forecast should be treated as directional",
+        "12.8% CAGR assumes continued rapid ADAS fleet penetration and successful insurer reimbursement—both subject to industry negotiation dynamics"
+      ],
+      "claim_id": "eng_74e67db162c7_task_012_359473c9",
+      "citation_ids": [
+        "CIT-ENG74E67-AGEN47DB-044"
+      ]
+    }
+  ],
+  "status": "complete",
+  "gaps": [],
+  "artifact_path": null,
+  "absence_report": [
+    "Per-MSA (city-level) collision repair market size, claim volume, or ADAS/EV penetration data for the top-10 US metropolitan areas (Los Angeles, New York, Chicago, Dallas, Houston, Washington DC, Miami, Philadelphia, Atlanta, Phoenix) could not be located; all found data is national or state-level, preventing metro-specific competitive structure comparisons.",
+    "Specific Mercedes-Benz ADAS calibration labor hour documentation (equivalent to the Ford 0.6–1.0 hour and Toyota 1.4–2.1 hour figures found for other OEMs) was not found; Mercedes calibration exists in I-CAR's system but procedure-level labor time was not publicly available.",
+    "GM BEV program total capital investment disclosure was not found; GM's certification requirements are published (I-CAR Gold Class + BEV Package + Aluminum welding) but the aggregate investment threshold for a shop to achieve full GM BEV certification was not disclosed in available sources.",
+    "Toyota EV-specific certification program (as distinct from general Toyota ADAS certification) was not found; Toyota's collision certification and ADAS calibration requirements were documented, but an EV-specific certification program with investment thresholds comparable to Tesla, Lucid, or Honda/Acura was not identified.",
+    "Head-to-head cost or quality comparison data between Tesla-certified independent shops and Tesla's own company-owned collision centers was not found; it is unknown whether Tesla captive centers produce faster cycle times, lower costs, or higher customer satisfaction than certified independents.",
+    "Robotaxi fleet repair procurement data was not found; no public information exists on whether Waymo, Cruise, Aurora, or other robotaxi operators have formal repair agreements with Caliber, Gerber, or any named collision repair operator—representing a strategic blind spot in the AV competitive analysis.",
+    "ADAS calibration economics data specifically for hybrid vehicles (as distinct from BEVs) was not found, despite hybrids now representing the fastest-growing EV-adjacent repair segment; hybrid ADAS calibration requirements and cost premium vs. ICE is a gap in the evidence base.",
+    "Top-10 MSA-level EV registration density data was not found for the purpose of assessing where EV repair certification investment has the highest near-term ROI by market; city-level EV penetration data from DMV or IIHS sources was not surfaced in searches.",
+    "Independent data verifying the 6.5x EBITDA multiple for OEM-certified shops (vs. 3x–4.5x for volume MSOs) was not found beyond the Quality Collision Group source, which is an industry participant with potential commercial bias; cross-verification from investment banks or transaction databases was not located.",
+    "AV-specific collision insurance claims data at the commercial fleet level (Waymo's claims handled by which insurers, at what cost, through which repair networks) was not publicly available; this gap means the commercial repair economics of robotaxi fleet maintenance cannot be assessed from public sources."
+  ],
+  "sources_consulted": 44,
+  "tokens_consumed": 18407,
+  "dropped_claims": []
+}
