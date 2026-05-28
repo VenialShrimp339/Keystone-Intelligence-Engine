@@ -2207,7 +2207,8 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 - Worktree: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`
 - Branch: `codex/owner-triage-normalization`
 - Start commit: `31189a5b3e3ce0a89e4a11fa0cbefc2b79b6ae03`
-- End commit: `78f9b4386b9cd266b4211ae62eb4fb3bbfa5551a`
+- Checkpoint commit created: `e5cf787` (`checkpoint artifact-centered research rebuild`)
+- End commit: see final response for final `HEAD`
 
 ### Authority and context read
 - `AUTHORITY-INDEX.md`
