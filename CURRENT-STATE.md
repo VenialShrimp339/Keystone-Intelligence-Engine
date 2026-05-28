@@ -1,6 +1,6 @@
 # Current State
 
-*Last updated: 2026-05-28 | Updated by: Codex ChatGPT provider capture pass*
+*Last updated: 2026-05-28 | Updated by: Codex repo-cleanup pass*
 
 > Summary-only current-truth layer. For live authority, start with `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, and the control-plane pair.
 
@@ -16,7 +16,7 @@
 - Claude web Research full lifecycle is proven for the public auto-body consolidation probe and was ingested into durable artifacts.
 - ChatGPT web Deep Research full lifecycle is now proven for the same public probe: completed report capture, Markdown export, Word export, source-link recovery, normalized report creation, and provider-neutral ingestion all succeeded.
 - ChatGPT export nuance: native Markdown preserved opaque citation markers, while native Word exposed the actual source URLs. The near-term browser adapter should treat ChatGPT as a body-plus-source export workflow when citation fidelity matters.
-- The worktree still has external untracked presentation files (`keystone-class-presentation.md`, `keystone-class-presentation.pptx`) that are unrelated to this provider-capture work. Preserve them.
+- External presentation drafts (`keystone-class-presentation.md`, `keystone-class-presentation.pptx`) exist in the worktree but are locally excluded from Git status. Preserve them; they are unrelated to the KIE source checkpoint.
 
 ## What Happens Next
 

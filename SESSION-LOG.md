@@ -2408,3 +2408,31 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 
 ### Exact next action
 - Run the issue-tree skill eval subset, implement `IssueTreePackage` upstream of the current `Decomposer`, build the browser provider adapter, and then run the first artifact-centered vertical slice.
+
+## 2026-05-28T14:51:06-0500 - Repository Cleanup Before Fresh Autonomous Goal
+
+### Required provenance
+- Agent/runtime identity: Codex GPT-5 in Codex desktop.
+- Worktree path: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`.
+- Branch: `codex/owner-triage-normalization`.
+- Start commit: `a3fd5984c526401535d1e26e829f53cc1e76d6c2` after rebasing the three local artifact-centered commits onto the remote README-only commits.
+- End commit: no commit yet at the time of this log entry; final response reports the cleanup commit and push state.
+- Authority docs read: `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`, `audit/remediation/control-plane/ACTIVE-HANDOFF.md`, `CURRENT-STATE.md`, `FOUNDER-INTENT-DOCTRINE.md`, `notes/OWNER-VISION-2026-05-24.md`, `audit/provider-feasibility/PROVIDER-FEASIBILITY-REPORT.md`, `audit/mega-goal/02-chatgpt-provider-capture-checkpoint.md`.
+- Files changed: `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`, `audit/remediation/control-plane/ACTIVE-HANDOFF.md`, `audit/mega-goal/01-stage-b-canonization-checkpoint.md`, `audit/mega-goal/02-chatgpt-provider-capture-checkpoint.md`, `SESSION-LOG.md`.
+
+### Work performed
+- Ran `git pull --rebase origin codex/owner-triage-normalization` to reconcile the three remote README-only commits with the local artifact-centered work.
+- Rebase completed cleanly.
+- Rebased local checkpoint commits now map as follows:
+  - Stage B artifact-centered rebuild: `e5cf787` -> `5be732d`
+  - Stage B doc checkpoint: `48544b1` -> `fa1f92e`
+  - ChatGPT provider capture: `43f771a` -> `a3fd598`
+- Added local Git exclude entries for `keystone-class-presentation.md` and `keystone-class-presentation.pptx` through the worktree/common Git exclude path. The files were not deleted, moved, or committed.
+- Updated live control-plane and checkpoint docs to reflect the post-rebase commit IDs and launch readiness.
+
+### Evidence
+- `git status --short --branch` after local excludes showed the branch clean and ahead of origin by the local checkpoint commits before final cleanup commit.
+- Remote-only changes were limited to `README.md`.
+
+### Exact next action
+- Commit these cleanup/current-truth docs, push `codex/owner-triage-normalization` to GitHub, then run the fresh autonomous goal in a new Codex session.

@@ -1,15 +1,15 @@
 version: 2
-controller_epoch: 14
-lease_owner: codex-chatgpt-provider-capture
-lease_acquired_at: "2026-05-28T14:23:35-0500"
-lease_heartbeat_at: "2026-05-28T14:23:35-0500"
-lease_expires_at: "2026-05-28T14:53:35-0500"
+controller_epoch: 15
+lease_owner: codex-repo-cleanup-before-autonomous-goal
+lease_acquired_at: "2026-05-28T14:51:06-0500"
+lease_heartbeat_at: "2026-05-28T14:51:06-0500"
+lease_expires_at: "2026-05-28T15:21:06-0500"
 lease_takeover_rule: "If lease_heartbeat_at is older than 30 minutes, or the new controller cannot confirm repo state from disk, it must increment controller_epoch, rewrite lease fields, and append the takeover to ACTIVE-HANDOFF.md before mutating state."
 
 active_branch: codex/owner-triage-normalization
 active_worktree_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization
 active_state: artifact_centered_research_rebuild_active
-controller_priority_workstream: ChatGPT provider capture and provider-neutral ingestion checkpoint
+controller_priority_workstream: Repository cleanup and fresh-goal launch readiness
 
 current_direction:
   summary: "Preserve Keystone's DPVI / issue-tree architecture, replace the Claude CLI-centered execution path, and rebuild around durable artifacts plus subscription-first provider routing."
@@ -49,10 +49,12 @@ provider_probe_status:
     note: "Native Markdown export hid source URLs behind opaque citation markers; DOCX export exposed source URLs and was used for normalized ingestion."
 
 worktree_protection:
-  status: dirty_valuable_work
-  policy: "Do not pull, rebase, reset, clean, or broad-refactor until the current uncommitted work is checkpointed."
-  current_head_before_provider_capture: 48544b131d18f2a3c145db7cb0839313e5d2724b
-  remote_state: "Branch is behind origin/codex/owner-triage-normalization by 3 README-only commits as recorded in audit/mega-goal/00-repo-baseline.md."
+  status: clean_after_rebase_pending_push
+  policy: "Do not reset or clean user files. Local presentation drafts are intentionally ignored through the worktree's local exclude file, not deleted."
+  stage_b_checkpoint_after_rebase: 5be732d
+  stage_b_doc_checkpoint_after_rebase: fa1f92e
+  chatgpt_provider_capture_after_rebase: a3fd5984c526401535d1e26e829f53cc1e76d6c2
+  remote_state: "Remote README-only commits were rebased into local branch on 2026-05-28. Local branch is ready to push after cleanup doc commit."
 
 historical_remediation_status:
   note: "The April Lane H/Lane E remediation control plane is preserved as historical provenance. It no longer defines the active next action for this worktree."
@@ -61,7 +63,7 @@ historical_remediation_status:
   prior_lane_e_promotion_status: promoted
   prior_blocked_candidate_reference_commit: f1af7dfafa2e66b831810d70006ab8295411c61b
 
-next_action: "Run the issue-tree skill eval subset, implement IssueTreePackage upstream of Decomposer, build the browser provider adapter from the proven ChatGPT/Claude lifecycle, and then run the first artifact-centered vertical slice."
+next_action: "After cleanup docs are committed and pushed, run the fresh autonomous goal: evaluate the issue-tree skill subset, implement IssueTreePackage upstream of Decomposer, build the browser provider adapter from the proven ChatGPT/Claude lifecycle, and run the first artifact-centered vertical slice."
 
 hard_stop_conditions:
   - "A proposed operation would destroy or overwrite uncommitted user/session work."

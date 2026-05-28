@@ -5,7 +5,7 @@ Agent/runtime: Codex, GPT-5
 Worktree: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`  
 Branch: `codex/owner-triage-normalization`  
 Start commit: `31189a5b3e3ce0a89e4a11fa0cbefc2b79b6ae03`  
-Checkpoint commit: `e5cf787` (`checkpoint artifact-centered research rebuild`)  
+Checkpoint commit after 2026-05-28 rebase: `5be732d` (`checkpoint artifact-centered research rebuild`)  
 End commit: see final response for final `HEAD`
 
 ## Purpose
@@ -45,7 +45,7 @@ Record the Stage B pivot after the issue-tree skill goal completed. The active p
 ## Residual Risks
 
 - Worktree contains valuable dirty and untracked work; checkpoint before broad changes.
-- Branch is behind remote by 3 README-only commits per `audit/mega-goal/00-repo-baseline.md`; do not pull until checkpointed.
-- ChatGPT completed report has not yet been durably captured.
+- Remote README-only commits were rebased into the local branch on 2026-05-28.
+- ChatGPT completed report was durably captured and ingested in `audit/mega-goal/02-chatgpt-provider-capture-checkpoint.md`.
 - Problem-decomposition skill has one blind eval win but needs broader eval before KIE integration.
 - Graphify was unavailable during prior attempts.

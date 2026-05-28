@@ -4,7 +4,7 @@
 
 - `AUTHORITY-INDEX.md` remains the mandatory front door and `SESSION-STANDARD.md` remains the shared operating standard.
 - Live current truth now begins with this control-plane pair in `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`.
-- The active branch is `codex/owner-triage-normalization` at local start commit `31189a5b3e3ce0a89e4a11fa0cbefc2b79b6ae03`.
+- The active branch is `codex/owner-triage-normalization`. Remote README-only commits were rebased into the local branch on 2026-05-28, preserving the artifact-centered rebuild commits on top.
 - The active product direction is the artifact-centered, subscription-first Keystone research rebuild, not the old April Lane E retrieval-parse next action.
 - Keystone's DPVI / issue-tree architecture is preserved. The execution boundaries are changing: expensive provider research must produce durable artifacts that can be inspected, resumed, reprocessed, and evaluated without rerunning upstream work.
 - The old Claude CLI-first runtime doctrine is stale. Preferred routing is now Codex CLI for structured local calls, ChatGPT web Deep Research for primary hosted research, Claude web Research for secondary/cross-check research, manual upload as fallback, deterministic public-source connectors for precision workflows, and API only as fallback/control.
@@ -13,7 +13,7 @@
 - Claude web Research full lifecycle is proven and ingested for the public auto-body consolidation probe.
 - ChatGPT web Deep Research full lifecycle is now proven and ingested for the same public probe.
 - ChatGPT export nuance: the Markdown export preserved opaque citation markers, while the Word export exposed the actual source URLs. The browser adapter should preserve both body and source-link exports for ChatGPT until a cleaner export route is proven.
-- The worktree contains external untracked presentation files that are unrelated to this provider capture. Protect them before any pull, rebase, reset, cleanup, or broad refactor.
+- The worktree contains external presentation draft files that are unrelated to KIE source. They were locally excluded through the Git worktree exclude file rather than deleted or moved.
 
 ## Fresh-Session Read Order
 
@@ -50,18 +50,21 @@ Any lower-order file that conflicts with a higher-order item below loses for liv
 - `active_branch`: `codex/owner-triage-normalization`
 - `active_worktree_path`: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`
 - `active_state`: `artifact_centered_research_rebuild_active`
-- `controller_priority_workstream`: `ChatGPT provider capture and provider-neutral ingestion checkpoint`
-- `current_head_before_provider_capture`: `48544b131d18f2a3c145db7cb0839313e5d2724b`
-- `worktree_state`: provider capture artifacts pending checkpoint; external untracked presentation files remain unrelated
+- `controller_priority_workstream`: `Repository cleanup and fresh-goal launch readiness`
+- `stage_b_checkpoint_after_rebase`: `5be732d`
+- `stage_b_doc_checkpoint_after_rebase`: `fa1f92e`
+- `chatgpt_provider_capture_after_rebase`: `a3fd5984c526401535d1e26e829f53cc1e76d6c2`
+- `worktree_state`: clean after local excludes; cleanup doc commit and push are the only remaining prep steps
 - `issue_tree_skill_status`: prototype-ready for more eval
 - `claude_provider_probe`: completed and ingested
 - `chatgpt_provider_probe`: completed, exported, source links recovered, and ingested
 
 ## Exact Next Action
 
-1. Run the recommended issue-tree skill eval subset.
-2. Implement `IssueTreePackage` upstream of the current `Decomposer`.
-3. Build the browser provider adapter from the proven lifecycle:
+1. Commit and push the cleanup/current-truth docs so GitHub matches local state.
+2. In a fresh Codex session, run the recommended issue-tree skill eval subset.
+3. Implement `IssueTreePackage` upstream of the current `Decomposer`.
+4. Build the browser provider adapter from the proven lifecycle:
    - tab registry
    - export-ready detection
    - ChatGPT Markdown plus DOCX export
@@ -69,8 +72,8 @@ Any lower-order file that conflicts with a higher-order item below loses for liv
    - provider ledger
    - blocked-state pause
    - per-provider concurrency controls
-4. Build the first artifact-centered vertical slice.
-5. Expand to a multi-branch provider prototype only after the vertical slice is stable.
+5. Build the first artifact-centered vertical slice.
+6. Expand to a multi-branch provider prototype only after the vertical slice is stable.
 
 ## Historical Remediation Notes
 
@@ -87,3 +90,4 @@ Any lower-order file that conflicts with a higher-order item below loses for liv
 - `2026-04-16T18:32:49-0400`: controller epoch advanced from `11` to `12` for Lane E promotion rerun.
 - `2026-05-28T14:08:49-0500`: controller epoch advanced from `12` to `13`; live next action changed from old Lane E retrieval-parse work to the artifact-centered, subscription-first research rebuild after owner direction, provider feasibility work, and issue-tree skill prototype completion.
 - `2026-05-28T14:23:35-0500`: controller epoch advanced from `13` to `14`; ChatGPT Deep Research moved from completed-in-browser/pending-capture to completed/exported/source-links-recovered/ingested.
+- `2026-05-28T14:51:06-0500`: controller epoch advanced from `14` to `15`; remote README-only commits were rebased into local branch, local presentation drafts were excluded from Git status without moving/deleting them, and the branch was prepared for push before the fresh autonomous goal.

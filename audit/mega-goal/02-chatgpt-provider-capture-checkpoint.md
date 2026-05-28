@@ -4,7 +4,7 @@ Timestamp: 2026-05-28T14:23:35-0500
 Agent/runtime: Codex GPT-5
 Worktree: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`
 Branch: `codex/owner-triage-normalization`
-Start commit: `48544b131d18f2a3c145db7cb0839313e5d2724b`
+Start commit after 2026-05-28 rebase: `fa1f92e`
 
 ## Scope
 
@@ -57,6 +57,8 @@ Counts:
 ChatGPT web Deep Research is now proven through full lifecycle: submit, run, complete, export, source-link recovery, normalization, and local provider-neutral ingestion.
 
 The adapter design should encode a ChatGPT-specific export policy: use Markdown for body structure and DOCX for source URL recovery unless a future export route exposes source URLs directly in Markdown.
+
+Checkpoint commit after 2026-05-28 rebase: `a3fd5984c526401535d1e26e829f53cc1e76d6c2`.
 
 ## Follow-On Action
 
