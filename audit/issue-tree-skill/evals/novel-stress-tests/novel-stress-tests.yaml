@@ -1,0 +1,80 @@
+schema_version: 0.1
+status: draft
+purpose: Novel issue-tree stress tests with no hidden book answer key.
+
+cases:
+  - id: novel_public_company_diligence_001
+    domain: public_company_diligence
+    prompt: >
+      A consulting partner asks whether a mid-market PE client should pursue a
+      take-private of a public specialty chemicals company whose revenue is
+      flat, margins are improving, and end markets are shifting toward
+      electrification. Build the issue tree that should govern diligence before
+      any research is launched.
+    grading_focus:
+      - separates attractiveness, achievability, risk, and investment-thesis tests
+      - handles financial, market, operational, regulatory, and exit logic without a generic checklist
+      - produces leaf evidence requirements suitable for SEC filings, market reports, and management diligence
+
+  - id: novel_technical_architecture_001
+    domain: technical_architecture
+    prompt: >
+      A startup wants to decide whether to rebuild its brittle monolith into
+      microservices before launching enterprise customers. The CEO says
+      reliability is the issue, the CTO says developer velocity is the issue,
+      and the sales lead says procurement security reviews are the issue.
+      Build the issue tree for deciding what architecture path to take.
+    grading_focus:
+      - distinguishes diagnosis from solution selection
+      - treats architecture choice as a trade-off under constraints
+      - includes evidence from incidents, deployment flow, compliance needs, team capability, and customer requirements
+
+  - id: novel_policy_001
+    domain: policy
+    prompt: >
+      A state government is considering whether to subsidize residential heat
+      pump adoption. The governor wants a recommendation that balances emissions
+      impact, affordability, grid reliability, fiscal cost, and political
+      feasibility. Build the issue tree for the policy analysis.
+    grading_focus:
+      - avoids business-only market-entry framing
+      - separates policy objectives, mechanisms, distributional effects, system constraints, and implementation risks
+      - uses pruning that keeps the decision-relevant trade-offs visible
+
+  - id: novel_scientific_evidence_001
+    domain: scientific_evidence
+    prompt: >
+      A foundation wants to know whether to fund a large randomized trial of a
+      nutritional intervention that has promising observational evidence,
+      mixed small trials, and plausible biological mechanisms. Build the issue
+      tree for deciding whether the trial is worth funding.
+    grading_focus:
+      - distinguishes evidence strength, biological plausibility, trial feasibility, expected value of information, and opportunity cost
+      - includes disconfirming evidence and risk of biased prior literature
+      - reaches leaves that can be resolved through literature review, trial design, and funding portfolio analysis
+
+  - id: novel_operations_diagnostic_001
+    domain: operations
+    prompt: >
+      A regional hospital system has rising emergency department wait times
+      despite adding staff. Leadership wants to know what is causing the issue
+      and what interventions would matter most. Build the issue tree for the
+      diagnostic and prioritization work.
+    grading_focus:
+      - separates arrival demand, acuity, throughput, downstream discharge, staffing mix, process design, and measurement artifacts
+      - uses causal and bottleneck logic rather than a generic people/process/technology split
+      - makes branch prioritization evidence-driven
+
+  - id: novel_messy_prompt_001
+    domain: ambiguous_client_prompt
+    prompt: >
+      We need to figure out what's going on with the new product and what to do
+      next. Sales says customers like it but usage is bad, finance says margins
+      are worse than expected, and product says the roadmap is overloaded.
+      Build the issue tree and identify the clarifying questions that must be
+      answered before expensive research.
+    grading_focus:
+      - asks targeted clarifying questions instead of pretending the problem is fully specified
+      - provides a provisional tree with visible assumptions
+      - distinguishes adoption, economics, product fit, execution capacity, and strategic options
+

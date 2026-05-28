@@ -11,6 +11,7 @@ If this file drifts from `JACK-ARCHITECTURAL-DIRECTIVES.md` or the relevant inte
 - `JACK-ARCHITECTURAL-DIRECTIVES.md`
 - `CAPSTONE-PLAN-v2.md`
 - authoritative founder clarifications preserved during the 2026-04-16 canon-and-reconciliation pass
+- authoritative founder clarifications from 2026-05-24 through 2026-05-28 on subscription-first provider routing, browser Deep Research acquisition, artifact-centered execution, and the issue-tree/problem-decomposition skill
 
 ## Intended Product Shape
 
@@ -21,14 +22,15 @@ If this file drifts from `JACK-ARCHITECTURAL-DIRECTIVES.md` or the relevant inte
 
 ## Runtime Doctrine
 
-- This is a Claude system, not an OpenAI system.
-- Founder-preferred runtime path is Claude Max, Claude Code, `claude -p`, and OAuth-backed operation.
-- Runtime doctrine here is a stable platform preference only. Exact commit pins, worktrees, live lane status, and approved write sets belong to live operational truth, not to founder doctrine.
+- The old Claude CLI-first doctrine is stale.
+- Founder-preferred runtime path is subscription-first and provider-agnostic: Codex CLI for structured local orchestration, ChatGPT web Deep Research as the primary hosted research acquisition surface, Claude web Research as a secondary/cross-check surface while available, manual upload as fallback, deterministic public-source connectors where precision matters, and API only as fallback or control.
+- Exact commit pins, worktrees, live lane status, and approved write sets belong to live operational truth, not to founder doctrine.
 
 ## Interaction Model
 
 - Work begins from user intent and decision context, not from a generic search or prompt template.
 - The system should decompose work through a specification layer and issue trees before major research fan-out.
+- Issue-tree generation should use the portable problem-decomposition methodology and should expose the problem frame, candidate axes, full tree, pruned decision tree, pruning rationale, branch logic, and leaf evidence requirements before major research spend.
 - The system should behave like a proactive research associate: it should surface hidden assumptions, rival hypotheses, and adjacent lines of inquiry, but it must not override or ignore the user’s requested scope.
 - Human review is profile- and ambiguity-dependent:
   - Light work may use compressed approval.

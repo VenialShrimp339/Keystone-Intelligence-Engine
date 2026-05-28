@@ -1,0 +1,165 @@
+source: "Bulletproof Problem Solving"
+artifact_type: methodology_primitives
+copyright_policy: "Derived methodology only; no long verbatim source text."
+primitives:
+  - id: bps_001_problem_statement_contract
+    name: Problem statement contract
+    type: framing_rule
+    description: "Define the decision context before decomposition: decision maker, decision, criteria, boundaries, time frame, accuracy required, constraints, and expected action."
+    checks:
+      - "Can the decision maker act if the answer is known?"
+      - "Are boundaries explicit enough to exclude attractive but irrelevant analysis?"
+      - "Is the required accuracy proportional to the decision?"
+    failure_modes:
+      - "Rushing into analysis from a vague prompt."
+      - "Answering a narrower local problem when the higher-level problem matters."
+      - "Treating the client diagnosis as the real problem without probing."
+
+  - id: bps_002_porpoising
+    name: Porpoising between framing, hypotheses, and data
+    type: iteration_rule
+    description: "Iteratively refine the problem statement and tree as early facts clarify scope, causes, and leverage."
+    procedure:
+      - "Draft first problem frame."
+      - "Build first-cut tree."
+      - "Gather just enough evidence to test whether the frame is right."
+      - "Revise problem frame and tree."
+      - "Repeat until the tree points to decisive analyses."
+    skill_use: "When the problem is broad, novel, or likely misstated."
+
+  - id: bps_003_multiple_cuts
+    name: Multiple cuts before commitment
+    type: decomposition_rule
+    description: "Generate several plausible cleaving frames and compare which one exposes the strongest decision logic."
+    candidate_frames:
+      - component_or_factor
+      - lever
+      - supply_demand
+      - incidence_severity
+      - process_or_value_chain
+      - stakeholder_incentive
+      - financial_driver
+      - uncertainty_strategy
+      - policy_mechanism
+      - system_feedback
+    checks:
+      - "Which cut makes the key leverage point visible?"
+      - "Which cut maps to evidence the team can collect?"
+      - "Which cut creates the least overlap at the top level?"
+
+  - id: bps_004_component_to_hypothesis_progression
+    name: Component-to-hypothesis progression
+    type: tree_maturity_rule
+    description: "Start with component/factor trees when little is known, then migrate branches toward hypotheses, tests, decision criteria, or levers."
+    maturity_levels:
+      - level: component_tree
+        use_when: "Problem space is unfamiliar."
+        output: "Relevant factors, variables, actors, or mechanisms."
+      - level: lever_tree
+        use_when: "Key drivers and controllable actions are emerging."
+        output: "Levers with likely impact and influenceability."
+      - level: hypothesis_tree
+        use_when: "A provisional answer exists."
+        output: "What must be true for the hypothesis to hold."
+      - level: decision_tree
+        use_when: "The decision path has conditional branches."
+        output: "Sequential tests and actions."
+
+  - id: bps_005_cleaving_frame_fit_test
+    name: Cleaving frame fit test
+    type: frame_selection_rule
+    description: "A standard framework is useful only when it reveals the problem's mechanism or decision leverage."
+    checks:
+      - "Does the frame reflect the actual system causing the result?"
+      - "Does it expose variables that differ in magnitude or controllability?"
+      - "Would another frame reveal a more useful intervention point?"
+      - "Can a quick calculation show the frame will be insightful?"
+    anti_pattern: "Using a familiar frame because the prompt resembles a prior case."
+
+  - id: bps_006_what_you_have_to_believe
+    name: What-you-have-to-believe analysis
+    type: hypothesis_rule
+    description: "For any recommendation or branch, state the assumptions that must hold and test their plausibility."
+    fields:
+      - assumption
+      - implied_metric_or_threshold
+      - evidence_needed
+      - sensitivity_if_wrong
+    use_when:
+      - "Sizing a market or investment."
+      - "Testing a business case."
+      - "Selecting among uncertain strategies."
+
+  - id: bps_007_pruning_by_impact_and_influence
+    name: Pruning by impact and influenceability
+    type: pruning_rule
+    description: "Prioritize branches with high impact on the objective and high ability to affect or resolve them."
+    matrix:
+      high_impact_high_influence: "retain and deepen"
+      high_impact_low_influence: "monitor, hedge, or reframe constraints"
+      low_impact_high_influence: "retain only if cheap or enabling"
+      low_impact_low_influence: "prune or defer"
+    checks:
+      - "Could this branch change the decision?"
+      - "Can the decision maker influence it or at least learn enough to adapt?"
+      - "Is evidence cost justified by decision impact?"
+
+  - id: bps_008_asymmetric_depth
+    name: Asymmetric depth by decision value
+    type: recursion_rule
+    description: "Expand high-impact, uncertain, testable branches more deeply; keep low-impact or already-known branches shallow."
+    checks:
+      - "Is this branch where the crux of the answer likely lives?"
+      - "Would more depth create a new decisive test?"
+      - "Is the branch being expanded merely for visual balance?"
+
+  - id: bps_009_simple_before_advanced_analysis
+    name: Simple before advanced analysis
+    type: analysis_selection_rule
+    description: "Use heuristics, summary statistics, first-cut calculations, and sanity checks before sophisticated tools."
+    escalation:
+      - heuristic_or_order_of_magnitude
+      - focused data pull
+      - experiment_or_quasi_experiment
+      - statistical_model
+      - simulation_or_optimization
+      - machine_learning_or_game_theory
+    checks:
+      - "Are we trying to understand causation or predict a state?"
+      - "Would a simple calculation already settle the decision?"
+      - "Does the advanced tool answer a specific hypothesis?"
+
+  - id: bps_010_uncertainty_strategy_tree
+    name: Uncertainty strategy tree
+    type: decomposition_axis
+    description: "For long-time-frame problems, classify uncertainty and map actions to buy information, hedge, create options, insure, make no-regrets moves, or place big bets."
+    uncertainty_levels:
+      - reasonably_predictable
+      - discrete_alternative_futures
+      - range_of_futures
+      - true_ambiguity
+      - unknown_unknowns
+    action_families:
+      - buy_information
+      - hedge
+      - low_cost_options
+      - insurance
+      - no_regrets_moves
+      - big_bets
+
+  - id: bps_011_system_and_wicked_problem_tree
+    name: System and wicked problem tree
+    type: complex_problem_rule
+    description: "For multi-actor problems with externalities, feedback, values, and behavioral change, map causes, actors, incentives, externalities, and possible internalization mechanisms."
+    checks:
+      - "Does the intervention change the problem shape?"
+      - "Are externalities treated as part of the system?"
+      - "Are values and trade-offs explicit?"
+      - "Is there a single right answer, or a least-bad trade-off?"
+
+  - id: bps_012_one_day_answer
+    name: One-day answer
+    type: synthesis_rule
+    description: "Maintain a current best answer at every stage, with situation, observation, and resolution updated as evidence accumulates."
+    skill_use: "After building the tree, produce a provisional answer and what would change it."
+

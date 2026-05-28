@@ -1,0 +1,260 @@
+source: "The Minto Pyramid Principle"
+artifact_type: methodology_primitives
+copyright_policy: "Derived methodology only; no long verbatim source text."
+primitives:
+  - id: minto_001_reader_question_anchor
+    name: Reader question anchor
+    type: framing_rule
+    description: "Define the single governing question before decomposing. The tree exists to answer that question, not to display everything known about the topic."
+    use_when:
+      - "The prompt is ambiguous or broad."
+      - "The user asks for issues, analysis, strategy, or recommendations."
+    procedure:
+      - "Identify the decision-maker or evaluator."
+      - "State the subject in one sentence."
+      - "Ask what question must be answered for that reader to act."
+      - "Reject branches that do not help answer the question."
+    checks:
+      - "Can the top answer be read as a direct response to the governing question?"
+      - "Would a reader know why each branch exists?"
+    failure_modes:
+      - "Topic taxonomy presented as an issue tree."
+      - "Multiple unrelated questions in one tree."
+      - "Facts listed before their relevance is established."
+
+  - id: minto_002_scqa_problem_frame
+    name: Situation-complication-question-answer frame
+    type: framing_move
+    description: "Use a short narrative frame to make the problem's decision need explicit."
+    fields:
+      situation: "Stable context or known baseline the reader accepts."
+      complication: "Event, recognition, discrepancy, proposed solution, or alternative set that creates the need for analysis."
+      question: "The decision question created by the complication."
+      answer: "The current top hypothesis or recommendation, if known."
+    checks:
+      - "Does the complication naturally raise the question?"
+      - "Does the answer directly respond to that question?"
+      - "Does the body of the tree answer the next question raised by the answer?"
+
+  - id: minto_003_gap_definition
+    name: R1 to R2 gap definition
+    type: problem_model
+    description: "Define a problem as the gap between the current or likely undesired result and the desired result."
+    fields:
+      opening_scene: "The visible structure or process that normally produces results."
+      disturbing_event: "The change, evidence, or recognition that reveals the gap."
+      r1_undesired_result: "What is happening or likely to happen that the reader does not want."
+      r2_desired_result: "The outcome the reader wants instead."
+      solution_status: "Unknown, proposed, accepted, failed, competing alternatives, unclear R2, or uncertain R1."
+    output:
+      - "A sharper problem statement."
+      - "The correct governing question."
+      - "A clue to the right diagnostic framework."
+    checks:
+      - "Is R2 specific enough to evaluate solutions?"
+      - "Is the disturbing event different from R1?"
+      - "Can likely causes be found in the opening-scene structure or process?"
+
+  - id: minto_004_solution_stance_router
+    name: Solution-stance router
+    type: tree_selection_rule
+    description: "Choose the tree form based on where the reader stands in the problem-solving journey."
+    routes:
+      - stance: "No solution known"
+        governing_question: "What should we do?"
+        tree_shape: "Diagnostic causes, then solution options and recommendation."
+      - stance: "Solution proposed but uncertain"
+        governing_question: "Should we do it?"
+        tree_shape: "Criteria-based evaluation or proof/disproof of the proposed solution."
+      - stance: "Solution accepted"
+        governing_question: "How should we do it?"
+        tree_shape: "Implementation steps, dependencies, risks, and sequencing."
+      - stance: "Prior solution failed"
+        governing_question: "What should we do now?"
+        tree_shape: "Failure diagnosis, revised options, and decision."
+      - stance: "Known alternatives"
+        governing_question: "Which option is best?"
+        tree_shape: "Evaluation criteria or option-by-option decisive reasons."
+      - stance: "Desired future unclear"
+        governing_question: "What should our objectives and strategy be?"
+        tree_shape: "Objective definition, strategic positioning, then path."
+      - stance: "Current gap uncertain"
+        governing_question: "Do we have a problem?"
+        tree_shape: "Benchmark or evidence tree that validates whether R1 exists."
+
+  - id: minto_005_vertical_qa_recursion
+    name: Vertical question-answer recursion
+    type: decomposition_rule
+    description: "Every node raises a natural reader question, and the child nodes answer it."
+    child_question_map:
+      why: "Reasons or causes."
+      how: "Steps, mechanisms, or changes."
+      which: "Criteria, option comparisons, or decisive differentiators."
+      whether: "Evidence tests that confirm or disconfirm."
+    checks:
+      - "Does each child group answer the parent question?"
+      - "Are assumptions introduced only when the reader needs them?"
+      - "Does the tree stop where the next answer would be implementation detail, known fact, or low-value research?"
+
+  - id: minto_006_horizontal_logic_mode
+    name: One horizontal logic mode per sibling group
+    type: logic_rule
+    description: "A sibling group must be either deductive or inductive, not a blend."
+    deductive_pattern:
+      form: "Situation or rule, comment/case, implication."
+      use_for:
+        - "Explaining why a conclusion follows."
+        - "Chaining problem analysis where one fact causes the next."
+      constraints:
+        - "Keep deductive chains short."
+        - "Make the implication explicit."
+    inductive_pattern:
+      form: "Similar items grouped under a common plural noun, then summarized with an insight."
+      use_for:
+        - "Reasons, causes, steps, problems, criteria, options."
+      constraints:
+        - "Name the plural noun."
+        - "Check for misfits."
+        - "Do not infer beyond what the grouped items support."
+
+  - id: minto_007_grouping_source_order
+    name: Source-of-grouping order
+    type: mece_operationalizer
+    description: "Determine the order and completeness test for a branch set by identifying its source logic."
+    source_logics:
+      sequence:
+        basis: "Actions or events needed to produce an effect."
+        order: "Time, dependency, or cause-effect order."
+        completeness_test: "Would these steps together produce the stated end product?"
+      structure:
+        basis: "Parts of a physical, organizational, financial, market, or conceptual whole."
+        order: "The order implied by the map, system, value chain, flow, or hierarchy."
+        completeness_test: "Are the parts mutually exclusive and collectively exhaustive for this purpose?"
+      class:
+        basis: "Items sharing a common attribute."
+        order: "Degree, importance, magnitude, risk, value, or discriminating strength."
+        completeness_test: "Are all included items members of the same class, and are obvious class members missing?"
+
+  - id: minto_008_summary_insight_requirement
+    name: Summary insight requirement
+    type: synthesis_rule
+    description: "Replace generic parent labels with the specific insight implied by the children."
+    weak_parent_examples:
+      - "Key issues"
+      - "Three problems"
+      - "Market factors"
+      - "Recommendations"
+    strong_parent_properties:
+      - "States what is true, what to do, or what the grouped facts imply."
+      - "Is specific to the children beneath it."
+      - "Raises the next useful question."
+    checks:
+      - "Could this parent sit above many unrelated branch sets? If yes, it is too generic."
+      - "Does the parent overclaim beyond the children? If yes, lower the abstraction."
+
+  - id: minto_009_action_end_product
+    name: Action end-product wording
+    type: leaf_design_rule
+    description: "Phrase action branches by the result the action creates, not by vague activity."
+    examples_of_leaf_properties:
+      - "Produces an observable output."
+      - "Can be assigned, tested, or completed."
+      - "Fits the level of abstraction of sibling actions."
+    checks:
+      - "If all child actions are done, what will exist that does not exist now?"
+      - "Are means and ends mixed at the same level?"
+
+  - id: minto_010_diagnostic_framework_first
+    name: Diagnostic framework before data
+    type: analysis_design_rule
+    description: "Model the system that could produce R1 before collecting data. Use that model to decide which facts matter."
+    framework_options:
+      physical_structure: "Map channels, operations, assets, customers, org units, or industry segments."
+      financial_structure: "Break performance into revenue, cost, asset, margin, cash, or ROI drivers."
+      activity_structure: "Map tasks and processes that produce the undesired result."
+      classification_structure: "Classify likely causes by shared type where no process map is available."
+      choice_structure: "Use binary splits through a process to isolate where failure occurs."
+    output:
+      - "Hypotheses about likely causes."
+      - "Yes/no research questions."
+      - "Evidence requirements and data sources."
+      - "A stopping rule for research."
+
+  - id: minto_011_yes_no_issue_form
+    name: Yes/no issue form
+    type: research_design_rule
+    description: "Phrase research issues as questions that can be answered yes or no."
+    rationale: "Yes/no phrasing enables exclusion, prioritization, and completion. Open-ended topics should be converted into concerns or analysis tasks until they can be made testable."
+    conversion_examples:
+      - concern: "Inventory levels"
+        issue: "Is the present inventory level higher than required to meet service targets?"
+      - concern: "Sales support quality"
+        issue: "Is sales support ineffective because field calls target the wrong stores?"
+      - concern: "Implementation readiness"
+        issue: "Do project managers have the experience needed to hit the target dates?"
+
+  - id: minto_012_elimination_order
+    name: Elimination order
+    type: pruning_rule
+    description: "When diagnosing, test causes in the order that removes uncertainty fastest at lowest cost, while respecting process dependencies."
+    factors:
+      - "Ease of evidence collection."
+      - "Likelihood based on domain knowledge."
+      - "Position in a sequential process, because upstream failure can make downstream analysis moot."
+      - "Decision impact if confirmed."
+    checks:
+      - "Would a no answer eliminate a whole branch?"
+      - "Would a yes answer change the recommendation?"
+
+  - id: minto_013_alternative_handling
+    name: Alternatives belong in the complication when already live
+    type: recommendation_rule
+    description: "Analyze alternatives when the reader already sees them as live options. Do not invent weak alternatives merely to defeat them."
+    preferred_tree_shapes:
+      - "Criteria-based proof that the selected option best satisfies the decision requirements."
+      - "Option-by-option decisive reason when the winner is not superior on every criterion."
+      - "Objective-priority tree when no option satisfies all requirements."
+    anti_pattern: "Recommend option C because A and B are bad, while failing to prove C solves the problem."
+
+  - id: minto_014_diagnostic_vs_solution_tree
+    name: Diagnostic versus solution tree separation
+    type: tree_taxonomy
+    description: "Separate the tree that explains why R1 exists from the tree that enumerates what can be changed."
+    diagnostic_tree:
+      root: "Undesired result or gap."
+      branches: "Possible causes or failure locations."
+      leaves: "Yes/no tests and evidence."
+    solution_tree:
+      root: "Desired result or intervention goal."
+      branches: "Possible action levers."
+      leaves: "Actions, benefits, risks, constraints."
+    checks:
+      - "Is a branch diagnosing the problem or proposing a fix?"
+      - "Has the diagnosis been confirmed enough to justify solution pruning?"
+
+  - id: minto_015_abductive_hypothesis_cycle
+    name: Abductive hypothesis cycle
+    type: reasoning_rule
+    description: "For unexplained results, propose possible structures or causes, derive what would be observable if each were true, then test for clean confirmation or exclusion."
+    steps:
+      - "Observe the unexpected result."
+      - "Use structural knowledge to propose candidate causes."
+      - "For each cause, state what evidence should be present if it is true."
+      - "Gather evidence designed to discriminate among causes."
+      - "Revise the tree as hypotheses are eliminated."
+
+  - id: minto_016_pruned_decision_tree_output
+    name: Visible full tree plus pruned decision tree
+    type: skill_output_requirement
+    description: "Generate both an exhaustive logic map and a smaller action-guiding tree."
+    full_tree_requirements:
+      - "Show the logical universe before pruning."
+      - "Label branch source logic: sequence, structure, class, or deductive chain."
+      - "Attach evidence requirements to leaves."
+    pruned_tree_requirements:
+      - "Keep only branches that can plausibly change the answer."
+      - "Show the reason each branch is retained or deferred."
+      - "Prioritize yes/no tests with high discriminating power."
+    checks:
+      - "Can the user see what was deliberately excluded?"
+      - "Do retained branches map to decision criteria or likely causes?"

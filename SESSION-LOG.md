@@ -2006,3 +2006,368 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 1. Run the required verification for this normalization pass and confirm the changed-file set stayed inside the agreed scope.
 2. Commit the normalization pass on `codex/owner-triage-normalization` if the delta is coherent.
 3. After this normalization is safely committed, prune the 19 stale `/private/tmp/...` worktrees in a separate follow-up session.
+
+---
+
+## Session 30: UI v0.1 Serving Layer + Basic Chat
+- **Timestamp:** `2026-04-21T14:59:58-0400`
+- **Agent/runtime:** `Codex (GPT-5.4)`
+- **Worktree:** `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`
+- **Branch:** `codex/owner-triage-normalization`
+- **Start commit:** `b382ad0c3a9c10357dbcd8ddbd6fc149a5c077eb`
+- **End commit:** `no commit`
+
+### Authority docs read
+- `AUTHORITY-INDEX.md`
+- `SESSION-STANDARD.md`
+- `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+- `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- `notes/UI-ARCHITECTURE.md` sections 1, 2, and 5
+- `.agents/skills/architecture/SKILL.md`
+- Graphify artifacts checked: `graphify-out/GRAPH_REPORT.md` and `graphify-out/wiki/index.md` were absent in this worktree.
+
+### Files changed
+- `.gitignore`
+- `src/keystone/server/__init__.py`
+- `src/keystone/server/app.py`
+- `src/keystone/server/models.py`
+- `src/keystone/server/run_store.py`
+- `src/keystone/server/pipeline_runner.py`
+- `src/keystone/server/routes_runs.py`
+- `src/keystone/server/ws.py`
+- `frontend/index.html`
+- `frontend/package.json`
+- `frontend/package-lock.json`
+- `frontend/postcss.config.js`
+- `frontend/tailwind.config.ts`
+- `frontend/tsconfig.json`
+- `frontend/tsconfig.node.json`
+- `frontend/vite.config.ts`
+- `frontend/src/main.tsx`
+- `frontend/src/App.tsx`
+- `frontend/src/index.css`
+- `frontend/src/lib/api.ts`
+- `frontend/src/lib/utils.ts`
+- `frontend/src/lib/ws.ts`
+- `frontend/src/types/api.ts`
+- `frontend/src/components/SessionSidebar.tsx`
+- `frontend/src/components/ChatPanel.tsx`
+- `frontend/src/components/EventLog.tsx`
+- `frontend/src/components/MarkdownResult.tsx`
+- `frontend/src/components/ui/badge.tsx`
+- `frontend/src/components/ui/button.tsx`
+- `frontend/src/components/ui/textarea.tsx`
+- `tests/unit/server/test_run_store.py`
+- `SESSION-LOG.md`
+
+### Files reviewed only
+- `src/keystone/events.py`
+- `src/keystone/pipeline/orchestrator.py`
+- `src/keystone/models/config.py`
+- `src/keystone/gateway/factory.py`
+- `src/keystone/gateway/mcp_gateway.py`
+- `src/keystone/llm_client.py`
+- `tests/e2e/test_mock_pipeline.py`
+
+### Summary of work
+- Implemented the v0.1 FastAPI serving layer under `src/keystone/server/`: app/lifespan setup, CORS, REST run routes, WebSocket stream route, Pydantic API models, in-memory `RunStore`, event envelope wrapping with `event_type`, run phase/status derivation, subscriber fanout, and best-effort task cancellation.
+- Wrapped `Pipeline.run_with_events(...)` in an asyncio task without modifying existing pipeline modules. The runner stores every yielded event, marks `RENDERING` before saving the final `PipelineResult`, and publishes `result_ready` when complete.
+- Created the standalone React + TypeScript + Vite frontend with Tailwind/shadcn-style primitives, API wrappers, reconnecting WebSocket client, session sidebar, chat submission/stop controls, readable event log, and markdown result rendering.
+- Added frontend generated-artifact ignores for `frontend/node_modules/` and `frontend/dist/`.
+- Added focused unit tests for run-store event wrapping, lifecycle transitions, subscriptions, and stopped-run recording.
+
+### Decisions / contradictions resolved
+- Treated the control-plane warning about deferring UI work as stale relative to the direct task packet and current `owner-triage-normalization` branch request; no control-plane pins were advanced because this session ended without a commit.
+- Kept server state single-process/in-memory per v0.1 and avoided changing `src/keystone/pipeline/`, `src/keystone/events.py`, or model contracts.
+- Returned nested result payloads as JSON DTOs so the frontend can render v0.1 markdown now and add richer typed panels later.
+- Used a local ignored `.venv` because the Homebrew Python environment is externally managed.
+
+### Evidence / verification
+- `.venv/bin/python -c "from keystone.server.app import app; print(app.title)"` passed.
+- `.venv/bin/ruff check src/keystone/server tests/unit/server/test_run_store.py` passed.
+- `.venv/bin/python -m compileall -q src/keystone/server` passed.
+- `.venv/bin/pytest tests/unit/server/test_run_store.py` passed (`2 passed`).
+- `cd frontend && npm run build` passed.
+- `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` failed with `ModuleNotFoundError: No module named 'graphify'`; graphify artifacts were not rebuilt.
+
+### Blockers / residual risks
+- Full live pipeline execution through the UI was not run because it depends on the local LLM/tool runtime and credentials.
+- `npm install` reported two moderate vulnerabilities; no forced audit fix was applied because that could introduce breaking dependency changes.
+- Pre-existing dirty/untracked workspace state remains outside this session's changes: `tests/canary/test_architectural_guarantees.py`, `.agents/`, `notes/UI-ARCHITECTURE.md`, and `notes/WRITE-BACK-DESIGN.md`.
+- This is no-commit WIP; the new server/frontend files are not durable canon until staged and committed.
+
+### Exact next action
+1. Run the backend and frontend dev servers locally and smoke-test start/stream/stop/result behavior against the configured LLM runtime.
+2. If the smoke test is acceptable, stage only the v0.1 server/frontend/test/session-log/gitignore files and commit them on `codex/owner-triage-normalization`, leaving unrelated pre-existing dirty state untouched.
+
+## 2026-05-24 - Owner Vision Reorientation
+
+### Context read
+- `AUTHORITY-INDEX.md`
+- `SESSION-STANDARD.md`
+- `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+- `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- `CURRENT-STATE.md`
+- `FOUNDER-INTENT-DOCTRINE.md`
+- `MVP-REQUIRED-BUILDOUT.md`
+- `README.md`
+- `docs/deliverable/CURRENT-STATUS.md`
+- `docs/deliverable/KNOWN-ISSUES.md`
+- `notes/FIRST-RUN-ANALYSIS.md`
+- Runtime logs under `output/`
+- Current OpenAI and Anthropic provider documentation
+
+### Summary
+- Confirmed this worktree belongs to `https://github.com/VenialShrimp339/Keystone-Intelligence-Engine.git`.
+- Confirmed local `codex/owner-triage-normalization` is behind `origin/codex/owner-triage-normalization` by three README-only commits.
+- Audited the current pipeline at a systems level: it has not completed a real end-to-end run, deep research remains Claude CLI-bound, token accounting is incomplete, retries amplify quota failure, and downstream L1.5/L4 fanout is a major cost and reliability risk.
+- Captured owner direction in `notes/OWNER-VISION-2026-05-24.md`: preserve the full issue-tree pipeline for July 27, prefer OpenAI/ChatGPT over Claude, prefer subscription capacity where feasible, allow manual Deep Research upload first, and evaluate browser automation seriously as a research acquisition backend.
+
+### Files changed
+- `notes/OWNER-VISION-2026-05-24.md`
+- `SESSION-LOG.md`
+
+### Residual risks
+- The control-plane docs and GitHub default branch disagree about the current runtime truth.
+- The current code still defaults to Claude CLI for the main pipeline and always uses Claude CLI for `DEEP_RESEARCH=1`.
+- No tests were run in this session because the work was a non-code audit and product-direction capture.
+
+### Follow-up owner clarification
+- The July 27 goal remains the full system, not a narrowed research-ingestion MVP.
+- The system must stay domain-flexible and should not be designed around market sizing, diligence, or any single business workflow.
+- Dynamic issue-tree generation, clarification questions, and consultant approval of the research plan are intentional product requirements.
+- Outputs should eventually include briefs/memos, decks, and Excel/financial models depending on the task.
+- Runtime should scale with task complexity; overnight is acceptable for genuinely complex research, but narrow extraction/modeling should be much faster.
+- Browser automation remains strategically important because it may access web-only ChatGPT capabilities and subscription capacity that are unavailable through specific CLI model paths.
+
+### Additional owner directive
+- Subscription-powered execution is the preferred default for the current independent build. Use paid API paths only when subscription-backed CLI/browser paths are technically blocked, materially weaker for the job, or too expensive to reconstruct.
+- ChatGPT web and Claude web automation are allowed first-class acquisition backends while both plans are active, especially for parallel Deep Research capacity and rate-limit pooling.
+- Public-data workflows are the near-term target. Do not process client-confidential files through external systems until the owner has firm approval, but preserve a future confidentiality-safe architecture.
+- Human checkpoints should be configurable: issue-tree approval should be available by default for complex runs, with optional approvals at each major follow-up wave.
+- Long-term configuration should expose depth, deliberation rounds, judges, research backend, output type, approval checkpoints, and compute budget in config files and eventually UI settings.
+- Working posture: when a workflow is slow, brittle, tedious, or costly, assume a better architecture likely exists and investigate alternatives before accepting the limitation.
+- Owner clarified there is no artificial cap on subscription-backed ChatGPT/Claude usage for feasibility work; probes should be bounded by information gain rather than quota fear.
+- Added `notes/MEGA-GOAL-PROMPT-2026-05-24.md`, a ready-to-run autonomous goal prompt covering repo baseline, architecture preservation audit, provider feasibility, artifact contracts, and July 27 roadmap.
+
+## 2026-05-24 - Mega-Goal Architecture And Provider Audit
+
+### Goal executed
+- Executed `notes/MEGA-GOAL-PROMPT-2026-05-24.md`.
+- Treated the owner clarification as binding: provider feasibility is framed as "how to make it work" with routes, missing proof, and fallback paths, not as a yes/no permission gate.
+
+### Files added
+- `audit/mega-goal/00-repo-baseline.md`
+- `audit/architecture-preservation/ARCHITECTURE-PRESERVATION-AUDIT.md`
+- `audit/architecture-preservation/component-matrix.yaml`
+- `audit/architecture-preservation/decision-log.md`
+- `audit/provider-feasibility/PROVIDER-FEASIBILITY-REPORT.md`
+- `audit/provider-feasibility/provider-capability-matrix.yaml`
+- `audit/provider-feasibility/experiment-log.md`
+- `audit/provider-feasibility/artifacts/*`
+- `audit/contracts/ARTIFACT-CONTRACTS.md`
+- `audit/contracts/contracts.yaml`
+- `audit/contracts/model-sketch.py`
+- `audit/roadmap/JULY-27-EXECUTION-PLAN.md`
+- `audit/roadmap/first-vertical-slice-spec.md`
+- `audit/roadmap/refactor-sequence.yaml`
+
+### Key conclusions
+- Preserve DPVI, L0 specification, issue trees, citation processor, HITL gates, checkpoint concept, and evaluator doctrine.
+- Replace the Claude-first runtime doctrine and hardwired `claude -p` deep research path.
+- Build subscription-first provider adapters: Codex CLI for structured non-browser calls, ChatGPT web Deep Research as primary hosted research, Claude web Research as secondary hosted research and rate-limit spillover, deterministic source connectors for SEC/public data, and API as fallback/control.
+- Make research reports first-class artifacts. The next version should ingest and evaluate ChatGPT/Claude/manual reports instead of forcing every branch through a coding CLI.
+- Add narrative synthesis before deliberation. The current all-claims-to-all-analysts shape is a quality and usage failure mode.
+- Stage evaluation by risk and cost. Full L4/L5 should not run indiscriminately over every intermediate output.
+
+### Evidence / verification
+- Verified current repo state, worktrees, branch/remote mismatch, and README-only remote delta.
+- Verified local Codex CLI version `0.128.0`.
+- Ran `codex exec --json --output-schema` successfully and saved JSONL events plus final structured message under `audit/provider-feasibility/artifacts/`.
+- Confirmed the trivial Codex probe reported 28,492 input tokens, which is evidence that Codex CLI calls need tight context discipline.
+- Used Chrome automation with the logged-in profile to save ChatGPT and Claude web artifacts:
+  - ChatGPT Pro surface and model menu, including Pro/Extended option.
+  - ChatGPT tools menu and Deep Research selected state.
+  - Claude Max surface and Research/Web Search controls.
+- Verified required audit deliverable files exist.
+- Ran `python3 -m py_compile audit/contracts/model-sketch.py` successfully.
+- Attempted the required graphify rebuild because `model-sketch.py` is a Python file. It failed with `ModuleNotFoundError: No module named 'graphify'`; no graphify artifacts were rebuilt.
+
+### Not run
+- No full Keystone pipeline test was run.
+- No live Deep Research job was submitted. The next provider track should run a tiny public lifecycle probe to capture submission, plan confirmation, running state, completion signal, and export/copy/download selectors.
+- No confidential client files were processed.
+- No commit was made.
+
+## 2026-05-28 - Stage B Canonization And Checkpoint
+
+### Session metadata
+- Timestamp: 2026-05-28 14:08:49 CDT -0500
+- Agent/runtime: Codex, GPT-5
+- Worktree: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`
+- Branch: `codex/owner-triage-normalization`
+- Start commit: `31189a5b3e3ce0a89e4a11fa0cbefc2b79b6ae03`
+- End commit: `78f9b4386b9cd266b4211ae62eb4fb3bbfa5551a`
+
+### Authority and context read
+- `AUTHORITY-INDEX.md`
+- `SESSION-STANDARD.md`
+- `CURRENT-STATE.md`
+- `FOUNDER-INTENT-DOCTRINE.md`
+- `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+- `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- `audit/mega-goal/00-repo-baseline.md`
+- `audit/architecture-preservation/ARCHITECTURE-PRESERVATION-AUDIT.md`
+- `audit/roadmap/JULY-27-EXECUTION-PLAN.md`
+- `audit/issue-tree-skill/handoff/HANDOFF.md`
+
+### Files added / changed
+- Repointed current truth docs:
+  - `CURRENT-STATE.md`
+  - `FOUNDER-INTENT-DOCTRINE.md`
+  - `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+  - `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- Added `audit/mega-goal/01-stage-b-canonization-checkpoint.md`.
+- Updated `TODO.md` with Stage B, ChatGPT capture, and issue-tree eval next actions.
+- Staged the coherent May 24/May 28 project work for checkpoint commit, excluding unrelated class presentation files.
+
+### Key outcomes
+- Live project direction now points to the artifact-centered, subscription-first Keystone research rebuild.
+- The old April Lane E retrieval-parse next action is preserved as historical provenance, not active guidance.
+- Founder runtime doctrine now marks Claude CLI-first execution as stale and records subscription-first provider routing.
+- The issue-tree skill handoff is now part of the active read path.
+- Exact next autonomous implementation sequence is documented: capture completed ChatGPT report, ingest both provider reports through one artifact contract, run issue-tree eval subset, implement `IssueTreePackage`, then build the first artifact-centered vertical slice.
+
+### Verification
+- `PYTHONPATH=src /opt/homebrew/opt/python@3.12/bin/python3.12 -m pytest tests/unit/artifacts/test_store.py tests/unit/ingestion/test_manual_report.py tests/unit/ingestion/test_vertical_slice.py tests/unit/providers/test_browser_watch.py tests/unit/specification/test_lens_selector.py tests/unit/specification/test_decomposer.py tests/unit/test_model_tier_fixes.py -q` -> 31 passed.
+- `PYTHONPATH=src /opt/homebrew/opt/python@3.12/bin/python3.12 -m ruff check ...` on touched artifact/ingestion/provider/specification/test slices -> passed.
+- Ruby YAML parse passed for the control-plane YAML and issue-tree skill/eval YAML files.
+- Graphify rebuild attempted with `python3 -c "from graphify.watch import _rebuild_code; from pathlib import Path; _rebuild_code(Path('.'))"` and failed because local `graphify` is not importable.
+
+### Residual risks / next work
+- ChatGPT completed report remains open in Chrome but is not yet durably captured or ingested.
+- Issue-tree skill has one blind eval win; broader eval subset remains required before direct KIE integration.
+- Worktree was behind `origin/codex/owner-triage-normalization` by 3 README-only commits at baseline; pull/rebase should wait until checkpoint is complete.
+- Unrelated `keystone-class-presentation.md` and `.pptx` remain untracked and were intentionally not staged.
+
+## 2026-05-28 - Portable Issue-Tree Skill Foundation
+
+### Session metadata
+- Timestamp: 2026-05-28 14:02:40 CDT -0500
+- Agent/runtime: GPT-5 Codex
+- Worktree: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`
+- Branch: `codex/owner-triage-normalization`
+- Start commit: `31189a5b3e3ce0a89e4a11fa0cbefc2b79b6ae03`
+- End commit: no commit created
+
+### Authority and context read
+- `AUTHORITY-INDEX.md`
+- `SESSION-STANDARD.md`
+- `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
+- `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
+- `FOUNDER-INTENT-DOCTRINE.md`
+- `notes/OWNER-VISION-2026-05-24.md`
+- `audit/architecture-preservation/ARCHITECTURE-PRESERVATION-AUDIT.md`
+- `audit/architecture-preservation/component-matrix.yaml`
+- `audit/roadmap/JULY-27-EXECUTION-PLAN.md`
+- relevant `src/keystone/specification/` files
+- local skill-creation guidance at `/Users/jackriddle/.codex/skills/.system/skill-creator/SKILL.md`
+
+### Files added / changed
+- Added derived book extraction artifacts under `audit/issue-tree-skill/books/`.
+- Added extraction plan, KIE spec gap notes, unified methodology pack, decomposition axis library, consulting archetypes, quality gates, output contract, KIE adapter, eval strategy, book-derived eval manifest, novel stress tests, critique record, first blind eval records, and handoff under `audit/issue-tree-skill/`.
+- Added portable skill package under `.agents/skills/problem-decomposition/`.
+- Updated this session log.
+
+### Key outcomes
+- Built the first portable problem-decomposition skill package for standalone consultant use and future KIE integration.
+- Distilled the three source books into private derived methodology artifacts without storing raw extracted book text in the repo.
+- Separated the methodology into problem framing, decomposition-axis selection, full tree generation, sibling-group branch logic, MECE validation, visible pruning, and leaf evidence requirements.
+- Added a strict output contract using `nodes[]`, `edges[]`, `sibling_groups[]`, `leaf_tasks[]`, `pruning_decisions[]`, and `quality_gate_results[]`.
+- Added a KIE adapter recommendation: create an upstream `IssueTreePackage`, route it through HITL approval, then down-convert approved pruned leaves into the existing task generator.
+- Ran one blind book-derived eval on Sydney Airport capacity. The skill output beat the no-skill baseline 34 to 24 after penalty.
+- Ran adversarial review and patched the schema, quality gates, KIE adapter, and skill instructions based on findings.
+
+### Verification
+- YAML validation passed for all new `.yaml` files under `audit/issue-tree-skill` and `.agents/skills/problem-decomposition`.
+- Non-ASCII scan passed for new issue-tree artifacts.
+- `git status --short audit/issue-tree-skill .agents/skills/problem-decomposition` shows the new artifact directories as untracked.
+
+### Residual risks / next work
+- Only one blind eval was run; the recommended seven-case subset still needs to be executed.
+- Bulletproof and McKinsey extraction artifacts were orchestrator fallback artifacts from local text extraction after book agents ran long; Minto was completed by a book subagent.
+- The output contract is a target schema, not yet implemented as Pydantic models in KIE.
+- KIE runtime code was not modified in this session.
+- Graphify artifacts were absent at session start, and no code files were modified by this session, so no graphify rebuild was required.
+- Exact next action: add a Pydantic `IssueTreePackage` upstream of the current `Decomposer`, then add a HITL approval view and adapter from approved `leaf_tasks[]` into the existing task generator.
+
+## 2026-05-24 - First-Slice Artifact, Ingestion, Dynamic Lenses, Provider Probe
+
+### Goal executed
+- Executed `notes/GOAL-PROMPT-FIRST-SLICE-FOUR-STAGES-2026-05-24.md`.
+- Honored owner clarification that hosted Deep Research jobs normally run 15+ minutes and should be used for breadth/depth across hundreds of sources.
+- Treated partial research cards and source-count progress as non-ingestable.
+
+### Files added / changed
+- Added artifact contracts and local store:
+  - `src/keystone/artifacts/models.py`
+  - `src/keystone/artifacts/store.py`
+  - `src/keystone/artifacts/__init__.py`
+- Added ingestion and first-slice flow:
+  - `src/keystone/ingestion/manual_report.py`
+  - `src/keystone/ingestion/vertical_slice.py`
+  - `tests/fixtures/ingestion/sample_public_deep_research_report.md`
+- Added dynamic L0 lens planning:
+  - `src/keystone/specification/lens_selector.py`
+  - `src/keystone/specification/decomposer.py`
+  - `src/keystone/specification/prompts/decompose_synthesis.md`
+  - `src/keystone/specification/spec_engine.py`
+- Added browser research completion watchers:
+  - `src/keystone/providers/browser_watch.py`
+  - `src/keystone/providers/__init__.py`
+  - `tests/unit/providers/test_browser_watch.py`
+- Added/updated provider artifacts and notes:
+  - `audit/provider-feasibility/artifacts/live-probe-2026-05-24/`
+  - `audit/provider-feasibility/COMPLETION-NOTIFICATION-DESIGN.md`
+  - `audit/provider-feasibility/experiment-log.md`
+  - `audit/provider-feasibility/PROVIDER-FEASIBILITY-REPORT.md`
+- Updated `TODO.md`.
+
+### Key outcomes
+- Built first-class artifacts for run ledger, specification, issue-tree node, provider job, research report, source bundle, evidence bundle, synthesis, evaluation, and deliverable.
+- Built local JSON/file artifact store with write/read/list/status updates and ledger child refs.
+- Built manual Markdown/TXT/HTML report ingestion with title, sections, source URLs, claims, citation IDs, and quality flags.
+- Built a repeatable manual first-slice run that creates a ledger, ingests a completed report, emits evidence/synthesis/evaluation/deliverable artifacts, and avoids the old full pipeline.
+- Replaced the load-bearing fixed L0 `_LENSES = ["financial", "operational", "market"]` pattern with deterministic dynamic lens selection across business, technical, scientific, and ambiguous prompts.
+- Updated synthesis prompting to accept dynamic lens payloads rather than three hardcoded tree slots.
+- Started live parallel browser provider jobs:
+  - ChatGPT Deep Research accepted the public prompt and remains running in `https://chatgpt.com/c/6a137bbc-82d0-83ea-a457-fbfa6d56e3de`.
+  - Claude Research accepted the same public prompt, gathered 257 sources, completed, exposed an artifact panel, and was ingested.
+- Created a 15-minute thread heartbeat automation named `Check Deep Research jobs` to check the still-running ChatGPT job.
+
+### Live provider ingestion
+- Completed Claude report saved at `audit/provider-feasibility/artifacts/live-probe-2026-05-24/claude-live-completed-report.md`.
+- Ingested artifacts saved under `audit/provider-feasibility/artifacts/live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-claude/`.
+- Ingested evidence bundle currently has 10 extracted sources, 24 candidate claims, 5 cited claims, and 19 citation-gap flags. The high gap count reflects copied artifact text where some source links are rendered after paragraphs rather than inline with every sentence; the source bundle remains traceable.
+
+### Notification / watcher conclusion
+- OpenAI official docs say ChatGPT Deep Research can take 5-30 minutes and sends a notification once complete.
+- OpenAI official help says completed reports expose sources/activity history and can be downloaded in Markdown, Word, and PDF.
+- Claude live UI exposes `Notify`, source-count progress, `Research complete`, `Boom! Research report is ready`, and an artifact panel.
+- Keystone should treat provider-native notification as operator UX and its own browser DOM watcher as control-plane truth.
+- `ProviderCompletionSignal.should_ingest` is true only for `export_ready` states.
+
+### Verification
+- `PYTHONPATH=src pytest tests/unit/artifacts/test_store.py tests/unit/ingestion/test_manual_report.py tests/unit/ingestion/test_vertical_slice.py tests/unit/specification/test_lens_selector.py tests/unit/specification/test_decomposer.py tests/unit/test_model_tier_fixes.py -q` -> 27 passed.
+- `PYTHONPATH=src pytest tests/unit/specification/test_spec_engine.py -q` -> 11 passed.
+- `PYTHONPATH=src pytest tests/unit/providers/test_browser_watch.py tests/unit/ingestion/test_manual_report.py tests/unit/ingestion/test_vertical_slice.py -q` -> 7 passed.
+- `PYTHONPATH=src ruff check ...` passed on touched artifact/ingestion/provider/specification/test slices.
+- `PYTHONPATH=src /opt/homebrew/opt/python@3.12/bin/python3.12 -m compileall -q ...` passed on touched modules.
+
+### Residual risks / next work
+- ChatGPT report completion/export still needs final capture when the current running job completes.
+- Provider browser adapter still needs implementation around the pure DOM detectors: tab registry, polling loop, export action, blocked-state pause, and per-provider concurrency.
+- Manual/browser report extraction can be improved by preserving exact inline source anchors from provider artifact DOM, not just visible text plus URL appendix.
+- L0 still has other one-size-fits-all surfaces outside lens selection: engagement type enum, task categories, methodology defaults, tool assignment, and source requirements.
+- No confidential client files were processed.
+- No commit was made.

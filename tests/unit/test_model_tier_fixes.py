@@ -22,7 +22,6 @@ from keystone.specification.decomposer import Decomposer, IssueTree
 from keystone.specification.spec_engine import SpecificationEngine
 from keystone.specification.template_registry import TemplateRegistry
 
-
 # ---- Evaluator extraction_llm (Fix B) ------------------------------------
 
 

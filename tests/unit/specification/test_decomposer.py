@@ -66,7 +66,9 @@ def _make_synthesized_tree(leaf_count: int = 12) -> dict:
             "description": "Unified MECE tree",
             "children": branches,
         },
-        "synthesis_rationale": "Merged financial and market perspectives, added operational insights.",
+        "synthesis_rationale": (
+            "Merged financial and market perspectives, added operational insights."
+        ),
     }
 
 
@@ -132,7 +134,7 @@ class TestDecomposer:
 
         assert 8 <= tree.metadata.leaf_count <= 20
 
-    async def test_three_lenses_merged(self):
+    async def test_selected_lenses_recorded(self):
         call_count = 0
 
         async def llm(prompt: str) -> str:
@@ -149,7 +151,32 @@ class TestDecomposer:
             "Test hypothesis",
         )
 
-        assert tree.metadata.lenses_used == ["financial", "operational", "market"]
+        assert 2 <= len(tree.metadata.lenses_used) <= 5
+        assert tree.metadata.lenses_used != ["financial", "operational", "market"]
+
+    async def test_dynamic_lenses_handle_technical_domain(self):
+        call_count = 0
+
+        async def llm(prompt: str) -> str:
+            nonlocal call_count
+            call_count += 1
+            if "Dynamic lens directive:" in prompt:
+                return json.dumps(_make_lens_tree(f"lens_{call_count}"))
+            return json.dumps(_make_synthesized_tree())
+
+        decomposer = Decomposer(llm)
+        tree = await decomposer.decompose(
+            "Evaluate a secure plugin runtime architecture for browser automation",
+            EngagementType.DESIGN,
+            "A plugin runtime can be made secure without losing automation capability",
+            domain="technical_architecture",
+            decision_context="Choose an internal tool architecture",
+            output_target="architecture memo",
+        )
+
+        assert "technical_architecture" in tree.metadata.lenses_used
+        assert "risk_security" in tree.metadata.lenses_used
+        assert tree.metadata.lenses_used != ["financial", "operational", "market"]
 
     async def test_tree_validates_as_json(self):
         call_count = 0

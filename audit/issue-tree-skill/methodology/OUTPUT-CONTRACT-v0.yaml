@@ -1,0 +1,121 @@
+schema_version: 0.2
+status: first_draft_after_adversarial_review
+purpose: >
+  Portable issue-tree output contract for standalone consultant use and later
+  Keystone Intelligence Engine integration. This is a target shape for the
+  skill and evals, not a frozen implementation schema.
+
+modes:
+  standalone_consultant:
+    description: Human-readable problem decomposition package.
+    required_sections:
+      - problem_frame
+      - clarifying_questions_or_assumptions
+      - candidate_decomposition_axes
+      - selected_axis_rationale
+      - full_issue_tree
+      - pruned_decision_tree
+      - leaf_resolution_plan
+      - quality_check
+  kie_integration:
+    description: Machine-readable issue tree package for L0 specification and HITL approval.
+    additional_required_collections:
+      - nodes
+      - edges
+      - sibling_groups
+      - leaf_tasks
+      - pruning_decisions
+      - quality_gate_results
+
+problem_frame:
+  original_prompt: string
+  reconstructed_problem: string
+  decision_maker: string_or_unknown
+  decision_or_question: string
+  situation: string
+  complication: string
+  r1_undesired_result: string_or_unknown
+  r2_desired_result: string_or_unknown
+  constraints: []
+  assumptions: []
+  ambiguity_status: clear_or_assumptions_or_needs_user_input
+  blocking_unknowns: []
+  objective_definition_branches: []
+
+candidate_axes:
+  - axis_id: string
+    label: string
+    what_it_reveals: string
+    what_it_hides: string
+    risk: string
+    selected: boolean
+
+nodes:
+  - node_id: string
+    parent_id: string_or_null
+    tree_scope: full_or_pruned_or_both
+    depth: integer
+    statement: string
+    question_or_hypothesis: string
+    decomposition_axis: string
+    source_logic: sequence_structure_class_criteria_diagnostic_deductive_custom
+    priority: high_medium_low
+    decision_relevance: high_medium_low
+    measurable_variable_or_proxy: string_or_null
+    named_mechanism: string_or_null
+    decision_consequence: string_or_null
+    disconfirming_test: string_or_null
+    prune_status: keep_prune_defer_merge
+
+edges:
+  - parent_id: string
+    child_id: string
+    relation_note: string
+
+sibling_groups:
+  - group_id: string
+    parent_id: string
+    child_ids: []
+    decomposition_axis: string
+    coverage_logic: exhaustive_or_representative_or_ranked_or_scenario_set_or_custom
+    truth_logic: AND_OR_weighted_factor_constraint_gate_minimum_bottleneck_none_custom
+    evaluation_logic: diagnostic_candidates_portfolio_sequence_evidence_sufficiency_tradeoff_none_custom
+    exclusivity_claim: mutually_exclusive_materially_distinct_overlapping_by_design
+    exhaustiveness_claim: complete_for_decision_partial_pending_clarification_not_exhaustive_by_design
+    validation_note: string
+
+leaf_tasks:
+  - leaf_id: string
+    research_question: string
+    resolution_criteria: []
+    evidence_requirements: []
+    expected_artifact: string
+    disconfirming_evidence_to_seek: []
+    likely_sources_or_methods: []
+    task_seed_prompt: string
+    required_artifact_type: memo_model_dataset_timeline_source_map_sensitivity_table_other
+    acceptance_criteria: []
+    source_policy: string
+    confidence_target: low_medium_high
+    human_approval_required: boolean
+    downstream_agent_routing_hint: string_or_null
+
+pruning_decisions:
+  - node_id: string
+    action: keep_prune_defer_merge
+    rationale: string
+    impact_score: 1_to_5
+    uncertainty_score: 1_to_5
+    evidence_cost_score: 1_to_5
+    discriminating_power_score: 1_to_5
+    influenceability_score: 1_to_5
+    dependency_ids: []
+    value_of_information_note: string
+    risk_if_wrong: low_medium_high
+    reopen_condition: string_or_null
+
+quality_gate_results:
+  - gate_id: problem_frame_axis_fit_sibling_logic_mece_hypothesis_pruning_leaf_actionability_anti_genericity_eval_hygiene
+    result: pass_fail_needs_revision
+    finding: string
+    revision_made: string_or_null

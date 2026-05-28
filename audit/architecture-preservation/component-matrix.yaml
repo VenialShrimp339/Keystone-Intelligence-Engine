@@ -1,0 +1,217 @@
+schema_version: 1
+generated_at: "2026-05-24"
+repo: "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization"
+verdict_values:
+  - KEEP
+  - ADAPT
+  - REPLACE
+  - BUILD
+  - DEFER
+components:
+  - id: meta_observation_library
+    layer: meta
+    current_status: "Conceptually strong; limited runtime proof."
+    verdict: ADAPT
+    confidence: "medium"
+    preserve: "Structured outcome capture and self-improvement doctrine."
+    change: "Turn run failures, operator decisions, and evaluation outcomes into explicit observations."
+    evidence:
+      - "architecture skill: meta-layer purpose"
+      - "research/synthesis/UNIFIED-SYNTHESIS.md"
+
+  - id: l0_intent_clarification
+    layer: "L0"
+    current_status: "Intent clarifier exists but pipeline proceeds too readily."
+    verdict: ADAPT
+    confidence: "high"
+    preserve: "Clarification before dispatch."
+    change: "Emit `ClarificationNeeded` and pause for user answers when ambiguity affects the issue tree or research budget."
+    evidence:
+      - "docs/deliverable/KNOWN-ISSUES.md: O-7"
+
+  - id: l0_issue_tree
+    layer: "L0"
+    current_status: "Produces useful MECE trees on business query."
+    verdict: KEEP
+    confidence: "high"
+    preserve: "Issue tree as primary planning artifact and operator review surface."
+    change: "Make tree editable, approve-able, and rerunnable before research launch."
+    evidence:
+      - "docs/deliverable/CURRENT-STATUS.md: L0"
+      - "output/pipeline_run_20260427_214406.log:13"
+
+  - id: l0_lens_selection
+    layer: "L0"
+    current_status: "Hardcoded to financial, operational, market."
+    verdict: REPLACE
+    confidence: "high"
+    preserve: "Parallel heterogeneous decomposition pattern."
+    change: "Build dynamic lens selector based on problem form and domain."
+    evidence:
+      - "src/keystone/specification/decomposer.py:56"
+      - "docs/deliverable/KNOWN-ISSUES.md: O-2"
+
+  - id: l0_task_generation
+    layer: "L0"
+    current_status: "Structured task generation exists and has enum coercion."
+    verdict: ADAPT
+    confidence: "high"
+    preserve: "Acceptance criteria, anti-confirmatory framing, source requirements."
+    change: "Generate long-form branch research briefs for Deep Research, not only short task records."
+    evidence:
+      - "docs/deliverable/CURRENT-STATUS.md: task generation"
+      - "docs/deliverable/KNOWN-ISSUES.md: quality gap"
+
+  - id: provider_runtime
+    layer: cross_cutting
+    current_status: "Claude CLI default; Codex OAuth path marked legacy."
+    verdict: REPLACE
+    confidence: "high"
+    preserve: "Layer-aware model routing and per-layer effort config."
+    change: "ProviderAdapter registry: Codex CLI, ChatGPT web, Claude web, API fallback, manual upload."
+    evidence:
+      - "src/keystone/models/config.py:482"
+      - "src/keystone/llm_client.py:1"
+      - "audit/provider-feasibility/artifacts/codex-exec-structured-events.jsonl"
+
+  - id: l1_parallel_research
+    layer: "L1"
+    current_status: "Deep mode produces real findings; shallow path incomplete."
+    verdict: ADAPT
+    confidence: "high"
+    preserve: "Parallel branch execution and isolation."
+    change: "Make L1 a research job manager that can submit, ingest, retry, and score provider artifacts."
+    evidence:
+      - "output/l1_deep_mode_test_stdout.log:149"
+      - "src/keystone/research/research_agent.py:127"
+
+  - id: l1_deep_research_transport
+    layer: "L1"
+    current_status: "Single Claude CLI call with WebSearch/WebFetch."
+    verdict: REPLACE
+    confidence: "high"
+    preserve: "Use frontier hosted research agents for breadth."
+    change: "Route deep research through browser/provider adapters and standard report artifacts."
+    evidence:
+      - "src/keystone/research/research_agent.py:266"
+      - "audit/provider-feasibility/artifacts/chatgpt-deep-research-selected-dom.txt"
+      - "audit/provider-feasibility/artifacts/claude-tools-menu-dom.txt"
+
+  - id: l1_shallow_tools
+    layer: "L1"
+    current_status: "Only Exa and Brave implemented in simple client; other tools stub."
+    verdict: REPLACE
+    confidence: "high"
+    preserve: "Tool governance, auth, rate limits, and circuit breaker ideas."
+    change: "Prioritize deterministic public-data connectors, starting with SEC/EDGAR and report ingestion."
+    evidence:
+      - "src/keystone/gateway/simple_client.py:66"
+
+  - id: citation_processor
+    layer: provenance
+    current_status: "Runs on real and synthetic data; URL validation works."
+    verdict: KEEP
+    confidence: "high"
+    preserve: "Citation IDs, URL verification, manifest production, dead URL detection."
+    change: "Extend to report-level citations and source-instance lineage."
+    evidence:
+      - "output/pipeline_run_20260427_214406.log:1445"
+      - "output/downstream_test_stdout.log:117"
+
+  - id: report_ingestion
+    layer: provenance
+    current_status: "Missing as a first-class component."
+    verdict: BUILD
+    confidence: "high"
+    preserve: "Existing citation and retrieval data models where compatible."
+    change: "Parse ChatGPT/Claude reports, manual uploads, PDFs, markdown, copied HTML, and SEC artifacts into canonical evidence bundles."
+    evidence:
+      - "User owner vision 2026-05-24"
+      - "audit/provider-feasibility/artifacts/"
+
+  - id: narrative_synthesis
+    layer: "between_L1_and_L1_5"
+    current_status: "Missing."
+    verdict: BUILD
+    confidence: "high"
+    preserve: "None directly."
+    change: "Create thesis, claim hierarchy, theme map, contested claims, and gap plan before deliberation."
+    evidence:
+      - "docs/deliverable/KNOWN-ISSUES.md: O-4"
+      - "notes/FIRST-RUN-ANALYSIS.md"
+
+  - id: deliberation
+    layer: "L1.5"
+    current_status: "Works on 6-claim synthetic fixture; fails or degrades on real claim load."
+    verdict: ADAPT
+    confidence: "high"
+    preserve: "Independent methodology-based analysis and aggregation."
+    change: "Feed selected claim clusters and synthesis briefs; select analyst methodologies by domain."
+    evidence:
+      - "output/downstream_test_stdout.log:29"
+      - "output/resume_run_20260428_014314.log:17"
+
+  - id: l2_content_structuring
+    layer: "L2"
+    current_status: "Built but not proven on real data."
+    verdict: ADAPT
+    confidence: "medium"
+    preserve: "Sprint contract before generation."
+    change: "Thread domain and output target; batch or defer contract calls."
+    evidence:
+      - "docs/deliverable/CURRENT-STATUS.md"
+      - "docs/deliverable/KNOWN-ISSUES.md: O-8"
+
+  - id: l3_generation
+    layer: "L3"
+    current_status: "Markdown renderer exists."
+    verdict: ADAPT
+    confidence: "medium"
+    preserve: "Outline-driven rendering and citation enforcement."
+    change: "Add deliverable targets: research brief, slide outline/deck, workbook, issue tree package."
+    evidence:
+      - "docs/deliverable/CURRENT-STATUS.md"
+
+  - id: l4_l5_evaluation
+    layer: "L4_L5"
+    current_status: "Built; expensive and not fully real-run proven."
+    verdict: ADAPT
+    confidence: "high"
+    preserve: "Deterministic checks, citation checks, rubric stack, ensemble option."
+    change: "Stage evaluator by cost and risk; reserve high-effort judges for final or contested outputs."
+    evidence:
+      - "src/keystone/evaluator/layer3_rubric.py:124"
+      - "output/downstream_test_stdout.log:55"
+
+  - id: checkpoint_resume
+    layer: cross_cutting
+    current_status: "Checkpoint store exists; scripts drifted."
+    verdict: ADAPT
+    confidence: "high"
+    preserve: "Stage boundary persistence and resume semantics."
+    change: "Make all provider jobs and artifacts checkpointed by default."
+    evidence:
+      - "src/keystone/pipeline/orchestrator.py:822"
+      - "output/resume_run_20260428_014016.log:5"
+
+  - id: operator_ui
+    layer: cross_cutting
+    current_status: "Server/HITL pieces exist but not proven as workflow."
+    verdict: ADAPT
+    confidence: "medium"
+    preserve: "Gate state machine."
+    change: "Operator console for tree approval, provider queue, report ingestion, gaps, and depth toggles."
+    evidence:
+      - "src/keystone/server/pipeline_runner.py"
+      - "src/keystone/hitl"
+
+  - id: confidentiality_controls
+    layer: governance
+    current_status: "Policy intent exists; product is public-data first."
+    verdict: BUILD
+    confidence: "medium"
+    preserve: "No client-confidential use without firm approval."
+    change: "Add data classification, provider allowlist, redaction, and local-only modes before confidential client files."
+    evidence:
+      - "User owner vision 2026-05-24"
+

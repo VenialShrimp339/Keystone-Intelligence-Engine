@@ -1,0 +1,71 @@
+source: "The McKinsey Mind"
+artifact_type: eval_candidates
+copyright_policy: "Derived rubrics only; executor should not see hidden rubrics."
+cases:
+  - id: mind_acme_thrum_mat_cost
+    visible_prompt: "Build an issue tree for a manufacturer evaluating whether a new shorter curing process can lower marginal cost for a product."
+    hidden_reference_logic: "Screen possible cost-reduction hypotheses first, then issue tree for the surviving curing-process hypothesis. Top issues are cost impact, implementation feasibility, and product quality. Implementation deepens only if special facilities or skills are needed."
+    hidden_grading_properties:
+      must_cover:
+        - "Cost reduction."
+        - "Implementation feasibility."
+        - "Quality impact."
+        - "Conditional deeper branches for facilities and skills."
+      strong_if:
+        - "Shows what assumptions must be true."
+        - "Sequences dominant questions that can eliminate downstream analyses."
+      common_failures:
+        - "Generic manufacturing cost tree with no hypothesis."
+        - "Uniform depth under all branches."
+
+  - id: mind_customer_information_business_case
+    visible_prompt: "Build an issue tree to justify whether a bank should invest in a customer information management capability."
+    hidden_reference_logic: "Value sources include cross-sell/up-sell to existing customers, lower cost to serve, reduced attrition, and more efficient acquisition, compared with implementation cost."
+    hidden_grading_properties:
+      must_cover:
+        - "Revenue from existing customers."
+        - "Cost to serve."
+        - "Retention or attrition."
+        - "New customer acquisition efficiency."
+        - "Cost/investment required."
+      strong_if:
+        - "Converts branches into quantifiable benefit pools."
+        - "Shows decision thresholds for ROI."
+      common_failures:
+        - "Technology implementation tree without value logic."
+        - "Customer analytics buzzwords with no economic branches."
+
+  - id: mind_hsdd_market_sizing
+    visible_prompt: "Build an issue tree to estimate the market potential for a drug addressing a condition that is defined in specialist literature but rarely diagnosed by general physicians."
+    hidden_reference_logic: "Because direct data is scarce, triangulate with analogies, prevalence, recognition, patient willingness to seek help, diagnosis behavior, treatment adoption, and pricing/access."
+    hidden_grading_properties:
+      must_cover:
+        - "Prevalence or eligible population."
+        - "Recognition/diagnosis rate."
+        - "Patient willingness to discuss or seek treatment."
+        - "Treatment adoption and access."
+        - "Analogical evidence or bounding methods."
+      strong_if:
+        - "Explicitly targets directional range rather than false precision."
+        - "Uses multiple independent triangulation paths."
+      common_failures:
+        - "Straight TAM/SAM/SOM with made-up precision."
+        - "No recognition that diagnosis behavior is a bottleneck."
+
+  - id: mind_policy_pillars
+    visible_prompt: "Build an issue tree for organizing a broad public-sector policy agenda into a decision-ready plan."
+    hidden_reference_logic: "Each issue should be framed by the problem, its dimensions, proposed action, feasibility, resources, political implications, and implementation path."
+    hidden_grading_properties:
+      must_cover:
+        - "Problem definition."
+        - "Dimensions or scope."
+        - "Action options."
+        - "Resources and achievability."
+        - "Political or stakeholder implications."
+      strong_if:
+        - "Uses consistent branch logic across heterogeneous policy areas."
+        - "Separates substantive policy merit from feasibility."
+      common_failures:
+        - "Pure topic taxonomy of policy areas."
+        - "No implementation or political feasibility."
+

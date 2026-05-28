@@ -1,0 +1,192 @@
+schema_version: 1
+generated_at: "2026-05-24"
+target_date: "2026-07-27"
+principles:
+  - "Preserve DPVI and issue-tree control system."
+  - "Make expensive provider work produce durable artifacts."
+  - "Use subscription-first providers by default."
+  - "Keep manual upload as reliability fallback."
+  - "Stage evaluation by risk and cost."
+sequence:
+  - id: R0
+    name: "Freeze Baseline And Contracts"
+    priority: 0
+    owner_track: "architecture"
+    intent: "Define artifact contracts and provider routing before code refactor."
+    deliverables:
+      - "Pydantic artifact models."
+      - "Run ledger persistence."
+      - "Provider job artifact persistence."
+    dependencies: []
+    exit_criteria:
+      - "Contracts have unit tests."
+      - "One dummy run writes and reloads artifact ledger."
+
+  - id: R1
+    name: "Manual Report Ingestion"
+    priority: 1
+    owner_track: "research_acquisition"
+    intent: "Prove downstream pipeline can consume Deep Research reports without browser automation first."
+    deliverables:
+      - "ManualUploadAdapter."
+      - "ResearchReportArtifact parser."
+      - "Source/citation extractor."
+    dependencies:
+      - R0
+    exit_criteria:
+      - "Saved ChatGPT/Claude report normalizes into report artifact."
+      - "Citations are extracted and validated where URLs are present."
+
+  - id: R2
+    name: "Provider Adapter Interface"
+    priority: 2
+    owner_track: "provider"
+    intent: "Abstract provider surfaces so ChatGPT web, Claude web, Codex CLI, and API fallback share job semantics."
+    deliverables:
+      - "ProviderAdapter protocol."
+      - "CodexExecAdapter for structured calls."
+      - "ManualUploadAdapter wired as provider."
+    dependencies:
+      - R0
+    exit_criteria:
+      - "Structured Codex call writes ProviderJobArtifact and output artifact."
+
+  - id: R3
+    name: "Dynamic Specification Gate"
+    priority: 3
+    owner_track: "specification"
+    intent: "Preserve L0 while removing hardcoded business lenses."
+    deliverables:
+      - "LensSelector."
+      - "ClarificationNeeded event."
+      - "Issue tree approval artifact."
+      - "Branch research prompt generator."
+    dependencies:
+      - R0
+    exit_criteria:
+      - "Three prompt types produce distinct lens sets."
+      - "Ambiguous prompt pauses for clarification."
+
+  - id: R4
+    name: "First Manual Vertical Slice"
+    priority: 4
+    owner_track: "integration"
+    intent: "Run public-data request through issue tree, manual report ingestion, synthesis, light evaluation, and brief."
+    deliverables:
+      - "End-to-end slice command or UI flow."
+      - "Research brief renderer."
+      - "Resume from report artifact."
+    dependencies:
+      - R1
+      - R2
+      - R3
+    exit_criteria:
+      - "One public prompt completes without rerunning research after ingestion."
+      - "Final brief has citations and gap plan."
+
+  - id: R5
+    name: "ChatGPT Web Research Lifecycle"
+    priority: 5
+    owner_track: "provider"
+    intent: "Automate ChatGPT Deep Research as a ProviderAdapter."
+    deliverables:
+      - "Selector map for ChatGPT Deep Research."
+      - "Submit public branch prompt."
+      - "Detect running/completion states."
+      - "Export/copy report into ResearchReportArtifact."
+    dependencies:
+      - R1
+      - R2
+    exit_criteria:
+      - "Tiny public Deep Research job completes and ingests."
+
+  - id: R6
+    name: "Claude Web Research Lifecycle"
+    priority: 6
+    owner_track: "provider"
+    intent: "Automate Claude Research as secondary provider and cross-check path."
+    deliverables:
+      - "Selector map for Claude Research."
+      - "Submit public branch prompt."
+      - "Detect running/completion states."
+      - "Export/copy report into ResearchReportArtifact."
+    dependencies:
+      - R1
+      - R2
+    exit_criteria:
+      - "Tiny public Claude Research job completes and ingests."
+
+  - id: R7
+    name: "Narrative Synthesis Layer"
+    priority: 7
+    owner_track: "synthesis"
+    intent: "Close quality gap between flat claims and consultant-readable analysis."
+    deliverables:
+      - "SynthesisArtifact generator."
+      - "Branch summary generator."
+      - "Contested claim and gap extractor."
+    dependencies:
+      - R4
+    exit_criteria:
+      - "Evidence bundle produces thesis, branch summaries, contested claims, and next-wave plan."
+
+  - id: R8
+    name: "Deliberation Repair"
+    priority: 8
+    owner_track: "deliberation"
+    intent: "Stop feeding all raw claims to every analyst."
+    deliverables:
+      - "Claim clustering."
+      - "Methodology selector."
+      - "Chunked deliberation inputs."
+    dependencies:
+      - R7
+    exit_criteria:
+      - "L1.5 handles real-sized evidence bundle without 1200s all-analyst timeouts."
+
+  - id: R9
+    name: "Staged Evaluator"
+    priority: 9
+    owner_track: "evaluation"
+    intent: "Preserve evaluator rigor while controlling usage."
+    deliverables:
+      - "Evaluation profile gating."
+      - "Deterministic-first checks."
+      - "Escalation policy for frontier judges."
+    dependencies:
+      - R4
+      - R7
+    exit_criteria:
+      - "Light profile finishes on first vertical slice under configured budget."
+
+  - id: R10
+    name: "Deterministic Public-Company Financials"
+    priority: 10
+    owner_track: "financials"
+    intent: "Handle SEC/filings workflows without hosted research when deterministic extraction is better."
+    deliverables:
+      - "SEC SourceBundleArtifact flow."
+      - "Statement extraction."
+      - "Basic workbook generator."
+    dependencies:
+      - R0
+    exit_criteria:
+      - "One public company 10-K/10-Q set produces workbook with source audit tab."
+
+  - id: R11
+    name: "Operator Console"
+    priority: 11
+    owner_track: "ui"
+    intent: "Make HITL and provider queue usable by an analyst."
+    deliverables:
+      - "Issue tree approval view."
+      - "Provider job queue."
+      - "Artifact browser."
+      - "Gap/next-wave controls."
+    dependencies:
+      - R4
+      - R5
+      - R6
+    exit_criteria:
+      - "User can approve tree, launch/ingest reports, and inspect artifacts without editing code."
+

@@ -1,0 +1,302 @@
+- navigation "Sidebar":
+  - link "Home":
+    - /url: /new
+    - img "Claude"
+  - button "Open sidebar":
+  - link "New chat":
+    - /url: /new
+    - generic: New chat
+  - link "Search":
+    - /url: "#"
+    - generic: Search
+  - link "Chats":
+    - /url: /recents
+    - generic: Chats
+  - link "Projects":
+    - /url: /projects
+    - generic: Projects
+  - link "Artifacts":
+    - /url: /artifacts/my
+    - generic: Artifacts
+  - link "Customize":
+    - /url: /customize
+    - generic: Customize
+  - heading [level=2]:
+    - button [expanded]:
+      - generic: Products
+      - generic: 
+  - list:
+    - link:
+      - /url: /code
+    - link:
+      - /url: /design
+  - heading [level=2]:
+    - button [expanded]:
+      - generic: Starred
+      - generic: 
+  - list:
+    - link:
+      - /url: /project/019d5c55-e8aa-7183-af56-c41df4e00eca
+  - heading [level=2]:
+    - button [expanded]:
+      - generic: Recents
+      - generic: 
+  - list:
+    - link:
+      - /url: /chat/1185593e-a87c-4062-9928-23be1aa106cf
+      - generic: U.S. auto body repair industry consolidation
+    - button:
+    - link:
+      - /url: /chat/e4ee8049-b0ad-4179-adb3-3d9a3ca256d9
+      - generic: Was Walt's fear of Gus justified in season 4?
+    - link:
+      - /url: /chat/45c5f114-5439-438b-92aa-8db9dd4ba3c5
+      - generic: Police undercover operations in support groups
+    - link:
+      - /url: /chat/08d145a4-284c-42e6-8ab9-b80ed3b7ea20
+      - generic: Telling your lawyer you're guilty
+    - link:
+      - /url: /chat/cc5bcbb3-21cd-4d37-b88d-7ad1f3857ca4
+      - generic: AirPods valuation as independent company
+    - link:
+      - /url: /chat/37c74f71-b822-4cd1-bf99-bf208b5c264a
+      - generic: Quoridor AI source code and algorithm research
+    - link:
+      - /url: /chat/ed0cd943-6ee9-42f4-b6aa-5d0032640e7e
+      - generic: Guessing actors from their eyes
+    - link:
+      - /url: /chat/5afc54de-49fa-4945-ba2e-064d0afee95d
+      - generic: Dog bleeding from bully stick chewing
+    - link:
+      - /url: /chat/be19ce48-3b34-4145-b1a1-0ae31d66a09b
+      - generic: Cleaning MacBook and monitor screens safely
+    - link:
+      - /url: /chat/6ea4c569-7c65-4fd0-9853-9cd34973c047
+      - generic: DOJ barring IRS from investigating Trump
+    - link:
+      - /url: /chat/727bce05-58f9-4996-8c0b-6e36bd13adf8
+      - generic: Removing stripped screws from walls
+    - link:
+      - /url: /chat/2bb82e72-67b9-48d5-a2d1-bb4035dbda21
+      - generic: 💬 how do I change the two locksc…
+    - link:
+      - /url: /chat/5531a9e5-a8c5-4934-b9e1-dd936a648e61
+      - generic: Michael Mann's problematic movie endings
+    - link:
+      - /url: /chat/e684b71d-4a15-4c64-802d-6d888081f176
+      - generic: Finding films with Nolan-level cinematography
+    - link:
+      - /url: /chat/af97acd3-b04a-447e-97e6-9f7231016617
+      - generic: Rapid elo recovery on chess.com
+    - link:
+      - /url: /chat/291db534-d0d6-4f82-a010-b035278c3122
+      - generic: Stockfish depth vs Magnus Carlsen winning chances
+    - link:
+      - /url: /chat/c4479259-7769-4d1d-9b82-f065fc132d40
+      - generic: Finding tonight's movie based on my preferences
+    - link:
+      - /url: /chat/860c3508-9072-48b6-bd65-d612303f51c2
+      - generic: Comparing "Come and See" vs. "The Prestige"
+    - link:
+      - /url: /chat/a36e2bd9-23e5-4100-8295-afbdf72dc69a
+      - generic: Tailbone pain and midline mass
+    - link:
+      - /url: /chat/2f00e848-f154-424f-b03b-c25c31721f66
+      - generic: Raynaud's rewarming pain and thermal sensitivity
+    - link:
+      - /url: /chat/4dc96717-fcd2-42b5-a7da-8296370c6e08
+      - generic: Trump judicial appointee refuses to deny third-term eligibility
+    - link:
+      - /url: /chat/dff59768-4fa8-47fc-9161-add249d75d9f
+      - generic: Security risks of Anthropic models on Colossus infrastructure
+    - link:
+      - /url: /chat/0dec6002-ba93-4e85-b7c2-19cf2f9d3a19
+      - generic: Reducing gunshot volume in 1917 with Denon settings
+    - link:
+      - /url: /chat/8425b38e-6ab0-460a-a443-d22401ce3832
+      - generic: Optima projector gaming feasibility
+    - link:
+      - /url: /chat/0e8dc3c8-cf3b-4d3a-94f2-fd09973883e7
+      - generic: Getting back into locked apartment through bedroom window
+    - link:
+      - /url: /chat/64d79b0a-766f-458e-9faf-dc6b41c37294
+      - generic: Official scripts availability for The Office
+    - link:
+      - /url: /chat/0593579e-3af2-49d6-b171-2993f46c78bf
+      - generic: Streaming music from HDD to Apple TV speakers
+    - link:
+      - /url: /chat/b2d3fe55-b5cf-4f96-a263-21cf3865afc1
+      - generic: Research brief deep dive launch
+    - link:
+      - /url: /chat/e148f096-a445-4cdb-9a60-975a27b40166
+      - generic: Research project launch
+    - link:
+      - /url: /chat/9d308408-7643-4471-873f-3448cfe233ea
+      - generic: Remote controlling Mac mini from MacBook
+    - link:
+      - /url: /chat/6e6b2124-1406-405a-a86b-ac06f198f7b3
+      - generic: "ArcMap: multi-modal cross-reference architecture"
+  - link:
+    - /url: /recents
+  - link "Get apps and extensions":
+    - /url: /downloads
+  - button "Jack Riddle, Settings":
+    - generic: JR
+    - generic: Jack Riddle
+    - generic: Max plan
+- banner:
+  - button "U.S. auto body repair industry consolidation, rename chat":
+    - generic: U.S. auto body repair industry consolidation
+  - button "More options for U.S. auto body repair industry consolidation":
+- status: Claude finished the response
+- 'heading "You said: Using only public web sources, produce a concise research report on the current state of the U." [level=2]'
+- paragraph: Using only public web sources, produce a concise research report on the current state of the U.S. auto body repair industry consolidation trend. Include 5 cited factual claims, source links, and a short note on evidence gaps. Keep the report compact.
+- group "Message actions":
+  - generic: 5:31 PM
+  - button "Retry":
+  - button "Edit":
+  - button "Copy":
+- 'heading "Claude responded: The request is specific enough to dive in." [level=2]'
+- paragraph: The request is specific enough to dive in. I'll pull from primary sources where possible (industry associations, M&A trackers, MSO financials), flag what's hard to verify, and keep it compact.
+- 'button "Collision repair industry consolidation report + + + + + +: 257 sources. Open research panel."':
+  - generic "Collision repair industry consolidation report + + + + + +":
+    - generic: Collision repair industry consolidation report + + + + + +
+  - text: Research complete
+  - generic: •
+  - generic "257 sources":
+    - generic: Writing and citing report...
+    - generic: 257 sources
+  - generic: •
+  - generic: 7m 22s
+- paragraph: Your U.S. collision repair consolidation report is ready. It covers the current state of the "Big 4" consolidators (Caliber, Gerber/Boyd, Crash Champions, Classic Collision), Boyd's $1.3B Joe Hudson's acquisition, private equity ownership structures, the 35-60% slowdown in 2025 M&A activity, demand headwinds including a 9.7% drop in repairable claims, structural drivers like ADAS calibration and technician shortages, and the rise of mid-tier PE-backed "Accelerator" platforms. The report also outlines evidence gaps around private company data, TAM methodology disagreements, and forecast limitations.
+- 'button "View U.S. Collision Repair Consolidation: State of Play, Late 2025 to Mid-2026"'
+- generic: "U.S. Collision Repair Consolidation: State of Play, Late 2025 to Mid-2026"
+- generic: Document
+- generic: "# U.S. Collision Repair Consolidation: State of Play, Late 2025 / Mid-2026 The consolidation thesis is intact but visibly slowing. The top four national consolidators now operate roughly 3,973 U.S. shops with combined revenue above $15 billion, yet"
+- group "Message actions":
+  - button "Copy":
+  - button "Give positive feedback":
+  - button "Give negative feedback":
+  - button "Retry":
+- button:
+- status:
+  - generic: Want to be notified when Claude responds?
+  - button "Notify"
+  - button:
+- button "Open Grammarly."
+- textbox "Write your prompt to Claude":
+  - paragraph: Write a message…
+- button "Add files, connectors, and more":
+- 'button "Model: Opus 4.7 Adaptive"':
+  - generic: Opus 4.7 Adaptive
+- button "Settings":
+- button "Press and hold to record":
+- button "Use voice mode":
+- note:
+  - link "Claude is AI and can make mistakes. Please double-check responses.":
+    - /url: https://support.anthropic.com/en/articles/8525154-claude-is-providing-incorrect-or-misleading-responses-what-s-going-on
+- 'region "Artifact panel: U.S. Collision Repair Consolidation: State of Play, Late 2025 to Mid-2026" [active]':
+  - group "Copy":
+    - button "Copy":
+      - generic: Copy
+    - button "Copy options":
+      - generic: 
+  - button "Publish":
+    - generic: Publish
+  - button "Close artifact":
+    - generic: 
+  - 'heading "U.S. Collision Repair Consolidation: State of Play, Late 2025 / Mid-2026" [level=1]'
+  - paragraph: The consolidation thesis is intact but visibly slowing. The top four national consolidators now operate roughly 3,973 U.S. shops with combined revenue above $15 billion, yet 2025 delivered the slowest M&A pace in years, a structural decline in claim volumes, and one blockbuster deal — Boyd Group's acquisition of Joe Hudson's — that collapsed the "Big 5" into a "Big 4."
+  - heading "Market Structure and the Top Operators" [level=2]
+  - paragraph:
+    - text: The U.S. collision repair total addressable market was $48.2 billion in 2024, the first dollar decline since 2020, per The Romans Group's 19th annual white paper. The top three independent consolidators (Caliber, Boyd/Gerber, Crash Champions) controlled over 27% of that market in 2024, and Romans projects that share could reach 37% by 2029. (
+    - link "bodyshopbusiness.com":
+      - /url: https://www.bodyshopbusiness.com/the-romans-group-releases-2024-profile-of-the-u-s-and-canada-collision-market/
+    - text: )
+  - paragraph:
+    - text: "At year-end 2025, Focus Advisors' Year-in-Review pegs the Big 4 at:"
+    - strong: Caliber Collision
+    - text: 1,863 locations across 41 states,
+    - strong: Gerber Collision & Glass
+    - text: 1,102 U.S. locations (after absorbing Joe Hudson's),
+    - strong: Crash Champions
+    - text: 662, and
+    - strong: Classic Collision
+    - text: 346. That cluster represents roughly 4,000 U.S. shops, about 13% of the ~30,000-shop national base — of which approximately 23,000 are still single-location independents. (
+    - link "autobodynews.com":
+      - /url: https://www.autobodynews.com/news/focus-advisors-fewer-deals-lower-valuations-defined-2025-and-one-blockbuster-exception
+    - text: )
+    - link "Autobody News + 2":
+      - /url: https://www.autobodynews.com/news/focus-advisors-fewer-deals-lower-valuations-defined-2025-and-one-blockbuster-exception
+      - generic: Autobody News + 2
+  - 'heading "The Defining Deal: Boyd / Joe Hudson''s" [level=2]'
+  - paragraph:
+    - text: In November 2025, Boyd Group Services acquired Joe Hudson's Collision Center for $1.3 billion (13.3x trailing EBITDA net of ~$150M tax benefits), adding 258 Southeast-concentrated shops and pushing Boyd's North American footprint past 1,300 locations. Boyd ended 2025 with $3.1 billion in sales (+2.4%), adjusted EBITDA of $376.3 million (+12.4%), and 70 added locations (43 acquisitions, 27 startups). Same-store sales fell 0.2%; on the Q4 call CEO Brian Kaner said Boyd "once again outperformed the industry in 2025, with our same-store sales performance exceeding the estimated 5%-7% decline in repairable claims." (
+    - link "boydgroup.com":
+      - /url: https://boydgroup.com/news/boyd-group-services-inc-news/2026/boyd-group-services-inc-reports-fourth-quarter-and-full-year-2025-results/
+    - text: )
+    - link "BodyShop Business + 3":
+      - /url: https://www.bodyshopbusiness.com/auto-body-consolidation-forecast-2026-ready-for-takeoff/
+      - generic: BodyShop Business + 3
+  - heading "Private Equity Behind the Big 4" [level=2]
+  - paragraph:
+    - text: "PE ownership remains the structural engine. Caliber is held by Hellman & Friedman (majority since the 2019 ABRA merger), with Leonard Green and OMERS as minority partners. Caliber filed confidentially with the SEC in July 2025 with BofA, Goldman Sachs and JPMorgan as bookrunners; as of late May 2026 the S-1 had not gone public and no priced offering had occurred. Crash Champions is backed by Clearlake Capital (post-2022 Service King merger). Classic Collision was acquired by TPG Capital from New Mountain Capital in 2024 at an undisclosed valuation. Boyd is publicly listed (TSX: BYD). Focus Advisors counts 14 PE-backed consolidators actively acquiring, with at least three more PE firms expected to enter in 2026."
+    - link "Hellman & Friedman + 4":
+      - /url: https://hf.com/caliber-collision-and-abra-auto-body-repair-of-america-to-merge-creating-a-leading-collision-repair-provider-in-37-states/
+      - generic: Hellman & Friedman + 4
+  - heading "A Slower Year for Deals" [level=2]
+  - paragraph:
+    - text: "Acquisition pace decelerated sharply. Focus Advisors found that consolidators and market-leading MSOs acquired or opened 223 shops in H1 2025, down 35% from 343 in H1 2024 — and the Big 5's combined activity fell 60.3% YoY. EBITDA multiples held around 7x for quality assets, but lower shop earnings pulled valuations down. PE firms also moved downstream: per Focus Advisors' 2025 Year-in-Review, \"PE firms that historically pursued established MSOs with $30 million or more in revenue moved downstream in 2025, pursuing operators with as few as one to three locations, reflecting limited availability of larger platform acquisitions.\" ("
+    - link "focusadvisors.com":
+      - /url: https://focusadvisors.com/2025/09/the-first-half-of-2025-year-in-review-consolidation-continues-despite-headwinds/
+    - text: )
+    - link "FINRA + 2":
+      - /url: https://focusadvisors.com/2025/09/the-first-half-of-2025-year-in-review-consolidation-continues-despite-headwinds/
+      - generic: FINRA + 2
+  - heading "Demand Headwinds Driving the Slowdown" [level=2]
+  - paragraph:
+    - text: CCC Intelligent Solutions' Crash Course 2026 report found repairable claim volume fell 9.7% across all coverages in 2025, total loss frequency hit a record 23.1% of all claims, and calibrations appeared on 28.3% of all repairable appraisals (35.6% of DRP estimates in Q3 2025, up from 26.9% a year earlier). Vehicles 7–12 years old now represent nearly 41% of total loss valuations (up from 33.4% in 2020), and S&P Global Mobility data cited in the report puts average light-vehicle fleet age at 12.8 years in 2025. Average total cost of repair rose only 1.7% to $4,818, the lowest increase since 2017. (
+    - link "cccis.com":
+      - /url: https://www.cccis.com/reports/crash-course-2026
+    - text: )
+    - link "Autobody News + 4":
+      - /url: https://www.autobodynews.com/news/aging-fleet-rising-complexity-define-collision-repair-landscape
+      - generic: Autobody News + 4
+  - heading "Structural Drivers Still Favor Consolidators" [level=2]
+  - paragraph:
+    - text: "ADAS calibration capex, OEM certification requirements, DRP scale economics, and a persistent technician shortage — TechForce Foundation's 2024 Supply & Demand Report projects over 100,000 collision-tech openings between 2024 and 2028, with the sector facing roughly 6.7 jobs per program graduate — continue to disadvantage single-shop independents. Tesla expanded its company-operated network to 60 U.S. locations in 2025 (up from 49 a year earlier), per Focus Advisors. Mid-sized PE-backed \"Accelerators\" collectively grew faster than the Big 4: Brightpoint Auto Body grew from 13 to 36 locations in 2025 (driven partly by a 16-shop Stonewall/Maaco acquisition), VIVE added shops across the Northeast, CollisionRight added 25, and Trive Capital launched a new platform via Chilton Auto Body."
+    - link "Greco Publishing + 4":
+      - /url: https://www.grecopublishing.com/near1225coverstory/
+      - generic: Greco Publishing + 4
+  - heading "Signs of Maturity, Not Reversal" [level=2]
+  - paragraph:
+    - text: Focus Advisors expects 2026 deal volume to recover as paused sellers return and Caliber's pending IPO re-anchors industry valuations. The 2025 pause is cyclical weakness layered onto a real secular shift toward fewer but more complex repairs. The Big 4 are unlikely to give back share, but the marginal consolidation gains will come from PE-backed mid-tier platforms and downstream tuck-ins, not blockbuster mergers.
+    - link "Autobody News":
+      - /url: https://www.autobodynews.com/news/focus-advisors-fewer-deals-lower-valuations-defined-2025-and-one-blockbuster-exception
+      - generic: Autobody News
+  - separator
+  - heading "Evidence Gaps and Limitations" [level=2]
+  - list:
+    - strong: Private company opacity
+    - text: ": Caliber, Crash Champions, Classic Collision, and Joe Hudson's are private. Revenue, EBITDA, and shop counts are estimated by third parties; Focus Advisors explicitly notes its figures are \"best estimates from available public information, not statements of absolute fact.\" Caliber's S-1 remained confidential as of late May 2026, so no audited financials are public."
+    - link "FINRA":
+      - /url: https://focusadvisors.com/2025/09/the-first-half-of-2025-year-in-review-consolidation-continues-despite-headwinds/
+      - generic: FINRA
+    - strong: TAM disagreement
+    - text: ": Romans Group reports $48.2B (2024). Other industry sources cite ranges from $30B to $50B depending on whether DIY paid repair and dealer shops are included. The ~$45–50B range is the most common methodology but is not standardized."
+    - strong: Shop-count lag
+    - text: ": Counts are point-in-time late-2025 snapshots; Q1–Q2 2026 M&A may not yet be reflected. Driven Brands (CARSTAR/ABRA/Fix Auto USA, ~1,000+ North American locations) operates a franchise model and is generally excluded from MSO consolidator tallies."
+    - link "Driven Brands":
+      - /url: https://www.drivenbrands.com/news/driven-brands-reaches-1000-collision-repair-locations-across-north-america/
+      - generic: Driven Brands
+    - strong: Romans' 37%-by-2029 projection
+    - text: is a forecast, not a measurement, and assumes consolidator growth holds through a softening claims environment.
+    - strong: CCC data
+    - text: reflects claims processed on CCC platforms (dominant but not universal); ISS Fast Track, Mitchell, and Enlyte figures sometimes diverge on absolute claim frequency by 1–2 percentage points.
+- button "Share"
+- region "Notifications (F8)":
+  - list:
+    - status:
+      - img "Warning"
+      - generic: An unknown error occurred while enabling push notifications for your browser.
+      - button "Close":

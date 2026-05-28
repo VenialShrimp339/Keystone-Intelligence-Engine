@@ -1,0 +1,49 @@
+schema_version: 0.1
+status: draft
+purpose: >
+  Manifest for blind book-derived issue-tree evals. Executors see only
+  visible_prompt. Graders see hidden_reference_logic and hidden rubrics in the
+  source eval-candidates files.
+
+source_files:
+  - path: audit/issue-tree-skill/books/bulletproof-problem-solving/eval-candidates.yaml
+    extraction_status: orchestrator_fallback_from_local_text
+    case_count: 6
+  - path: audit/issue-tree-skill/books/minto-pyramid-principle/eval-candidates.yaml
+    extraction_status: subagent_completed_from_ocr_pdf
+    case_count: 10
+  - path: audit/issue-tree-skill/books/mckinsey-mind/eval-candidates.yaml
+    extraction_status: orchestrator_fallback_from_local_text
+    case_count: 4
+
+executor_rules:
+  - "Executor receives the problem prompt only."
+  - "Treatment arm may use the problem-decomposition skill."
+  - "Baseline arm receives a generic request to build a high-quality issue tree."
+  - "Executor must not see hidden_reference_logic, hidden_property_rubric, or common_traps."
+
+grader_rules:
+  - "Grade properties, not exact tree similarity."
+  - "Reward alternate structures when branch logic and decision relevance are superior."
+  - "Penalize generic frameworks used without problem-specific fit."
+  - "Check full tree, pruned tree, parent-child logic, leaf evidence requirements, and pruning rationale."
+
+scoring_dimensions:
+  problem_frame: 1-5
+  axis_selection: 1-5
+  mece_and_branch_logic: 1-5
+  expert_property_coverage: 1-5
+  hypothesis_and_decision_relevance: 1-5
+  asymmetric_depth_and_pruning: 1-5
+  leaf_resolution_actionability: 1-5
+  framework_misuse_penalty: 0_to_minus_2
+
+recommended_initial_subset:
+  - bps_sydney_airport_capacity
+  - bps_solar_install_now
+  - bps_salmon_conservation
+  - minto_eval_003_sales_growth_gap
+  - minto_eval_006_energy_cost_driver_tree
+  - mind_acme_thrum_mat_cost
+  - mind_hsdd_market_sizing
+

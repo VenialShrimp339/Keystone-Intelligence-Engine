@@ -1,0 +1,104 @@
+schema_version: 1
+generated_at: "2026-05-24"
+status_values:
+  - PROVEN
+  - PATH_DEFINED
+  - BUILD_REQUIRED
+  - FALLBACK_ONLY
+  - DO_NOT_USE_PRIMARY
+providers:
+  - id: codex_exec_subscription
+    label: "Codex CLI using current ChatGPT-authenticated account"
+    default_use: "Structured orchestration, parsing, classification, evaluation, synthesis tasks with schemas."
+    status: PROVEN
+    strengths:
+      - "Non-interactive execution."
+      - "JSONL event stream."
+      - "JSON Schema final output."
+      - "Usage accounting in events."
+      - "Local sandbox and working-directory controls."
+    risks:
+      - "Harness overhead is high; trivial probe used 28492 input tokens."
+      - "Model availability depends on current account and CLI catalog."
+      - "Subscription usage counts toward OpenAI agentic usage."
+    evidence:
+      - "audit/provider-feasibility/artifacts/codex-exec-structured-events.jsonl"
+      - "codex-cli 0.128.0"
+
+  - id: chatgpt_web_deep_research
+    label: "ChatGPT web Deep Research through Chrome automation"
+    default_use: "Primary public-web hosted research reports."
+    status: PATH_DEFINED
+    strengths:
+      - "Uses ChatGPT Pro web surface."
+      - "Deep Research is selectable from tools menu."
+      - "Pro mode appears in model menu."
+      - "Report output includes citations per OpenAI help docs."
+    risks:
+      - "DOM selectors can change."
+      - "Completion/export selectors still need lifecycle probe."
+      - "Terms and usage guardrails apply to automated use."
+    evidence:
+      - "audit/provider-feasibility/artifacts/chatgpt-tools-menu-dom.txt"
+      - "audit/provider-feasibility/artifacts/chatgpt-deep-research-selected-dom.txt"
+      - "https://help.openai.com/en/articles/10500283-research-faq"
+
+  - id: claude_web_research
+    label: "Claude web Research through Chrome automation"
+    default_use: "Secondary public-web research, rate-limit spillover, cross-provider challenge reports."
+    status: PATH_DEFINED
+    strengths:
+      - "Uses Claude Max web surface."
+      - "Research and Web Search controls are exposed."
+      - "Independent provider family for challenge reports."
+    risks:
+      - "DOM selectors can change."
+      - "Completion/export selectors still need lifecycle probe."
+      - "Claude CLI billing policy changed; web remains separate from Agent SDK credit path."
+    evidence:
+      - "audit/provider-feasibility/artifacts/claude-tools-menu-dom.txt"
+      - "https://support.claude.com/en/articles/11088861-using-research-on-claude-ai"
+
+  - id: openai_api
+    label: "OpenAI API"
+    default_use: "Fallback, benchmark, eval/control path, future firm-grade operations."
+    status: FALLBACK_ONLY
+    strengths:
+      - "Best structured-output and retry observability."
+      - "Web search and structured outputs supported by current frontier models."
+      - "Predictable integration surface."
+    risks:
+      - "Direct paid usage conflicts with owner's near-term subscription-first preference."
+      - "Some ChatGPT web features may not map one-to-one to API features."
+    evidence:
+      - "https://developers.openai.com/api/docs/models/gpt-5.5/"
+
+  - id: claude_cli
+    label: "Claude CLI `claude -p`"
+    default_use: "Avoid as primary Keystone provider."
+    status: DO_NOT_USE_PRIMARY
+    strengths:
+      - "Existing repo integration."
+      - "Can still be useful for controlled experiments if Agent SDK credit is acceptable."
+    risks:
+      - "Old Max-plan usage assumption is stale."
+      - "Real run failed repeatedly on `claude -p` timeouts/exits."
+      - "Opaque hidden tool/research work."
+    evidence:
+      - "output/pipeline_run_20260427_214406.log"
+      - "https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan"
+
+  - id: deterministic_sources
+    label: "Deterministic public-source connectors"
+    default_use: "SEC filings, public company financials, datasets, PDFs, source downloads."
+    status: BUILD_REQUIRED
+    strengths:
+      - "Repeatable and auditable."
+      - "Best for financial extraction and workbook generation."
+      - "Reduces hosted research usage for structured data tasks."
+    risks:
+      - "Current simple client stubs many tools."
+      - "Requires parser and source lineage work."
+    evidence:
+      - "src/keystone/gateway/simple_client.py:66"
+

@@ -1,131 +1,66 @@
-version: 1
-controller_epoch: 12
-lease_owner: codex-gpt-5.4-xhigh-lane-e-promotion-rerun-controller
-lease_acquired_at: "2026-04-16T18:32:49-0400"
-lease_heartbeat_at: "2026-04-16T18:32:49-0400"
-lease_expires_at: "2026-04-16T19:02:49-0400"
+version: 2
+controller_epoch: 13
+lease_owner: codex-stage-b-artifact-centered-canonization
+lease_acquired_at: "2026-05-28T14:08:49-0500"
+lease_heartbeat_at: "2026-05-28T14:08:49-0500"
+lease_expires_at: "2026-05-28T14:38:49-0500"
 lease_takeover_rule: "If lease_heartbeat_at is older than 30 minutes, or the new controller cannot confirm repo state from disk, it must increment controller_epoch, rewrite lease fields, and append the takeover to ACTIVE-HANDOFF.md before mutating state."
-lease_stolen_by: codex-gpt-5.4-xhigh-lane-e-promotion-rerun-controller
-active_branch: codex/lane-e-promotion-rerun
-controller_workspace_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun
-active_worktree_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun
-planned_worktree_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-parse
-planned_worktree_branch: codex/retrieval-mvp-parse
-runtime_truth_anchor_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface
-runtime_truth_anchor_commit: 93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea
-runtime_truth_anchor_policy: "Treat runtime truth as pinned commit plus worktree path. The worktree path alone is not authoritative because newer docs-only commits may exist above the pin."
-review_worktrees:
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch
-active_wave: lane_e_promoted
-active_state: promoted_pending_runtime_open
-execution_baseline_commit: 93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea
-last_cleared_code_commit: 93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea
-current_candidate_commit: null
-candidate_parent_commit: 93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea
-approved_setup_artifact: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md
-approved_write_set: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/ALLOWED-WRITE-SET.md
-candidate_packet_root: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-parse/audit/remediation/runs/retrieval-parse/
-lane_e_package_root: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse
-lane_e_setup_artifact: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md
-lane_e_package_commit: c9c7a1596d68171881023ce832412b74b2ee5c7c
-lane_e_review_persist_commit: 8e002a77e149aba86ef5f0520e16e58b5647a551
-lane_e_review_index: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md
-lane_e_promotion_status: promoted
-lane_e_promotion_rule: "The tracked Lane E setup package at c9c7a1596d68171881023ce832412b74b2ee5c7c is now promoted because the later repaired package-integrity snapshot f954edffa9d6b78e98bdbfedff78097539f425d5 closes the prior missing-reference and mandatory-graphify defects without widening scope. The next action is to open the clean Lane E runtime worktree on codex/retrieval-mvp-parse from baseline 93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea, not to redesign the package."
-last_docs_reconcile_commit: f954edffa9d6b78e98bdbfedff78097539f425d5
-docs_reconcile_commit_policy: "Pinned to the repaired Lane E package-integrity snapshot used for this promotion rerun. Do not treat it as symbolic HEAD; later controller docs checkpoints must advance this pin explicitly."
-current_branch_docs_commit: f954edffa9d6b78e98bdbfedff78097539f425d5
-current_branch_docs_commit_policy: "Commit f954edffa9d6b78e98bdbfedff78097539f425d5 persists the Lane E package-integrity repair that removed required references to missing Retrieval MVP docs and made graphify optional when absent. Commit 8e002a77e149aba86ef5f0520e16e58b5647a551 remains the persisted pre-promotion review-sidecar commit. This field is not, by itself, the live control-plane pin."
-last_cleared_docs_commit: 91f97c2
-planning_anchor_commit: 2e6d780
-retrospective_lineage_manifest: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-LINEAGE-MANIFEST.yaml
-retrospective_lineage_manifest_policy: "For retrospective audits of docs checkpoints 35a8a29 through 2e6d780, this manifest is the authoritative lineage layer. It replaces historical symbolic HEAD pins with exact git-derived pins without rewriting earlier checkpoint text."
-retrospective_review_ledger: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/RETROSPECTIVE-REVIEW-LEDGER.yaml
-retrospective_review_ledger_policy: "For retrospective audit-program status, this ledger is the authoritative current review-status layer. It remains prerequisite proof only and does not, by itself, authorize forward work."
-retrospective_review_launch:
-  may_launch_now: []
-  current_stop_sign: null
-  current_stop_sign_status: null
-  no_later_slice_may_launch_from_current_ledger: false
-  blocked_due_to_current_stop_sign: []
-  blocked_until_current_cleared:
-    W4B-1:
-      - W4-1
-      - W4D-1
-    W4B-2:
-      - W4-1
-      - W4D-1
-    X-1:
-      - W4B-2
-retrospective_sidecar_roots:
-  - audit/remediation/workstream-retro/
-  - audit/remediation/workstream-retro/reviews/
-required_review_stage: retrieval_mvp_lane_e_runtime_open
-accepted_overlays:
-  - round-3-content-audit-planning-overlay
-workspace_policy: "This controller rerun worktree is authorized for docs/provenance only in this session. The promoted next code lane is authorized only in the clean Lane E runtime worktree, not from this controller worktree."
-model_policy: "GPT-5.4 xhigh fast for every spawned agent unless an explicit deviation is recorded."
-autonomy_mode: continuous_across_checkpoints
-checkpoint_behavior: "After any docs-only blocked-state, cleared-state, seam-freeze, setup, or promotion checkpoint, re-read the control plane and continue automatically unless a hard stop condition is hit."
+
+active_branch: codex/owner-triage-normalization
+active_worktree_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization
+active_state: artifact_centered_research_rebuild_active
+controller_priority_workstream: Stage B checkpoint and canonization for artifact-centered research rebuild
+
+current_direction:
+  summary: "Preserve Keystone's DPVI / issue-tree architecture, replace the Claude CLI-centered execution path, and rebuild around durable artifacts plus subscription-first provider routing."
+  owner_vision: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/notes/OWNER-VISION-2026-05-24.md
+  architecture_audit: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/architecture-preservation/ARCHITECTURE-PRESERVATION-AUDIT.md
+  provider_feasibility: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/PROVIDER-FEASIBILITY-REPORT.md
+  july_plan: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/roadmap/JULY-27-EXECUTION-PLAN.md
+
+runtime_doctrine:
+  status: subscription_first_provider_routing
+  codex_cli: structured local orchestration, parsing, evaluation, and small synthesis calls
+  chatgpt_web: primary hosted Deep Research acquisition backend
+  claude_web: secondary hosted Research and cross-provider challenge backend
+  manual_upload: reliability fallback and first-slice ingestion path
+  deterministic_sources: preferred for SEC, filings, datasets, and other precision workflows
+  api: fallback or control path, not default cost path
+  stale_doctrine: "Claude CLI / claude -p is no longer the preferred runtime spine."
+
+issue_tree_skill:
+  status: prototype_ready_for_more_eval
+  skill_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/.agents/skills/problem-decomposition/SKILL.md
+  handoff: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/issue-tree-skill/handoff/HANDOFF.md
+  integration_rule: "Do not directly replace the KIE Decomposer yet. First run the recommended eval subset, then implement a Pydantic IssueTreePackage upstream of the current Decomposer and map approved leaf_tasks into the existing task generator."
+
+provider_probe_status:
+  claude_web_research:
+    status: completed_and_ingested
+    report: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/claude-live-completed-report.md
+    ingested_run: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-claude/run-ledger.json
+  chatgpt_deep_research:
+    status: completed_in_browser_pending_capture
+    conversation_url: https://chatgpt.com/c/6a137bbc-82d0-83ea-a457-fbfa6d56e3de
+    next_action: "Capture completed report from Chrome, save completion/export evidence, then ingest only the full completed report."
+
+worktree_protection:
+  status: dirty_valuable_work
+  policy: "Do not pull, rebase, reset, clean, or broad-refactor until the current uncommitted work is checkpointed."
+  current_head: 31189a5b3e3ce0a89e4a11fa0cbefc2b79b6ae03
+  remote_state: "Branch is behind origin/codex/owner-triage-normalization by 3 README-only commits as recorded in audit/mega-goal/00-repo-baseline.md."
+
+historical_remediation_status:
+  note: "The April Lane H/Lane E remediation control plane is preserved as historical provenance. It no longer defines the active next action for this worktree."
+  prior_runtime_truth_anchor_commit: 93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea
+  prior_lane_e_package_commit: c9c7a1596d68171881023ce832412b74b2ee5c7c
+  prior_lane_e_promotion_status: promoted
+  prior_blocked_candidate_reference_commit: f1af7dfafa2e66b831810d70006ab8295411c61b
+
+next_action: "Finish Stage B by checkpointing the current work and ensuring current-state docs point to the artifact-centered rebuild. Then run the next autonomous goal: capture completed ChatGPT report, ingest both provider reports through one artifact contract, evaluate the issue-tree skill subset, implement IssueTreePackage upstream of Decomposer, and build the first artifact-centered vertical slice."
+
 hard_stop_conditions:
-  - "A proposed change would touch files outside the approved docs/provenance canonization write set."
-  - "A recovery patch or replay conflicts outside the controller-approved file manifest."
-  - "A required authority artifact is missing, contradictory, or uncommitted."
-  - "A review finds a blocker that cannot be resolved within the active approved scope."
-  - "An external dependency requires Jack's judgment, scoring, or a new architecture decision not already settled in FINAL-DECISIONS-v2.1.md."
-  - "The controller cannot reconcile repo state to the control plane without risking unrelated user changes."
-blocked_on: []
-forward_code_lane_authorized: true
-blocked_candidate_status: BLOCKED
-blocked_candidate_reference_commit: f1af7dfafa2e66b831810d70006ab8295411c61b
-blocked_candidate_disposition: SUPERSEDED_REFERENCE_ONLY
-blocked_candidate_blocker_classification: authority_first_sec_venue_separate
-controller_priority_workstream: Lane E runtime worktree open / implementation session
-next_action: "Live runtime truth remains Lane H commit 93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea in /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface. The tracked narrow Lane E setup package at c9c7a1596d68171881023ce832412b74b2ee5c7c is now promoted in the repaired current canon after package-integrity fixes persisted at f954edffa9d6b78e98bdbfedff78097539f425d5 and pre-promotion reviews persisted at 8e002a77e149aba86ef5f0520e16e58b5647a551. The exact next operational step is to open the clean Lane E runtime worktree at /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-parse on branch codex/retrieval-mvp-parse from baseline 93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea and begin implementation inside the approved Lane E write set. Do not reopen Lane H coding, Lane D coding, SEC / EDGAR, Lane F, UI work, benchmark acceptance claims, Wave 5, or calibration from this controller worktree."
-latest_review_packets:
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/WORKSTREAM-HANDOFF.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/AUTHORITY-EXPANSION-DECISION.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/NEW-LANE-SETUP-ARTIFACT.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/ALLOWED-WRITE-SET.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/TOOL-CONTRACT-CHANGES.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/retrieval-tool-surface/PROMOTION-DECISION.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-review-synthesis.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface/audit/remediation/runs/retrieval-tool-surface/candidate-93a5ca8-blocked-or-cleared-checkpoint.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-review-synthesis.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-fetch/audit/remediation/runs/retrieval-mvp-fetch/candidate-f1af7df-blocked-checkpoint.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/NEW-LANE-SETUP-ARTIFACT.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/ALLOWED-WRITE-SET.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/REVIEW-AND-GATE-CHECKLIST.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/retrieval-parse/PROMOTION-DECISION.md
-  - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-lane-e-promotion-rerun/audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md
-dirty_state_status: clean_tracked_workspace
-docs_provenance_canonization_override:
-  status: historical_committed_reference_only
-  policy: "This override records the earlier docs/provenance canonization scope from session 24. In this rerun lineage, the later package-integrity repair is already committed at f954edffa9d6b78e98bdbfedff78097539f425d5, so this block is provenance only and does not describe current dirty state."
-  scope:
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/FOUNDER-INTENT-DOCTRINE.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/AUTHORITY-INDEX.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-STANDARD.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CLAUDE.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/AGENTS.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/README.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/CURRENT-STATE.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/SESSION-LOG.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/WORKSTREAM-STATUS.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/README.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/ARCHITECTURE.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/docs/architecture-and-evolution.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/ACTIVE-HANDOFF.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/FRESH-ORCHESTRATOR-BOOTSTRAP.md
-    - /Users/jackriddle/Desktop/Keystone-Intelligence-Engine/audit/remediation/control-plane/FRESH-ORCHESTRATOR-SESSION-PROMPT.md
-  safe_resume: "Treat this block as historical provenance only. For the current rerun state, start from AUTHORITY-INDEX.md, SESSION-STANDARD.md, and the live control-plane pair in this worktree."
-recovery_patch_path: null
-recovery_patch_sha256: null
-recovery_branch: null
-wip_parent_candidate_commit: null
-wip_scope: []
+  - "A proposed operation would destroy or overwrite uncommitted user/session work."
+  - "A pull, rebase, reset, or cleanup would be required before checkpointing current work."
+  - "A provider capture requires owner login or browser access that is unavailable."
+  - "A product/vision decision is required that is not settled by owner vision or audit docs."

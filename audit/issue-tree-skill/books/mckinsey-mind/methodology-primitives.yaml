@@ -1,0 +1,141 @@
+source: "The McKinsey Mind"
+artifact_type: methodology_primitives
+copyright_policy: "Derived methodology only; no long verbatim source text."
+primitives:
+  - id: mind_001_structure_before_facts
+    name: Structure before facts
+    type: operating_rule
+    description: "Define boundaries and break the problem into logical components before data gathering."
+    checks:
+      - "Has the tree identified what facts matter?"
+      - "Would collecting broad data now be wasteful?"
+    failure_modes:
+      - "Data-first analysis."
+      - "Interesting facts with no decision implication."
+
+  - id: mind_002_initial_hypothesis
+    name: Initial hypothesis
+    type: hypothesis_rule
+    description: "Create a provisional answer early to focus questions, analyses, and data collection."
+    constraints:
+      - "Treat as a testable starting point, not as a conclusion."
+      - "Be prepared to change it when facts contradict it."
+      - "Use multiple hypotheses when the problem is genuinely ambiguous."
+
+  - id: mind_003_quick_and_dirty_test
+    name: Quick and Dirty Test
+    type: hypothesis_screen
+    description: "For each hypothesis, list the assumptions that must be true. If a must-have assumption is false, the hypothesis fails."
+    fields:
+      - hypothesis
+      - must_be_true_assumptions
+      - easiest_disproof
+      - result
+    use_when:
+      - "Choosing among options."
+      - "Pruning hypotheses before deep research."
+      - "Testing whether a branch deserves depth."
+
+  - id: mind_004_issue_tree_bridge
+    name: Issue tree as bridge from hypothesis to analysis
+    type: tree_taxonomy
+    description: "A logic tree maps components; an issue tree maps the questions that prove or disprove a hypothesis."
+    node_rule: "Phrase branches as issues/questions where possible."
+    leaf_rule: "A leaf should map to an analysis or evidence test."
+
+  - id: mind_005_yes_no_branching
+    name: Conditional yes/no branching
+    type: recursion_rule
+    description: "Some issue answers close a branch; others raise new required questions. Depth should follow the branch logic."
+    examples:
+      - "If no special facilities are required, facilities-acquisition analysis falls away."
+      - "If special facilities are required, analyze whether they can be acquired and at what cost."
+    checks:
+      - "Does the answer eliminate a branch?"
+      - "Does the answer trigger a downstream condition?"
+
+  - id: mind_006_key_driver_focus
+    name: Key driver focus
+    type: prioritization_rule
+    description: "Focus analysis on the few factors that most affect the outcome."
+    checks:
+      - "Which branches dominate the objective?"
+      - "Which branches would materially change the recommendation?"
+      - "Which branches are nice-to-know but low impact?"
+
+  - id: mind_007_dont_boil_ocean
+    name: Do not boil the ocean
+    type: pruning_rule
+    description: "Do only the analyses needed to prove, disprove, or revise the hypothesis."
+    checks:
+      - "Does this analysis add significant value?"
+      - "Can the decision be made with directional accuracy?"
+      - "Is the team chasing precision beyond decision need?"
+
+  - id: mind_008_directional_accuracy
+    name: Directional accuracy over spurious precision
+    type: evidence_standard
+    description: "Prefer order-of-magnitude or comfort-zone answers when exact precision would not change the decision."
+    checks:
+      - "What accuracy is needed for the decision?"
+      - "How wrong could the estimate be before the answer changes?"
+      - "Is more precision worth the time?"
+
+  - id: mind_009_triangulation
+    name: Triangulation around hard questions
+    type: evidence_strategy
+    description: "When direct data is unavailable, bound the answer through analogies, adjacent data, upper/lower limits, and independent estimates."
+    use_when:
+      - "New markets."
+      - "Proprietary competitor facts."
+      - "Emerging diseases, technologies, or behaviors."
+
+  - id: mind_010_workplan_leaf_contract
+    name: Workplan leaf contract
+    type: execution_rule
+    description: "Each issue-tree leaf should become an executable analysis record."
+    fields:
+      - issue_or_subissue
+      - hypothesis_answer
+      - analyses_required
+      - data_needed
+      - likely_sources
+      - end_product
+      - owner_or_agent
+      - due_date_or_sequence
+
+  - id: mind_011_dominant_question_sequence
+    name: Dominant question sequencing
+    type: workplan_rule
+    description: "Run analyses that can eliminate downstream branches as early as possible."
+    checks:
+      - "Which question, if answered, makes later analyses unnecessary?"
+      - "Which quick win creates the biggest uncertainty reduction?"
+
+  - id: mind_012_so_what_filter
+    name: So-what filter
+    type: synthesis_rule
+    description: "Every analysis and branch must state the implication for the decision."
+    checks:
+      - "What does this tell us?"
+      - "How is it useful?"
+      - "What recommendation or next test does it support?"
+
+  - id: mind_013_sanity_check
+    name: Sanity check
+    type: validation_rule
+    description: "Before trusting an analysis, ask whether the answer is plausible and whether assumptions would have to be extreme."
+    example_checks:
+      - "If this were true, would the world look different?"
+      - "What would it take for this to matter?"
+      - "How far off could the assumption be before the conclusion changes?"
+
+  - id: mind_014_issue_tree_to_presentation
+    name: Issue tree to presentation check
+    type: communication_validation
+    description: "A clear issue tree should translate into a top-line answer and supporting arguments. If communication fails, revisit the tree."
+    checks:
+      - "Can the conclusion and 2-4 major reasons be stated quickly?"
+      - "Do major points map to branches?"
+      - "Does each exhibit or artifact prove a branch?"
+

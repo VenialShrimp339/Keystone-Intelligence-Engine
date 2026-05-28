@@ -1,0 +1,4 @@
+{"type":"thread.started","thread_id":"019e5bc1-adf9-7f61-82cf-53c4a06a6aa4"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"{\"ok\":true,\"provider\":\"openai\",\"surface\":\"codex_exec_subscription_or_current_login\",\"capabilities_observed\":[\"non_interactive_exec\",\"output_schema_flag\",\"json_events_flag\"],\"limits_observed\":[]}"}}
+{"type":"turn.completed","usage":{"input_tokens":28492,"cached_input_tokens":2432,"output_tokens":130,"reasoning_output_tokens":74}}

@@ -1,9 +1,9 @@
-"""Step 3: MECE issue tree decomposition with heterogeneous consulting lenses.
+"""Step 3: MECE issue tree decomposition with dynamic analytical lenses.
 
-The core intellectual engine of the Specification Engine. Three standard-tier
-agents independently construct issue trees from different analytical
-perspectives (financial, operational, market/competitive), then a flagship-tier
-meta-agent synthesizes them into a unified tree.
+The core intellectual engine of the Specification Engine. Standard-tier
+agents independently construct issue trees from selected analytical
+perspectives, then a flagship-tier meta-agent synthesizes them into a unified
+tree.
 
 Implements Directive 2 (MECE Issue Tree Decomposition) and
 Directive 12 (Principles Over Example Libraries).
@@ -14,12 +14,16 @@ from __future__ import annotations
 import asyncio
 import json
 import logging
+from typing import TYPE_CHECKING
 
 from pydantic import BaseModel, Field
 
 from keystone.evaluator.retry import LLMCallable, retry_llm_call
-from keystone.models.research import EngagementType
 from keystone.specification._prompts import extract_json, load_prompt
+from keystone.specification.lens_selector import LensDefinition, LensSelector
+
+if TYPE_CHECKING:
+    from keystone.models.research import EngagementType
 
 logger = logging.getLogger(__name__)
 
@@ -51,9 +55,6 @@ class IssueTree(BaseModel):
 
     root: IssueTreeNode
     metadata: IssueTreeMetadata
-
-
-_LENSES = ["financial", "operational", "market"]
 
 
 def _count_leaves(node: IssueTreeNode) -> int:
@@ -95,12 +96,12 @@ class Decomposer:
     """Construct a MECE issue tree using heterogeneous consulting lenses.
 
     Three-phase decomposition:
-    1. Spawn 3 parallel agents (financial, operational, market/competitive)
-       at the STANDARD tier — lens decompositions benefit from parallelism
-       more than raw reasoning depth.
+    1. Select 2-5 request-appropriate lenses and spawn parallel STANDARD-tier
+       agents. Lens decompositions benefit from parallelism more than raw
+       reasoning depth.
     2. Each produces an independent shallow tree (2-3 levels)
-    3. FLAGSHIP meta-agent synthesizes into unified tree — the synthesis
-       step is the real reasoning work and keeps the strongest model.
+    3. FLAGSHIP meta-agent synthesizes into unified tree. The synthesis step
+       is the real reasoning work and keeps the strongest model.
 
     Callers may pass ``lens_llm`` and ``synth_llm`` as distinct callables
     to honor the tier split. Legacy single-LLM callers pass ``llm`` and
@@ -113,6 +114,7 @@ class Decomposer:
         *,
         lens_llm: LLMCallable | None = None,
         synth_llm: LLMCallable | None = None,
+        lens_selector: LensSelector | None = None,
     ) -> None:
         if lens_llm is None and synth_llm is None and llm is None:
             raise ValueError(
@@ -128,6 +130,7 @@ class Decomposer:
             )
         self._lens_llm = resolved_lens
         self._synth_llm = resolved_synth
+        self._lens_selector = lens_selector or LensSelector()
 
     async def decompose(
         self,
@@ -135,37 +138,56 @@ class Decomposer:
         engagement_type: EngagementType,
         day_1_hypothesis: str,
         client_context: str | None = None,
+        *,
+        domain: str | None = None,
+        decision_context: str | None = None,
+        output_target: str | None = None,
     ) -> IssueTree:
-        """Produce a unified MECE issue tree from 3 lens perspectives."""
+        """Produce a unified MECE issue tree from selected lens perspectives."""
+        selection = self._lens_selector.select(
+            question=question,
+            engagement_type=engagement_type,
+            domain=domain,
+            decision_context=decision_context,
+            output_target=output_target,
+            client_context=client_context,
+        )
+
         # Phase 1: Parallel lens decompositions
-        lens_trees = await asyncio.gather(
+        raw_lens_trees = await asyncio.gather(
             *[
                 self._run_lens(lens, question, engagement_type, day_1_hypothesis, client_context)
-                for lens in _LENSES
+                for lens in selection.lenses
             ]
         )
+        lens_trees = list(zip(selection.lenses, raw_lens_trees, strict=True))
 
         # Phase 2: Synthesis
         return await self._synthesize(question, engagement_type, day_1_hypothesis, lens_trees)
 
     async def _run_lens(
         self,
-        lens: str,
+        lens: LensDefinition,
         question: str,
         engagement_type: EngagementType,
         day_1_hypothesis: str,
         client_context: str | None,
     ) -> dict:
         """Run a single lens decomposition and return raw JSON."""
+        context = _lens_context(lens, client_context)
         prompt = load_prompt(
-            f"decompose_{lens}_lens",
+            f"decompose_{lens.prompt_family}_lens",
             question=question,
             engagement_type=engagement_type.value,
             day_1_hypothesis=day_1_hypothesis,
-            client_context=client_context or "No additional context provided.",
+            client_context=context,
         )
 
-        raw = await retry_llm_call(self._lens_llm, prompt, description=f"decompose_{lens}_lens")
+        raw = await retry_llm_call(
+            self._lens_llm,
+            prompt,
+            description=f"decompose_{lens.lens_id}_lens",
+        )
         return extract_json(raw)
 
     async def _synthesize(
@@ -173,17 +195,26 @@ class Decomposer:
         question: str,
         engagement_type: EngagementType,
         day_1_hypothesis: str,
-        lens_trees: list[dict],
+        lens_trees: list[tuple[LensDefinition, dict]],
     ) -> IssueTree:
-        """Synthesize 3 lens trees into one unified tree."""
+        """Synthesize selected lens trees into one unified tree."""
+        lens_payloads = [
+            {
+                "lens_id": lens.lens_id,
+                "label": lens.label,
+                "prompt_family": lens.prompt_family,
+                "rationale": lens.rationale,
+                "tree": tree,
+            }
+            for lens, tree in lens_trees
+        ]
         prompt = load_prompt(
             "decompose_synthesis",
             question=question,
             engagement_type=engagement_type.value,
             day_1_hypothesis=day_1_hypothesis,
-            financial_tree=json.dumps(lens_trees[0], indent=2),
-            operational_tree=json.dumps(lens_trees[1], indent=2),
-            market_tree=json.dumps(lens_trees[2], indent=2),
+            lens_trees=json.dumps(lens_payloads, indent=2),
+            lenses_used=", ".join(lens.label for lens, _tree in lens_trees),
         )
 
         raw = await retry_llm_call(self._synth_llm, prompt, description="decompose_synthesis")
@@ -198,11 +229,24 @@ class Decomposer:
         metadata = IssueTreeMetadata(
             depth=depth,
             leaf_count=leaf_count,
-            lenses_used=_LENSES.copy(),
+            lenses_used=[lens.lens_id for lens, _tree in lens_trees],
             synthesis_rationale=data.get(
                 "synthesis_rationale",
-                "Unified tree synthesized from financial, operational, and market lenses.",
+                "Unified tree synthesized from selected dynamic lenses.",
             ),
         )
 
         return IssueTree(root=root, metadata=metadata)
+
+
+def _lens_context(lens: LensDefinition, client_context: str | None) -> str:
+    base_context = client_context or "No additional context provided."
+    return (
+        "Dynamic lens directive:\n"
+        f"- Selected lens id: {lens.lens_id}\n"
+        f"- Selected lens label: {lens.label}\n"
+        f"- Lens description: {lens.description}\n"
+        f"- Selection rationale: {lens.rationale}\n"
+        "- Adapt the host prompt to this selected lens. Keep the output schema unchanged.\n\n"
+        f"Client context:\n{base_context}"
+    )

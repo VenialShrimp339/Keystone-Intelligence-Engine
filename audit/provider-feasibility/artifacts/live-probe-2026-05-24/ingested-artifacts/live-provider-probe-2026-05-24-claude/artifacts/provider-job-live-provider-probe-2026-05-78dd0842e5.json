@@ -1,0 +1,34 @@
+{
+  "artifact_id": "provider-job-live-provider-probe-2026-05-78dd0842e5",
+  "artifact_type": "provider_job",
+  "block_reason": null,
+  "child_artifact_ids": [],
+  "completed_at": "2026-05-24T22:42:37.728306Z",
+  "created_at": "2026-05-24T22:42:37.728319Z",
+  "export_paths": [
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/claude-live-completed-report.md"
+  ],
+  "exported_at": "2026-05-24T22:42:37.728306Z",
+  "job_url": "https://claude.ai/chat/1185593e-a87c-4062-9928-23be1aa106cf",
+  "metadata": {
+    "note": "Only completed full report was ingested. Partial research card content was ignored.",
+    "observed_completion": "Research complete; gathered 257 sources; artifact panel opened."
+  },
+  "model_name": "Opus 4.7 Adaptive",
+  "parent_artifact_ids": [],
+  "prompt": "Using only public web sources, produce a concise research report on the current state of the U.S. auto body repair industry consolidation trend. Include 5 cited factual claims, source links, and a short note on evidence gaps. Keep the report compact.",
+  "provider": "claude",
+  "provider_status": "exported",
+  "run_id": "live-provider-probe-2026-05-24-claude",
+  "selected_model_evidence": "Claude web composer showed Model: Opus 4.7 Adaptive and Research mode pressed.",
+  "status": "ready",
+  "submitted_at": "2026-05-24T22:42:37.728306Z",
+  "surface": "web",
+  "tool_name": "Claude Research",
+  "trace_paths": [
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/claude-live-after-submit-dom.txt",
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/claude-live-after-notify-dom.txt",
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/claude-live-completed-report-dom.txt"
+  ],
+  "updated_at": "2026-05-24T22:42:37.728348+00:00"
+}

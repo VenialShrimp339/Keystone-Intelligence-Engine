@@ -1,0 +1,45 @@
+{
+  "artifact_ids": [
+    "spec-live-provider-probe-2026-05-e9b6d9ecd9",
+    "report-live-provider-probe-2026-05-86253ae16e",
+    "sources-report-live-provider-probe-2-730134b49d",
+    "evidence-report-live-provider-probe-2-730134b49d",
+    "synthesis-report-live-provider-probe-2-730134b49d",
+    "evaluation-evidence-report-live-provide-8b80f9a721",
+    "deliverable-live-provider-probe-2026-05-186176b3d5",
+    "provider-job-live-provider-probe-2026-05-78dd0842e5"
+  ],
+  "child_refs": {
+    "evaluation-evidence-report-live-provide-8b80f9a721": [
+      "deliverable-live-provider-probe-2026-05-186176b3d5"
+    ],
+    "evidence-report-live-provider-probe-2-730134b49d": [
+      "synthesis-report-live-provider-probe-2-730134b49d",
+      "evaluation-evidence-report-live-provide-8b80f9a721"
+    ],
+    "report-live-provider-probe-2026-05-86253ae16e": [
+      "sources-report-live-provider-probe-2-730134b49d",
+      "evidence-report-live-provider-probe-2-730134b49d",
+      "synthesis-report-live-provider-probe-2-730134b49d"
+    ],
+    "sources-report-live-provider-probe-2-730134b49d": [
+      "evidence-report-live-provider-probe-2-730134b49d"
+    ],
+    "spec-live-provider-probe-2026-05-e9b6d9ecd9": [
+      "synthesis-report-live-provider-probe-2-730134b49d"
+    ],
+    "synthesis-report-live-provider-probe-2-730134b49d": [
+      "evaluation-evidence-report-live-provide-8b80f9a721",
+      "deliverable-live-provider-probe-2026-05-186176b3d5"
+    ]
+  },
+  "created_at": "2026-05-24T22:42:37.718874Z",
+  "metadata": {},
+  "notes": [
+    "First-slice local run. No full Keystone pipeline execution."
+  ],
+  "root_request": "Using only public web sources, produce a concise research report on the current state of the U.S. auto body repair industry consolidation trend. Include 5 cited factual claims, source links, and a short note on evidence gaps. Keep the report compact.",
+  "run_id": "live-provider-probe-2026-05-24-claude",
+  "status": "ready",
+  "updated_at": "2026-05-24T22:42:37.728463+00:00"
+}

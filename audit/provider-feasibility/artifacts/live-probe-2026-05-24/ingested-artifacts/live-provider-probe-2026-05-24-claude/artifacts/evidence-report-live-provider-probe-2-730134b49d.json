@@ -1,0 +1,345 @@
+{
+  "artifact_id": "evidence-report-live-provider-probe-2-730134b49d",
+  "artifact_type": "evidence_bundle",
+  "child_artifact_ids": [],
+  "claim_records": [
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-001",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "The consolidation thesis is intact but visibly slowing."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-002",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "The top four national consolidators now operate roughly 3,973 U.S. shops with combined revenue above $15 billion, yet 2025 delivered the slowest M&A pace in years, a structural decline in claim volumes, and one blockbuster deal \u2014 Boyd Group's acquisition of Joe Hudson's \u2014 that collapsed the \"Big 5\" into a \"Big 4.\""
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-003",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "The U.S. collision repair total addressable market was $48.2 billion in 2024, the first dollar decline since 2020, per The Romans Group's 19th annual white paper."
+    },
+    {
+      "citation_ids": [
+        "SRC-001"
+      ],
+      "claim_id": "CLM-004",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_001",
+      "text": "The top three independent consolidators (Caliber, Boyd/Gerber, Crash Champions) controlled over 27% of that market in 2024, and Romans projects that share could reach 37% by 2029. (bodyshopbusiness.com)"
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-005",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "At year-end 2025, Focus Advisors' Year-in-Review pegs the Big 4 at: Caliber Collision 1,863 locations across 41 states, Gerber Collision & Glass 1,102 U.S. locations (after absorbing Joe Hudson's), Crash Champions 662, and Classic Collision 346."
+    },
+    {
+      "citation_ids": [
+        "SRC-002"
+      ],
+      "claim_id": "CLM-006",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_001",
+      "text": "That cluster represents roughly 4,000 U.S. shops, about 13% of the ~30,000-shop national base \u2014 of which approximately 23,000 are still single-location independents. (autobodynews.com)"
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-007",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "In November 2025, Boyd Group Services acquired Joe Hudson's Collision Center for $1.3 billion (13.3x trailing EBITDA net of ~$150M tax benefits), adding 258 Southeast-concentrated shops and pushing Boyd's North American footprint past 1,300 locations."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-008",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "Boyd ended 2025 with $3.1 billion in sales (+2.4%), adjusted EBITDA of $376.3 million (+12.4%), and 70 added locations (43 acquisitions, 27 startups)."
+    },
+    {
+      "citation_ids": [
+        "SRC-003"
+      ],
+      "claim_id": "CLM-009",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_001",
+      "text": "Same-store sales fell 0.2%; on the Q4 call CEO Brian Kaner said Boyd \"once again outperformed the industry in 2025, with our same-store sales performance exceeding the estimated 5%-7% decline in repairable claims.\" (boydgroup.com)"
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-010",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "PE ownership remains the structural engine."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-011",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "Caliber is held by Hellman & Friedman (majority since the 2019 ABRA merger), with Leonard Green and OMERS as minority partners."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-012",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "Caliber filed confidentially with the SEC in July 2025 with BofA, Goldman Sachs and JPMorgan as bookrunners; as of late May 2026 the S-1 had not gone public and no priced offering had occurred."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-013",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "Crash Champions is backed by Clearlake Capital (post-2022 Service King merger)."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-014",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "Classic Collision was acquired by TPG Capital from New Mountain Capital in 2024 at an undisclosed valuation."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-015",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "Boyd is publicly listed (TSX: BYD)."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-016",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "Focus Advisors counts 14 PE-backed consolidators actively acquiring, with at least three more PE firms expected to enter in 2026."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-017",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "Acquisition pace decelerated sharply."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-018",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "Focus Advisors found that consolidators and market-leading MSOs acquired or opened 223 shops in H1 2025, down 35% from 343 in H1 2024 \u2014 and the Big 5's combined activity fell 60.3% YoY."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-019",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "EBITDA multiples held around 7x for quality assets, but lower shop earnings pulled valuations down."
+    },
+    {
+      "citation_ids": [
+        "SRC-006"
+      ],
+      "claim_id": "CLM-020",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_001",
+      "text": "PE firms also moved downstream: per Focus Advisors' 2025 Year-in-Review, \"PE firms that historically pursued established MSOs with $30 million or more in revenue moved downstream in 2025, pursuing operators with as few as one to three locations, reflecting limited availability of larger platform acquisitions.\" (focusadvisors.com)"
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-021",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "CCC Intelligent Solutions' Crash Course 2026 report found repairable claim volume fell 9.7% across all coverages in 2025, total loss frequency hit a record 23.1% of all claims, and calibrations appeared on 28.3% of all repairable appraisals (35.6% of DRP estimates in Q3 2025, up from 26.9% a year earlier)."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-022",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "Vehicles 7\u201312 years old now represent nearly 41% of total loss valuations (up from 33.4% in 2020), and S&P Global Mobility data cited in the report puts average light-vehicle fleet age at 12.8 years in 2025."
+    },
+    {
+      "citation_ids": [
+        "SRC-007"
+      ],
+      "claim_id": "CLM-023",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_001",
+      "text": "Average total cost of repair rose only 1.7% to $4,818, the lowest increase since 2017. (cccis.com)"
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-024",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_001",
+      "text": "ADAS calibration capex, OEM certification requirements, DRP scale economics, and a persistent technician shortage \u2014 TechForce Foundation's 2024 Supply & Demand Report projects over 100,000 collision-tech openings between 2024 and 2028, with the sector facing roughly 6.7 jobs per program graduate \u2014 continue to disadvantage single-shop independents."
+    }
+  ],
+  "created_at": "2026-05-24T22:42:37.720823Z",
+  "metadata": {},
+  "parent_artifact_ids": [
+    "report-live-provider-probe-2026-05-86253ae16e",
+    "sources-report-live-provider-probe-2-730134b49d"
+  ],
+  "quality_flags": [
+    "19_claims_missing_citations"
+  ],
+  "report_artifact_ids": [
+    "report-live-provider-probe-2026-05-86253ae16e"
+  ],
+  "run_id": "live-provider-probe-2026-05-24-claude",
+  "source_bundle_artifact_id": "sources-report-live-provider-probe-2-730134b49d",
+  "source_records": [
+    {
+      "domain": "www.bodyshopbusiness.com",
+      "first_seen_section_id": "section_002",
+      "label": "1",
+      "reference_key": "1",
+      "source_id": "SRC-001",
+      "url": "https://www.bodyshopbusiness.com/the-romans-group-releases-2024-profile-of-the-u-s-and-canada-collision-market/"
+    },
+    {
+      "domain": "www.autobodynews.com",
+      "first_seen_section_id": "section_002",
+      "label": "2",
+      "reference_key": "2",
+      "source_id": "SRC-002",
+      "url": "https://www.autobodynews.com/news/focus-advisors-fewer-deals-lower-valuations-defined-2025-and-one-blockbuster-exception"
+    },
+    {
+      "domain": "boydgroup.com",
+      "first_seen_section_id": "section_002",
+      "label": "4",
+      "reference_key": "4",
+      "source_id": "SRC-003",
+      "url": "https://boydgroup.com/news/boyd-group-services-inc-news/2026/boyd-group-services-inc-reports-fourth-quarter-and-full-year-2025-results/"
+    },
+    {
+      "domain": "www.bodyshopbusiness.com",
+      "first_seen_section_id": "section_002",
+      "label": "5",
+      "reference_key": "5",
+      "source_id": "SRC-004",
+      "url": "https://www.bodyshopbusiness.com/auto-body-consolidation-forecast-2026-ready-for-takeoff/"
+    },
+    {
+      "domain": "hf.com",
+      "first_seen_section_id": "section_002",
+      "label": "6",
+      "reference_key": "6",
+      "source_id": "SRC-005",
+      "url": "https://hf.com/caliber-collision-and-abra-auto-body-repair-of-america-to-merge-creating-a-leading-collision-repair-provider-in-37-states/"
+    },
+    {
+      "domain": "focusadvisors.com",
+      "first_seen_section_id": "section_002",
+      "label": "7",
+      "reference_key": "7",
+      "source_id": "SRC-006",
+      "url": "https://focusadvisors.com/2025/09/the-first-half-of-2025-year-in-review-consolidation-continues-despite-headwinds/"
+    },
+    {
+      "domain": "www.cccis.com",
+      "first_seen_section_id": "section_002",
+      "label": "9",
+      "reference_key": "9",
+      "source_id": "SRC-007",
+      "url": "https://www.cccis.com/reports/crash-course-2026"
+    },
+    {
+      "domain": "www.autobodynews.com",
+      "first_seen_section_id": "section_002",
+      "label": "10",
+      "reference_key": "10",
+      "source_id": "SRC-008",
+      "url": "https://www.autobodynews.com/news/aging-fleet-rising-complexity-define-collision-repair-landscape"
+    },
+    {
+      "domain": "www.grecopublishing.com",
+      "first_seen_section_id": "section_002",
+      "label": "11",
+      "reference_key": "11",
+      "source_id": "SRC-009",
+      "url": "https://www.grecopublishing.com/near1225coverstory/"
+    },
+    {
+      "domain": "www.drivenbrands.com",
+      "first_seen_section_id": "section_002",
+      "label": "14",
+      "reference_key": "14",
+      "source_id": "SRC-010",
+      "url": "https://www.drivenbrands.com/news/driven-brands-reaches-1000-collision-repair-locations-across-north-america/"
+    }
+  ],
+  "status": "ready",
+  "updated_at": "2026-05-24T22:42:37.727180+00:00"
+}

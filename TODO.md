@@ -2,8 +2,19 @@
 
 ## Active
 
+- [ ] **Stage B checkpoint + canonization** — preserve the current uncommitted May 24/May 28 work, update live current-state docs away from stale April Lane E next action, and then run the next autonomous goal from the artifact-centered direction.
+- [ ] **Capture completed ChatGPT Deep Research report** — owner reports the ChatGPT auto-body/collision repair report is complete and open in Chrome. Save full completed report/export evidence and ingest only the completed full report through the provider-neutral artifact path.
+- [ ] **Issue-tree skill eval subset** — before direct KIE integration, run the recommended seven-case book-derived subset and at least five novel stress tests for `.agents/skills/problem-decomposition/`, then implement a Pydantic `IssueTreePackage` upstream of the current `Decomposer`.
 - [ ] Phase 2: route deep-mode tool calls through `MCPGateway.call_tool` (not just the audit log) once provider-native WebSearch/WebFetch have gateway-owned wrappers
 - [ ] **Prompt audit and optimization** — all 35 pipeline prompts (27 `.md` files + 8 inline Python in deliberation layer) were built during implementation without owner review. Dedicated session needed to: (a) read and approve/revise every prompt's wording, thresholds, and instructions; (b) externalize the 8 inline L1.5 deliberation prompts to `.md` files; (c) evaluate whether per-task prompt customization from L0 is sufficient or needs enhancement. Highest-leverage quality improvement available. See prompt catalog in session notes.
+- [ ] **Audit all L0 one-size-fits-all patterns** — First pipeline run (2026-04-22) exposed multiple places where L0 applies consulting-engagement defaults that break on non-consulting questions. Known instances:
+  - Decomposition lenses: hardcoded financial/operational/market (above)
+  - Engagement type classification: the `EngagementType` enum (SIZING, DIAGNOSTIC, EVALUATIVE, etc.) is consulting-scoped — a technical architecture question doesn't map cleanly to any of these
+  - Default methodology requirements: `_DEFAULT_METHODOLOGY` maps engagement types to frameworks like Porter's Five Forces — irrelevant for technical research
+  - Task categories: `TaskCategory` enum (MARKET_SIZING, COMPETITIVE_LANDSCAPE, FINANCIAL_ANALYSIS, etc.) has no category for "systems architecture," "evaluation design," "prior art survey," etc.
+  - Tool assignment via `BASELINE_AGENT_TOOLS` — edgar_filings assigned to tasks that have nothing to do with SEC filings
+  - Source requirements: `SourceRequirement` types (industry_reports, financial_data, academic) may not cover the source universe for all question types
+  - The pipeline should handle ANY research question a consulting analyst would face, including internal capability-building, technology evaluation, process design, and organizational analysis — not just client-facing company research
 
 ## Up Next
 
@@ -27,6 +38,10 @@
 - [ ] Branch/worktree consolidation (cosmetic, not blocking)
 
 ## Done
+
+- [x] **First-slice artifact/report ingestion + dynamic lens patch** — Added durable artifact contracts and local JSON store; built manual Markdown/TXT/HTML report ingestion; added a repeatable manual first-slice run that writes a run ledger, report/source/evidence/synthesis/evaluation/deliverable artifacts; replaced L0's fixed financial/operational/market lens list with deterministic dynamic lens selection; added provider DOM completion detectors so only export-ready completed browser research reports are ingestable. Live Claude Research probe completed and was ingested; live ChatGPT Deep Research probe remains running with a heartbeat scheduled.
+
+- [x] **L0 decomposition lenses dynamic, not hardcoded** — The hardcoded `_LENSES = ["financial", "operational", "market"]` path was replaced with `LensSelector`, which selects 2-5 lenses from request/domain/decision/output context and preserves parallel decomposition. Business, technical, scientific, and ambiguous prompts now produce distinct lens plans, and the synthesis prompt accepts a dynamic lens payload.
 
 - [x] **Audit remediation pass (pipeline-config follow-up)** — `pytest tests/unit/ tests/canary/` = **1404 passing + 3 xfailed** (+9 new across 6 coverage gaps). Ruff net-zero on touched files; mypy net-zero on `src/` (128 → 128). Four source fixes + six test gaps, zero deferrals. (1) `ResearchAgent` + `AgentPool` gained `current_tier: ModelTier` kwarg so `ErrorRecovery`'s fallback chain walks from the correct baseline when operators retune `l1_research`; orchestrator resolves via `_resolve_layer_tier_or(pc, "l1_research", STANDARD)`. (2) `ModelMixingConfig.sprint_contract = "flagship"` + `_DEFAULT_LAYER_EFFORTS["sprint_contract"] = "high"` added; orchestrator wires `SprintContractGenerator` through `_layer_llm("sprint_contract", FLAGSHIP, "high")` instead of the raw factory call. (3) Removed dead config fields `l2_structuring` and `l3_generation` from `ModelMixingConfig` and `_DEFAULT_LAYER_EFFORTS` (L2 is pure Python, L3 is the MarkdownRenderer — neither maps to an LLM call). (4) Orchestrator prefers `factory.deep_research_callable()` when `llm_factory` is a `LayerAwareLLMFactory` so programmatic AppConfig overrides flow through to deep-research; `get_deep_research_callable` docstring documents the env-var vs programmatic-override split. New coverage lives in `tests/unit/test_remediation_coverage.py`: sprint-contract fallback flag emission; infrastructure_failure distinguishable from genuine zero; `get_deep_research_callable` with custom AppConfig + default path; Layer 4 trajectory tier (structural + end-to-end); per-task Evaluator freshness; analyst_tier env-var threaded to `Deliberation._analyst_tier` and `AnalystSpawned.model_tier`.
 

@@ -1,0 +1,246 @@
+- link "Skip to content":
+  - /url: "#main"
+- navigation "Sidebar":
+  - button "Open sidebar":
+  - link "New chat":
+    - /url: /
+    - generic: New chat
+  - button "Search chats":
+    - generic: Search chats
+  - button "Recents":
+    - generic: Recents
+  - button "Open profile menu":
+    - img "Profile image"
+- heading "Chat history" [level=2]
+- navigation "Chat history":
+  - link "Home":
+    - /url: /
+    - generic: ChatGPT
+  - button "Close sidebar" [expanded]:
+  - list:
+    - link "New chat Shift Command O":
+      - /url: /
+      - generic: New chat
+      - generic "Shift":
+        - generic: ⇧
+      - generic "Command":
+        - generic: ⌘
+      - generic: O
+    - button "Search chats Command K":
+      - generic: Search chats
+      - generic "Command":
+        - generic: ⌘
+      - generic: K
+  - link "Library":
+    - /url: /library
+    - generic: Library
+  - link "Apps":
+    - /url: /apps
+    - generic: Apps
+  - link "Codex":
+    - /url: /codex
+    - generic: Codex
+  - generic: More
+  - button "GPTs" [expanded]:
+    - heading "GPTs" [level=2]
+  - list:
+    - link "Nate Prompting GPT":
+      - /url: /g/g-68502f565b748191be4b0f0e7580ab97-nate-prompting-gpt
+      - generic: Nate Prompting GPT
+      - button:
+  - link "Explore GPTs":
+    - /url: /gpts
+    - generic: Explore GPTs
+  - button "Projects" [expanded]:
+    - heading "Projects" [level=2]
+  - list:
+    - button "New project":
+      - generic: New project
+    - link "Show chats ArcWiki Open project options for ArcWiki":
+      - /url: /g/g-p-69f62be1e0ec819182562e2cfa42f950-arcwiki/project
+      - button "Show chats":
+      - generic: ArcWiki
+      - button "Open project options for ArcWiki":
+    - link "Show chats KIE audit Open project options for KIE audit":
+      - /url: /g/g-p-69da81c004d881919a0b842bd4579f70-kie-audit/project
+      - button "Show chats":
+      - generic: KIE audit
+      - button "Open project options for KIE audit":
+    - link "Show chats keystone intelligence engine Open project options for keystone intelligence engine":
+      - /url: /g/g-p-69d9e06400888191ab6d728defc0ac9e-keystone-intelligence-engine/project
+      - button "Show chats":
+      - generic: keystone intelligence engine
+      - button "Open project options for keystone intelligence engine":
+    - link "Show chats algo Open project options for algo":
+      - /url: /g/g-p-69d4a65e939c81919babe1fe79c61739-algo/project
+      - button "Show chats":
+      - generic: algo
+      - button "Open project options for algo":
+    - link "Show chats AMC Platform Research Open project options for AMC Platform Research":
+      - /url: /g/g-p-69d4a49952d48191b60420d64e2a6ad1-amc-platform-research/project
+      - button "Show chats":
+      - generic: AMC Platform Research
+      - button "Open project options for AMC Platform Research":
+    - generic: More
+  - button "Recents" [expanded]:
+    - heading "Recents" [level=2]
+  - list:
+    - link "Codex Research Execution Tips":
+      - /url: /c/6a10d4c8-be20-83ea-83f4-e0e7e7b74a58
+      - generic: Codex Research Execution Tips
+      - button "Open conversation options for Codex Research Execution Tips":
+    - link "Project Planning for Codex":
+      - /url: /c/6a10d1cb-cf8c-83ea-97a6-008fd2c7ca52
+      - generic: Project Planning for Codex
+      - button "Open conversation options for Project Planning for Codex":
+    - link "AOC Data Center Claim":
+      - /url: /c/6a109b4b-e440-83ea-aa7b-069c7931317d
+      - generic: AOC Data Center Claim
+      - button "Open conversation options for AOC Data Center Claim":
+    - link "Coaching Text Revision":
+      - /url: /c/6a106e64-25c0-83ea-8213-19477b011cb9
+      - generic: Coaching Text Revision
+      - button "Open conversation options for Coaching Text Revision":
+    - link "Minecraft Galaxy Floor Guide":
+      - /url: /c/6a0f081e-4414-83ea-b7b4-1b5809d2d773
+      - generic: Minecraft Galaxy Floor Guide
+      - button "Open conversation options for Minecraft Galaxy Floor Guide":
+    - link "Facial Recognition and Social Cues":
+      - /url: /c/6a0f00cd-2d40-83ea-9504-b98060a2e4f7
+      - generic: Facial Recognition and Social Cues
+      - button "Open conversation options for Facial Recognition and Social Cues":
+    - link "Excel Mastery Plan":
+      - /url: /c/6a0e77b2-d2b4-83ea-9966-24517ef5c187
+      - generic: Excel Mastery Plan
+      - button "Open conversation options for Excel Mastery Plan":
+    - link "Gas Leak Concerns":
+      - /url: /c/6a0e6023-7144-83ea-b1ab-41ff87e23520
+      - generic: Gas Leak Concerns
+      - button "Open conversation options for Gas Leak Concerns":
+    - link "Iced Thai Tea Calories":
+      - /url: /c/6a0e34c3-63b4-83ea-bb92-0395cd49456b
+      - generic: Iced Thai Tea Calories
+      - button "Open conversation options for Iced Thai Tea Calories":
+    - link "ADHD Meds Break Analysis":
+      - /url: /c/6a0d36ea-6be0-83ea-be88-35a79534d410
+      - generic: ADHD Meds Break Analysis
+      - button "Open conversation options for ADHD Meds Break Analysis":
+    - link "Walt's Risky Drive Analysis":
+      - /url: /c/6a0d1ba5-85ac-83ea-9599-e99d80961f9f
+      - generic: Walt's Risky Drive Analysis
+      - button "Open conversation options for Walt's Risky Drive Analysis":
+    - link "Erase Pencil Marks Patch Holes":
+      - /url: /c/6a0b6172-0ac4-83ea-90cc-b75956d22c02
+      - generic: Erase Pencil Marks Patch Holes
+      - button "Open conversation options for Erase Pencil Marks Patch Holes":
+    - link "U-Haul Rental Bloomington to Winnetka":
+      - /url: /c/6a0b329a-9ecc-83ea-8508-ecaad437c083
+      - generic "U-Haul Rental Bloomington to Winnetka"
+      - button "Open conversation options for U-Haul Rental Bloomington to Winnetka":
+    - link "Projector Power Issue":
+      - /url: /c/6a09563c-95f4-83ea-a34f-6b5bda7c898e
+      - generic: Projector Power Issue
+      - button "Open conversation options for Projector Power Issue":
+    - link "Pinball Machine Troubleshooting":
+      - /url: /c/6a0953ac-81a0-83ea-8b5a-fb9161c2af8d
+      - generic: Pinball Machine Troubleshooting
+      - button "Open conversation options for Pinball Machine Troubleshooting":
+    - link "Model Weight Editing Limits":
+      - /url: /c/6a08fd66-81f4-83ea-ab6d-8b3afdd84604
+      - generic: Model Weight Editing Limits
+      - button "Open conversation options for Model Weight Editing Limits":
+    - link "CVA 4066 Cleaning Cycle":
+      - /url: /c/6a08b9de-9c44-83ea-8a88-6ff5c6fb7c42
+      - generic: CVA 4066 Cleaning Cycle
+      - button "Open conversation options for CVA 4066 Cleaning Cycle":
+    - link "Movie Recommendations Analysis":
+      - /url: /c/6a061c61-4328-83ea-98df-0fdb9a205fdb
+      - generic: Movie Recommendations Analysis
+      - button "Open conversation options for Movie Recommendations Analysis":
+    - link "Movie Recommendations Analysis":
+      - /url: /c/6a061961-b05c-83ea-859d-14018f00740a
+      - generic: Movie Recommendations Analysis
+      - button "Open conversation options for Movie Recommendations Analysis":
+    - link "Movie Recommendations Analysis":
+      - /url: /c/6a06196f-fd30-83ea-bf5e-69528f88eccf
+      - generic: Movie Recommendations Analysis
+      - button "Open conversation options for Movie Recommendations Analysis":
+    - link "Zojirushi Arborio Rice Water":
+      - /url: /c/6a06123b-f54c-83ea-aae1-b45b7de5c293
+      - generic: Zojirushi Arborio Rice Water
+      - button "Open conversation options for Zojirushi Arborio Rice Water":
+    - link "Creative Profile Ideas":
+      - /url: /c/6a0479fd-c8c0-83ea-9a87-33214b6e60b8
+      - generic: Creative Profile Ideas
+      - button "Open conversation options for Creative Profile Ideas":
+    - link "Adding Full-Photo Stickers":
+      - /url: /c/6a025f23-1c88-83ea-9644-4838a782f5c0
+      - generic: Adding Full-Photo Stickers
+      - button "Open conversation options for Adding Full-Photo Stickers":
+    - link "Green Light Timing Tech":
+      - /url: /c/6a01432c-1580-83ea-8948-63177676214e
+      - generic: Green Light Timing Tech
+      - button "Open conversation options for Green Light Timing Tech":
+    - link "One St. Andrew's Meaning":
+      - /url: /c/69fe7987-0764-83ea-8188-a1e773346413
+      - generic: One St. Andrew's Meaning
+      - button "Open conversation options for One St. Andrew's Meaning":
+    - link "OpenClaw Task Analysis":
+      - /url: /c/69fd0314-846c-83ea-87c9-3ad9509cbe91
+      - generic: OpenClaw Task Analysis
+      - button "Open conversation options for OpenClaw Task Analysis":
+    - link "Musk Anthropics Partnership Risk":
+      - /url: /c/69fcb7e2-4c3c-83ea-9cd9-927476ff32b8
+      - generic: Musk Anthropics Partnership Risk
+      - button "Open conversation options for Musk Anthropics Partnership Risk":
+    - link "Denon Settings for 1917":
+      - /url: /c/69fc0787-3718-83ea-b453-8be0b4344fde
+      - generic: Denon Settings for 1917
+      - button "Open conversation options for Denon Settings for 1917":
+- button "Jack Riddle Pro, open profile menu":
+  - img "Profile image"
+  - generic: Jack Riddle
+  - generic: Pro
+  - button "Download apps":
+- banner:
+  - button "Turn on temporary chat":
+- main:
+  - heading "Ready when you are." [level=1]:
+    - generic: Ready when you are.
+  - button "Open Grammarly."
+  - button "Open Grammarly."
+  - button "Add files and more" [expanded]:
+  - textbox "Chat with ChatGPT":
+    - paragraph: Ask anything
+  - button "Heavy":
+    - generic: Heavy
+  - button "Start dictation":
+  - button "Start Voice":
+  - button
+  - button
+- alert
+- status
+- status: 1Password menu is available. Press down arrow to select.
+- generic: Add files and more
+- generic: /
+- tooltip "Add files and more /":
+  - generic: Add files and more
+  - generic: /
+- menu [active]:
+  - menuitem "Add photos & files Command U":
+    - generic: Add photos & files
+    - generic "Command":
+      - generic: ⌘
+    - generic: U
+  - menuitem "Recent files":
+    - generic: Recent files
+  - menuitemradio "Create image":
+    - generic: Create image
+  - menuitemradio "Deep research":
+    - generic: Deep research
+  - menuitemradio "Web search":
+    - generic: Web search
+  - menuitem "More":
+    - generic: More
+  - menuitem "Projects":
+    - generic: Projects

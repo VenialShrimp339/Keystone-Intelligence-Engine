@@ -1,0 +1,44 @@
+{
+  "approval_status": "not_required",
+  "artifact_id": "spec-live-provider-probe-2026-05-e9b6d9ecd9",
+  "artifact_type": "specification",
+  "child_artifact_ids": [],
+  "clarifying_questions": [],
+  "created_at": "2026-05-24T22:42:37.719599Z",
+  "day_1_hypothesis": null,
+  "decision_context": null,
+  "domain": "business_strategy",
+  "engagement_type": null,
+  "metadata": {
+    "selection_rationale": "Selected 3 lenses from request/domain/engagement signals: Market and Competitive, Financial, Operational Capability."
+  },
+  "output_target": "markdown brief",
+  "parent_artifact_ids": [],
+  "question": "Using only public web sources, produce a concise research report on the current state of the U.S. auto body repair industry consolidation trend. Include 5 cited factual claims, source links, and a short note on evidence gaps. Keep the report compact.",
+  "run_id": "live-provider-probe-2026-05-24-claude",
+  "selected_lenses": [
+    {
+      "description": "External market structure, customer demand, competitors, substitutes, and industry trends.",
+      "label": "Market and Competitive",
+      "lens_id": "market_competitive",
+      "prompt_family": "market",
+      "rationale": "market_competitive selected from score=7; domain=business."
+    },
+    {
+      "description": "Revenue, costs, margins, cash flow, capital intensity, valuation, and financing risk.",
+      "label": "Financial",
+      "lens_id": "financial",
+      "prompt_family": "financial",
+      "rationale": "financial selected from score=4; domain=business."
+    },
+    {
+      "description": "Capabilities, workflows, execution capacity, process maturity, and delivery constraints.",
+      "label": "Operational Capability",
+      "lens_id": "operational_capability",
+      "prompt_family": "operational",
+      "rationale": "operational_capability selected from score=4; domain=business."
+    }
+  ],
+  "status": "pending_approval",
+  "updated_at": "2026-05-24T22:42:37.719634+00:00"
+}

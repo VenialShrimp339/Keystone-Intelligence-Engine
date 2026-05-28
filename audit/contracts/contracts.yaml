@@ -1,0 +1,186 @@
+schema_version: 1
+generated_at: "2026-05-24"
+artifact_root: "output/{run_id}/artifacts"
+common_fields:
+  artifact_id: "Stable unique ID."
+  artifact_type: "Contract type name."
+  schema_version: "Integer schema version."
+  run_id: "Parent run ID."
+  created_at: "UTC timestamp."
+  updated_at: "UTC timestamp."
+  status: "draft | awaiting_user | running | failed | complete | superseded"
+  parent_artifact_ids: "List of upstream artifact IDs."
+  file_paths: "List of durable local paths."
+  provenance: "Provider, tool, command, browser, or parser lineage."
+contracts:
+  RunLedger:
+    required:
+      - run_id
+      - user_request
+      - public_data_only
+      - profile
+      - status
+      - artifact_ids
+      - provider_events
+    status_values:
+      - draft
+      - awaiting_user
+      - running
+      - failed
+      - complete
+
+  SpecificationArtifact:
+    required:
+      - artifact_id
+      - run_id
+      - decision_context
+      - clarifying_questions
+      - issue_tree
+      - lens_set
+      - research_plan
+      - approval_status
+    approval_status_values:
+      - awaiting_approval
+      - approved
+      - rejected
+      - revised
+
+  IssueTreeNodeArtifact:
+    required:
+      - node_id
+      - run_id
+      - parent_id
+      - question
+      - hypothesis
+      - acceptance_criteria
+      - disconfirming_evidence
+      - provider_budget
+
+  ProviderJobArtifact:
+    required:
+      - artifact_id
+      - run_id
+      - provider
+      - surface
+      - prompt
+      - input_artifact_ids
+      - status
+      - state_snapshots
+      - usage
+    providers:
+      - codex_exec
+      - chatgpt_web
+      - claude_web
+      - openai_api
+      - anthropic_api
+      - manual_upload
+      - deterministic_source
+    status_values:
+      - planned
+      - submitted
+      - running
+      - needs_user
+      - complete
+      - failed
+
+  ResearchReportArtifact:
+    required:
+      - report_id
+      - run_id
+      - provider_job_id
+      - source_format
+      - raw_path
+      - normalized_markdown_path
+      - title
+      - summary
+      - sections
+      - citations
+      - claims
+      - quality_flags
+    source_formats:
+      - markdown
+      - html
+      - pdf
+      - copied_dom
+      - text
+      - json
+
+  SourceBundleArtifact:
+    required:
+      - source_id
+      - run_id
+      - source_type
+      - url
+      - retrieved_at
+      - raw_path
+      - parsed_path
+      - source_metadata
+      - lineage
+    source_types:
+      - sec_filing
+      - article
+      - pdf
+      - dataset
+      - web_page
+      - transcript
+      - company_facts
+
+  EvidenceBundleArtifact:
+    required:
+      - evidence_id
+      - run_id
+      - issue_node_ids
+      - claim_records
+      - source_records
+      - absence_records
+      - coverage_map
+      - conflict_map
+
+  SynthesisArtifact:
+    required:
+      - artifact_id
+      - run_id
+      - thesis
+      - supporting_arguments
+      - contested_claims
+      - gap_questions
+      - branch_summaries
+      - confidence_map
+
+  EvaluationArtifact:
+    required:
+      - artifact_id
+      - run_id
+      - target_artifact_id
+      - deterministic_checks
+      - rubric_scores
+      - judge_outputs
+      - pass_fail
+      - required_rework
+
+  DeliverableArtifact:
+    required:
+      - artifact_id
+      - run_id
+      - deliverable_type
+      - source_artifact_ids
+      - file_paths
+      - citation_manifest_id
+      - status
+    deliverable_types:
+      - research_brief
+      - slide_deck
+      - workbook
+      - issue_tree_package
+      - memo
+
+first_vertical_slice_required_contracts:
+  - RunLedger
+  - SpecificationArtifact
+  - ProviderJobArtifact
+  - ResearchReportArtifact
+  - EvidenceBundleArtifact
+  - SynthesisArtifact
+  - EvaluationArtifact
+  - DeliverableArtifact
+

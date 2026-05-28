@@ -1,0 +1,1 @@
+{"ok":true,"provider":"openai","surface":"codex_exec_subscription_or_current_login","capabilities_observed":["non_interactive_exec","output_schema_flag","json_events_flag"],"limits_observed":[]}

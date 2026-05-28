@@ -13,12 +13,10 @@ from __future__ import annotations
 
 import logging
 import uuid
-from collections.abc import AsyncIterator, Callable
 from datetime import UTC, datetime
 from typing import TYPE_CHECKING
 
 from keystone.evaluator.rubric_config import ENGAGEMENT_PROFILE_MAP
-from keystone.evaluator.retry import LLMCallable
 from keystone.events import (
     AgentDispatched,
     AnyPipelineEvent,
@@ -31,7 +29,6 @@ from keystone.models.research import (
     EngagementType,
     EvaluationProfileName,
     MethodologyRequirement,
-    PipelineProfile,
     ResearchQuestion,
     ResearchSpec,
     SourceRequirement,
@@ -52,6 +49,9 @@ from keystone.specification.template_registry import TemplateRegistry
 from keystone.specification.validator import MECEValidator
 
 if TYPE_CHECKING:
+    from collections.abc import AsyncIterator, Callable
+
+    from keystone.evaluator.retry import LLMCallable
     from keystone.models.tasks import TaskDecomposition
 
 logger = logging.getLogger(__name__)
@@ -325,6 +325,9 @@ class SpecificationEngine:
             classification.engagement_type,
             intent.day_1_hypothesis,
             client_context,
+            domain=classification.domain,
+            decision_context=intent.decision_context,
+            output_target="markdown",
         )
         logger.info(
             "Steps 3-4 complete: %d leaves, depth %d, mece_passed=%s",
@@ -431,6 +434,10 @@ class SpecificationEngine:
         engagement_type: EngagementType,
         day_1_hypothesis: str,
         client_context: str | None,
+        *,
+        domain: str | None = None,
+        decision_context: str | None = None,
+        output_target: str | None = None,
     ) -> tuple[IssueTree, bool]:
         """Run decomposition with MECE validation retry loop.
 
@@ -439,7 +446,13 @@ class SpecificationEngine:
         """
         for attempt in range(_MAX_DECOMPOSE_RETRIES + 1):
             tree = await self._decomposer.decompose(
-                question, engagement_type, day_1_hypothesis, client_context
+                question,
+                engagement_type,
+                day_1_hypothesis,
+                client_context,
+                domain=domain,
+                decision_context=decision_context,
+                output_target=output_target,
             )
 
             validation = await self._validator.validate(tree, question, engagement_type)

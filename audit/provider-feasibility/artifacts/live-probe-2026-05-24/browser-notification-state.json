@@ -1,0 +1,20 @@
+{
+  "chatgpt": {
+    "hasServiceWorker": false,
+    "hidden": false,
+    "notificationPermission": "unsupported",
+    "origin": "https://chatgpt.com",
+    "serviceWorkerController": false,
+    "title": "US Auto Body Repair Trends",
+    "url": "https://chatgpt.com/c/6a137bbc-82d0-83ea-a457-fbfa6d56e3de"
+  },
+  "claude": {
+    "hasServiceWorker": false,
+    "hidden": false,
+    "notificationPermission": "unsupported",
+    "origin": "https://claude.ai",
+    "serviceWorkerController": false,
+    "title": "U.S. auto body repair industry consolidation - Claude",
+    "url": "https://claude.ai/chat/1185593e-a87c-4062-9928-23be1aa106cf"
+  }
+}

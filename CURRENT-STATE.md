@@ -1,34 +1,42 @@
 # Current State
 
-*Last updated: 2026-04-16 | Updated by: Lane E promotion rerun*
+*Last updated: 2026-05-28 | Updated by: Codex Stage B canonization pass*
 
 > Summary-only current-truth layer. For live authority, start with `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, and the control-plane pair.
 
 ## Live Status
 
-- Historical implementation remains cleared through Wave 4B at `65a612d`.
-- The current cleared runtime truth anchor is Lane H commit `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` in worktree `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-tool-surface`.
-- Treat runtime truth as pinned commit plus worktree path. The worktree's current `HEAD` may be newer docs-only state and does not replace the pin.
-- No retrieval code is authorized from this controller rerun worktree.
-- The tracked narrow Lane E setup package exists at `c9c7a1596d68171881023ce832412b74b2ee5c7c`.
-- The repaired package-integrity snapshot at `f954edffa9d6b78e98bdbfedff78097539f425d5` closed the earlier missing-reference and mandatory-graphify defects without widening scope.
-- Cleared pre-promotion Lane E reviews are persisted on the current branch at `8e002a77e149aba86ef5f0520e16e58b5647a551`.
-- Live control-plane promotion of that package is now `PROMOTED`.
-- The exact next authorized code step is to open `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-retrieval-parse` on branch `codex/retrieval-mvp-parse` from baseline `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea`.
-- Retrieval MVP Lane D candidate `f1af7dfafa2e66b831810d70006ab8295411c61b` remains blocked, frozen, and superseded reference material only.
-- This controller rerun worktree is authorized for docs/provenance work only in this session. That is an authorization policy, not a cleanliness claim.
-- Browser Use remains `FALLBACK_ONLY` with a secondary `BENCHMARK_OR_CONTROL_ARM_ONLY` role.
+- The active product direction is now the artifact-centered, subscription-first Keystone research rebuild captured in `notes/OWNER-VISION-2026-05-24.md`, `audit/architecture-preservation/ARCHITECTURE-PRESERVATION-AUDIT.md`, `audit/provider-feasibility/PROVIDER-FEASIBILITY-REPORT.md`, and `audit/roadmap/JULY-27-EXECUTION-PLAN.md`.
+- Keystone remains a spec-driven, issue-tree-based consulting research system. The DPVI spine is preserved: decompose, parallelize, verify, iterate.
+- The prior April remediation control plane that pointed at Lane E retrieval-parse is historical provenance only for current planning. It no longer describes the active next action for this worktree.
+- The old Claude CLI-first runtime doctrine is stale. The target runtime is subscription-first provider routing: Codex CLI for structured local calls, ChatGPT web Deep Research as primary hosted research, Claude web Research as secondary/cross-check research, manual upload as fallback, deterministic public-source connectors where precision matters, and API only as fallback/control.
+- The issue-tree/problem-decomposition skill has a prototype package at `.agents/skills/problem-decomposition/`, with derived methodology, references, output contract, eval strategy, and KIE adapter notes under `audit/issue-tree-skill/`.
+- The issue-tree skill is prototype-ready for further eval. Direct KIE runtime integration should wait until the recommended book-derived and novel stress-test eval subset passes and a Pydantic `IssueTreePackage` is implemented.
+- First-slice artifact/report ingestion and provider completion detection exist in uncommitted work under `src/keystone/artifacts/`, `src/keystone/ingestion/`, and `src/keystone/providers/`.
+- Claude web Research full lifecycle is proven for the public auto-body consolidation probe and was ingested into durable artifacts. ChatGPT Deep Research was submitted and later completed in Chrome per owner report, but the completed ChatGPT report still needs durable capture and ingestion.
+- The worktree contains valuable uncommitted code, docs, provider artifacts, and skill artifacts. Preserve current work before pulling, rebasing, or broad refactoring.
 
 ## What Happens Next
 
-1. Start from `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, and the control-plane pair.
-2. Treat Lane H as the cleared runtime truth anchor, not as an active execution lane.
-3. Use the existing Lane E package, review index, and promotion decision as the current controller truth:
-   - `audit/remediation/retrieval-parse/WORKSTREAM-HANDOFF.md`
-   - `audit/remediation/runs/retrieval-parse/package-c9c7a15-review-index.md`
-   - `audit/remediation/retrieval-parse/PROMOTION-DECISION.md`
-4. The next controller-priority milestone is opening the clean Lane E runtime worktree and beginning narrow Lane E implementation inside the approved write set.
-5. Do **not** reopen Lane H coding, Lane D coding, SEC / EDGAR, Lane F, UI work, benchmark acceptance claims, Wave 5, or calibration from this controller rerun worktree.
+1. Protect the current uncommitted work with a checkpoint commit or durable checkpoint.
+2. Capture the completed ChatGPT Deep Research report that is open in Chrome, save completion/export evidence, and ingest only the full completed report.
+3. Re-confirm the Claude completed report artifact path and keep it as the proven provider-ingestion fixture.
+4. Evaluate the problem-decomposition skill on the recommended book-derived and novel stress-test subset.
+5. Implement a Pydantic `IssueTreePackage` upstream of the current `Decomposer`, then map approved `leaf_tasks[]` into the existing task generator.
+6. Build the first artifact-centered vertical slice: messy request, problem frame, issue tree, approval artifact, provider reports, evidence bundle, synthesis brief, light evaluation, cited brief.
+7. Only after that slice works, build the multi-branch provider prototype with branch-level ChatGPT/Claude/manual jobs, completion monitoring, evidence-to-branch mapping, gap detection, and next-wave recommendation.
+
+## Current Key Artifacts
+
+- Owner vision: `notes/OWNER-VISION-2026-05-24.md`
+- Repo baseline: `audit/mega-goal/00-repo-baseline.md`
+- Architecture preservation audit: `audit/architecture-preservation/ARCHITECTURE-PRESERVATION-AUDIT.md`
+- Provider feasibility: `audit/provider-feasibility/PROVIDER-FEASIBILITY-REPORT.md`
+- Artifact contracts: `audit/contracts/ARTIFACT-CONTRACTS.md`
+- July plan: `audit/roadmap/JULY-27-EXECUTION-PLAN.md`
+- First vertical slice: `audit/roadmap/first-vertical-slice-spec.md`
+- Issue-tree skill handoff: `audit/issue-tree-skill/handoff/HANDOFF.md`
+- Portable issue-tree skill: `.agents/skills/problem-decomposition/SKILL.md`
 
 ## Fresh-Session Read Order
 
@@ -37,16 +45,17 @@
 3. `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`
 4. `audit/remediation/control-plane/ACTIVE-HANDOFF.md`
 5. `FOUNDER-INTENT-DOCTRINE.md`
-6. `audit/remediation/control-plane/FRESH-ORCHESTRATOR-BOOTSTRAP.md`
-7. `audit/remediation/control-plane/FRESH-ORCHESTRATOR-SESSION-PROMPT.md`
-8. `CURRENT-STATE.md`
-9. `audit/remediation/project-state-reconcile/MVP-REQUIRED-BUILDOUT.md`
-10. the task-specific package and review index
-11. `SESSION-LOG.md` only if historical rationale is needed
+6. `CURRENT-STATE.md`
+7. `notes/OWNER-VISION-2026-05-24.md`
+8. `audit/architecture-preservation/ARCHITECTURE-PRESERVATION-AUDIT.md`
+9. `audit/provider-feasibility/PROVIDER-FEASIBILITY-REPORT.md`
+10. `audit/issue-tree-skill/handoff/HANDOFF.md`
+11. `audit/roadmap/JULY-27-EXECUTION-PLAN.md`
+12. `SESSION-LOG.md` only if historical rationale is needed
 
-## Non-Authoritative But Useful
+## Historical Notes
 
+- Historical implementation remains cleared through Wave 4B at `65a612d`.
+- Lane H commit `93a5ca8406dc0c46c96f0c6285f56ec0ab6601ea` remains useful as the prior governed article/PDF retrieval anchor, but it is not the active next action.
+- Lane E retrieval-parse package promotion remains provenance for the old remediation path, not the current product-rebuild priority.
 - `SESSION-LOG.md` is provenance-only history, not the complete live chronology.
-- `docs/ARCHITECTURE.md` is an older scaffold/code-structure snapshot.
-- `docs/architecture-and-evolution.md` is a derived historical/professor narrative, not current-state truth.
-- `audit/remediation/README.md` is historical remediation-process narrative.

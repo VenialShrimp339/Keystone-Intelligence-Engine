@@ -1,0 +1,99 @@
+source: "Bulletproof Problem Solving"
+artifact_type: eval_candidates
+copyright_policy: "Derived rubrics only; executor should not see hidden rubrics."
+cases:
+  - id: bps_sydney_airport_capacity
+    visible_prompt: "Build an issue tree to determine whether Sydney Airport will have adequate passenger capacity in the future."
+    hidden_reference_logic: "Capacity adequacy is supply versus demand. Supply decomposes into runways, runway capacity, and utilization. Demand decomposes into regional demand and Sydney share. Depth should focus on runway utilization because it is controllable."
+    hidden_grading_properties:
+      must_cover:
+        - "Supply/capacity side and demand side."
+        - "Runway utilization as a deep branch."
+        - "Controllable levers such as operating hours, movement spacing, aircraft size, or slot policy."
+      strong_if:
+        - "Explicitly bounds the problem away from broader second-airport policy unless decision context requires it."
+        - "Uses mathematical capacity logic rather than generic transport-market topics."
+      common_failures:
+        - "Generic market/operations/stakeholder tree."
+        - "Deep analysis of policy arguments before capacity bottlenecks."
+
+  - id: bps_solar_install_now
+    visible_prompt: "Build an issue tree to decide whether a homeowner should install rooftop solar panels now."
+    hidden_reference_logic: "Install-now hypothesis depends on attractive payback, insufficient benefit from waiting for lower costs, material carbon reduction, and risks around tariffs/subsidies."
+    hidden_grading_properties:
+      must_cover:
+        - "Economics/payback."
+        - "Timing/waiting option."
+        - "Carbon or nonfinancial objective if relevant."
+        - "Risks from subsidies, feed-in tariffs, power prices, or technology."
+      strong_if:
+        - "Shows condition-gate or weighted-objective logic."
+        - "Compares lost savings from waiting against potential cost decline."
+      common_failures:
+        - "Only lists solar benefits and costs."
+        - "Fails to distinguish install-now from install-ever."
+
+  - id: bps_where_to_live
+    visible_prompt: "Build an issue tree to help a family choose which town to move to."
+    hidden_reference_logic: "Option-selection tree should define weighted criteria, measurable indicators, discriminating variables, and sensitivity to subjective weights."
+    hidden_grading_properties:
+      must_cover:
+        - "Family decision criteria."
+        - "Measurable indicators under criteria."
+        - "Weighting/trade-off logic."
+        - "Pruning of nondiscriminating variables."
+      strong_if:
+        - "Distinguishes full criteria universe from pruned comparison set."
+        - "Includes sensitivity checks for subjective weights."
+      common_failures:
+        - "Treats all criteria as hard gates."
+        - "Ignores ability to earn income or practical constraints."
+
+  - id: bps_salmon_conservation
+    visible_prompt: "Build an issue tree for a foundation trying to improve Pacific salmon abundance and diversity."
+    hidden_reference_logic: "Full system tree maps habitat, ocean conditions, fishing, hatcheries/farms, consumers, and policy, then corrects overlaps and prunes based on impact and influenceability."
+    hidden_grading_properties:
+      must_cover:
+        - "Freshwater habitat and ocean conditions."
+        - "Human extraction/fishing pressures."
+        - "Artificial propagation or aquaculture interactions."
+        - "Policy as cross-cutting rather than only a separate silo."
+        - "Pruning by impact and ability to influence."
+      strong_if:
+        - "Notes regional variation and magnitude uncertainty."
+        - "Separates system map from intervention strategy."
+      common_failures:
+        - "Pure stakeholder tree with no ecological mechanisms."
+        - "Ignores uncontrollable high-impact branches."
+
+  - id: bps_contested_monuments
+    visible_prompt: "Build an issue tree for an institution deciding how to handle monuments tied to historically important but morally contested figures."
+    hidden_reference_logic: "Use inductive comparison to derive principles, then organize threshold questions into a decision tree guiding responses."
+    hidden_grading_properties:
+      must_cover:
+        - "Principle-development before decision."
+        - "Threshold questions about severity, context, institutional relationship, current harm, and educational value."
+        - "Response options beyond remove/retain."
+      strong_if:
+        - "Shows how case comparisons produce the decision rules."
+        - "Makes value trade-offs explicit."
+      common_failures:
+        - "Simple stakeholder sentiment tree."
+        - "Premature recommendation without principles."
+
+  - id: bps_asthma_incidence_severity
+    visible_prompt: "Build an issue tree to understand why one region has much worse asthma outcomes than another and what interventions to prioritize."
+    hidden_reference_logic: "Incidence/severity cut reveals that severe outcomes may diverge more than diagnosis rates, pointing to exposure and vulnerability drivers."
+    hidden_grading_properties:
+      must_cover:
+        - "Incidence versus severity."
+        - "Environmental exposure such as particulate matter or tree cover."
+        - "Socioeconomic or vulnerability factors."
+        - "Intervention evidence and feasibility."
+      strong_if:
+        - "Uses the axis to reveal severity as the crux."
+        - "Identifies experiments or quasi-experiments."
+      common_failures:
+        - "Generic healthcare access tree only."
+        - "Fails to compare magnitudes."
+

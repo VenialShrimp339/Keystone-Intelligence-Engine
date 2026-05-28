@@ -1,0 +1,23 @@
+{
+  "artifact_id": "deliverable-live-provider-probe-2026-05-186176b3d5",
+  "artifact_type": "deliverable",
+  "child_artifact_ids": [],
+  "created_at": "2026-05-24T22:42:37.728101Z",
+  "deliverable_type": "markdown_brief",
+  "input_artifact_ids": [
+    "synthesis-report-live-provider-probe-2-730134b49d"
+  ],
+  "metadata": {},
+  "parent_artifact_ids": [
+    "synthesis-report-live-provider-probe-2-730134b49d",
+    "evaluation-evidence-report-live-provide-8b80f9a721"
+  ],
+  "path": "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-claude/files/deliverables/synthesis-report-live-provider-probe-2-730134b49d.md",
+  "quality_gate_artifact_ids": [
+    "evaluation-evidence-report-live-provide-8b80f9a721"
+  ],
+  "run_id": "live-provider-probe-2026-05-24-claude",
+  "status": "ready",
+  "title": "First-slice brief: U.S. Collision Repair Consolidation: State of Play, Late 2025 / Mid-2026",
+  "updated_at": "2026-05-24T22:42:37.728123+00:00"
+}

@@ -1,0 +1,56 @@
+{
+  "artifact_id": "synthesis-report-live-provider-probe-2-730134b49d",
+  "artifact_type": "synthesis",
+  "branch_summaries": [
+    {
+      "claim_count": 24,
+      "section_id": "section_001",
+      "title": "U.S. Collision Repair Consolidation: State of Play, Late 2025 / Mid-2026"
+    },
+    {
+      "claim_count": 0,
+      "section_id": "section_002",
+      "title": "Extracted Source URLs"
+    }
+  ],
+  "child_artifact_ids": [],
+  "created_at": "2026-05-24T22:42:37.727630Z",
+  "evidence_map": {
+    "CLM-004": [
+      "SRC-001"
+    ],
+    "CLM-006": [
+      "SRC-002"
+    ],
+    "CLM-009": [
+      "SRC-003"
+    ],
+    "CLM-020": [
+      "SRC-006"
+    ],
+    "CLM-023": [
+      "SRC-007"
+    ]
+  },
+  "gap_questions": [
+    "Can this claim be independently sourced: The consolidation thesis is intact but visibly slowing.?",
+    "Can this claim be independently sourced: The top four national consolidators now operate roughly 3,973 U.S. shops with combined revenue above $15 billion, yet 20?",
+    "Can this claim be independently sourced: The U.S. collision repair total addressable market was $48.2 billion in 2024, the first dollar decline since 2020, per T?",
+    "Can this claim be independently sourced: At year-end 2025, Focus Advisors' Year-in-Review pegs the Big 4 at: Caliber Collision 1,863 locations across 41 states, ?",
+    "Can this claim be independently sourced: In November 2025, Boyd Group Services acquired Joe Hudson's Collision Center for $1.3 billion (13.3x trailing EBITDA net?"
+  ],
+  "input_artifact_ids": [
+    "evidence-report-live-provider-probe-2-730134b49d"
+  ],
+  "markdown_path": "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-claude/files/deliverables/synthesis-report-live-provider-probe-2-730134b49d.md",
+  "metadata": {},
+  "parent_artifact_ids": [
+    "spec-live-provider-probe-2026-05-e9b6d9ecd9",
+    "report-live-provider-probe-2026-05-86253ae16e",
+    "evidence-report-live-provider-probe-2-730134b49d"
+  ],
+  "run_id": "live-provider-probe-2026-05-24-claude",
+  "status": "ready",
+  "thesis": "The top three independent consolidators (Caliber, Boyd/Gerber, Crash Champions) controlled over 27% of that market in 2024, and Romans projects that share could reach 37% by 2029. (bodyshopbusiness.com)",
+  "updated_at": "2026-05-24T22:42:37.727677+00:00"
+}

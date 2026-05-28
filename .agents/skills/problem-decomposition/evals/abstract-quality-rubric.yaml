@@ -1,0 +1,46 @@
+schema_version: 0.1
+purpose: >
+  Non-hidden abstract grading rubric for issue-tree outputs. Suitable for novel
+  stress tests and skill improvement. Do not use as an executor answer key.
+
+dimensions:
+  - id: problem_frame
+    score_1: "No clear decision question or R1/R2 gap."
+    score_3: "Question and some context are clear, but constraints or action implication are thin."
+    score_5: "Decision maker, governing question, R1/R2, constraints, and assumptions are precise."
+  - id: axis_selection
+    score_1: "Generic framework or unexplained axis."
+    score_3: "Defensible axis, limited comparison to alternatives."
+    score_5: "Candidate axes compared; selected axis exposes decision leverage."
+  - id: mece_branch_logic
+    score_1: "Overlapping siblings or mixed logic."
+    score_3: "Mostly clean top level, weaker lower levels."
+    score_5: "Every sibling set has explicit source logic and passes MECE for that logic."
+  - id: parent_child_semantics
+    score_1: "Tree does not state how branches relate."
+    score_3: "Some logic labels but inconsistent use."
+    score_5: "Parent-child logic is explicit and materially improves the tree."
+  - id: decision_relevance
+    score_1: "Covers topics without resolving the decision."
+    score_3: "Most branches are relevant, some low-value inclusions."
+    score_5: "Every retained branch can change or materially support the decision."
+  - id: asymmetric_depth
+    score_1: "Uniform depth regardless of branch value."
+    score_3: "Some branch prioritization."
+    score_5: "Depth follows uncertainty, impact, and conditional logic."
+  - id: pruning
+    score_1: "No pruning or silent pruning."
+    score_3: "Pruning present but rationale is generic."
+    score_5: "Full and pruned trees are separate with visible keep/defer/prune/merge rationale."
+  - id: leaf_actionability
+    score_1: "Leaves are vague topics."
+    score_3: "Leaves are researchable but evidence requirements are incomplete."
+    score_5: "Leaves have resolution criteria, evidence requirements, expected artifacts, and disconfirming tests."
+
+penalties:
+  generic_framework_without_fit: -2
+  no_full_tree: -1
+  no_pruned_tree: -2
+  no_evidence_requirements: -2
+  confirmation_bias: -2
+

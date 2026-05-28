@@ -1,0 +1,194 @@
+- navigation "Sidebar":
+  - link "Home":
+    - /url: /new
+    - img "Claude"
+  - button "Close sidebar" [pressed]:
+  - link "New chat":
+    - /url: /new
+    - generic: New chat
+    - generic: ⇧⌘O
+  - link "Search":
+    - /url: "#"
+    - generic: Search
+    - generic: ⌘K
+  - link "Chats":
+    - /url: /recents
+    - generic: Chats
+  - link "Projects":
+    - /url: /projects
+    - generic: Projects
+  - link "Artifacts":
+    - /url: /artifacts/my
+    - generic: Artifacts
+  - link "Customize":
+    - /url: /customize
+    - generic: Customize
+  - heading "Products" [level=2]:
+    - button "Products" [expanded]:
+      - generic: Products
+      - generic: 
+  - list:
+    - link "Code":
+      - /url: /code
+      - generic: Code
+    - link "Design":
+      - /url: /design
+      - generic: Design
+  - heading "Starred" [level=2]:
+    - button "Starred" [expanded]:
+      - generic: Starred
+      - generic: 
+  - list:
+    - link "Project, claude code leak research (capstone)":
+      - /url: /project/019d5c55-e8aa-7183-af56-c41df4e00eca
+      - generic: claude code leak research (capstone)
+  - heading "Recents" [level=2]:
+    - button "Recents" [expanded]:
+      - generic: Recents
+      - generic: 
+  - list:
+    - link "Police undercover operations in support groups":
+      - /url: /chat/45c5f114-5439-438b-92aa-8db9dd4ba3c5
+      - generic: Police undercover operations in support groups
+    - link "Telling your lawyer you're guilty":
+      - /url: /chat/08d145a4-284c-42e6-8ab9-b80ed3b7ea20
+      - generic: Telling your lawyer you're guilty
+    - link "AirPods valuation as independent company":
+      - /url: /chat/cc5bcbb3-21cd-4d37-b88d-7ad1f3857ca4
+      - generic: AirPods valuation as independent company
+    - link "Quoridor AI source code and algorithm research":
+      - /url: /chat/37c74f71-b822-4cd1-bf99-bf208b5c264a
+      - generic: Quoridor AI source code and algorithm research
+    - link "Guessing actors from their eyes":
+      - /url: /chat/ed0cd943-6ee9-42f4-b6aa-5d0032640e7e
+      - generic: Guessing actors from their eyes
+    - link "Dog bleeding from bully stick chewing":
+      - /url: /chat/5afc54de-49fa-4945-ba2e-064d0afee95d
+      - generic: Dog bleeding from bully stick chewing
+    - link "Cleaning MacBook and monitor screens safely":
+      - /url: /chat/be19ce48-3b34-4145-b1a1-0ae31d66a09b
+      - generic: Cleaning MacBook and monitor screens safely
+    - link "DOJ barring IRS from investigating Trump":
+      - /url: /chat/6ea4c569-7c65-4fd0-9853-9cd34973c047
+      - generic: DOJ barring IRS from investigating Trump
+    - link "Removing stripped screws from walls":
+      - /url: /chat/727bce05-58f9-4996-8c0b-6e36bd13adf8
+      - generic: Removing stripped screws from walls
+    - link "💬 how do I change the two locksc…":
+      - /url: /chat/2bb82e72-67b9-48d5-a2d1-bb4035dbda21
+      - generic: 💬 how do I change the two locksc…
+    - link "Michael Mann's problematic movie endings":
+      - /url: /chat/5531a9e5-a8c5-4934-b9e1-dd936a648e61
+      - generic: Michael Mann's problematic movie endings
+    - link "Finding films with Nolan-level cinematography":
+      - /url: /chat/e684b71d-4a15-4c64-802d-6d888081f176
+      - generic: Finding films with Nolan-level cinematography
+    - link "Rapid elo recovery on chess.com":
+      - /url: /chat/af97acd3-b04a-447e-97e6-9f7231016617
+      - generic: Rapid elo recovery on chess.com
+    - link "Stockfish depth vs Magnus Carlsen winning chances":
+      - /url: /chat/291db534-d0d6-4f82-a010-b035278c3122
+      - generic: Stockfish depth vs Magnus Carlsen winning chances
+    - link "Finding tonight's movie based on my preferences":
+      - /url: /chat/c4479259-7769-4d1d-9b82-f065fc132d40
+      - generic: Finding tonight's movie based on my preferences
+    - link "Comparing \"Come and See\" vs. \"The Prestige\"":
+      - /url: /chat/860c3508-9072-48b6-bd65-d612303f51c2
+      - generic: Comparing "Come and See" vs. "The Prestige"
+    - link "Tailbone pain and midline mass":
+      - /url: /chat/a36e2bd9-23e5-4100-8295-afbdf72dc69a
+      - generic: Tailbone pain and midline mass
+    - link "Raynaud's rewarming pain and thermal sensitivity":
+      - /url: /chat/2f00e848-f154-424f-b03b-c25c31721f66
+      - generic: Raynaud's rewarming pain and thermal sensitivity
+    - link "Trump judicial appointee refuses to deny third-term eligibility":
+      - /url: /chat/4dc96717-fcd2-42b5-a7da-8296370c6e08
+      - generic: Trump judicial appointee refuses to deny third-term eligibility
+    - link "Security risks of Anthropic models on Colossus infrastructure":
+      - /url: /chat/dff59768-4fa8-47fc-9161-add249d75d9f
+      - generic: Security risks of Anthropic models on Colossus infrastructure
+    - link "Reducing gunshot volume in 1917 with Denon settings":
+      - /url: /chat/0dec6002-ba93-4e85-b7c2-19cf2f9d3a19
+      - generic: Reducing gunshot volume in 1917 with Denon settings
+    - link "Optima projector gaming feasibility":
+      - /url: /chat/8425b38e-6ab0-460a-a443-d22401ce3832
+      - generic: Optima projector gaming feasibility
+    - link "Getting back into locked apartment through bedroom window":
+      - /url: /chat/0e8dc3c8-cf3b-4d3a-94f2-fd09973883e7
+      - generic: Getting back into locked apartment through bedroom window
+    - link "Official scripts availability for The Office":
+      - /url: /chat/64d79b0a-766f-458e-9faf-dc6b41c37294
+      - generic: Official scripts availability for The Office
+    - link "Streaming music from HDD to Apple TV speakers":
+      - /url: /chat/0593579e-3af2-49d6-b171-2993f46c78bf
+      - generic: Streaming music from HDD to Apple TV speakers
+    - link "Research brief deep dive launch":
+      - /url: /chat/b2d3fe55-b5cf-4f96-a263-21cf3865afc1
+      - generic: Research brief deep dive launch
+    - link "Research project launch":
+      - /url: /chat/e148f096-a445-4cdb-9a60-975a27b40166
+      - generic: Research project launch
+    - link "Remote controlling Mac mini from MacBook":
+      - /url: /chat/9d308408-7643-4471-873f-3448cfe233ea
+      - generic: Remote controlling Mac mini from MacBook
+    - 'link "ArcMap: multi-modal cross-reference architecture"':
+      - /url: /chat/6e6b2124-1406-405a-a86b-ac06f198f7b3
+      - generic: "ArcMap: multi-modal cross-reference architecture"
+    - link "Video embedding model for cross-reference matching":
+      - /url: /chat/0239b2a1-2aa1-413a-af91-822ea9a194c6
+      - generic: Video embedding model for cross-reference matching
+  - link "All chats":
+    - /url: /recents
+    - generic: All chats
+  - button "Jack Riddle, Settings":
+    - generic: JR
+    - generic: Jack Riddle
+    - generic: Max plan
+    - button "Get apps and extensions":
+- main:
+  - generic: Afternoon, Jack
+  - textbox "Write your prompt to Claude":
+    - paragraph
+  - button "Open Grammarly."
+  - generic: How can I help you today?
+  - button "Add files, connectors, and more" [expanded]:
+  - menu "Add files, connectors, and more" [active]:
+    - menuitem "Add files or photos ⌘U":
+      - generic: Add files or photos
+      - generic: ⌘U
+    - menuitem "Take a screenshot":
+      - generic: Take a screenshot
+    - menuitem "Add to project":
+      - generic: Add to project
+    - separator
+    - menuitem "Skills":
+      - generic: Skills
+    - menuitem "Add connectors":
+      - generic: Add connectors
+    - separator
+    - menuitemcheckbox "Research":
+      - generic: Research
+    - menuitemcheckbox "Web search" [checked]:
+      - generic: Web search
+    - menuitem "Use style":
+      - generic: Use style
+  - 'button "Model: Opus 4.7 Adaptive"':
+    - generic: Opus 4.7 Adaptive
+  - button "Settings":
+  - button "Press and hold to record":
+  - button "Use voice mode":
+  - status
+  - list "Prompt categories":
+    - button "Write":
+      - generic: Write
+    - button "Learn":
+      - generic: Learn
+    - button "Code":
+      - generic: Code
+    - button "Life stuff":
+      - generic: Life stuff
+    - button "Claude’s choice":
+      - generic: Claude’s choice
+- button "Use incognito":
+- region "Notifications (F8)":
+  - list
