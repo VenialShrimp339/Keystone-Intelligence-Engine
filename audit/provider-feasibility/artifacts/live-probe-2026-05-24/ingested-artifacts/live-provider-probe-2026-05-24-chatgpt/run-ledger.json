@@ -1,0 +1,53 @@
+{
+  "artifact_ids": [
+    "provider-job-live-provider-probe-2026-05-cd935ef776",
+    "spec-live-provider-probe-2026-05-3250578d30",
+    "report-live-provider-probe-2026-05-c0589cac5e",
+    "sources-report-live-provider-probe-2-26d5c838ef",
+    "evidence-report-live-provider-probe-2-26d5c838ef",
+    "synthesis-report-live-provider-probe-2-26d5c838ef",
+    "evaluation-evidence-report-live-provide-c25563318d",
+    "deliverable-live-provider-probe-2026-05-33e175c221"
+  ],
+  "child_refs": {
+    "evaluation-evidence-report-live-provide-c25563318d": [
+      "deliverable-live-provider-probe-2026-05-33e175c221"
+    ],
+    "evidence-report-live-provider-probe-2-26d5c838ef": [
+      "synthesis-report-live-provider-probe-2-26d5c838ef",
+      "evaluation-evidence-report-live-provide-c25563318d"
+    ],
+    "provider-job-live-provider-probe-2026-05-cd935ef776": [
+      "report-live-provider-probe-2026-05-c0589cac5e"
+    ],
+    "report-live-provider-probe-2026-05-c0589cac5e": [
+      "sources-report-live-provider-probe-2-26d5c838ef",
+      "evidence-report-live-provider-probe-2-26d5c838ef",
+      "synthesis-report-live-provider-probe-2-26d5c838ef"
+    ],
+    "sources-report-live-provider-probe-2-26d5c838ef": [
+      "evidence-report-live-provider-probe-2-26d5c838ef"
+    ],
+    "spec-live-provider-probe-2026-05-3250578d30": [
+      "synthesis-report-live-provider-probe-2-26d5c838ef"
+    ],
+    "synthesis-report-live-provider-probe-2-26d5c838ef": [
+      "evaluation-evidence-report-live-provide-c25563318d",
+      "deliverable-live-provider-probe-2026-05-33e175c221"
+    ]
+  },
+  "created_at": "2026-05-28T19:22:32.049286Z",
+  "metadata": {
+    "conversation_url": "https://chatgpt.com/c/6a137bbc-82d0-83ea-a457-fbfa6d56e3de",
+    "provider_report_banner": "Research completed in 17m \u00b7 10 citations \u00b7 246 searches",
+    "source_link_recovery": "DOCX export relationship and document XML parsing"
+  },
+  "notes": [
+    "ChatGPT web Deep Research lifecycle captured from Chrome and ingested from exported Markdown plus DOCX source-link recovery.",
+    "No full Keystone pipeline execution."
+  ],
+  "root_request": "Using only public web sources, produce a concise research report on the current state of the U.S. auto body repair industry consolidation trend. Include 5 cited factual claims, source links, and a short note on evidence gaps. Keep the report compact.",
+  "run_id": "live-provider-probe-2026-05-24-chatgpt",
+  "status": "ready",
+  "updated_at": "2026-05-28T19:22:32.053940+00:00"
+}

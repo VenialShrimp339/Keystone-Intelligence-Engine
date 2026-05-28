@@ -1,0 +1,99 @@
+{
+  "artifact_id": "sources-report-live-provider-probe-2-26d5c838ef",
+  "artifact_type": "source_bundle",
+  "child_artifact_ids": [],
+  "created_at": "2026-05-28T19:22:32.051667Z",
+  "extraction_method": "manual_report_adapter",
+  "metadata": {},
+  "parent_artifact_ids": [
+    "report-live-provider-probe-2026-05-c0589cac5e"
+  ],
+  "report_artifact_ids": [
+    "report-live-provider-probe-2026-05-c0589cac5e"
+  ],
+  "run_id": "live-provider-probe-2026-05-24-chatgpt",
+  "source_records": [
+    {
+      "domain": "focusadvisors.com",
+      "first_seen_section_id": "section_008",
+      "label": "1",
+      "reference_key": "1",
+      "source_id": "SRC-001",
+      "url": "https://focusadvisors.com/2025/09/the-first-half-of-2025-year-in-review-consolidation-continues-despite-headwinds/"
+    },
+    {
+      "domain": "boydgroup.com",
+      "first_seen_section_id": "section_008",
+      "label": "4",
+      "reference_key": "4",
+      "source_id": "SRC-002",
+      "url": "https://boydgroup.com/news/boyd-group-services-inc-news/2026/boyd-group-services-inc-completes-acquisition-of-joe-hudsons-collision-center/"
+    },
+    {
+      "domain": "boydgroup.com",
+      "first_seen_section_id": "section_008",
+      "label": "5",
+      "reference_key": "5",
+      "source_id": "SRC-003",
+      "url": "https://boydgroup.com/news/boyd-group-services-inc-news/2025/boyd-group-services-inc-to-acquire-joe-hudsons-collision-center-a-leading-player-in-the-u-s-southeast-collision-repair-industry/"
+    },
+    {
+      "domain": "focusadvisors.com",
+      "first_seen_section_id": "section_008",
+      "label": "6",
+      "reference_key": "6",
+      "source_id": "SRC-004",
+      "url": "https://focusadvisors.com/2026/02/year-in-review-2025-slowdown-and-then-a-blockbuster/"
+    },
+    {
+      "domain": "crashchampions.com",
+      "first_seen_section_id": "section_008",
+      "label": "8",
+      "reference_key": "8",
+      "source_id": "SRC-005",
+      "url": "https://crashchampions.com/about-us/our-history"
+    },
+    {
+      "domain": "www.caliber.com",
+      "first_seen_section_id": "section_008",
+      "label": "9",
+      "reference_key": "9",
+      "source_id": "SRC-006",
+      "url": "https://www.caliber.com/newsroom/our-story"
+    },
+    {
+      "domain": "www.gerbercollision.com",
+      "first_seen_section_id": "section_008",
+      "label": "10",
+      "reference_key": "10",
+      "source_id": "SRC-007",
+      "url": "https://www.gerbercollision.com/locations"
+    },
+    {
+      "domain": "crashchampions.com",
+      "first_seen_section_id": "section_008",
+      "label": "11",
+      "reference_key": "11",
+      "source_id": "SRC-008",
+      "url": "https://crashchampions.com/company/press/crash-champions-continues-strong-close-2024-finalizes-acquisitions-florida-and"
+    },
+    {
+      "domain": "classiccollision.com",
+      "first_seen_section_id": "section_008",
+      "label": "12",
+      "reference_key": "12",
+      "source_id": "SRC-009",
+      "url": "https://classiccollision.com/news/classic-collision-south-denton/"
+    },
+    {
+      "domain": "www.caliber.com",
+      "first_seen_section_id": "section_008",
+      "label": "14",
+      "reference_key": "14",
+      "source_id": "SRC-010",
+      "url": "https://www.caliber.com/"
+    }
+  ],
+  "status": "ready",
+  "updated_at": "2026-05-28T19:22:32.052589+00:00"
+}

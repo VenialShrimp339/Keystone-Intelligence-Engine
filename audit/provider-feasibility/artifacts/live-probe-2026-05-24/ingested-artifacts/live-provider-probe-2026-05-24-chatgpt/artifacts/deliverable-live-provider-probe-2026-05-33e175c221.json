@@ -1,0 +1,23 @@
+{
+  "artifact_id": "deliverable-live-provider-probe-2026-05-33e175c221",
+  "artifact_type": "deliverable",
+  "child_artifact_ids": [],
+  "created_at": "2026-05-28T19:22:32.053804Z",
+  "deliverable_type": "markdown_brief",
+  "input_artifact_ids": [
+    "synthesis-report-live-provider-probe-2-26d5c838ef"
+  ],
+  "metadata": {},
+  "parent_artifact_ids": [
+    "synthesis-report-live-provider-probe-2-26d5c838ef",
+    "evaluation-evidence-report-live-provide-c25563318d"
+  ],
+  "path": "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-chatgpt/files/deliverables/synthesis-report-live-provider-probe-2-26d5c838ef.md",
+  "quality_gate_artifact_ids": [
+    "evaluation-evidence-report-live-provide-c25563318d"
+  ],
+  "run_id": "live-provider-probe-2026-05-24-chatgpt",
+  "status": "ready",
+  "title": "First-slice brief: U.S. Auto Body Repair Consolidation",
+  "updated_at": "2026-05-28T19:22:32.053824+00:00"
+}

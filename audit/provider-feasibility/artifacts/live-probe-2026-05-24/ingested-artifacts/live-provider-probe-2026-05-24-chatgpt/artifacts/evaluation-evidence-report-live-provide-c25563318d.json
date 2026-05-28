@@ -1,0 +1,40 @@
+{
+  "artifact_id": "evaluation-evidence-report-live-provide-c25563318d",
+  "artifact_type": "evaluation",
+  "checks": [
+    {
+      "name": "claims_extracted",
+      "observed": 24,
+      "passed": true
+    },
+    {
+      "name": "sources_extracted",
+      "observed": 10,
+      "passed": true
+    },
+    {
+      "name": "citation_gaps_recorded",
+      "observed": 13,
+      "passed": true
+    },
+    {
+      "name": "synthesis_has_traceable_evidence",
+      "observed": 11,
+      "passed": true
+    }
+  ],
+  "child_artifact_ids": [],
+  "created_at": "2026-05-28T19:22:32.053354Z",
+  "issues": [],
+  "metadata": {},
+  "parent_artifact_ids": [
+    "evidence-report-live-provider-probe-2-26d5c838ef",
+    "synthesis-report-live-provider-probe-2-26d5c838ef"
+  ],
+  "passed": true,
+  "run_id": "live-provider-probe-2026-05-24-chatgpt",
+  "score": 1.0,
+  "status": "ready",
+  "target_artifact_id": "evidence-report-live-provider-probe-2-26d5c838ef",
+  "updated_at": "2026-05-28T19:22:32.053613+00:00"
+}

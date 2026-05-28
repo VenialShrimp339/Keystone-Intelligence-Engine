@@ -1,0 +1,61 @@
+{
+  "reference_map": {
+    "1": "https://focusadvisors.com/2025/09/the-first-half-of-2025-year-in-review-consolidation-continues-despite-headwinds/",
+    "2": "https://focusadvisors.com/2025/09/the-first-half-of-2025-year-in-review-consolidation-continues-despite-headwinds/",
+    "3": "https://focusadvisors.com/2025/09/the-first-half-of-2025-year-in-review-consolidation-continues-despite-headwinds/",
+    "7": "https://focusadvisors.com/2025/09/the-first-half-of-2025-year-in-review-consolidation-continues-despite-headwinds/",
+    "4": "https://boydgroup.com/news/boyd-group-services-inc-news/2026/boyd-group-services-inc-completes-acquisition-of-joe-hudsons-collision-center/",
+    "5": "https://boydgroup.com/news/boyd-group-services-inc-news/2025/boyd-group-services-inc-to-acquire-joe-hudsons-collision-center-a-leading-player-in-the-u-s-southeast-collision-repair-industry/",
+    "6": "https://focusadvisors.com/2026/02/year-in-review-2025-slowdown-and-then-a-blockbuster/",
+    "13": "https://focusadvisors.com/2026/02/year-in-review-2025-slowdown-and-then-a-blockbuster/",
+    "8": "https://crashchampions.com/about-us/our-history",
+    "9": "https://www.caliber.com/newsroom/our-story",
+    "10": "https://www.gerbercollision.com/locations",
+    "15": "https://www.gerbercollision.com/locations",
+    "11": "https://crashchampions.com/company/press/crash-champions-continues-strong-close-2024-finalizes-acquisitions-florida-and",
+    "12": "https://classiccollision.com/news/classic-collision-south-denton/",
+    "14": "https://www.caliber.com/"
+  },
+  "source_records": [
+    {
+      "source_id": "SRC-001",
+      "url": "https://focusadvisors.com/2025/09/the-first-half-of-2025-year-in-review-consolidation-continues-despite-headwinds/"
+    },
+    {
+      "source_id": "SRC-002",
+      "url": "https://boydgroup.com/news/boyd-group-services-inc-news/2026/boyd-group-services-inc-completes-acquisition-of-joe-hudsons-collision-center/"
+    },
+    {
+      "source_id": "SRC-003",
+      "url": "https://boydgroup.com/news/boyd-group-services-inc-news/2025/boyd-group-services-inc-to-acquire-joe-hudsons-collision-center-a-leading-player-in-the-u-s-southeast-collision-repair-industry/"
+    },
+    {
+      "source_id": "SRC-004",
+      "url": "https://focusadvisors.com/2026/02/year-in-review-2025-slowdown-and-then-a-blockbuster/"
+    },
+    {
+      "source_id": "SRC-005",
+      "url": "https://crashchampions.com/about-us/our-history"
+    },
+    {
+      "source_id": "SRC-006",
+      "url": "https://www.caliber.com/newsroom/our-story"
+    },
+    {
+      "source_id": "SRC-007",
+      "url": "https://www.gerbercollision.com/locations"
+    },
+    {
+      "source_id": "SRC-008",
+      "url": "https://crashchampions.com/company/press/crash-champions-continues-strong-close-2024-finalizes-acquisitions-florida-and"
+    },
+    {
+      "source_id": "SRC-009",
+      "url": "https://classiccollision.com/news/classic-collision-south-denton/"
+    },
+    {
+      "source_id": "SRC-010",
+      "url": "https://www.caliber.com/"
+    }
+  ]
+}

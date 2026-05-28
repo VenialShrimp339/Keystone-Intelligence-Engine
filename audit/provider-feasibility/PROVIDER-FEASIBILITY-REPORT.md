@@ -108,10 +108,25 @@ This matters because Deep Research is excellent for breadth and synthesis, but d
 | ChatGPT Pro mode access | ChatGPT web | PROVEN | `chatgpt-model-menu-dom.txt`. |
 | Claude Research selection | Claude web | PROVEN | `claude-tools-menu-dom.txt`. |
 | Submit hosted research job | ChatGPT/Claude web | PROVEN | Live public prompt submitted to both providers. |
-| Detect hosted research completion | Browser adapter | PARTIAL | Claude completion captured; ChatGPT still running at handoff. |
-| Export/copy/download hosted report | Browser adapter | PROVEN for Claude | Claude artifact panel extracted to Markdown and saved. |
-| Manual/browser report ingestion | Local ingestion | PROVEN | Claude completed report ingested into durable artifacts. |
+| Detect hosted research completion | Browser adapter | PROVEN | Claude completion captured; ChatGPT completion captured with `Research completed in 17m · 10 citations · 246 searches`. |
+| Export/copy/download hosted report | Browser adapter | PROVEN | Claude artifact panel extracted to Markdown; ChatGPT exported to Markdown and Word. |
+| Manual/browser report ingestion | Local ingestion | PROVEN | Claude and ChatGPT completed reports ingested into durable artifacts. |
 | API fallback | OpenAI/Anthropic APIs | AVAILABLE | Official docs and SDKs, but out of default cost path. |
+
+## ChatGPT Lifecycle Update
+
+The live ChatGPT Deep Research probe completed and was captured on 2026-05-28.
+
+| Evidence | Result |
+| --- | --- |
+| Completion card | `Research completed in 17m · 10 citations · 246 searches`. |
+| Markdown export | Succeeded; saved as `live-probe-2026-05-24/chatgpt-live-completed-report.md`. |
+| Word export | Succeeded; saved as `live-probe-2026-05-24/chatgpt-live-completed-report.docx`. |
+| Source-link recovery | Required the DOCX export. Native Markdown preserved opaque citation markers but not source URLs. |
+| Ingestion run | `live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-chatgpt/`. |
+| Ingestion result | 10 sources, 24 candidate claims, 11 cited claims, 13 citation-gap flags, 4/4 local evaluation checks passed. |
+
+Implementation implication: the ChatGPT web adapter should prefer a two-export route when source fidelity matters: Markdown for body structure, DOCX for source URL recovery. If a future UI export includes source URLs directly in Markdown, the adapter can collapse back to one export.
 
 ## Terms And Risk Notes
 
@@ -150,7 +165,7 @@ ProviderAdapter
 
 ## Immediate Next Experiments
 
-1. Finish the live ChatGPT Deep Research lifecycle when the running job completes; save report/export evidence and ingest only the full completed report.
-2. Build the browser adapter around `src/keystone/providers/browser_watch.py` so many provider jobs can be monitored in parallel.
+1. Build the browser adapter around `src/keystone/providers/browser_watch.py` so many provider jobs can be monitored in parallel.
+2. Add export handlers that preserve both body text and source URLs, including ChatGPT DOCX source-link recovery.
 3. Add per-provider concurrency controls and source/depth budget prompts before launching large issue-tree waves.
 4. Add a provider ledger UI view that records provider, account surface, submitted prompt, start/end timestamps, DOM snapshots, completion status, artifact paths, and usage if available.

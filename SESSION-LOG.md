@@ -2372,3 +2372,39 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 - L0 still has other one-size-fits-all surfaces outside lens selection: engagement type enum, task categories, methodology defaults, tool assignment, and source requirements.
 - No confidential client files were processed.
 - No commit was made.
+
+## 2026-05-28T14:23:35-0500 - ChatGPT Deep Research Capture And Ingestion
+
+### Required provenance
+- Agent/runtime identity: Codex GPT-5 in Codex desktop.
+- Worktree path: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`.
+- Branch: `codex/owner-triage-normalization`.
+- Start commit: `48544b131d18f2a3c145db7cb0839313e5d2724b`.
+- End commit: no commit yet at the time of this log entry; final response reports the checkpoint commit if committed.
+- Authority docs read: `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`, `audit/remediation/control-plane/ACTIVE-HANDOFF.md`, `FOUNDER-INTENT-DOCTRINE.md`, `CURRENT-STATE.md`, `audit/provider-feasibility/PROVIDER-FEASIBILITY-REPORT.md`; graphify artifacts were checked and absent.
+- Files reviewed: `src/keystone/artifacts/models.py`, `src/keystone/artifacts/store.py`, `src/keystone/ingestion/manual_report.py`, `src/keystone/ingestion/vertical_slice.py`, `tests/unit/ingestion/test_manual_report.py`.
+- Files changed: ChatGPT provider artifacts under `audit/provider-feasibility/artifacts/live-probe-2026-05-24/`, ChatGPT ingested artifact run under `audit/provider-feasibility/artifacts/live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-chatgpt/`, `audit/provider-feasibility/experiment-log.md`, `audit/provider-feasibility/PROVIDER-FEASIBILITY-REPORT.md`, `audit/provider-feasibility/provider-capability-matrix.yaml`, `TODO.md`, `CURRENT-STATE.md`, `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`, `audit/remediation/control-plane/ACTIVE-HANDOFF.md`, `audit/mega-goal/02-chatgpt-provider-capture-checkpoint.md`, `SESSION-LOG.md`.
+
+### Work performed
+- Captured the completed ChatGPT Deep Research report from the open Chrome tab.
+- Saved completion evidence, DOM snapshots, visible text, native Markdown export, native Word export, source-link extraction JSON, and normalized Markdown with source references.
+- Confirmed native Markdown export preserves body text but not actual source URLs.
+- Confirmed native Word export exposes actual source URLs through DOCX relationships/document XML.
+- Ingested the normalized report through the local provider-neutral artifact path as run `live-provider-probe-2026-05-24-chatgpt`.
+- Updated live provider feasibility docs, current-state docs, control-plane state, and TODO routing.
+
+### Evidence
+- ChatGPT completion banner observed: `Research completed in 17m · 10 citations · 246 searches`.
+- Markdown export SHA-256: `287780c0dfc2d2173b5d9d9425c7a8947d91827a90e45cc72c342913e5752827`.
+- Word export SHA-256: `37dda94efd61fccf2f47a6cc69e05d6fbe2ad0087413210531dff900ab13b3b0`.
+- Ingestion produced 10 sources, 24 candidate claims, 11 cited claims, 13 citation-gap flags, and a 4/4 deterministic first-slice evaluation pass.
+
+### Decisions and residual risks
+- Decision: ChatGPT web Deep Research is now full-lifecycle proven for subscription-first hosted research.
+- Decision: ChatGPT adapter should use Markdown plus DOCX export until a cleaner source-link export path is proven.
+- Residual risk: copy controls returned empty clipboard content through the current browser automation route.
+- Residual risk: the test prompt remains a provider-lifecycle probe, not a realistic branch-level issue-tree research prompt.
+- Residual risk: the browser provider adapter is still not implemented as production code.
+
+### Exact next action
+- Run the issue-tree skill eval subset, implement `IssueTreePackage` upstream of the current `Decomposer`, build the browser provider adapter, and then run the first artifact-centered vertical slice.

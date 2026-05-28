@@ -173,6 +173,12 @@ Artifacts:
 | `live-probe-2026-05-24/chatgpt-live-submitted-prompt.txt` | Submitted public prompt. |
 | `live-probe-2026-05-24/chatgpt-live-after-submit-url.txt` | Created conversation URL. |
 | `live-probe-2026-05-24/chatgpt-live-poll-*.txt/png` | Running-state evidence. |
+| `live-probe-2026-05-24/chatgpt-live-completed-report-fullpage.png` | Completed report screenshot evidence. |
+| `live-probe-2026-05-24/chatgpt-live-completed-report.md` | Native Markdown export. |
+| `live-probe-2026-05-24/chatgpt-live-completed-report.docx` | Native Word export, used to recover actual source links. |
+| `live-probe-2026-05-24/chatgpt-live-completed-report-normalized-with-sources.md` | Ingestion-friendly normalized report with DOCX-derived source references. |
+| `live-probe-2026-05-24/chatgpt-live-completed-report-source-links.json` | Extracted source URL inventory and numeric citation map. |
+| `live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-chatgpt/` | Keystone run ledger and ingested artifacts. |
 
 Observed selectors:
 
@@ -182,10 +188,19 @@ Observed selectors:
 | Running state | `button "Thinking"` and `button "Stop answering"` |
 | Conversation title | `US Auto Body Repair Trends` |
 | Conversation URL | `https://chatgpt.com/c/6a137bbc-82d0-83ea-a457-fbfa6d56e3de` |
+| Completion banner | `Research completed in 17m · 10 citations · 246 searches` |
+| Export menu | `Copy contents`, `Export to Markdown`, `Export to Word`, `Export to PDF` |
 
-Status: still running at the last poll in this session. A 15-minute thread heartbeat named `Check Deep Research jobs` was created to check back and ingest only a completed full report.
+Outcome:
 
-Verdict: SUBMISSION/RUNNING PROVEN. Completion/export remains live pending the heartbeat check.
+- ChatGPT completed the hosted report and exposed export controls.
+- Markdown export succeeded, but it preserved opaque ChatGPT citation markers rather than actual source URLs.
+- Word export succeeded and exposed the ten actual source URLs in DOCX relationships/document XML.
+- The normalized report was ingested into `ProviderJobArtifact`, `ResearchReportArtifact`, `SourceBundleArtifact`, `EvidenceBundleArtifact`, `SynthesisArtifact`, `EvaluationArtifact`, and `DeliverableArtifact`.
+- The ingested source bundle has 10 sources, 24 extracted candidate claims, 11 cited claims, and 13 citation-gap flags. The local first-slice evaluation passed 4/4 deterministic checks.
+- Partial/running poll artifacts were preserved as lifecycle evidence but were not ingested.
+
+Verdict: FULL LIFECYCLE PROVEN for ChatGPT Deep Research through browser automation, native export, source-link recovery, and local ingestion.
 
 ### Claude Research
 

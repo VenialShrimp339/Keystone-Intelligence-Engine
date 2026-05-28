@@ -1,0 +1,46 @@
+{
+  "artifact_id": "provider-job-live-provider-probe-2026-05-cd935ef776",
+  "artifact_type": "provider_job",
+  "block_reason": null,
+  "child_artifact_ids": [],
+  "completed_at": "2026-05-28T19:18:22.438000Z",
+  "created_at": "2026-05-28T19:22:32.049918Z",
+  "export_paths": [
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-completed-report.md",
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-completed-report.docx",
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-completed-report-normalized-with-sources.md",
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-completed-report-source-links.json"
+  ],
+  "exported_at": "2026-05-28T19:22:32.049883Z",
+  "job_url": "https://chatgpt.com/c/6a137bbc-82d0-83ea-a457-fbfa6d56e3de",
+  "metadata": {
+    "captured_at": "2026-05-28T19:18:22.438Z",
+    "docx_export_sha256": "37dda94efd61fccf2f47a6cc69e05d6fbe2ad0087413210531dff900ab13b3b0",
+    "dom_snapshot_length": 10317,
+    "markdown_export_sha256": "287780c0dfc2d2173b5d9d9425c7a8947d91827a90e45cc72c342913e5752827",
+    "reference_count": 15,
+    "source_link_limitation": "Native Markdown export did not expose source URLs; DOCX export did.",
+    "source_url_count": 10,
+    "visible_body_text_length": 1391
+  },
+  "model_name": "ChatGPT Deep Research",
+  "parent_artifact_ids": [],
+  "prompt": "Using only public web sources, produce a concise research report on the current state of the U.S. auto body repair industry consolidation trend. Include 5 cited factual claims, source links, and a short note on evidence gaps. Keep the report compact.",
+  "provider": "chatgpt",
+  "provider_status": "exported",
+  "run_id": "live-provider-probe-2026-05-24-chatgpt",
+  "selected_model_evidence": "ChatGPT Pro account; Deep research selected in browser; completed card showed 17m runtime, 10 citations, 246 searches.",
+  "status": "ready",
+  "submitted_at": "2026-05-24T22:29:29Z",
+  "surface": "web",
+  "tool_name": "Deep Research",
+  "trace_paths": [
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-before-submit-dom.txt",
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-after-submit-dom.txt",
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-poll-01-dom.txt",
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-poll-07-dom.txt",
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-completed-report-dom.txt",
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-export-menu.png"
+  ],
+  "updated_at": "2026-05-28T19:22:32.049956+00:00"
+}

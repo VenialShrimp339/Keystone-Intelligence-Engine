@@ -1,0 +1,104 @@
+{
+  "artifact_id": "synthesis-report-live-provider-probe-2-26d5c838ef",
+  "artifact_type": "synthesis",
+  "branch_summaries": [
+    {
+      "claim_count": 0,
+      "section_id": "section_001",
+      "title": "U.S. Auto Body Repair Consolidation"
+    },
+    {
+      "claim_count": 3,
+      "section_id": "section_002",
+      "title": "Executive Summary"
+    },
+    {
+      "claim_count": 11,
+      "section_id": "section_003",
+      "title": "Five factual claims"
+    },
+    {
+      "claim_count": 5,
+      "section_id": "section_004",
+      "title": "Trend synthesis"
+    },
+    {
+      "claim_count": 0,
+      "section_id": "section_005",
+      "title": "Leading consolidators"
+    },
+    {
+      "claim_count": 1,
+      "section_id": "section_006",
+      "title": "Leading consolidators table"
+    },
+    {
+      "claim_count": 4,
+      "section_id": "section_007",
+      "title": "Evidence gaps and assumptions"
+    },
+    {
+      "claim_count": 0,
+      "section_id": "section_008",
+      "title": "Exported source links"
+    }
+  ],
+  "child_artifact_ids": [],
+  "created_at": "2026-05-28T19:22:32.053333Z",
+  "evidence_map": {
+    "CLM-003": [
+      "SRC-001"
+    ],
+    "CLM-005": [
+      "SRC-001"
+    ],
+    "CLM-007": [
+      "SRC-001"
+    ],
+    "CLM-010": [
+      "SRC-002"
+    ],
+    "CLM-012": [
+      "SRC-003"
+    ],
+    "CLM-014": [
+      "SRC-004"
+    ],
+    "CLM-018": [
+      "SRC-001"
+    ],
+    "CLM-019": [
+      "SRC-005"
+    ],
+    "CLM-022": [
+      "SRC-004"
+    ],
+    "CLM-023": [
+      "SRC-002"
+    ],
+    "CLM-024": [
+      "SRC-010"
+    ]
+  },
+  "gap_questions": [
+    "Can this claim be independently sourced: Public sources point to a market that is still consolidating, but in a more selective, capital-intensive phase.?",
+    "Can this claim be independently sourced: Share concentration kept rising even as H1 2025 shop acquisitions and openings slowed materially, Boyd still executed a ?",
+    "Can this claim be independently sourced: Concentration is meaningful and still rising.?",
+    "Can this claim be independently sourced: The pace softened before re-accelerating.?",
+    "Can this claim be independently sourced: The biggest recent deal was regionally concentrated.?"
+  ],
+  "input_artifact_ids": [
+    "evidence-report-live-provider-probe-2-26d5c838ef"
+  ],
+  "markdown_path": "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/provider-feasibility/artifacts/live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-chatgpt/files/deliverables/synthesis-report-live-provider-probe-2-26d5c838ef.md",
+  "metadata": {},
+  "parent_artifact_ids": [
+    "spec-live-provider-probe-2026-05-3250578d30",
+    "report-live-provider-probe-2026-05-c0589cac5e",
+    "evidence-report-live-provider-probe-2-26d5c838ef"
+  ],
+  "run_id": "live-provider-probe-2026-05-24-chatgpt",
+  "status": "ready",
+  "thesis": "The core logic has not changed: scale helps win insurer relationships, absorb technician scarcity, and fund ADAS, calibration, and OEM-capability investments.",
+  "updated_at": "2026-05-28T19:22:32.053379+00:00"
+}

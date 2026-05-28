@@ -28,35 +28,42 @@ providers:
   - id: chatgpt_web_deep_research
     label: "ChatGPT web Deep Research through Chrome automation"
     default_use: "Primary public-web hosted research reports."
-    status: PATH_DEFINED
+    status: PROVEN
     strengths:
       - "Uses ChatGPT Pro web surface."
       - "Deep Research is selectable from tools menu."
       - "Pro mode appears in model menu."
-      - "Report output includes citations per OpenAI help docs."
+      - "Completed live report exposed native Markdown and Word export controls."
+      - "Word export exposes actual source URLs for citation recovery."
     risks:
       - "DOM selectors can change."
-      - "Completion/export selectors still need lifecycle probe."
+      - "Native Markdown export preserved opaque citation markers rather than source URLs in the live probe."
+      - "Adapter must pair body capture with source-link recovery when source fidelity matters."
       - "Terms and usage guardrails apply to automated use."
     evidence:
       - "audit/provider-feasibility/artifacts/chatgpt-tools-menu-dom.txt"
       - "audit/provider-feasibility/artifacts/chatgpt-deep-research-selected-dom.txt"
+      - "audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-completed-report.md"
+      - "audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-completed-report.docx"
+      - "audit/provider-feasibility/artifacts/live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-chatgpt/run-ledger.json"
       - "https://help.openai.com/en/articles/10500283-research-faq"
 
   - id: claude_web_research
     label: "Claude web Research through Chrome automation"
     default_use: "Secondary public-web research, rate-limit spillover, cross-provider challenge reports."
-    status: PATH_DEFINED
+    status: PROVEN
     strengths:
       - "Uses Claude Max web surface."
       - "Research and Web Search controls are exposed."
       - "Independent provider family for challenge reports."
+      - "Completed live report exposed a durable artifact panel that could be captured and ingested."
     risks:
       - "DOM selectors can change."
-      - "Completion/export selectors still need lifecycle probe."
       - "Claude CLI billing policy changed; web remains separate from Agent SDK credit path."
     evidence:
       - "audit/provider-feasibility/artifacts/claude-tools-menu-dom.txt"
+      - "audit/provider-feasibility/artifacts/live-probe-2026-05-24/claude-live-completed-report.md"
+      - "audit/provider-feasibility/artifacts/live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-claude/run-ledger.json"
       - "https://support.claude.com/en/articles/11088861-using-research-on-claude-ai"
 
   - id: openai_api
@@ -101,4 +108,3 @@ providers:
       - "Requires parser and source lineage work."
     evidence:
       - "src/keystone/gateway/simple_client.py:66"
-

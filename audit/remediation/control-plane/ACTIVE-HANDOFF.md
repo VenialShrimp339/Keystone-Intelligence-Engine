@@ -11,8 +11,9 @@
 - The issue-tree/problem-decomposition skill is prototype-ready at `.agents/skills/problem-decomposition/`. It is not production-integrated into KIE yet.
 - The next KIE specification step is to implement a Pydantic `IssueTreePackage` upstream of the current `Decomposer`, after running the recommended issue-tree skill eval subset.
 - Claude web Research full lifecycle is proven and ingested for the public auto-body consolidation probe.
-- ChatGPT Deep Research completed in Chrome per owner report, but the completed report still needs durable capture and ingestion.
-- The worktree contains valuable uncommitted code, docs, provider artifacts, and skill artifacts. Protect this work before any pull, rebase, reset, cleanup, or broad refactor.
+- ChatGPT web Deep Research full lifecycle is now proven and ingested for the same public probe.
+- ChatGPT export nuance: the Markdown export preserved opaque citation markers, while the Word export exposed the actual source URLs. The browser adapter should preserve both body and source-link exports for ChatGPT until a cleaner export route is proven.
+- The worktree contains external untracked presentation files that are unrelated to this provider capture. Protect them before any pull, rebase, reset, cleanup, or broad refactor.
 
 ## Fresh-Session Read Order
 
@@ -49,24 +50,27 @@ Any lower-order file that conflicts with a higher-order item below loses for liv
 - `active_branch`: `codex/owner-triage-normalization`
 - `active_worktree_path`: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`
 - `active_state`: `artifact_centered_research_rebuild_active`
-- `controller_priority_workstream`: `Stage B checkpoint and canonization for artifact-centered research rebuild`
-- `current_head_before_stage_b`: `31189a5b3e3ce0a89e4a11fa0cbefc2b79b6ae03`
-- `worktree_state`: valuable dirty work, checkpoint required
+- `controller_priority_workstream`: `ChatGPT provider capture and provider-neutral ingestion checkpoint`
+- `current_head_before_provider_capture`: `48544b131d18f2a3c145db7cb0839313e5d2724b`
+- `worktree_state`: provider capture artifacts pending checkpoint; external untracked presentation files remain unrelated
 - `issue_tree_skill_status`: prototype-ready for more eval
 - `claude_provider_probe`: completed and ingested
-- `chatgpt_provider_probe`: completed in Chrome, pending durable capture
+- `chatgpt_provider_probe`: completed, exported, source links recovered, and ingested
 
 ## Exact Next Action
 
-1. Finish Stage B by checkpointing the current work.
-2. Do not pull, rebase, reset, or clean before the checkpoint.
-3. Run the next autonomous goal:
-   - capture completed ChatGPT report from Chrome
-   - ingest ChatGPT and Claude reports through one provider-neutral artifact contract
-   - run the recommended issue-tree skill eval subset
-   - implement `IssueTreePackage` upstream of the current `Decomposer`
-   - build the first artifact-centered vertical slice
-   - then expand to a multi-branch provider prototype only after the vertical slice is stable
+1. Run the recommended issue-tree skill eval subset.
+2. Implement `IssueTreePackage` upstream of the current `Decomposer`.
+3. Build the browser provider adapter from the proven lifecycle:
+   - tab registry
+   - export-ready detection
+   - ChatGPT Markdown plus DOCX export
+   - Claude artifact export
+   - provider ledger
+   - blocked-state pause
+   - per-provider concurrency controls
+4. Build the first artifact-centered vertical slice.
+5. Expand to a multi-branch provider prototype only after the vertical slice is stable.
 
 ## Historical Remediation Notes
 
@@ -82,3 +86,4 @@ Any lower-order file that conflicts with a higher-order item below loses for liv
 - `2026-04-16T16:51:40-0400`: controller epoch advanced from `10` to `11` for Lane E promotion reconcile.
 - `2026-04-16T18:32:49-0400`: controller epoch advanced from `11` to `12` for Lane E promotion rerun.
 - `2026-05-28T14:08:49-0500`: controller epoch advanced from `12` to `13`; live next action changed from old Lane E retrieval-parse work to the artifact-centered, subscription-first research rebuild after owner direction, provider feasibility work, and issue-tree skill prototype completion.
+- `2026-05-28T14:23:35-0500`: controller epoch advanced from `13` to `14`; ChatGPT Deep Research moved from completed-in-browser/pending-capture to completed/exported/source-links-recovered/ingested.
