@@ -1,0 +1,82 @@
+{
+  "artifact_id": "synthesis-evidence-combined-sqsp-permi-ef1d530508",
+  "artifact_type": "synthesis",
+  "branch_summaries": [
+    {
+      "claim_count": 11,
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4"
+    },
+    {
+      "claim_count": 11,
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880"
+    }
+  ],
+  "child_artifact_ids": [],
+  "created_at": "2026-05-28T20:45:13.801793Z",
+  "evidence_map": {
+    "CLM-002": [
+      "SRC-001"
+    ],
+    "CLM-003": [
+      "SRC-002"
+    ],
+    "CLM-004": [
+      "SRC-002"
+    ],
+    "CLM-005": [
+      "SRC-002"
+    ],
+    "CLM-006": [
+      "SRC-002"
+    ],
+    "CLM-007": [
+      "SRC-003"
+    ],
+    "CLM-008": [
+      "SRC-004"
+    ],
+    "CLM-013": [
+      "SRC-005"
+    ],
+    "CLM-014": [
+      "SRC-005"
+    ],
+    "CLM-015": [
+      "SRC-005"
+    ],
+    "CLM-016": [
+      "SRC-005"
+    ],
+    "CLM-017": [
+      "SRC-006"
+    ],
+    "CLM-018": [
+      "SRC-007"
+    ],
+    "CLM-019": [
+      "SRC-008"
+    ]
+  },
+  "gap_questions": [
+    "Can this claim be independently sourced: Assess whether Squarespace's post-take-private growth base is strong enough for a PE sponsor to underwrite value creatio?",
+    "Can this claim be independently sourced: The growth branch is directionally attractive but not self-proving.?",
+    "Can this claim be independently sourced: Subscription count and ARRR growth support further diligence, while modest ARPUS growth and Wix's stronger agency/Studio?",
+    "Can this claim be independently sourced: The most important disconfirming evidence would be cohort-level data showing that incremental subscriptions came from lo?",
+    "Can this claim be independently sourced: Assess whether Squarespace's margin, cash-flow, and portfolio posture can support private-equity value creation after th?"
+  ],
+  "input_artifact_ids": [
+    "evidence-combined-sqsp-permira-artifact-slice-049052fee9"
+  ],
+  "markdown_path": "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/run/artifact-store/sqsp-permira-artifact-slice/files/deliverables/synthesis-evidence-combined-sqsp-permi-ef1d530508.md",
+  "metadata": {},
+  "parent_artifact_ids": [
+    "issue-tree-package-sqsp-permira-artifact-slice-e13719edd8",
+    "evidence-combined-sqsp-permira-artifact-slice-049052fee9",
+    "provider-job-sqsp-permira-artifact-slice-68490fe053",
+    "provider-job-sqsp-permira-artifact-slice-9d23dcc3cc"
+  ],
+  "run_id": "sqsp-permira-artifact-slice",
+  "status": "ready",
+  "thesis": "Permira completed the acquisition of Squarespace on October 17, 2024, and the transaction valued the company at approximately $7.2 billion, so the diligence question is now a sponsor-owned value-creation question rather than a public-shareholder voting question.",
+  "updated_at": "2026-05-28T20:45:13.801848+00:00"
+}

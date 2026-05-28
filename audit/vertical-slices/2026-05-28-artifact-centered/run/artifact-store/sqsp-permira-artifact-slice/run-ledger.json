@@ -1,0 +1,79 @@
+{
+  "artifact_ids": [
+    "spec-sqsp-permira-artifact-slice-c151b988ae",
+    "issue-tree-package-sqsp-permira-artifact-slice-e13719edd8",
+    "provider-job-sqsp-permira-artifact-slice-68490fe053",
+    "report-sqsp-permira-artifact-slice-3d571b69b4",
+    "sources-report-sqsp-permira-artifact-194a9a016f",
+    "evidence-report-sqsp-permira-artifact-194a9a016f",
+    "provider-job-sqsp-permira-artifact-slice-9d23dcc3cc",
+    "report-sqsp-permira-artifact-slice-8e174fe880",
+    "sources-report-sqsp-permira-artifact-48dcf41594",
+    "evidence-report-sqsp-permira-artifact-48dcf41594",
+    "sources-combined-sqsp-permira-artifact-slice-049052fee9",
+    "evidence-combined-sqsp-permira-artifact-slice-049052fee9",
+    "synthesis-evidence-combined-sqsp-permi-ef1d530508",
+    "evaluation-evidence-combined-sqsp-permi-ef1d530508",
+    "deliverable-sqsp-permira-artifact-slice-8d0c065c95"
+  ],
+  "child_refs": {
+    "evaluation-evidence-combined-sqsp-permi-ef1d530508": [
+      "deliverable-sqsp-permira-artifact-slice-8d0c065c95"
+    ],
+    "evidence-combined-sqsp-permira-artifact-slice-049052fee9": [
+      "synthesis-evidence-combined-sqsp-permi-ef1d530508",
+      "evaluation-evidence-combined-sqsp-permi-ef1d530508"
+    ],
+    "issue-tree-package-sqsp-permira-artifact-slice-e13719edd8": [
+      "provider-job-sqsp-permira-artifact-slice-68490fe053",
+      "provider-job-sqsp-permira-artifact-slice-9d23dcc3cc",
+      "synthesis-evidence-combined-sqsp-permi-ef1d530508"
+    ],
+    "provider-job-sqsp-permira-artifact-slice-68490fe053": [
+      "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "synthesis-evidence-combined-sqsp-permi-ef1d530508"
+    ],
+    "provider-job-sqsp-permira-artifact-slice-9d23dcc3cc": [
+      "report-sqsp-permira-artifact-slice-8e174fe880",
+      "synthesis-evidence-combined-sqsp-permi-ef1d530508"
+    ],
+    "report-sqsp-permira-artifact-slice-3d571b69b4": [
+      "sources-report-sqsp-permira-artifact-194a9a016f",
+      "evidence-report-sqsp-permira-artifact-194a9a016f",
+      "evidence-combined-sqsp-permira-artifact-slice-049052fee9"
+    ],
+    "report-sqsp-permira-artifact-slice-8e174fe880": [
+      "sources-report-sqsp-permira-artifact-48dcf41594",
+      "evidence-report-sqsp-permira-artifact-48dcf41594",
+      "evidence-combined-sqsp-permira-artifact-slice-049052fee9"
+    ],
+    "sources-combined-sqsp-permira-artifact-slice-049052fee9": [
+      "evidence-combined-sqsp-permira-artifact-slice-049052fee9"
+    ],
+    "sources-report-sqsp-permira-artifact-194a9a016f": [
+      "evidence-report-sqsp-permira-artifact-194a9a016f"
+    ],
+    "sources-report-sqsp-permira-artifact-48dcf41594": [
+      "evidence-report-sqsp-permira-artifact-48dcf41594"
+    ],
+    "spec-sqsp-permira-artifact-slice-c151b988ae": [
+      "issue-tree-package-sqsp-permira-artifact-slice-e13719edd8"
+    ],
+    "synthesis-evidence-combined-sqsp-permi-ef1d530508": [
+      "evaluation-evidence-combined-sqsp-permi-ef1d530508",
+      "deliverable-sqsp-permira-artifact-slice-8d0c065c95"
+    ]
+  },
+  "created_at": "2026-05-28T20:45:13.796489Z",
+  "metadata": {
+    "domain": "private_equity_software_diligence",
+    "output_target": "markdown brief"
+  },
+  "notes": [
+    "Artifact-centered first slice from approved IssueTreePackage."
+  ],
+  "root_request": "We're advising a PE operating partner after Permira's Squarespace take-private. The ask is messy: is this a durable value-creation platform, or did the sponsor overpay for a mature website-builder asset? Build the issue tree, launch branch research, ingest completed provider reports, and produce a cited first-pass brief.",
+  "run_id": "sqsp-permira-artifact-slice",
+  "status": "ready",
+  "updated_at": "2026-05-28T20:45:13.802451+00:00"
+}

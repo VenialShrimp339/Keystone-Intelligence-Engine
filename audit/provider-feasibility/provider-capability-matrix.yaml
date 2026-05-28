@@ -1,5 +1,5 @@
 schema_version: 1
-generated_at: "2026-05-24"
+generated_at: "2026-05-28"
 status_values:
   - PROVEN
   - PATH_DEFINED
@@ -35,6 +35,7 @@ providers:
       - "Pro mode appears in model menu."
       - "Completed live report exposed native Markdown and Word export controls."
       - "Word export exposes actual source URLs for citation recovery."
+      - "Provider ledger and completion-only ingestion adapter now enforce Markdown body plus DOCX source route."
     risks:
       - "DOM selectors can change."
       - "Native Markdown export preserved opaque citation markers rather than source URLs in the live probe."
@@ -46,6 +47,8 @@ providers:
       - "audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-completed-report.md"
       - "audit/provider-feasibility/artifacts/live-probe-2026-05-24/chatgpt-live-completed-report.docx"
       - "audit/provider-feasibility/artifacts/live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-chatgpt/run-ledger.json"
+      - "src/keystone/providers/browser_provider.py"
+      - "audit/vertical-slices/2026-05-28-artifact-centered/run/provider-ledger.json"
       - "https://help.openai.com/en/articles/10500283-research-faq"
 
   - id: claude_web_research
@@ -57,6 +60,7 @@ providers:
       - "Research and Web Search controls are exposed."
       - "Independent provider family for challenge reports."
       - "Completed live report exposed a durable artifact panel that could be captured and ingested."
+      - "Provider ledger and completion-only ingestion adapter now enforce artifact/report export path."
     risks:
       - "DOM selectors can change."
       - "Claude CLI billing policy changed; web remains separate from Agent SDK credit path."
@@ -64,6 +68,8 @@ providers:
       - "audit/provider-feasibility/artifacts/claude-tools-menu-dom.txt"
       - "audit/provider-feasibility/artifacts/live-probe-2026-05-24/claude-live-completed-report.md"
       - "audit/provider-feasibility/artifacts/live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-claude/run-ledger.json"
+      - "src/keystone/providers/browser_provider.py"
+      - "audit/vertical-slices/2026-05-28-artifact-centered/run/provider-ledger.json"
       - "https://support.claude.com/en/articles/11088861-using-research-on-claude-ai"
 
   - id: openai_api

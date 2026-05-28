@@ -1,0 +1,23 @@
+{
+  "artifact_id": "deliverable-sqsp-permira-artifact-slice-8d0c065c95",
+  "artifact_type": "deliverable",
+  "child_artifact_ids": [],
+  "created_at": "2026-05-28T20:45:13.802284Z",
+  "deliverable_type": "markdown_brief",
+  "input_artifact_ids": [
+    "synthesis-evidence-combined-sqsp-permi-ef1d530508"
+  ],
+  "metadata": {},
+  "parent_artifact_ids": [
+    "synthesis-evidence-combined-sqsp-permi-ef1d530508",
+    "evaluation-evidence-combined-sqsp-permi-ef1d530508"
+  ],
+  "path": "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/run/artifact-store/sqsp-permira-artifact-slice/files/deliverables/synthesis-evidence-combined-sqsp-permi-ef1d530508.md",
+  "quality_gate_artifact_ids": [
+    "evaluation-evidence-combined-sqsp-permi-ef1d530508"
+  ],
+  "run_id": "sqsp-permira-artifact-slice",
+  "status": "ready",
+  "title": "Artifact-centered brief: Can Permira create durable value in Squarespace after the take-private?",
+  "updated_at": "2026-05-28T20:45:13.802306+00:00"
+}

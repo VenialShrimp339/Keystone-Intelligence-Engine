@@ -1,0 +1,50 @@
+{
+  "approval_status": "approved",
+  "artifact_id": "spec-sqsp-permira-artifact-slice-c151b988ae",
+  "artifact_type": "specification",
+  "child_artifact_ids": [],
+  "clarifying_questions": [],
+  "created_at": "2026-05-28T20:45:13.796721Z",
+  "day_1_hypothesis": "Determine whether Squarespace is an attractive sponsor-owned value creation platform after the Permira take-private.",
+  "decision_context": "Can Permira create durable value in Squarespace after the take-private?",
+  "domain": "private_equity_software_diligence",
+  "engagement_type": null,
+  "metadata": {
+    "problem_frame": {
+      "ambiguity_status": "clear",
+      "assumptions": [
+        "No access to sponsor debt package, cohort data, or management forecast.",
+        "The first slice should identify diligence priorities, not issue a final investment memo."
+      ],
+      "blocking_unknowns": [],
+      "complication": "The asset is exposed to website-builder competition, ARPUS growth is modest, and sponsor returns require both operating execution and underwriting discipline.",
+      "constraints": [
+        "Use public sources only for this first pass.",
+        "Produce a cited markdown brief.",
+        "Treat provider reports as completed exports before ingestion."
+      ],
+      "decision_maker": "PE operating partner and investment committee",
+      "decision_or_question": "Can Permira create durable value in Squarespace after the take-private?",
+      "objective_definition_branches": [],
+      "original_prompt": "We're advising a PE operating partner after Permira's Squarespace take-private. The ask is messy: is this a durable value-creation platform, or did the sponsor overpay for a mature website-builder asset? Build the issue tree, launch branch research, ingest completed provider reports, and produce a cited first-pass brief.",
+      "r1_undesired_result": "Underwrite value creation from headline growth while missing mature-product, pricing, margin, integration, or competitive risks.",
+      "r2_desired_result": "Identify the few must-be-true branches that determine whether the platform can support a credible PE value-creation plan.",
+      "reconstructed_problem": "Determine whether Squarespace is an attractive sponsor-owned value creation platform after the Permira take-private.",
+      "situation": "Permira completed the acquisition, Squarespace is private, and the last public disclosures show subscription growth plus cash generation."
+    },
+    "selected_axis": {
+      "axis_id": "must_be_true",
+      "rationale": "A take-private diligence slice should dispatch provider research only to branches that can change the sponsor value-creation answer.",
+      "rejected_axis_notes": [
+        "Functional workstreams are useful after gates are proven, but too broad for slice one."
+      ]
+    }
+  },
+  "output_target": "markdown brief",
+  "parent_artifact_ids": [],
+  "question": "We're advising a PE operating partner after Permira's Squarespace take-private. The ask is messy: is this a durable value-creation platform, or did the sponsor overpay for a mature website-builder asset? Build the issue tree, launch branch research, ingest completed provider reports, and produce a cited first-pass brief.",
+  "run_id": "sqsp-permira-artifact-slice",
+  "selected_lenses": [],
+  "status": "ready",
+  "updated_at": "2026-05-28T20:45:13.796755+00:00"
+}

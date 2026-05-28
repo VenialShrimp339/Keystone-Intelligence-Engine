@@ -1,0 +1,381 @@
+{
+  "approval_status": "approved",
+  "artifact_id": "issue-tree-package-sqsp-permira-artifact-slice-e13719edd8",
+  "artifact_type": "issue_tree_package",
+  "child_artifact_ids": [],
+  "created_at": "2026-05-28T20:45:13.797001Z",
+  "metadata": {},
+  "package": {
+    "approval": {
+      "approved_at": null,
+      "approved_leaf_ids": [
+        "SQSP-L1-growth",
+        "SQSP-L2-margin"
+      ],
+      "notes": [
+        "Approved for first public-source vertical slice."
+      ],
+      "reviewer": "codex-autonomous-slice",
+      "status": "approved"
+    },
+    "candidate_axes": [
+      {
+        "axis_id": "must_be_true",
+        "label": "Must-be-true value creation gates",
+        "risk": "May underweight upside options not needed for the first pass",
+        "selected": true,
+        "what_it_hides": "Detailed operating plan sequencing",
+        "what_it_reveals": "Sponsor case blockers and branch-level research prompts"
+      },
+      {
+        "axis_id": "functional",
+        "label": "Growth, product, finance, risk functions",
+        "risk": "Can become a generic diligence checklist",
+        "selected": false,
+        "what_it_hides": "Whether a branch can actually change the investment answer",
+        "what_it_reveals": "Clean workstream ownership"
+      }
+    ],
+    "created_at": "2026-05-28T20:45:13.794673Z",
+    "edges": [
+      {
+        "child_id": "SQSP-1",
+        "parent_id": "SQSP-root",
+        "relation_note": ""
+      },
+      {
+        "child_id": "SQSP-2",
+        "parent_id": "SQSP-root",
+        "relation_note": ""
+      },
+      {
+        "child_id": "SQSP-3",
+        "parent_id": "SQSP-root",
+        "relation_note": ""
+      }
+    ],
+    "eval_hygiene": {
+      "benchmark_case_overlap_risk": "unknown",
+      "examples_used_as_priors": [],
+      "potential_contamination_notes": []
+    },
+    "evidence_requirements": [],
+    "full_tree": [
+      {
+        "decision_consequence": null,
+        "decision_relevance": "high",
+        "decomposition_axis": "must_be_true_value_creation",
+        "depth": 0,
+        "disconfirming_test": null,
+        "measurable_variable_or_proxy": null,
+        "named_mechanism": null,
+        "node_id": "SQSP-root",
+        "parent_id": null,
+        "priority": "high",
+        "prune_status": "keep",
+        "question_or_hypothesis": "Can growth quality, cash-flow expansion, and execution risk support a credible sponsor case?",
+        "source_logic": "criteria",
+        "statement": "Squarespace value creation clears PE must-be-true gates",
+        "tree_scope": "both"
+      },
+      {
+        "decision_consequence": "Determines whether growth underwriting is credible",
+        "decision_relevance": "high",
+        "decomposition_axis": "value_creation_gate",
+        "depth": 1,
+        "disconfirming_test": "Growth is migration-driven, low-retention, or competitively capped",
+        "measurable_variable_or_proxy": "ARRR growth, unique subscriptions, ARPUS, competitor bookings",
+        "named_mechanism": "subscription base monetization",
+        "node_id": "SQSP-1",
+        "parent_id": "SQSP-root",
+        "priority": "high",
+        "prune_status": "keep",
+        "question_or_hypothesis": "Are subscriptions, ARRR, ARPUS, commerce, and competitive position strong enough to support upside?",
+        "source_logic": "criteria",
+        "statement": "Growth base is durable and monetizable",
+        "tree_scope": "both"
+      },
+      {
+        "decision_consequence": "Determines debt capacity and value-creation runway",
+        "decision_relevance": "high",
+        "decomposition_axis": "value_creation_gate",
+        "depth": 1,
+        "disconfirming_test": "Cash generation is non-recurring or consumed by reinvestment and debt service",
+        "measurable_variable_or_proxy": "Adjusted EBITDA, UFCF, operating cash flow, divestiture proceeds",
+        "named_mechanism": "operating leverage and portfolio simplification",
+        "node_id": "SQSP-2",
+        "parent_id": "SQSP-root",
+        "priority": "high",
+        "prune_status": "keep",
+        "question_or_hypothesis": "Can EBITDA, unlevered free cash flow, and portfolio focus support deleveraging and reinvestment?",
+        "source_logic": "criteria",
+        "statement": "Margins and free cash flow support sponsor economics",
+        "tree_scope": "both"
+      },
+      {
+        "decision_consequence": null,
+        "decision_relevance": "medium",
+        "decomposition_axis": "risk_gate",
+        "depth": 1,
+        "disconfirming_test": null,
+        "measurable_variable_or_proxy": null,
+        "named_mechanism": null,
+        "node_id": "SQSP-3",
+        "parent_id": "SQSP-root",
+        "priority": "medium",
+        "prune_status": "defer",
+        "question_or_hypothesis": "Are financing, retention, integration, and disruption risks bounded enough?",
+        "source_logic": "criteria",
+        "statement": "Transaction and execution risks are manageable",
+        "tree_scope": "full"
+      }
+    ],
+    "leaf_tasks": [
+      {
+        "acceptance_criteria": [
+          "At least five source-backed claims",
+          "Explicit disconfirming evidence"
+        ],
+        "confidence_target": "high",
+        "disconfirming_evidence_to_seek": [
+          "Growth is driven by low-quality migrated domains or weak retention",
+          "Competitors have stronger agency, AI, or commerce momentum"
+        ],
+        "downstream_agent_routing_hint": "strategic_positioning",
+        "evidence_requirements": [
+          "Squarespace Q2 2024 operating metrics",
+          "Transaction close facts",
+          "Competitor benchmark evidence"
+        ],
+        "expected_artifact": "Growth-quality memo with source map",
+        "human_approval_required": true,
+        "leaf_id": "SQSP-L1-growth",
+        "likely_sources_or_methods": [
+          "Company press releases",
+          "Competitor public results",
+          "Transaction announcement risk factors"
+        ],
+        "node_id": "SQSP-1",
+        "required_artifact_type": "memo",
+        "research_question": "Is Squarespace's post-take-private growth base durable and monetizable?",
+        "resolution_criteria": [
+          "ARRR, subscription, ARPUS, and competitive data are cited.",
+          "Disconfirming risks to growth quality are explicit."
+        ],
+        "source_policy": "Use public company and credible competitor sources.",
+        "task_seed_prompt": "Assess whether Squarespace's post-take-private growth base is strong enough for a PE sponsor to underwrite value creation without relying mainly on multiple expansion."
+      },
+      {
+        "acceptance_criteria": [
+          "At least five source-backed claims",
+          "Explicit non-GAAP caveats"
+        ],
+        "confidence_target": "high",
+        "disconfirming_evidence_to_seek": [
+          "EBITDA expansion is absent despite growth",
+          "Cash flow is insufficient after debt service and reinvestment"
+        ],
+        "downstream_agent_routing_hint": "financial_analysis",
+        "evidence_requirements": [
+          "Squarespace Q2 2024 financial metrics",
+          "Tock divestiture evidence",
+          "Transaction risk factors"
+        ],
+        "expected_artifact": "Margin and cash-flow bridge memo",
+        "human_approval_required": true,
+        "leaf_id": "SQSP-L2-margin",
+        "likely_sources_or_methods": [
+          "Financial results press release",
+          "Divestiture announcements",
+          "Transaction announcement risk factors"
+        ],
+        "node_id": "SQSP-2",
+        "required_artifact_type": "memo",
+        "research_question": "Can Squarespace's margin and cash flow support PE value creation?",
+        "resolution_criteria": [
+          "Adjusted EBITDA, UFCF, operating cash flow, and Tock perimeter facts are cited.",
+          "Non-GAAP and debt-service caveats are explicit."
+        ],
+        "source_policy": "Use public company, acquirer, and transaction sources.",
+        "task_seed_prompt": "Assess whether Squarespace's margin, cash-flow, and portfolio posture can support private-equity value creation after the Permira take-private."
+      }
+    ],
+    "package_id": "sqsp-permira-package",
+    "problem_frame": {
+      "ambiguity_status": "clear",
+      "assumptions": [
+        "No access to sponsor debt package, cohort data, or management forecast.",
+        "The first slice should identify diligence priorities, not issue a final investment memo."
+      ],
+      "blocking_unknowns": [],
+      "complication": "The asset is exposed to website-builder competition, ARPUS growth is modest, and sponsor returns require both operating execution and underwriting discipline.",
+      "constraints": [
+        "Use public sources only for this first pass.",
+        "Produce a cited markdown brief.",
+        "Treat provider reports as completed exports before ingestion."
+      ],
+      "decision_maker": "PE operating partner and investment committee",
+      "decision_or_question": "Can Permira create durable value in Squarespace after the take-private?",
+      "objective_definition_branches": [],
+      "original_prompt": "We're advising a PE operating partner after Permira's Squarespace take-private. The ask is messy: is this a durable value-creation platform, or did the sponsor overpay for a mature website-builder asset? Build the issue tree, launch branch research, ingest completed provider reports, and produce a cited first-pass brief.",
+      "r1_undesired_result": "Underwrite value creation from headline growth while missing mature-product, pricing, margin, integration, or competitive risks.",
+      "r2_desired_result": "Identify the few must-be-true branches that determine whether the platform can support a credible PE value-creation plan.",
+      "reconstructed_problem": "Determine whether Squarespace is an attractive sponsor-owned value creation platform after the Permira take-private.",
+      "situation": "Permira completed the acquisition, Squarespace is private, and the last public disclosures show subscription growth plus cash generation."
+    },
+    "pruned_tree": [
+      {
+        "decision_consequence": null,
+        "decision_relevance": "high",
+        "decomposition_axis": "must_be_true_value_creation",
+        "depth": 0,
+        "disconfirming_test": null,
+        "measurable_variable_or_proxy": null,
+        "named_mechanism": null,
+        "node_id": "SQSP-root",
+        "parent_id": null,
+        "priority": "high",
+        "prune_status": "keep",
+        "question_or_hypothesis": "Can growth quality, cash-flow expansion, and execution risk support a credible sponsor case?",
+        "source_logic": "criteria",
+        "statement": "Squarespace value creation clears PE must-be-true gates",
+        "tree_scope": "both"
+      },
+      {
+        "decision_consequence": "Determines whether growth underwriting is credible",
+        "decision_relevance": "high",
+        "decomposition_axis": "value_creation_gate",
+        "depth": 1,
+        "disconfirming_test": "Growth is migration-driven, low-retention, or competitively capped",
+        "measurable_variable_or_proxy": "ARRR growth, unique subscriptions, ARPUS, competitor bookings",
+        "named_mechanism": "subscription base monetization",
+        "node_id": "SQSP-1",
+        "parent_id": "SQSP-root",
+        "priority": "high",
+        "prune_status": "keep",
+        "question_or_hypothesis": "Are subscriptions, ARRR, ARPUS, commerce, and competitive position strong enough to support upside?",
+        "source_logic": "criteria",
+        "statement": "Growth base is durable and monetizable",
+        "tree_scope": "both"
+      },
+      {
+        "decision_consequence": "Determines debt capacity and value-creation runway",
+        "decision_relevance": "high",
+        "decomposition_axis": "value_creation_gate",
+        "depth": 1,
+        "disconfirming_test": "Cash generation is non-recurring or consumed by reinvestment and debt service",
+        "measurable_variable_or_proxy": "Adjusted EBITDA, UFCF, operating cash flow, divestiture proceeds",
+        "named_mechanism": "operating leverage and portfolio simplification",
+        "node_id": "SQSP-2",
+        "parent_id": "SQSP-root",
+        "priority": "high",
+        "prune_status": "keep",
+        "question_or_hypothesis": "Can EBITDA, unlevered free cash flow, and portfolio focus support deleveraging and reinvestment?",
+        "source_logic": "criteria",
+        "statement": "Margins and free cash flow support sponsor economics",
+        "tree_scope": "both"
+      }
+    ],
+    "pruning_decisions": [
+      {
+        "action": "keep",
+        "dependency_ids": [],
+        "discriminating_power_score": 5,
+        "evidence_cost_score": 2,
+        "impact_score": 5,
+        "influenceability_score": 4,
+        "node_id": "SQSP-1",
+        "rationale": "Growth quality is a high-impact and still-uncertain sponsor-case gate.",
+        "reopen_condition": "New cohort, retention, or competitor evidence changes growth quality.",
+        "risk_if_wrong": "high",
+        "uncertainty_score": 4,
+        "value_of_information_note": "Determines whether value creation can start from durable growth."
+      },
+      {
+        "action": "keep",
+        "dependency_ids": [],
+        "discriminating_power_score": 5,
+        "evidence_cost_score": 2,
+        "impact_score": 5,
+        "influenceability_score": 4,
+        "node_id": "SQSP-2",
+        "rationale": "Cash-flow support is required for debt, reinvestment, and sponsor returns.",
+        "reopen_condition": "Debt package, management forecast, or non-GAAP reconciliation changes.",
+        "risk_if_wrong": "high",
+        "uncertainty_score": 4,
+        "value_of_information_note": "Determines whether the sponsor case can fund itself."
+      },
+      {
+        "action": "defer",
+        "dependency_ids": [],
+        "discriminating_power_score": 3,
+        "evidence_cost_score": 3,
+        "impact_score": 4,
+        "influenceability_score": 3,
+        "node_id": "SQSP-3",
+        "rationale": "Execution risks matter, but first-pass public evidence should establish whether growth and cash-flow gates merit deeper risk work.",
+        "reopen_condition": "Provider reports show growth and cash-flow gates are strong enough.",
+        "risk_if_wrong": "medium",
+        "uncertainty_score": 4,
+        "value_of_information_note": "Reopen after branch reports if either retained gate passes."
+      }
+    ],
+    "quality_gate_results": [
+      {
+        "finding": "Decision maker, R1, R2, constraints, and assumptions are explicit.",
+        "gate_id": "problem_frame",
+        "result": "pass",
+        "revision_made": null
+      },
+      {
+        "finding": "Must-be-true gates fit a PE take-private value-creation question.",
+        "gate_id": "axis_fit",
+        "result": "pass",
+        "revision_made": null
+      },
+      {
+        "finding": "Pruned tree keeps two branch prompts and defers execution risk.",
+        "gate_id": "pruning",
+        "result": "pass",
+        "revision_made": null
+      },
+      {
+        "finding": "Approved leaves contain research prompts, evidence requirements, and artifacts.",
+        "gate_id": "leaf_actionability",
+        "result": "pass",
+        "revision_made": null
+      }
+    ],
+    "selected_axis": {
+      "axis_id": "must_be_true",
+      "rationale": "A take-private diligence slice should dispatch provider research only to branches that can change the sponsor value-creation answer.",
+      "rejected_axis_notes": [
+        "Functional workstreams are useful after gates are proven, but too broad for slice one."
+      ]
+    },
+    "sibling_logic": [
+      {
+        "child_ids": [
+          "SQSP-1",
+          "SQSP-2",
+          "SQSP-3"
+        ],
+        "coverage_logic": "exhaustive",
+        "decomposition_axis": "must_be_true_value_creation",
+        "evaluation_logic": "evidence_sufficiency",
+        "exclusivity_claim": "materially_distinct",
+        "exhaustiveness_claim": "complete_for_decision",
+        "group_id": "sqsp-root-gates",
+        "parent_id": "SQSP-root",
+        "truth_logic": "AND",
+        "validation_note": "Growth, cash-flow, and execution-risk gates are distinct enough for first-pass research and jointly cover the sponsor case."
+      }
+    ]
+  },
+  "parent_artifact_ids": [
+    "spec-sqsp-permira-artifact-slice-c151b988ae"
+  ],
+  "run_id": "sqsp-permira-artifact-slice",
+  "status": "ready",
+  "updated_at": "2026-05-28T20:45:13.797049+00:00"
+}

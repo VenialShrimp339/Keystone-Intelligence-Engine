@@ -1,0 +1,205 @@
+{
+  "artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+  "artifact_type": "research_report",
+  "candidate_claim_records": [
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-001",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_002",
+      "text": "Assess whether Squarespace's post-take-private growth base is strong enough for a PE sponsor to underwrite value creation without relying mainly on multiple expansion."
+    },
+    {
+      "citation_ids": [
+        "SRC-001"
+      ],
+      "claim_id": "CLM-002",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "Permira completed the acquisition of Squarespace on October 17, 2024, and the transaction valued the company at approximately $7.2 billion, so the diligence question is now a sponsor-owned value-creation question rather than a public-shareholder voting question."
+    },
+    {
+      "citation_ids": [
+        "SRC-002"
+      ],
+      "claim_id": "CLM-003",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "Squarespace's Q2 2024 total revenue was $296.8 million, up 20% year over year, which indicates the company entered the take-private with real top-line momentum rather than a stalled revenue base."
+    },
+    {
+      "citation_ids": [
+        "SRC-002"
+      ],
+      "claim_id": "CLM-004",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "Annual run-rate revenue reached $1.179 billion in Q2 2024, up 20% year over year, while unique subscriptions increased 21% to more than 5.2 million, giving the sponsor a large subscription base to monetize."
+    },
+    {
+      "citation_ids": [
+        "SRC-002"
+      ],
+      "claim_id": "CLM-005",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "Average revenue per unique subscription rose only 3% year over year to $225.45, which suggests that near-term value creation probably needs price-packaging, attachment, or mix improvements in addition to continued subscription growth."
+    },
+    {
+      "citation_ids": [
+        "SRC-002"
+      ],
+      "claim_id": "CLM-006",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "Squarespace's own metric definition says ARRR is a run-rate indicator and not a GAAP revenue forecast, so underwriting should avoid treating ARRR as guaranteed next-year revenue."
+    },
+    {
+      "citation_ids": [
+        "SRC-003"
+      ],
+      "claim_id": "CLM-007",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "Wix reported Q2 2024 bookings of $458.4 million, up 15% year over year, and attributed momentum partly to Wix Studio, AI capabilities, and commerce expansion, creating a competitive benchmark that Squarespace must answer with product depth and partner-led growth rather than brand alone."
+    },
+    {
+      "citation_ids": [
+        "SRC-004"
+      ],
+      "claim_id": "CLM-008",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "The merger announcement warned of business disruption, employee-retention, financing, regulatory, and competitive-response risks, making continuity and execution quality explicit diligence gates after close."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-009",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_004",
+      "text": "The growth branch is directionally attractive but not self-proving."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-010",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_004",
+      "text": "Subscription count and ARRR growth support further diligence, while modest ARPUS growth and Wix's stronger agency/Studio narrative imply that sponsor upside needs a focused monetization and product-extension plan."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-011",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_004",
+      "text": "The most important disconfirming evidence would be cohort-level data showing that incremental subscriptions came from lower-quality Google Domains migration effects or low-retention price-sensitive customers."
+    }
+  ],
+  "child_artifact_ids": [],
+  "created_at": "2026-05-28T20:45:13.798492Z",
+  "issue_node_ids": [
+    "SQSP-1"
+  ],
+  "metadata": {},
+  "normalized_path": "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/run/artifact-store/sqsp-permira-artifact-slice/files/normalized/report-sqsp-permira-artifact-slice-3d571b69b4.txt",
+  "parent_artifact_ids": [
+    "provider-job-sqsp-permira-artifact-slice-68490fe053"
+  ],
+  "provider_job_id": "provider-job-sqsp-permira-artifact-slice-68490fe053",
+  "quality_flags": [
+    "4_claims_missing_citations",
+    "fewer_than_5_sources"
+  ],
+  "raw_path": "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/run/artifact-store/sqsp-permira-artifact-slice/files/raw/chatgpt-sqsp-growth-quality.md",
+  "run_id": "sqsp-permira-artifact-slice",
+  "section_records": [
+    {
+      "end_line": 2,
+      "level": 1,
+      "section_id": "section_001",
+      "start_line": 1,
+      "text": "",
+      "title": "Squarespace Growth Quality Branch Report"
+    },
+    {
+      "end_line": 6,
+      "level": 2,
+      "section_id": "section_002",
+      "start_line": 3,
+      "text": "Assess whether Squarespace's post-take-private growth base is strong enough for a PE sponsor to underwrite value creation without relying mainly on multiple expansion.",
+      "title": "Branch Prompt"
+    },
+    {
+      "end_line": 16,
+      "level": 2,
+      "section_id": "section_003",
+      "start_line": 7,
+      "text": "- Permira completed the acquisition of Squarespace on October 17, 2024, and the transaction valued the company at approximately $7.2 billion, so the diligence question is now a sponsor-owned value-creation question rather than a public-shareholder voting question [SRC1].\n- Squarespace's Q2 2024 total revenue was $296.8 million, up 20% year over year, which indicates the company entered the take-private with real top-line momentum rather than a stalled revenue base [SRC2].\n- Annual run-rate revenue reached $1.179 billion in Q2 2024, up 20% year over year, while unique subscriptions increased 21% to more than 5.2 million, giving the sponsor a large subscription base to monetize [SRC2].\n- Average revenue per unique subscription rose only 3% year over year to $225.45, which suggests that near-term value creation probably needs price-packaging, attachment, or mix improvements in addition to continued subscription growth [SRC2].\n- Squarespace's own metric definition says ARRR is a run-rate indicator and not a GAAP revenue forecast, so underwriting should avoid treating ARRR as guaranteed next-year revenue [SRC3].\n- Wix reported Q2 2024 bookings of $458.4 million, up 15% year over year, and attributed momentum partly to Wix Studio, AI capabilities, and commerce expansion, creating a competitive benchmark that Squarespace must answer with product depth and partner-led growth rather than brand alone [SRC4].\n- The merger announcement warned of business disruption, employee-retention, financing, regulatory, and competitive-response risks, making continuity and execution quality explicit diligence gates after close [SRC5].",
+      "title": "Findings"
+    },
+    {
+      "end_line": 25,
+      "level": 2,
+      "section_id": "section_004",
+      "start_line": 17,
+      "text": "The growth branch is directionally attractive but not self-proving. Subscription count and ARRR growth support further diligence, while modest ARPUS growth and Wix's stronger agency/Studio narrative imply that sponsor upside needs a focused monetization and product-extension plan. The most important disconfirming evidence would be cohort-level data showing that incremental subscriptions came from lower-quality Google Domains migration effects or low-retention price-sensitive customers.\n\n[SRC1]: https://www.squarespace.com/press-releases/2024/10/17/permira-completes-acquisition-of-squarespace\n[SRC2]: https://www.prnewswire.com/news-releases/squarespace-announces-second-quarter-2024-financial-results-302212968.html\n[SRC3]: https://www.prnewswire.com/news-releases/squarespace-announces-second-quarter-2024-financial-results-302212968.html\n[SRC4]: https://www.wix.com/press-room/home/post/wix-reports-second-quarter-2024-results\n[SRC5]: https://www.squarespace.com/press-releases/2024/5/13/squarespace-to-go-private-in-69b-all-cash-transaction-with-permira",
+      "title": "Branch Assessment"
+    }
+  ],
+  "source_format": "markdown",
+  "source_records": [
+    {
+      "domain": "www.squarespace.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC1",
+      "reference_key": "SRC1",
+      "source_id": "SRC-001",
+      "url": "https://www.squarespace.com/press-releases/2024/10/17/permira-completes-acquisition-of-squarespace"
+    },
+    {
+      "domain": "www.prnewswire.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC2",
+      "reference_key": "SRC2",
+      "source_id": "SRC-002",
+      "url": "https://www.prnewswire.com/news-releases/squarespace-announces-second-quarter-2024-financial-results-302212968.html"
+    },
+    {
+      "domain": "www.wix.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC4",
+      "reference_key": "SRC4",
+      "source_id": "SRC-003",
+      "url": "https://www.wix.com/press-room/home/post/wix-reports-second-quarter-2024-results"
+    },
+    {
+      "domain": "www.squarespace.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC5",
+      "reference_key": "SRC5",
+      "source_id": "SRC-004",
+      "url": "https://www.squarespace.com/press-releases/2024/5/13/squarespace-to-go-private-in-69b-all-cash-transaction-with-permira"
+    }
+  ],
+  "status": "ready",
+  "title": "Squarespace Growth Quality Branch Report",
+  "updated_at": "2026-05-28T20:45:13.798550+00:00"
+}

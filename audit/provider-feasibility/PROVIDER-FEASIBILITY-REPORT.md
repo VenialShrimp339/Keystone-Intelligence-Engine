@@ -165,7 +165,15 @@ ProviderAdapter
 
 ## Immediate Next Experiments
 
-1. Build the browser adapter around `src/keystone/providers/browser_watch.py` so many provider jobs can be monitored in parallel.
-2. Add export handlers that preserve both body text and source URLs, including ChatGPT DOCX source-link recovery.
+Status update, 2026-05-28:
+
+- `src/keystone/providers/browser_provider.py` now implements the provider ledger, interleaved watcher loop, DOM-signal integration, ChatGPT Markdown plus DOCX export-route enforcement, Claude artifact/report export-route enforcement, and completion-only ingestion control.
+- The first artifact-centered vertical slice used a fixture controller to run two branch-level provider jobs and wrote the provider ledger under `audit/vertical-slices/2026-05-28-artifact-centered/run/provider-ledger.json`.
+- The remaining gap is live browser control: replacing the fixture controller with a Chrome/plugin controller that can submit provider jobs and trigger native exports in logged-in sessions.
+
+Next experiments:
+
+1. Implement a live Chrome/plugin-backed `BrowserProviderController`.
+2. Exercise real ChatGPT Markdown+DOCX and Claude artifact exports from approved `IssueTreePackage.leaf_tasks[]`.
 3. Add per-provider concurrency controls and source/depth budget prompts before launching large issue-tree waves.
-4. Add a provider ledger UI view that records provider, account surface, submitted prompt, start/end timestamps, DOM snapshots, completion status, artifact paths, and usage if available.
+4. Add a provider ledger UI or review view that records provider, account surface, submitted prompt, start/end timestamps, DOM snapshots, completion status, artifact paths, and usage if available.

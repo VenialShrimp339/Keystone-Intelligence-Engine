@@ -64,13 +64,19 @@ The live Claude completed report was ingested under:
 
 `audit/provider-feasibility/artifacts/live-probe-2026-05-24/ingested-artifacts/live-provider-probe-2026-05-24-claude/`
 
-## Next Build Step
+## Build Status
 
-Build the actual browser adapter around these detectors:
+Implemented on 2026-05-28:
 
-1. Persist a `BrowserProviderSession` with provider, tab URL, tab title, conversation URL, and artifact root.
-2. Poll each active tab with provider-specific detector.
-3. On `export_ready`, open the report surface, save DOM/screenshot/export text, and call `ManualUploadAdapter`.
-4. On `blocked`, pause the run and request human action.
-5. On timeout with continued progress, keep job active rather than failing.
-6. On timeout with no state change, mark the job `partial` and keep the tab as a handoff.
+1. `ProviderJobRecord` persists provider, prompt, branch ID, URL, snapshots, status, export paths, source recovery, and ingestion state.
+2. `BrowserProviderAdapter.watch_until_terminal` polls multiple active jobs in an interleaved loop with provider-specific detectors.
+3. `export_and_ingest` allows ingestion only when the latest signal is `export_ready` and the provider export route is complete.
+4. ChatGPT requires the body-plus-source route: Markdown report body plus DOCX source-link path.
+5. Claude requires an artifact/report export path.
+6. Running, blocked, failed, completed, exported, and rejected-incomplete states are ledgered.
+
+Remaining build step:
+
+1. Implement a live Chrome/plugin-backed controller for `BrowserProviderController`.
+2. Trigger native provider exports from logged-in ChatGPT and Claude sessions.
+3. Preserve source URL recovery from real DOCX/artifact exports, then reconcile those URLs into the evidence bundle.

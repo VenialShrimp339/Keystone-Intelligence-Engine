@@ -4,13 +4,13 @@ mode: standalone_consultant_or_kie_integration
 problem_frame:
   original_prompt: string
   reconstructed_problem: string
-  decision_maker: string_or_unknown
+  decision_maker: string_required_or_explicit_assumption
   decision_or_question: string
   situation: string
   complication: string
-  r1_undesired_result: string_or_unknown
-  r2_desired_result: string_or_unknown
-  constraints: []
+  r1_undesired_result: string_required_or_explicit_assumption
+  r2_desired_result: string_required_or_explicit_assumption
+  constraints: [explicit_or_assumed_constraints]
   assumptions: []
   ambiguity_status: clear_or_assumptions_or_needs_user_input
   blocking_unknowns: []
@@ -92,6 +92,12 @@ pruning_decisions:
     value_of_information_note: string
     risk_if_wrong: low_medium_high
     reopen_condition: string_or_null
+
+pruned_tree_contract:
+  retained_leaf_target: 3_to_8_unless_user_requests_broad_map
+  tree_body_rule: retained_executable_spine_only
+  ledger_rule: detailed_keep_defer_prune_merge_rationale_lives_in_pruning_decisions
+  second_pass_required_when: more_than_8_retained_leaves_without_explicit_broad_map_label
 
 quality_gate_results:
   - gate_id: problem_frame_axis_fit_sibling_logic_mece_hypothesis_pruning_leaf_actionability_anti_genericity_eval_hygiene

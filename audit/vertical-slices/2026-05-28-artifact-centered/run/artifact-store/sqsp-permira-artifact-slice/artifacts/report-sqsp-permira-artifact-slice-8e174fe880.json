@@ -1,0 +1,205 @@
+{
+  "artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+  "artifact_type": "research_report",
+  "candidate_claim_records": [
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-001",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_002",
+      "text": "Assess whether Squarespace's margin, cash-flow, and portfolio posture can support private-equity value creation after the Permira take-private."
+    },
+    {
+      "citation_ids": [
+        "SRC-001"
+      ],
+      "claim_id": "CLM-002",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "Squarespace generated $72.1 million of adjusted EBITDA in Q2 2024 against $296.8 million of revenue, but adjusted EBITDA declined slightly year over year, so growth was not translating into automatic EBITDA expansion at the latest public checkpoint."
+    },
+    {
+      "citation_ids": [
+        "SRC-001"
+      ],
+      "claim_id": "CLM-003",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "Unlevered free cash flow was $65.4 million in Q2 2024 and $154.7 million for the first half of 2024, giving the sponsor a cash-generative asset base for deleveraging, reinvestment, or tuck-in work."
+    },
+    {
+      "citation_ids": [
+        "SRC-001"
+      ],
+      "claim_id": "CLM-004",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "Net cash provided by operating activities was $145.8 million for the first half of 2024 versus $116.7 million in the prior-year period, supporting the view that the company had improving cash conversion before delisting."
+    },
+    {
+      "citation_ids": [
+        "SRC-001"
+      ],
+      "claim_id": "CLM-005",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "Squarespace's Q2 2024 disclosure warns that adjusted EBITDA and unlevered free cash flow are non-GAAP measures and should be used only alongside GAAP results, so diligence should reconcile reported non-GAAP cash generation to debt capacity and sponsor-case liquidity."
+    },
+    {
+      "citation_ids": [
+        "SRC-002"
+      ],
+      "claim_id": "CLM-006",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "Squarespace agreed in June 2024 to sell Tock to American Express for $400 million in cash, creating a portfolio-simplification and liquidity event that can sharpen focus on the core website, domains, commerce, and entrepreneur platform."
+    },
+    {
+      "citation_ids": [
+        "SRC-003"
+      ],
+      "claim_id": "CLM-007",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "American Express completed the Tock acquisition on October 15, 2024, removing a non-core hospitality platform from the Squarespace perimeter immediately before the Permira closing."
+    },
+    {
+      "citation_ids": [
+        "SRC-004"
+      ],
+      "claim_id": "CLM-008",
+      "confidence": 0.55,
+      "quality_flags": [],
+      "section_id": "section_003",
+      "text": "The transaction announcement's risk factors include financing, rating-agency, macro, litigation, disruption, and employee-retention risks, so the cash-flow branch should include downside cases for debt cost, retention, and execution disruption rather than assuming a frictionless take-private."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-009",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_004",
+      "text": "The margin and cash-flow branch supports proceeding to deeper diligence, with a caution."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-010",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_004",
+      "text": "Squarespace had meaningful unlevered free cash flow and a cleaner portfolio after Tock, but the public checkpoint did not show clear EBITDA expansion."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-011",
+      "confidence": 0.35,
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "section_id": "section_004",
+      "text": "The next analytical artifact should be a sponsor-case bridge that separates recurring subscription gross margin, operating expense leverage, Google Domains integration effects, post-Tock perimeter changes, debt service, and reinvestment needs."
+    }
+  ],
+  "child_artifact_ids": [],
+  "created_at": "2026-05-28T20:45:13.800148Z",
+  "issue_node_ids": [
+    "SQSP-2"
+  ],
+  "metadata": {},
+  "normalized_path": "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/run/artifact-store/sqsp-permira-artifact-slice/files/normalized/report-sqsp-permira-artifact-slice-8e174fe880.txt",
+  "parent_artifact_ids": [
+    "provider-job-sqsp-permira-artifact-slice-9d23dcc3cc"
+  ],
+  "provider_job_id": "provider-job-sqsp-permira-artifact-slice-9d23dcc3cc",
+  "quality_flags": [
+    "4_claims_missing_citations",
+    "fewer_than_5_sources"
+  ],
+  "raw_path": "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/run/artifact-store/sqsp-permira-artifact-slice/files/raw/claude-sqsp-margin-fcf.md",
+  "run_id": "sqsp-permira-artifact-slice",
+  "section_records": [
+    {
+      "end_line": 2,
+      "level": 1,
+      "section_id": "section_001",
+      "start_line": 1,
+      "text": "",
+      "title": "Squarespace Margin And Cash Flow Branch Report"
+    },
+    {
+      "end_line": 6,
+      "level": 2,
+      "section_id": "section_002",
+      "start_line": 3,
+      "text": "Assess whether Squarespace's margin, cash-flow, and portfolio posture can support private-equity value creation after the Permira take-private.",
+      "title": "Branch Prompt"
+    },
+    {
+      "end_line": 16,
+      "level": 2,
+      "section_id": "section_003",
+      "start_line": 7,
+      "text": "- Squarespace generated $72.1 million of adjusted EBITDA in Q2 2024 against $296.8 million of revenue, but adjusted EBITDA declined slightly year over year, so growth was not translating into automatic EBITDA expansion at the latest public checkpoint [SRC1].\n- Unlevered free cash flow was $65.4 million in Q2 2024 and $154.7 million for the first half of 2024, giving the sponsor a cash-generative asset base for deleveraging, reinvestment, or tuck-in work [SRC1].\n- Net cash provided by operating activities was $145.8 million for the first half of 2024 versus $116.7 million in the prior-year period, supporting the view that the company had improving cash conversion before delisting [SRC1].\n- Squarespace's Q2 2024 disclosure warns that adjusted EBITDA and unlevered free cash flow are non-GAAP measures and should be used only alongside GAAP results, so diligence should reconcile reported non-GAAP cash generation to debt capacity and sponsor-case liquidity [SRC2].\n- Squarespace agreed in June 2024 to sell Tock to American Express for $400 million in cash, creating a portfolio-simplification and liquidity event that can sharpen focus on the core website, domains, commerce, and entrepreneur platform [SRC3].\n- American Express completed the Tock acquisition on October 15, 2024, removing a non-core hospitality platform from the Squarespace perimeter immediately before the Permira closing [SRC4].\n- The transaction announcement's risk factors include financing, rating-agency, macro, litigation, disruption, and employee-retention risks, so the cash-flow branch should include downside cases for debt cost, retention, and execution disruption rather than assuming a frictionless take-private [SRC5].",
+      "title": "Findings"
+    },
+    {
+      "end_line": 25,
+      "level": 2,
+      "section_id": "section_004",
+      "start_line": 17,
+      "text": "The margin and cash-flow branch supports proceeding to deeper diligence, with a caution. Squarespace had meaningful unlevered free cash flow and a cleaner portfolio after Tock, but the public checkpoint did not show clear EBITDA expansion. The next analytical artifact should be a sponsor-case bridge that separates recurring subscription gross margin, operating expense leverage, Google Domains integration effects, post-Tock perimeter changes, debt service, and reinvestment needs.\n\n[SRC1]: https://www.prnewswire.com/news-releases/squarespace-announces-second-quarter-2024-financial-results-302212968.html\n[SRC2]: https://www.prnewswire.com/news-releases/squarespace-announces-second-quarter-2024-financial-results-302212968.html\n[SRC3]: https://www.squarespace.com/press-releases/2024/6/21/squarespace-agrees-to-sell-tock-platform-to-american-express-for-400-million\n[SRC4]: https://www.americanexpress.com/en-us/newsroom/articles/company-statements/american-express-completes-acquisition-of-tock.html\n[SRC5]: https://www.squarespace.com/press-releases/2024/5/13/squarespace-to-go-private-in-69b-all-cash-transaction-with-permira",
+      "title": "Branch Assessment"
+    }
+  ],
+  "source_format": "markdown",
+  "source_records": [
+    {
+      "domain": "www.prnewswire.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC1",
+      "reference_key": "SRC1",
+      "source_id": "SRC-001",
+      "url": "https://www.prnewswire.com/news-releases/squarespace-announces-second-quarter-2024-financial-results-302212968.html"
+    },
+    {
+      "domain": "www.squarespace.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC3",
+      "reference_key": "SRC3",
+      "source_id": "SRC-002",
+      "url": "https://www.squarespace.com/press-releases/2024/6/21/squarespace-agrees-to-sell-tock-platform-to-american-express-for-400-million"
+    },
+    {
+      "domain": "www.americanexpress.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC4",
+      "reference_key": "SRC4",
+      "source_id": "SRC-003",
+      "url": "https://www.americanexpress.com/en-us/newsroom/articles/company-statements/american-express-completes-acquisition-of-tock.html"
+    },
+    {
+      "domain": "www.squarespace.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC5",
+      "reference_key": "SRC5",
+      "source_id": "SRC-004",
+      "url": "https://www.squarespace.com/press-releases/2024/5/13/squarespace-to-go-private-in-69b-all-cash-transaction-with-permira"
+    }
+  ],
+  "status": "ready",
+  "title": "Squarespace Margin And Cash Flow Branch Report",
+  "updated_at": "2026-05-28T20:45:13.800221+00:00"
+}

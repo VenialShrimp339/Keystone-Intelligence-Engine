@@ -386,4 +386,5 @@ def _looks_like_claim(text: str) -> bool:
 def _strip_markdown(text: str) -> str:
     without_links = _INLINE_LINK_RE.sub(r"\1", text)
     without_refs = _REF_MARKER_RE.sub("", without_links)
-    return re.sub(r"\s+", " ", without_refs).strip()
+    collapsed = re.sub(r"\s+", " ", without_refs).strip()
+    return re.sub(r"\s+([.,;:!?])", r"\1", collapsed)

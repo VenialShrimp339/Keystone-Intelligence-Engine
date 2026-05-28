@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["run_id", "verdict", "case_results", "aggregate", "failure_clusters", "integration_decision"],
+  "properties": {
+    "run_id": {"type": "string"},
+    "verdict": {"type": "string"},
+    "case_results": {
+      "type": "array",
+      "minItems": 13,
+      "maxItems": 13,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id",
+          "winner",
+          "baseline_total",
+          "skill_total",
+          "delta",
+          "baseline_scores",
+          "skill_scores",
+          "schema_compliance",
+          "catastrophic_failure",
+          "notes"
+        ],
+        "properties": {
+          "case_id": {"type": "string"},
+          "winner": {"type": "string", "enum": ["baseline", "skill", "tie"]},
+          "baseline_total": {"type": "number"},
+          "skill_total": {"type": "number"},
+          "delta": {"type": "number"},
+          "baseline_scores": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "problem_frame",
+              "axis_selection",
+              "mece_and_branch_logic",
+              "expert_property_coverage",
+              "hypothesis_and_decision_relevance",
+              "asymmetric_depth_and_pruning",
+              "leaf_resolution_actionability",
+              "framework_misuse_penalty"
+            ],
+            "properties": {
+              "problem_frame": {"type": "number"},
+              "axis_selection": {"type": "number"},
+              "mece_and_branch_logic": {"type": "number"},
+              "expert_property_coverage": {"type": "number"},
+              "hypothesis_and_decision_relevance": {"type": "number"},
+              "asymmetric_depth_and_pruning": {"type": "number"},
+              "leaf_resolution_actionability": {"type": "number"},
+              "framework_misuse_penalty": {"type": "number"}
+            }
+          },
+          "skill_scores": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "problem_frame",
+              "axis_selection",
+              "mece_and_branch_logic",
+              "expert_property_coverage",
+              "hypothesis_and_decision_relevance",
+              "asymmetric_depth_and_pruning",
+              "leaf_resolution_actionability",
+              "framework_misuse_penalty"
+            ],
+            "properties": {
+              "problem_frame": {"type": "number"},
+              "axis_selection": {"type": "number"},
+              "mece_and_branch_logic": {"type": "number"},
+              "expert_property_coverage": {"type": "number"},
+              "hypothesis_and_decision_relevance": {"type": "number"},
+              "asymmetric_depth_and_pruning": {"type": "number"},
+              "leaf_resolution_actionability": {"type": "number"},
+              "framework_misuse_penalty": {"type": "number"}
+            }
+          },
+          "schema_compliance": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["baseline", "skill"],
+            "properties": {
+              "baseline": {"type": "boolean"},
+              "skill": {"type": "boolean"}
+            }
+          },
+          "catastrophic_failure": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["baseline", "skill"],
+            "properties": {
+              "baseline": {"type": "boolean"},
+              "skill": {"type": "boolean"}
+            }
+          },
+          "notes": {"type": "string"}
+        }
+      }
+    },
+    "aggregate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baseline_average", "skill_average", "average_delta", "skill_wins", "baseline_wins", "ties"],
+      "properties": {
+        "baseline_average": {"type": "number"},
+        "skill_average": {"type": "number"},
+        "average_delta": {"type": "number"},
+        "skill_wins": {"type": "integer"},
+        "baseline_wins": {"type": "integer"},
+        "ties": {"type": "integer"}
+      }
+    },
+    "failure_clusters": {
+      "type": "array",
+      "items": {"type": "string"}
+    },
+    "integration_decision": {"type": "string"}
+  }
+}

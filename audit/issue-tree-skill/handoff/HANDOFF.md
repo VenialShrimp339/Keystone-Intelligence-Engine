@@ -120,33 +120,33 @@ Confidence: high for this single eval. Low to medium for general readiness until
 
 ## Weaknesses
 
-- Only one blind eval has been run so far.
-- The skill has not been wired into KIE runtime code.
+- The initial blind eval weakness is now reduced: a 13-case baseline-vs-skill run completed on 2026-05-28 with 11 skill wins, 0 baseline wins, 2 ties, no catastrophic failures, and schema-compliant outputs.
+- The skill is now wired into KIE prototype code through `IssueTreePackage` and approved-leaf task bridging, but the LLM package-builder prompt path and HITL approval view are still pending.
 - Bulletproof and McKinsey extraction artifacts were orchestrator fallback artifacts, not completed independent book-agent deliverables.
 - The contract is a target schema, not a validated Pydantic model.
 - The skill still depends on the executor model following quality gates. More adversarial evals are needed to measure compliance.
 
 ## Readiness Recommendation
 
-Ready for further eval and prototype integration.
+Ready for live-controller prototype integration.
 
-Not ready for direct production KIE integration until:
+Still not ready for direct production KIE integration until:
 
-1. the recommended seven-case book-derived subset passes,
-2. at least five novel stress tests show clear skill lift versus baseline,
-3. a Pydantic `IssueTreePackage` schema is implemented,
-4. the current `Decomposer` is adapted to consume approved pruned leaves instead of replacing the skill's tree logic.
+1. live multi-branch provider runs prove the package-to-provider path,
+2. a package-builder prompt path invokes the skill and validates the Pydantic schema,
+3. a HITL approval view exists for problem frame, axes, pruned leaves, and pruning decisions,
+4. source reconciliation from live provider exports is robust enough for cited synthesis.
 
 ## Exact Next KIE Step
 
-Add a new specification-stage artifact named `IssueTreePackage` upstream of the current `Decomposer`.
+Replace the fixture controller with a live browser-provider controller, while keeping `IssueTreePackage` as the dispatch artifact.
 
 Implementation sequence:
 
-1. Create Pydantic models matching `.agents/skills/problem-decomposition/references/output_contract.yaml`.
-2. Add a prompt path that invokes the problem-decomposition skill/methodology to produce the `IssueTreePackage`.
-3. Add a HITL approval view for the problem frame, candidate axes, full tree, pruned tree, pruning decisions, and leaf evidence plan.
-4. Add an adapter that maps approved `leaf_tasks[]` into the existing KIE task generator.
-5. Keep the existing decomposer as the downstream executor fanout layer until the new package is eval-proven.
+1. Add a prompt path that invokes the problem-decomposition skill/methodology to produce and validate `IssueTreePackage`.
+2. Add a HITL approval view for the problem frame, candidate axes, full tree, pruned tree, pruning decisions, and leaf evidence plan.
+3. Replace the fixture `BrowserProviderController` with a live Chrome/plugin controller.
+4. Run a multi-branch provider prototype from approved `leaf_tasks[]`.
+5. Keep the existing decomposer as fallback until live package-driven provider runs are stable.
 
 This preserves KIE's current lens and task machinery while fixing the upstream issue-tree quality gap.

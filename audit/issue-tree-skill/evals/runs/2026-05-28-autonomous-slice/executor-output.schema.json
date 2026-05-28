@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["arm", "case_outputs"],
+  "properties": {
+    "arm": {
+      "type": "string",
+      "enum": ["baseline", "skill"]
+    },
+    "case_outputs": {
+      "type": "array",
+      "minItems": 13,
+      "maxItems": 13,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id",
+          "problem_frame",
+          "candidate_axes",
+          "selected_axis_rationale",
+          "full_tree",
+          "pruned_tree",
+          "sibling_logic",
+          "leaf_tasks",
+          "pruning_decisions",
+          "quality_gate_results",
+          "machine_readable_summary"
+        ],
+        "properties": {
+          "case_id": {"type": "string"},
+          "problem_frame": {"type": "string"},
+          "candidate_axes": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "selected_axis_rationale": {"type": "string"},
+          "full_tree": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "pruned_tree": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "sibling_logic": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "leaf_tasks": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "leaf_id",
+                "research_question",
+                "evidence_requirements",
+                "expected_artifact",
+                "disconfirming_evidence"
+              ],
+              "properties": {
+                "leaf_id": {"type": "string"},
+                "research_question": {"type": "string"},
+                "evidence_requirements": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                },
+                "expected_artifact": {"type": "string"},
+                "disconfirming_evidence": {
+                  "type": "array",
+                  "items": {"type": "string"}
+                }
+              }
+            }
+          },
+          "pruning_decisions": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "quality_gate_results": {
+            "type": "array",
+            "items": {"type": "string"}
+          },
+          "machine_readable_summary": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["nodes_count", "leaf_tasks_count", "has_pruned_tree", "schema_claim"],
+            "properties": {
+              "nodes_count": {"type": "integer", "minimum": 1},
+              "leaf_tasks_count": {"type": "integer", "minimum": 1},
+              "has_pruned_tree": {"type": "boolean"},
+              "schema_claim": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  }
+}

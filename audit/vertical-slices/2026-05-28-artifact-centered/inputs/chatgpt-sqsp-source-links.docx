@@ -1,0 +1,6 @@
+Placeholder for the ChatGPT DOCX source-link export route.
+
+The live provider route uses the Markdown export for body text and DOCX export
+for source URLs. This local vertical-slice fixture preserves that route as a
+path in the provider ledger; the source URLs also appear in the Markdown report
+so the current ManualUploadAdapter can recover them deterministically.

@@ -1,0 +1,126 @@
+{
+  "created_at": "2026-05-28T20:45:13.794990Z",
+  "jobs": [
+    {
+      "branch_id": "SQSP-1",
+      "completed_at": "2026-05-28T20:45:13.795863Z",
+      "created_at": "2026-05-28T20:45:13.794924Z",
+      "export_paths": [
+        "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/inputs/chatgpt-sqsp-growth-quality.md",
+        "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/inputs/chatgpt-sqsp-source-links.docx"
+      ],
+      "exported_at": "2026-05-28T20:45:13.795396Z",
+      "ingested_at": null,
+      "ingestion_state": "ready_to_ingest",
+      "job_id": "provider-job-sqsp-permira-artifact-slice-68490fe053",
+      "job_url": "https://provider.local/chatgpt/SQSP-1/job",
+      "metadata": {
+        "provider_job_ref": "fixture-SQSP-1"
+      },
+      "prompt": "Assess whether Squarespace's post-take-private growth base is strong enough for a PE sponsor to underwrite value creation without relying mainly on multiple expansion.",
+      "provider": "chatgpt",
+      "provider_artifact_id": "provider-job-sqsp-permira-artifact-slice-ee02fce432",
+      "report_artifact_ids": [],
+      "run_id": "sqsp-permira-artifact-slice",
+      "snapshots": [
+        {
+          "captured_at": "2026-05-28T20:45:13.795444Z",
+          "evidence": [
+            "stop answering",
+            "thinking",
+            "searching"
+          ],
+          "export_available": false,
+          "report_title": null,
+          "screenshot_path": null,
+          "source_count": null,
+          "state": "running",
+          "url": "https://provider.local/chatgpt/SQSP-1/job"
+        },
+        {
+          "captured_at": "2026-05-28T20:45:13.795863Z",
+          "evidence": [
+            "download",
+            "markdown",
+            "word",
+            "sources used"
+          ],
+          "export_available": true,
+          "report_title": null,
+          "screenshot_path": null,
+          "source_count": null,
+          "state": "export_ready",
+          "url": "https://provider.local/chatgpt/SQSP-1/job"
+        }
+      ],
+      "source_recovery": {
+        "complete": true,
+        "notes": [],
+        "route": "markdown_body_plus_docx_source_links",
+        "source_paths": [
+          "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/inputs/chatgpt-sqsp-source-links.docx"
+        ],
+        "source_urls": [
+          "https://www.squarespace.com/press-releases/2024/10/17/permira-completes-acquisition-of-squarespace",
+          "https://www.prnewswire.com/news-releases/squarespace-announces-second-quarter-2024-financial-results-302212968.html"
+        ]
+      },
+      "status": "exported",
+      "submitted_at": "2026-05-28T20:45:13.794944Z",
+      "surface": "web",
+      "tab_id": "fixture-SQSP-1"
+    },
+    {
+      "branch_id": "SQSP-2",
+      "completed_at": "2026-05-28T20:45:13.795613Z",
+      "created_at": "2026-05-28T20:45:13.795195Z",
+      "export_paths": [
+        "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/inputs/claude-sqsp-margin-fcf.md"
+      ],
+      "exported_at": "2026-05-28T20:45:13.795402Z",
+      "ingested_at": null,
+      "ingestion_state": "ready_to_ingest",
+      "job_id": "provider-job-sqsp-permira-artifact-slice-9d23dcc3cc",
+      "job_url": "https://provider.local/claude/SQSP-2/job",
+      "metadata": {
+        "provider_job_ref": "fixture-SQSP-2"
+      },
+      "prompt": "Assess whether Squarespace's margin, cash-flow, and portfolio posture can support private-equity value creation after the Permira take-private.",
+      "provider": "claude",
+      "provider_artifact_id": "provider-job-sqsp-permira-artifact-slice-c654da9f1a",
+      "report_artifact_ids": [],
+      "run_id": "sqsp-permira-artifact-slice",
+      "snapshots": [
+        {
+          "captured_at": "2026-05-28T20:45:13.795613Z",
+          "evidence": [
+            "artifact panel:",
+            "research complete"
+          ],
+          "export_available": true,
+          "report_title": "Squarespace Margin And Cash Flow. 37 sources.",
+          "screenshot_path": null,
+          "source_count": 37,
+          "state": "export_ready",
+          "url": "https://provider.local/claude/SQSP-2/job"
+        }
+      ],
+      "source_recovery": {
+        "complete": true,
+        "notes": [],
+        "route": "artifact_report_export",
+        "source_paths": [],
+        "source_urls": [
+          "https://www.prnewswire.com/news-releases/squarespace-announces-second-quarter-2024-financial-results-302212968.html",
+          "https://www.squarespace.com/press-releases/2024/6/21/squarespace-agrees-to-sell-tock-platform-to-american-express-for-400-million"
+        ]
+      },
+      "status": "exported",
+      "submitted_at": "2026-05-28T20:45:13.795201Z",
+      "surface": "web",
+      "tab_id": "fixture-SQSP-2"
+    }
+  ],
+  "run_id": "sqsp-permira-artifact-slice",
+  "updated_at": "2026-05-28T20:45:13.796343+00:00"
+}

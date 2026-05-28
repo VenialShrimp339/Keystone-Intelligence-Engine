@@ -1,0 +1,371 @@
+{
+  "artifact_id": "evidence-combined-sqsp-permira-artifact-slice-049052fee9",
+  "artifact_type": "evidence_bundle",
+  "child_artifact_ids": [],
+  "claim_records": [
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-001",
+      "confidence": 0.35,
+      "original_claim_id": "CLM-001",
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "section_id": "section_002",
+      "text": "Assess whether Squarespace's post-take-private growth base is strong enough for a PE sponsor to underwrite value creation without relying mainly on multiple expansion."
+    },
+    {
+      "citation_ids": [
+        "SRC-001"
+      ],
+      "claim_id": "CLM-002",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-002",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "section_id": "section_003",
+      "text": "Permira completed the acquisition of Squarespace on October 17, 2024, and the transaction valued the company at approximately $7.2 billion, so the diligence question is now a sponsor-owned value-creation question rather than a public-shareholder voting question."
+    },
+    {
+      "citation_ids": [
+        "SRC-002"
+      ],
+      "claim_id": "CLM-003",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-003",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "section_id": "section_003",
+      "text": "Squarespace's Q2 2024 total revenue was $296.8 million, up 20% year over year, which indicates the company entered the take-private with real top-line momentum rather than a stalled revenue base."
+    },
+    {
+      "citation_ids": [
+        "SRC-002"
+      ],
+      "claim_id": "CLM-004",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-004",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "section_id": "section_003",
+      "text": "Annual run-rate revenue reached $1.179 billion in Q2 2024, up 20% year over year, while unique subscriptions increased 21% to more than 5.2 million, giving the sponsor a large subscription base to monetize."
+    },
+    {
+      "citation_ids": [
+        "SRC-002"
+      ],
+      "claim_id": "CLM-005",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-005",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "section_id": "section_003",
+      "text": "Average revenue per unique subscription rose only 3% year over year to $225.45, which suggests that near-term value creation probably needs price-packaging, attachment, or mix improvements in addition to continued subscription growth."
+    },
+    {
+      "citation_ids": [
+        "SRC-002"
+      ],
+      "claim_id": "CLM-006",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-006",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "section_id": "section_003",
+      "text": "Squarespace's own metric definition says ARRR is a run-rate indicator and not a GAAP revenue forecast, so underwriting should avoid treating ARRR as guaranteed next-year revenue."
+    },
+    {
+      "citation_ids": [
+        "SRC-003"
+      ],
+      "claim_id": "CLM-007",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-007",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "section_id": "section_003",
+      "text": "Wix reported Q2 2024 bookings of $458.4 million, up 15% year over year, and attributed momentum partly to Wix Studio, AI capabilities, and commerce expansion, creating a competitive benchmark that Squarespace must answer with product depth and partner-led growth rather than brand alone."
+    },
+    {
+      "citation_ids": [
+        "SRC-004"
+      ],
+      "claim_id": "CLM-008",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-008",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "section_id": "section_003",
+      "text": "The merger announcement warned of business disruption, employee-retention, financing, regulatory, and competitive-response risks, making continuity and execution quality explicit diligence gates after close."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-009",
+      "confidence": 0.35,
+      "original_claim_id": "CLM-009",
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "section_id": "section_004",
+      "text": "The growth branch is directionally attractive but not self-proving."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-010",
+      "confidence": 0.35,
+      "original_claim_id": "CLM-010",
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "section_id": "section_004",
+      "text": "Subscription count and ARRR growth support further diligence, while modest ARPUS growth and Wix's stronger agency/Studio narrative imply that sponsor upside needs a focused monetization and product-extension plan."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-011",
+      "confidence": 0.35,
+      "original_claim_id": "CLM-011",
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "section_id": "section_004",
+      "text": "The most important disconfirming evidence would be cohort-level data showing that incremental subscriptions came from lower-quality Google Domains migration effects or low-retention price-sensitive customers."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-012",
+      "confidence": 0.35,
+      "original_claim_id": "CLM-001",
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "section_id": "section_002",
+      "text": "Assess whether Squarespace's margin, cash-flow, and portfolio posture can support private-equity value creation after the Permira take-private."
+    },
+    {
+      "citation_ids": [
+        "SRC-005"
+      ],
+      "claim_id": "CLM-013",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-002",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "section_id": "section_003",
+      "text": "Squarespace generated $72.1 million of adjusted EBITDA in Q2 2024 against $296.8 million of revenue, but adjusted EBITDA declined slightly year over year, so growth was not translating into automatic EBITDA expansion at the latest public checkpoint."
+    },
+    {
+      "citation_ids": [
+        "SRC-005"
+      ],
+      "claim_id": "CLM-014",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-003",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "section_id": "section_003",
+      "text": "Unlevered free cash flow was $65.4 million in Q2 2024 and $154.7 million for the first half of 2024, giving the sponsor a cash-generative asset base for deleveraging, reinvestment, or tuck-in work."
+    },
+    {
+      "citation_ids": [
+        "SRC-005"
+      ],
+      "claim_id": "CLM-015",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-004",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "section_id": "section_003",
+      "text": "Net cash provided by operating activities was $145.8 million for the first half of 2024 versus $116.7 million in the prior-year period, supporting the view that the company had improving cash conversion before delisting."
+    },
+    {
+      "citation_ids": [
+        "SRC-005"
+      ],
+      "claim_id": "CLM-016",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-005",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "section_id": "section_003",
+      "text": "Squarespace's Q2 2024 disclosure warns that adjusted EBITDA and unlevered free cash flow are non-GAAP measures and should be used only alongside GAAP results, so diligence should reconcile reported non-GAAP cash generation to debt capacity and sponsor-case liquidity."
+    },
+    {
+      "citation_ids": [
+        "SRC-006"
+      ],
+      "claim_id": "CLM-017",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-006",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "section_id": "section_003",
+      "text": "Squarespace agreed in June 2024 to sell Tock to American Express for $400 million in cash, creating a portfolio-simplification and liquidity event that can sharpen focus on the core website, domains, commerce, and entrepreneur platform."
+    },
+    {
+      "citation_ids": [
+        "SRC-007"
+      ],
+      "claim_id": "CLM-018",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-007",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "section_id": "section_003",
+      "text": "American Express completed the Tock acquisition on October 15, 2024, removing a non-core hospitality platform from the Squarespace perimeter immediately before the Permira closing."
+    },
+    {
+      "citation_ids": [
+        "SRC-008"
+      ],
+      "claim_id": "CLM-019",
+      "confidence": 0.55,
+      "original_claim_id": "CLM-008",
+      "quality_flags": [],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "section_id": "section_003",
+      "text": "The transaction announcement's risk factors include financing, rating-agency, macro, litigation, disruption, and employee-retention risks, so the cash-flow branch should include downside cases for debt cost, retention, and execution disruption rather than assuming a frictionless take-private."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-020",
+      "confidence": 0.35,
+      "original_claim_id": "CLM-009",
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "section_id": "section_004",
+      "text": "The margin and cash-flow branch supports proceeding to deeper diligence, with a caution."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-021",
+      "confidence": 0.35,
+      "original_claim_id": "CLM-010",
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "section_id": "section_004",
+      "text": "Squarespace had meaningful unlevered free cash flow and a cleaner portfolio after Tock, but the public checkpoint did not show clear EBITDA expansion."
+    },
+    {
+      "citation_ids": [],
+      "claim_id": "CLM-022",
+      "confidence": 0.35,
+      "original_claim_id": "CLM-011",
+      "quality_flags": [
+        "missing_citation"
+      ],
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "section_id": "section_004",
+      "text": "The next analytical artifact should be a sponsor-case bridge that separates recurring subscription gross margin, operating expense leverage, Google Domains integration effects, post-Tock perimeter changes, debt service, and reinvestment needs."
+    }
+  ],
+  "created_at": "2026-05-28T20:45:13.801011Z",
+  "metadata": {},
+  "parent_artifact_ids": [
+    "sources-combined-sqsp-permira-artifact-slice-049052fee9",
+    "report-sqsp-permira-artifact-slice-3d571b69b4",
+    "report-sqsp-permira-artifact-slice-8e174fe880"
+  ],
+  "quality_flags": [
+    "8_claims_missing_citations"
+  ],
+  "report_artifact_ids": [
+    "report-sqsp-permira-artifact-slice-3d571b69b4",
+    "report-sqsp-permira-artifact-slice-8e174fe880"
+  ],
+  "run_id": "sqsp-permira-artifact-slice",
+  "source_bundle_artifact_id": "sources-combined-sqsp-permira-artifact-slice-049052fee9",
+  "source_records": [
+    {
+      "domain": "www.squarespace.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC1",
+      "original_source_id": "SRC-001",
+      "reference_key": "SRC1",
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "source_id": "SRC-001",
+      "url": "https://www.squarespace.com/press-releases/2024/10/17/permira-completes-acquisition-of-squarespace"
+    },
+    {
+      "domain": "www.prnewswire.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC2",
+      "original_source_id": "SRC-002",
+      "reference_key": "SRC2",
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "source_id": "SRC-002",
+      "url": "https://www.prnewswire.com/news-releases/squarespace-announces-second-quarter-2024-financial-results-302212968.html"
+    },
+    {
+      "domain": "www.wix.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC4",
+      "original_source_id": "SRC-003",
+      "reference_key": "SRC4",
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "source_id": "SRC-003",
+      "url": "https://www.wix.com/press-room/home/post/wix-reports-second-quarter-2024-results"
+    },
+    {
+      "domain": "www.squarespace.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC5",
+      "original_source_id": "SRC-004",
+      "reference_key": "SRC5",
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-3d571b69b4",
+      "source_id": "SRC-004",
+      "url": "https://www.squarespace.com/press-releases/2024/5/13/squarespace-to-go-private-in-69b-all-cash-transaction-with-permira"
+    },
+    {
+      "domain": "www.prnewswire.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC1",
+      "original_source_id": "SRC-001",
+      "reference_key": "SRC1",
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "source_id": "SRC-005",
+      "url": "https://www.prnewswire.com/news-releases/squarespace-announces-second-quarter-2024-financial-results-302212968.html"
+    },
+    {
+      "domain": "www.squarespace.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC3",
+      "original_source_id": "SRC-002",
+      "reference_key": "SRC3",
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "source_id": "SRC-006",
+      "url": "https://www.squarespace.com/press-releases/2024/6/21/squarespace-agrees-to-sell-tock-platform-to-american-express-for-400-million"
+    },
+    {
+      "domain": "www.americanexpress.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC4",
+      "original_source_id": "SRC-003",
+      "reference_key": "SRC4",
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "source_id": "SRC-007",
+      "url": "https://www.americanexpress.com/en-us/newsroom/articles/company-statements/american-express-completes-acquisition-of-tock.html"
+    },
+    {
+      "domain": "www.squarespace.com",
+      "first_seen_section_id": "section_004",
+      "label": "SRC5",
+      "original_source_id": "SRC-004",
+      "reference_key": "SRC5",
+      "report_artifact_id": "report-sqsp-permira-artifact-slice-8e174fe880",
+      "source_id": "SRC-008",
+      "url": "https://www.squarespace.com/press-releases/2024/5/13/squarespace-to-go-private-in-69b-all-cash-transaction-with-permira"
+    }
+  ],
+  "status": "ready",
+  "updated_at": "2026-05-28T20:45:13.801340+00:00"
+}

@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import json
 import logging
+from typing import TYPE_CHECKING
 
 from pydantic import ValidationError
 
@@ -26,10 +27,18 @@ from keystone.models.tasks import (
     TaskType,
 )
 from keystone.specification._prompts import load_prompt
-from keystone.specification.decomposer import IssueTree
-from keystone.specification.priority_scorer import PriorityScore
-from keystone.specification.template_registry import TemplateRegistry
+from keystone.specification.issue_tree_package import (
+    ConfidenceTarget,
+    IssueTreeLeafTask,
+    IssueTreePackage,
+    RequiredArtifactType,
+)
 from keystone.tool_names import ALL_TOOLS, BASELINE_AGENT_TOOLS, SYSTEM_OWNED_TOOLS
+
+if TYPE_CHECKING:
+    from keystone.specification.decomposer import IssueTree
+    from keystone.specification.priority_scorer import PriorityScore
+    from keystone.specification.template_registry import TemplateRegistry
 
 logger = logging.getLogger(__name__)
 
@@ -106,6 +115,46 @@ class TaskGenerator:
             )
 
         return await self._generate_single(tree, priorities, engagement_type, spec, priority_ranks)
+
+    def generate_from_issue_tree_package(
+        self,
+        package: IssueTreePackage,
+        engagement_type: EngagementType,
+        spec: ResearchSpec,
+    ) -> TaskDecomposition:
+        """Generate tasks directly from approved IssueTreePackage leaves.
+
+        This is the deterministic bridge from artifact-centered planning into
+        the existing research execution contract. It bypasses the LLM task
+        generator because the package leaf tasks already contain research
+        questions, evidence requirements, disconfirming tests, and expected
+        artifacts.
+        """
+        leaves = package.approved_leaf_tasks()
+        if not leaves:
+            raise ValueError("IssueTreePackage has no approved leaf_tasks to dispatch")
+
+        tasks = [
+            self._task_from_leaf(
+                leaf=leaf,
+                index=index,
+                engagement_type=engagement_type,
+                spec=spec,
+            )
+            for index, leaf in enumerate(leaves, start=1)
+        ]
+        return TaskDecomposition(
+            project=spec.title,
+            engagement_id=spec.engagement_id,
+            client_id=spec.client_id,
+            research_md_path=f"engagements/{spec.engagement_id}/RESEARCH.md",
+            specification_version=spec.specification_version,
+            decomposition_rationale=(
+                "Generated from approved IssueTreePackage leaf_tasks after "
+                f"axis selection: {package.selected_axis.rationale}"
+            ),
+            tasks=tasks,
+        )
 
     async def _generate_single(
         self,
@@ -310,6 +359,51 @@ class TaskGenerator:
 
         return sorted(tasks, key=lambda task: task.priority)
 
+    def _task_from_leaf(
+        self,
+        *,
+        leaf: IssueTreeLeafTask,
+        index: int,
+        engagement_type: EngagementType,
+        spec: ResearchSpec,
+    ) -> ResearchTask:
+        category = self._category_from_leaf(leaf)
+        target_decision_usefulness = _confidence_to_decision_usefulness(leaf.confidence_target)
+        source_requirements = leaf.evidence_requirements or leaf.likely_sources_or_methods
+        acceptance = leaf.acceptance_criteria or leaf.resolution_criteria
+        if not acceptance:
+            acceptance = ["Resolution criteria are satisfied with traceable evidence"]
+
+        return ResearchTask(
+            id=f"task_{index:03d}",
+            engagement_id=spec.engagement_id,
+            client_id=spec.client_id,
+            category=category,
+            type=_task_type_from_artifact(leaf.required_artifact_type),
+            target_decision_usefulness=target_decision_usefulness,
+            description=leaf.research_question,
+            required_sources=source_requirements,
+            acceptance_criteria=acceptance,
+            deliverable_destination=leaf.expected_artifact,
+            priority=index,
+            importance=self._resolve_importance(
+                priority_rank=index,
+                spec=spec,
+                target_decision_usefulness=target_decision_usefulness,
+            ),
+            anti_confirmatory_framing=_anti_confirmatory_framing(leaf),
+            assigned_tools=self._resolve_tools({}, category, engagement_type),
+            assigned_model=ModelTier.STANDARD,
+            end_product=leaf.expected_artifact,
+            dependencies=[],
+            issue_tree_branch_id=leaf.branch_id,
+            custom_category=leaf.downstream_agent_routing_hint,
+        )
+
+    def _category_from_leaf(self, leaf: IssueTreeLeafTask) -> TaskCategory:
+        routing = leaf.downstream_agent_routing_hint or leaf.required_artifact_type.value
+        return self._resolve_category(routing)
+
     def _resolve_category(self, raw: str) -> TaskCategory:
         """Map raw category string to TaskCategory, defaulting gracefully.
 
@@ -380,7 +474,9 @@ class TaskGenerator:
             acceptance_criteria=["temp"],
             deliverable_destination="temp",
             priority=1,
-            anti_confirmatory_framing="Evaluate whether this is the case, including evidence both for and against",
+            anti_confirmatory_framing=(
+                "Evaluate whether this is the case, including evidence both for and against"
+            ),
             assigned_tools=list(BASELINE_AGENT_TOOLS),
             end_product="temp",
         )
@@ -426,3 +522,31 @@ class TaskGenerator:
         if not isinstance(raw, int):
             return None
         return raw if raw >= 1 else None
+
+
+def _task_type_from_artifact(artifact_type: RequiredArtifactType) -> TaskType:
+    if artifact_type in {
+        RequiredArtifactType.DATASET,
+        RequiredArtifactType.SOURCE_MAP,
+        RequiredArtifactType.TIMELINE,
+    }:
+        return TaskType.CURRENT
+    return TaskType.ESTIMATIVE
+
+
+def _confidence_to_decision_usefulness(confidence: ConfidenceTarget) -> int:
+    return {
+        ConfidenceTarget.HIGH: 5,
+        ConfidenceTarget.MEDIUM: 4,
+        ConfidenceTarget.LOW: 3,
+    }[confidence]
+
+
+def _anti_confirmatory_framing(leaf: IssueTreeLeafTask) -> str:
+    disconfirming = "; ".join(leaf.disconfirming_evidence_to_seek)
+    if not disconfirming:
+        disconfirming = "evidence that would weaken or overturn the branch hypothesis"
+    return (
+        f"Evaluate whether the evidence resolves: {leaf.research_question}. "
+        f"Include evidence both for and against, and actively seek: {disconfirming}."
+    )

@@ -2436,3 +2436,52 @@ Used agent teams from `audit/remediation/AGENT-TEAMS-SETUP.md`. For each wave: s
 
 ### Exact next action
 - Commit these cleanup/current-truth docs, push `codex/owner-triage-normalization` to GitHub, then run the fresh autonomous goal in a new Codex session.
+
+## 2026-05-28T15:55:41-0500 - Artifact-Centered Autonomous Research Slice
+
+### Required provenance
+- Agent/runtime identity: Codex GPT-5 in Codex desktop.
+- Worktree path: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`.
+- Branch: `codex/owner-triage-normalization`.
+- Start commit: `76cdfb79468a09691bfd92abe7e0a758b8f247cf`.
+- End commit: no commit yet at the time of this log entry; final response reports the checkpoint commit if committed.
+- Authority docs read: `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, `audit/remediation/control-plane/CONTROL-PLANE-STATE.yaml`, `audit/remediation/control-plane/ACTIVE-HANDOFF.md`, `CURRENT-STATE.md`, `FOUNDER-INTENT-DOCTRINE.md`, `audit/issue-tree-skill/handoff/HANDOFF.md`, `audit/provider-feasibility/PROVIDER-FEASIBILITY-REPORT.md`, `audit/mega-goal/02-chatgpt-provider-capture-checkpoint.md`.
+- Graphify artifacts were checked earlier in the goal and absent; the required graphify rebuild hook was attempted after code changes but `graphify` was not importable in the repo venv or host Python.
+
+### Work performed
+- Ran a 13-case baseline-vs-skill issue-tree evaluation: 7 book-derived visible prompts and 6 novel stress tests.
+- Skill arm won 11 cases, baseline won 0, 2 cases tied. No catastrophic failures. Outputs were schema-compliant.
+- Patched `.agents/skills/problem-decomposition/` to require explicit decision maker/R1/R2/constraints in KIE mode and to keep pruned trees compact while moving verbose pruning rationale into `pruning_decisions[]`.
+- Reran targeted HSDD, policy, and messy-prompt cases after the patch; retained pruned trees compacted to 4-5 leaf tasks and 5-6 pruned entries.
+- Implemented `src/keystone/specification/issue_tree_package.py` and exported it from `keystone.specification`.
+- Added `TaskGenerator.generate_from_issue_tree_package`, bridging approved `leaf_tasks[]` into existing `ResearchTask` records with branch IDs preserved.
+- Added `IssueTreePackageArtifact`.
+- Implemented `src/keystone/providers/browser_provider.py`: provider ledger, job records, snapshots, source recovery, interleaved watcher loop, ChatGPT Markdown+DOCX export enforcement, Claude artifact/report export enforcement, and completion-only ingestion control.
+- Extended `src/keystone/ingestion/vertical_slice.py` with `run_artifact_centered_first_slice`.
+- Ran a public Permira/Squarespace PE diligence slice using a fixture provider controller and completed local provider reports. Outputs live under `audit/vertical-slices/2026-05-28-artifact-centered/run/`.
+- Wrote adversarial review and updated current-state, control-plane, TODO, and provider feasibility docs.
+
+### Evidence
+- Eval report: `audit/issue-tree-skill/evals/runs/2026-05-28-autonomous-slice/EVAL-REPORT.md`.
+- Vertical slice result: `audit/vertical-slices/2026-05-28-artifact-centered/run/result.json`.
+- Provider ledger: `audit/vertical-slices/2026-05-28-artifact-centered/run/provider-ledger.json`.
+- Cited deliverable: `audit/vertical-slices/2026-05-28-artifact-centered/run/artifact-store/sqsp-permira-artifact-slice/files/deliverables/synthesis-evidence-combined-sqsp-permi-ef1d530508.md`.
+- Slice evaluation passed with score 1.0, 22 extracted claims, 8 sources, and 14 traceable evidence-map entries.
+
+### Verification
+- `PYTHONPATH=src .venv/bin/python -m pytest tests/unit/specification/test_issue_tree_package.py tests/unit/specification/test_task_generator.py tests/unit/providers/test_browser_watch.py tests/unit/providers/test_browser_provider.py tests/unit/ingestion/test_vertical_slice.py -q` -> 32 passed.
+- `.venv/bin/python -m ruff check ...` on touched code, tests, and vertical-slice harness -> passed.
+- `PYTHONPATH=src .venv/bin/python audit/vertical-slices/2026-05-28-artifact-centered/run_artifact_centered_slice.py` -> completed and rewrote run artifacts.
+- Full `PYTHONPATH=src .venv/bin/python -m pytest -q` was killed after running longer than 8 minutes with one failure marker visible. Rerun with `-x` surfaced `tests/e2e/test_mock_pipeline.py::test_mock_pipeline_end_to_end`, where governance halted because mock research agents produced zero claims for primary tasks.
+- Graphify rebuild attempted with `.venv/bin/python` and `python3`; both failed with `ModuleNotFoundError: No module named 'graphify'`.
+
+### Decisions and residual risks
+- Decision: integrate the issue-tree skill through `IssueTreePackage` and approved leaf tasks rather than directly replacing the legacy `Decomposer`.
+- Decision: keep provider-native notifications as auxiliary UX. Keystone's provider ledger and watcher remain the control-plane truth.
+- Decision: ChatGPT full ingestion still requires Markdown body plus DOCX source-link route until source URLs appear directly in Markdown.
+- Residual risk: the vertical slice used a fixture controller, not live logged-in Chrome automation.
+- Residual risk: the cited deliverable is a first-pass evidence brief, not final consultant synthesis.
+- Residual risk: source URL reconciliation from real ChatGPT DOCX exports still needs implementation inside live export handling.
+
+### Exact next action
+- Replace the fixture controller with a live Chrome/plugin-backed `BrowserProviderController`, then run a multi-branch provider prototype from an approved `IssueTreePackage`.

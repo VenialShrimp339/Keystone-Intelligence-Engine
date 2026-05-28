@@ -8,8 +8,10 @@
 - The active product direction is the artifact-centered, subscription-first Keystone research rebuild, not the old April Lane E retrieval-parse next action.
 - Keystone's DPVI / issue-tree architecture is preserved. The execution boundaries are changing: expensive provider research must produce durable artifacts that can be inspected, resumed, reprocessed, and evaluated without rerunning upstream work.
 - The old Claude CLI-first runtime doctrine is stale. Preferred routing is now Codex CLI for structured local calls, ChatGPT web Deep Research for primary hosted research, Claude web Research for secondary/cross-check research, manual upload as fallback, deterministic public-source connectors for precision workflows, and API only as fallback/control.
-- The issue-tree/problem-decomposition skill is prototype-ready at `.agents/skills/problem-decomposition/`. It is not production-integrated into KIE yet.
-- The next KIE specification step is to implement a Pydantic `IssueTreePackage` upstream of the current `Decomposer`, after running the recommended issue-tree skill eval subset.
+- The issue-tree/problem-decomposition skill passed the recommended eval gate: 11 skill wins, 0 baseline wins, 2 ties, no catastrophic failures, and valid schema output. It was patched for compact pruning plus explicit decision maker/R1/R2/constraints.
+- A Pydantic `IssueTreePackage` now exists upstream of the current `Decomposer`; approved `leaf_tasks[]` bridge into `ResearchTask.issue_tree_branch_id` through `TaskGenerator.generate_from_issue_tree_package`.
+- Browser-provider orchestration now exists in `src/keystone/providers/browser_provider.py`: provider ledger, watcher polling, ChatGPT Markdown+DOCX export enforcement, Claude artifact/report export enforcement, completion-only ingestion, and interleaved multi-job watching.
+- The first realistic artifact-centered vertical slice completed on a public Permira/Squarespace PE diligence prompt using a fixture provider controller and completed local reports. It produced an issue-tree package artifact, provider ledger, provider job artifacts, combined evidence bundle, passing evaluation, and cited Markdown deliverable.
 - Claude web Research full lifecycle is proven and ingested for the public auto-body consolidation probe.
 - ChatGPT web Deep Research full lifecycle is now proven and ingested for the same public probe.
 - ChatGPT export nuance: the Markdown export preserved opaque citation markers, while the Word export exposed the actual source URLs. The browser adapter should preserve both body and source-link exports for ChatGPT until a cleaner export route is proven.
@@ -49,31 +51,24 @@ Any lower-order file that conflicts with a higher-order item below loses for liv
 
 - `active_branch`: `codex/owner-triage-normalization`
 - `active_worktree_path`: `/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization`
-- `active_state`: `artifact_centered_research_rebuild_active`
-- `controller_priority_workstream`: `Repository cleanup and fresh-goal launch readiness`
+- `active_state`: `artifact_centered_vertical_slice_proven`
+- `controller_priority_workstream`: `Live browser-controller hardening and multi-branch provider prototype`
 - `stage_b_checkpoint_after_rebase`: `5be732d`
 - `stage_b_doc_checkpoint_after_rebase`: `fa1f92e`
 - `chatgpt_provider_capture_after_rebase`: `a3fd5984c526401535d1e26e829f53cc1e76d6c2`
-- `worktree_state`: clean after local excludes; cleanup doc commit and push are the only remaining prep steps
-- `issue_tree_skill_status`: prototype-ready for more eval
+- `worktree_state`: dirty with current artifact-centered slice pending checkpoint commit
+- `issue_tree_skill_status`: eval-passed and integrated as IssueTreePackage schema plus task bridge
 - `claude_provider_probe`: completed and ingested
 - `chatgpt_provider_probe`: completed, exported, source links recovered, and ingested
+- `artifact_centered_vertical_slice`: fixture-backed public PE diligence slice completed
 
 ## Exact Next Action
 
-1. Commit and push the cleanup/current-truth docs so GitHub matches local state.
-2. In a fresh Codex session, run the recommended issue-tree skill eval subset.
-3. Implement `IssueTreePackage` upstream of the current `Decomposer`.
-4. Build the browser provider adapter from the proven lifecycle:
-   - tab registry
-   - export-ready detection
-   - ChatGPT Markdown plus DOCX export
-   - Claude artifact export
-   - provider ledger
-   - blocked-state pause
-   - per-provider concurrency controls
-5. Build the first artifact-centered vertical slice.
-6. Expand to a multi-branch provider prototype only after the vertical slice is stable.
+1. Commit the current slice checkpoint.
+2. Replace the fixture provider controller with a live Chrome/plugin controller that can submit and export logged-in ChatGPT/Claude jobs.
+3. Run a multi-branch provider prototype from an approved `IssueTreePackage`, with provider ledger state as control-plane truth.
+4. Add or expose a HITL approval artifact for issue-tree package leaves before expensive provider dispatch.
+5. Decide whether legacy `Decomposer` becomes fallback-only, wrapped by the package builder, or retired from artifact-centered flows.
 
 ## Historical Remediation Notes
 
@@ -91,3 +86,4 @@ Any lower-order file that conflicts with a higher-order item below loses for liv
 - `2026-05-28T14:08:49-0500`: controller epoch advanced from `12` to `13`; live next action changed from old Lane E retrieval-parse work to the artifact-centered, subscription-first research rebuild after owner direction, provider feasibility work, and issue-tree skill prototype completion.
 - `2026-05-28T14:23:35-0500`: controller epoch advanced from `13` to `14`; ChatGPT Deep Research moved from completed-in-browser/pending-capture to completed/exported/source-links-recovered/ingested.
 - `2026-05-28T14:51:06-0500`: controller epoch advanced from `14` to `15`; remote README-only commits were rebased into local branch, local presentation drafts were excluded from Git status without moving/deleting them, and the branch was prepared for push before the fresh autonomous goal.
+- `2026-05-28T15:55:41-0500`: controller epoch advanced from `15` to `16`; issue-tree skill eval passed and was patched, `IssueTreePackage` plus task bridge were implemented, browser-provider orchestration and ledgering were added, and the first fixture-backed artifact-centered vertical slice completed.

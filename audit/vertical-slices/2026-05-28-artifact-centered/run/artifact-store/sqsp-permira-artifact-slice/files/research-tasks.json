@@ -1,0 +1,84 @@
+{
+  "project": "Can Permira create durable value in Squarespace after the take-private?",
+  "engagement_id": "sqsp-permira-package",
+  "client_id": "artifact_slice",
+  "research_md_path": "engagements/sqsp-permira-package/RESEARCH.md",
+  "specification_version": 1,
+  "decomposition_rationale": "Generated from approved IssueTreePackage leaf_tasks after axis selection: A take-private diligence slice should dispatch provider research only to branches that can change the sponsor value-creation answer.",
+  "tasks": [
+    {
+      "id": "task_001",
+      "engagement_id": "sqsp-permira-package",
+      "client_id": "artifact_slice",
+      "category": "strategic_positioning",
+      "type": "estimative",
+      "target_decision_usefulness": 5,
+      "description": "Is Squarespace's post-take-private growth base durable and monetizable?",
+      "required_sources": [
+        "Squarespace Q2 2024 operating metrics",
+        "Transaction close facts",
+        "Competitor benchmark evidence"
+      ],
+      "acceptance_criteria": [
+        "At least five source-backed claims",
+        "Explicit disconfirming evidence"
+      ],
+      "deliverable_destination": "Growth-quality memo with source map",
+      "passes": false,
+      "priority": 1,
+      "importance": "primary",
+      "anti_confirmatory_framing": "Evaluate whether the evidence resolves: Is Squarespace's post-take-private growth base durable and monetizable?. Include evidence both for and against, and actively seek: Growth is driven by low-quality migrated domains or weak retention; Competitors have stronger agency, AI, or commerce momentum.",
+      "assigned_tools": [
+        "exa_search",
+        "brave_search",
+        "paper_search",
+        "doi_verify",
+        "fred_data"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [],
+      "end_product": "Growth-quality memo with source map",
+      "issue_tree_branch_id": "SQSP-1",
+      "custom_category": "strategic_positioning"
+    },
+    {
+      "id": "task_002",
+      "engagement_id": "sqsp-permira-package",
+      "client_id": "artifact_slice",
+      "category": "financial_analysis",
+      "type": "estimative",
+      "target_decision_usefulness": 5,
+      "description": "Can Squarespace's margin and cash flow support PE value creation?",
+      "required_sources": [
+        "Squarespace Q2 2024 financial metrics",
+        "Tock divestiture evidence",
+        "Transaction risk factors"
+      ],
+      "acceptance_criteria": [
+        "At least five source-backed claims",
+        "Explicit non-GAAP caveats"
+      ],
+      "deliverable_destination": "Margin and cash-flow bridge memo",
+      "passes": false,
+      "priority": 2,
+      "importance": "supporting",
+      "anti_confirmatory_framing": "Evaluate whether the evidence resolves: Can Squarespace's margin and cash flow support PE value creation?. Include evidence both for and against, and actively seek: EBITDA expansion is absent despite growth; Cash flow is insufficient after debt service and reinvestment.",
+      "assigned_tools": [
+        "edgar_filings",
+        "finnhub_market",
+        "exa_search",
+        "brave_search",
+        "fred_data"
+      ],
+      "assigned_model": "standard",
+      "status": "pending",
+      "assigned_agent_id": null,
+      "dependencies": [],
+      "end_product": "Margin and cash-flow bridge memo",
+      "issue_tree_branch_id": "SQSP-2",
+      "custom_category": "financial_analysis"
+    }
+  ]
+}

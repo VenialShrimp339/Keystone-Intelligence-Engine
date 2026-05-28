@@ -2,9 +2,9 @@
 
 ## Active
 
-- [ ] **Issue-tree skill eval subset** — before direct KIE integration, run the recommended seven-case book-derived subset and at least five novel stress tests for `.agents/skills/problem-decomposition/`, then implement a Pydantic `IssueTreePackage` upstream of the current `Decomposer`.
-- [ ] **Browser provider adapter** — turn the proven manual browser lifecycle into code: tab registry, polling, export-ready detection, ChatGPT Markdown+DOCX export, Claude artifact export, provider ledger, blocked-state pause, and per-provider concurrency controls.
-- [ ] **First artifact-centered vertical slice** — run the new direction end to end on a messy request: problem frame, issue tree, approval artifact, provider reports, evidence bundle, synthesis brief, light evaluation, and cited deliverable.
+- [ ] **Live browser-provider controller** — replace the fixture controller with a Chrome/plugin-backed controller that can submit logged-in ChatGPT/Claude jobs, handle provider preflight prompts, and trigger real exports without manual downloading.
+- [ ] **Multi-branch provider prototype** — run several approved `IssueTreePackage.leaf_tasks[]` through provider jobs with provider ledger state as control-plane truth, then map completed reports back to branches and recommend the next wave.
+- [ ] **IssueTreePackage approval UX/artifact** — expose the problem frame, candidate axes, pruned tree, pruning decisions, and approved leaves before expensive provider dispatch.
 - [ ] Phase 2: route deep-mode tool calls through `MCPGateway.call_tool` (not just the audit log) once provider-native WebSearch/WebFetch have gateway-owned wrappers
 - [ ] **Prompt audit and optimization** — all 35 pipeline prompts (27 `.md` files + 8 inline Python in deliberation layer) were built during implementation without owner review. Dedicated session needed to: (a) read and approve/revise every prompt's wording, thresholds, and instructions; (b) externalize the 8 inline L1.5 deliberation prompts to `.md` files; (c) evaluate whether per-task prompt customization from L0 is sufficient or needs enhancement. Highest-leverage quality improvement available. See prompt catalog in session notes.
 - [ ] **Audit all L0 one-size-fits-all patterns** — First pipeline run (2026-04-22) exposed multiple places where L0 applies consulting-engagement defaults that break on non-consulting questions. Known instances:
@@ -38,6 +38,8 @@
 - [ ] Branch/worktree consolidation (cosmetic, not blocking)
 
 ## Done
+
+- [x] **First artifact-centered autonomous research slice** — Evaluated `.agents/skills/problem-decomposition/` on 13 cases (7 book-derived + 6 novel stress tests): skill won 11, baseline won 0, 2 ties, no catastrophic failures, schema-compliant outputs. Patched the skill for explicit decision maker/R1/R2/constraints and compact pruned trees. Implemented `IssueTreePackage`, approved-leaf task bridging, provider ledger/watcher/export adapter, completion-only ingestion, and a fixture-backed public PE diligence vertical slice for Permira/Squarespace. The slice produced provider jobs, provider ledger, issue-tree package artifact, research tasks, reports, combined evidence, passing evaluation, and a cited deliverable under `audit/vertical-slices/2026-05-28-artifact-centered/run/`.
 
 - [x] **ChatGPT Deep Research completion capture + ingestion** — Captured the completed ChatGPT auto-body/collision repair report from Chrome. Native Markdown export saved the report body but hid source URLs behind opaque citation markers; native Word export exposed the ten actual source URLs, so the normalized ingestion fixture combines the report body with DOCX-derived source references. Ingested run `live-provider-probe-2026-05-24-chatgpt` produced provider job, report, source bundle, evidence bundle, synthesis, evaluation, and deliverable artifacts with 10 sources, 24 candidate claims, 11 cited claims, and a 4/4 local evaluation pass.
 

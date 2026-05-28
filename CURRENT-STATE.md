@@ -1,6 +1,6 @@
 # Current State
 
-*Last updated: 2026-05-28 | Updated by: Codex repo-cleanup pass*
+*Last updated: 2026-05-28 | Updated by: Codex artifact-centered autonomous slice*
 
 > Summary-only current-truth layer. For live authority, start with `AUTHORITY-INDEX.md`, `SESSION-STANDARD.md`, and the control-plane pair.
 
@@ -10,9 +10,10 @@
 - Keystone remains a spec-driven, issue-tree-based consulting research system. The DPVI spine is preserved: decompose, parallelize, verify, iterate.
 - The prior April remediation control plane that pointed at Lane E retrieval-parse is historical provenance only for current planning. It no longer describes the active next action for this worktree.
 - The old Claude CLI-first runtime doctrine is stale. The target runtime is subscription-first provider routing: Codex CLI for structured local calls, ChatGPT web Deep Research as primary hosted research, Claude web Research as secondary/cross-check research, manual upload as fallback, deterministic public-source connectors where precision matters, and API only as fallback/control.
-- The issue-tree/problem-decomposition skill has a prototype package at `.agents/skills/problem-decomposition/`, with derived methodology, references, output contract, eval strategy, and KIE adapter notes under `audit/issue-tree-skill/`.
-- The issue-tree skill is prototype-ready for further eval. Direct KIE runtime integration should wait until the recommended book-derived and novel stress-test eval subset passes and a Pydantic `IssueTreePackage` is implemented.
-- First-slice artifact/report ingestion and provider completion detection exist under `src/keystone/artifacts/`, `src/keystone/ingestion/`, and `src/keystone/providers/`.
+- The issue-tree/problem-decomposition skill has now passed the recommended baseline-vs-skill eval gate. It won 11 of 13 cases, tied 2, had no catastrophic failures, and was patched for compact pruning plus explicit decision maker/R1/R2/constraints.
+- A Pydantic `IssueTreePackage` now exists upstream of the legacy `Decomposer` in `src/keystone/specification/issue_tree_package.py`. Approved `leaf_tasks[]` bridge deterministically into existing `ResearchTask` records through `TaskGenerator.generate_from_issue_tree_package`.
+- First-slice artifact/report ingestion, provider completion detection, provider ledgering, browser-provider orchestration, and artifact-centered slice execution exist under `src/keystone/artifacts/`, `src/keystone/ingestion/`, and `src/keystone/providers/`.
+- The first realistic artifact-centered vertical slice ran on a public Permira/Squarespace PE diligence prompt. It produced an approved issue-tree package, branch prompts, fixture-backed provider jobs, provider ledger, two ingested reports, combined evidence bundle, evaluation, and cited Markdown deliverable.
 - Claude web Research full lifecycle is proven for the public auto-body consolidation probe and was ingested into durable artifacts.
 - ChatGPT web Deep Research full lifecycle is now proven for the same public probe: completed report capture, Markdown export, Word export, source-link recovery, normalized report creation, and provider-neutral ingestion all succeeded.
 - ChatGPT export nuance: native Markdown preserved opaque citation markers, while native Word exposed the actual source URLs. The near-term browser adapter should treat ChatGPT as a body-plus-source export workflow when citation fidelity matters.
@@ -20,11 +21,11 @@
 
 ## What Happens Next
 
-1. Evaluate the problem-decomposition skill on the recommended book-derived and novel stress-test subset.
-2. Implement a Pydantic `IssueTreePackage` upstream of the current `Decomposer`, then map approved `leaf_tasks[]` into the existing task generator.
-3. Build the browser provider adapter around the proven lifecycle: tab registry, export-ready detection, ChatGPT Markdown+DOCX export, Claude artifact export, provider ledger, blocked-state pause, and per-provider concurrency controls.
-4. Build the first artifact-centered vertical slice: messy request, problem frame, issue tree, approval artifact, provider reports, evidence bundle, synthesis brief, light evaluation, cited brief.
-5. Only after that slice works, build the multi-branch provider prototype with branch-level ChatGPT/Claude/manual jobs, completion monitoring, evidence-to-branch mapping, gap detection, and next-wave recommendation.
+1. Replace the fixture controller in the vertical slice with a live Chrome controller or plugin-backed controller that can submit and export ChatGPT/Claude jobs under logged-in browser sessions.
+2. Harden provider export handlers around real ChatGPT Markdown+DOCX downloads and Claude artifact/report export, including source URL reconciliation.
+3. Promote the artifact-centered slice from local harness to orchestrated multi-branch prototype with provider-job scheduling, completion monitoring, branch evidence mapping, gap detection, and next-wave recommendation.
+4. Add a UI or review artifact for approving `IssueTreePackage` leaves before expensive provider dispatch.
+5. Decide whether the legacy `Decomposer` remains a fallback path, is wrapped by the skill package builder, or is retired for artifact-centered flows.
 
 ## Current Key Artifacts
 
@@ -36,6 +37,11 @@
 - July plan: `audit/roadmap/JULY-27-EXECUTION-PLAN.md`
 - First vertical slice: `audit/roadmap/first-vertical-slice-spec.md`
 - Issue-tree skill handoff: `audit/issue-tree-skill/handoff/HANDOFF.md`
+- Issue-tree eval report: `audit/issue-tree-skill/evals/runs/2026-05-28-autonomous-slice/EVAL-REPORT.md`
+- IssueTreePackage schema: `src/keystone/specification/issue_tree_package.py`
+- Browser provider adapter: `src/keystone/providers/browser_provider.py`
+- First artifact-centered vertical slice run: `audit/vertical-slices/2026-05-28-artifact-centered/run/result.json`
+- First artifact-centered cited deliverable: `audit/vertical-slices/2026-05-28-artifact-centered/run/artifact-store/sqsp-permira-artifact-slice/files/deliverables/synthesis-evidence-combined-sqsp-permi-ef1d530508.md`
 - Portable issue-tree skill: `.agents/skills/problem-decomposition/SKILL.md`
 
 ## Fresh-Session Read Order

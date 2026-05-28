@@ -4,6 +4,8 @@
 
 Passes when the governing question, decision maker, R1/R2 gap, constraints, and action implication are clear or visibly assumed.
 
+Fails in Keystone or machine-readable mode when decision maker, R1, R2, or constraints are omitted, even if they are inferable from surrounding prose.
+
 ## Axis Fit
 
 Passes when the selected axis exposes decision leverage and rejected axes are considered for ambiguous prompts.
@@ -23,6 +25,8 @@ Passes when provisional hypotheses include must-be-true assumptions and disconfi
 ## Pruning
 
 Passes when the full tree and pruned tree are separate, with visible retain/defer/prune/merge rationale.
+
+Fails when the pruned tree is mainly a KEEP/DEFER/PRUNE ledger or when more than 8 retained leaves survive without a second-pass pruning rationale or an explicit broad-map label.
 
 ## Leaf Actionability
 

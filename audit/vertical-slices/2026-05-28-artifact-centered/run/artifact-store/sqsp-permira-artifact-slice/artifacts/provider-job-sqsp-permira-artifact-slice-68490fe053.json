@@ -1,0 +1,34 @@
+{
+  "artifact_id": "provider-job-sqsp-permira-artifact-slice-68490fe053",
+  "artifact_type": "provider_job",
+  "block_reason": null,
+  "child_artifact_ids": [],
+  "completed_at": null,
+  "created_at": "2026-05-28T20:45:13.797605Z",
+  "export_paths": [
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/inputs/chatgpt-sqsp-growth-quality.md",
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/inputs/chatgpt-sqsp-source-links.docx"
+  ],
+  "exported_at": null,
+  "job_url": "https://provider.local/chatgpt/SQSP-1/job",
+  "metadata": {
+    "branch_id": "SQSP-1",
+    "ingestion_state": "completed_export_supplied",
+    "source_urls": "[\"https://www.squarespace.com/press-releases/2024/10/17/permira-completes-acquisition-of-squarespace\", \"https://www.prnewswire.com/news-releases/squarespace-announces-second-quarter-2024-financial-results-302212968.html\"]"
+  },
+  "model_name": null,
+  "parent_artifact_ids": [
+    "issue-tree-package-sqsp-permira-artifact-slice-e13719edd8"
+  ],
+  "prompt": "Assess whether Squarespace's post-take-private growth base is strong enough for a PE sponsor to underwrite value creation without relying mainly on multiple expansion.",
+  "provider": "chatgpt",
+  "provider_status": "exported",
+  "run_id": "sqsp-permira-artifact-slice",
+  "selected_model_evidence": null,
+  "status": "ready",
+  "submitted_at": null,
+  "surface": "web",
+  "tool_name": null,
+  "trace_paths": [],
+  "updated_at": "2026-05-28T20:45:13.797636+00:00"
+}

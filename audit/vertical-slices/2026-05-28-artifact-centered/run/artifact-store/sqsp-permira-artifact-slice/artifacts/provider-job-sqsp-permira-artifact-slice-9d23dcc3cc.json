@@ -1,0 +1,33 @@
+{
+  "artifact_id": "provider-job-sqsp-permira-artifact-slice-9d23dcc3cc",
+  "artifact_type": "provider_job",
+  "block_reason": null,
+  "child_artifact_ids": [],
+  "completed_at": null,
+  "created_at": "2026-05-28T20:45:13.799344Z",
+  "export_paths": [
+    "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/inputs/claude-sqsp-margin-fcf.md"
+  ],
+  "exported_at": null,
+  "job_url": "https://provider.local/claude/SQSP-2/job",
+  "metadata": {
+    "branch_id": "SQSP-2",
+    "ingestion_state": "completed_export_supplied",
+    "source_urls": "[\"https://www.prnewswire.com/news-releases/squarespace-announces-second-quarter-2024-financial-results-302212968.html\", \"https://www.squarespace.com/press-releases/2024/6/21/squarespace-agrees-to-sell-tock-platform-to-american-express-for-400-million\"]"
+  },
+  "model_name": null,
+  "parent_artifact_ids": [
+    "issue-tree-package-sqsp-permira-artifact-slice-e13719edd8"
+  ],
+  "prompt": "Assess whether Squarespace's margin, cash-flow, and portfolio posture can support private-equity value creation after the Permira take-private.",
+  "provider": "claude",
+  "provider_status": "exported",
+  "run_id": "sqsp-permira-artifact-slice",
+  "selected_model_evidence": null,
+  "status": "ready",
+  "submitted_at": null,
+  "surface": "web",
+  "tool_name": null,
+  "trace_paths": [],
+  "updated_at": "2026-05-28T20:45:13.799376+00:00"
+}

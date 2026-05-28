@@ -26,6 +26,8 @@ Define:
 - solution stance: no solution, proposed solution, accepted solution, failed solution, known alternatives, unclear R2, or uncertain R1
 - boundaries, time frame, accuracy needed, constraints, and expected action
 
+For machine-readable or Keystone outputs, decision maker, R1, R2, and constraints must be explicit. When they are unknown, write the assumption in the field and add a blocking unknown or objective-definition branch instead of omitting the field.
+
 ## Tree Type Router
 
 - No solution known: diagnostic causes, then solution options.
@@ -74,6 +76,8 @@ Show:
 - risk if wrong
 - evidence that would reopen the branch
 
+Separate the retained pruned tree from the pruning ledger. The pruned tree should be the compact executable spine, usually 3-8 retained leaves, plus only the dependencies needed to understand those leaves. The pruning ledger can be verbose and should carry the KEEP/DEFER/PRUNE/MERGE rationale. If more than 8 retained leaves survive, run a second pass or label the result as a broad research map.
+
 ## Leaf Resolution
 
 Every leaf should include:
@@ -85,4 +89,3 @@ Every leaf should include:
 - disconfirming evidence
 - likely sources or methods
 - required accuracy
-

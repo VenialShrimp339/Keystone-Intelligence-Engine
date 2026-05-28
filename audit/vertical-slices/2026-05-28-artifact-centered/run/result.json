@@ -1,0 +1,13 @@
+{
+  "run_id": "sqsp-permira-artifact-slice",
+  "specification_artifact_id": "spec-sqsp-permira-artifact-slice-c151b988ae",
+  "issue_tree_package_artifact_id": "issue-tree-package-sqsp-permira-artifact-slice-e13719edd8",
+  "task_decomposition_path": "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/run/artifact-store/sqsp-permira-artifact-slice/files/research-tasks.json",
+  "provider_job_artifact_ids": "provider-job-sqsp-permira-artifact-slice-68490fe053,provider-job-sqsp-permira-artifact-slice-9d23dcc3cc",
+  "combined_source_bundle_artifact_id": "sources-combined-sqsp-permira-artifact-slice-049052fee9",
+  "combined_evidence_bundle_artifact_id": "evidence-combined-sqsp-permira-artifact-slice-049052fee9",
+  "synthesis_artifact_id": "synthesis-evidence-combined-sqsp-permi-ef1d530508",
+  "evaluation_artifact_id": "evaluation-evidence-combined-sqsp-permi-ef1d530508",
+  "deliverable_artifact_id": "deliverable-sqsp-permira-artifact-slice-8d0c065c95",
+  "deliverable_path": "/Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/run/artifact-store/sqsp-permira-artifact-slice/files/deliverables/synthesis-evidence-combined-sqsp-permi-ef1d530508.md"
+}

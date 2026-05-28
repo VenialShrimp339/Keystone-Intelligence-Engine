@@ -1,15 +1,15 @@
 version: 2
-controller_epoch: 15
-lease_owner: codex-repo-cleanup-before-autonomous-goal
-lease_acquired_at: "2026-05-28T14:51:06-0500"
-lease_heartbeat_at: "2026-05-28T14:51:06-0500"
-lease_expires_at: "2026-05-28T15:21:06-0500"
+controller_epoch: 16
+lease_owner: codex-artifact-centered-autonomous-slice
+lease_acquired_at: "2026-05-28T15:55:41-0500"
+lease_heartbeat_at: "2026-05-28T15:55:41-0500"
+lease_expires_at: "2026-05-28T16:25:41-0500"
 lease_takeover_rule: "If lease_heartbeat_at is older than 30 minutes, or the new controller cannot confirm repo state from disk, it must increment controller_epoch, rewrite lease fields, and append the takeover to ACTIVE-HANDOFF.md before mutating state."
 
 active_branch: codex/owner-triage-normalization
 active_worktree_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization
-active_state: artifact_centered_research_rebuild_active
-controller_priority_workstream: Repository cleanup and fresh-goal launch readiness
+active_state: artifact_centered_vertical_slice_proven
+controller_priority_workstream: Live browser-controller hardening and multi-branch provider prototype
 
 current_direction:
   summary: "Preserve Keystone's DPVI / issue-tree architecture, replace the Claude CLI-centered execution path, and rebuild around durable artifacts plus subscription-first provider routing."
@@ -29,10 +29,20 @@ runtime_doctrine:
   stale_doctrine: "Claude CLI / claude -p is no longer the preferred runtime spine."
 
 issue_tree_skill:
-  status: prototype_ready_for_more_eval
+  status: eval_passed_and_integrated_as_issue_tree_package_schema
   skill_path: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/.agents/skills/problem-decomposition/SKILL.md
   handoff: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/issue-tree-skill/handoff/HANDOFF.md
-  integration_rule: "Do not directly replace the KIE Decomposer yet. First run the recommended eval subset, then implement a Pydantic IssueTreePackage upstream of the current Decomposer and map approved leaf_tasks into the existing task generator."
+  eval_report: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/issue-tree-skill/evals/runs/2026-05-28-autonomous-slice/EVAL-REPORT.md
+  package_schema: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/src/keystone/specification/issue_tree_package.py
+  integration_rule: "Approved IssueTreePackage leaf_tasks now bridge into ResearchTask generation. Do not fully retire the legacy Decomposer until live browser-provider multi-branch runs are stable."
+
+artifact_centered_vertical_slice:
+  status: fixture_backed_slice_completed
+  prompt_domain: "public PE diligence on Permira/Squarespace take-private"
+  run_result: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/run/result.json
+  provider_ledger: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/run/provider-ledger.json
+  cited_deliverable: /Users/jackriddle/Desktop/Keystone-Intelligence-Engine-owner-triage-normalization/audit/vertical-slices/2026-05-28-artifact-centered/run/artifact-store/sqsp-permira-artifact-slice/files/deliverables/synthesis-evidence-combined-sqsp-permi-ef1d530508.md
+  limitation: "Provider jobs used a fixture controller and completed local reports; live Chrome submission/export still needs hardening."
 
 provider_probe_status:
   claude_web_research:
@@ -49,7 +59,7 @@ provider_probe_status:
     note: "Native Markdown export hid source URLs behind opaque citation markers; DOCX export exposed source URLs and was used for normalized ingestion."
 
 worktree_protection:
-  status: clean_after_rebase_pending_push
+  status: dirty_with_current_slice_pending_commit
   policy: "Do not reset or clean user files. Local presentation drafts are intentionally ignored through the worktree's local exclude file, not deleted."
   stage_b_checkpoint_after_rebase: 5be732d
   stage_b_doc_checkpoint_after_rebase: fa1f92e
@@ -63,7 +73,7 @@ historical_remediation_status:
   prior_lane_e_promotion_status: promoted
   prior_blocked_candidate_reference_commit: f1af7dfafa2e66b831810d70006ab8295411c61b
 
-next_action: "After cleanup docs are committed and pushed, run the fresh autonomous goal: evaluate the issue-tree skill subset, implement IssueTreePackage upstream of Decomposer, build the browser provider adapter from the proven ChatGPT/Claude lifecycle, and run the first artifact-centered vertical slice."
+next_action: "Harden the browser-provider adapter with a live Chrome/plugin controller, run a multi-branch provider job against logged-in ChatGPT/Claude sessions, and preserve the IssueTreePackage approval artifact as the dispatch gate."
 
 hard_stop_conditions:
   - "A proposed operation would destroy or overwrite uncommitted user/session work."

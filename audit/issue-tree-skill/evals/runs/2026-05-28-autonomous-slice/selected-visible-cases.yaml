@@ -1,0 +1,31 @@
+schema_version: 0.1
+run_id: issue-tree-eval-2026-05-28-autonomous-slice
+executor_visibility: visible_prompts_only
+book_derived_cases:
+  - id: bps_sydney_airport_capacity
+    prompt: "Build an issue tree to determine whether Sydney Airport will have adequate passenger capacity in the future."
+  - id: bps_solar_install_now
+    prompt: "Build an issue tree to decide whether a homeowner should install rooftop solar panels now."
+  - id: bps_salmon_conservation
+    prompt: "Build an issue tree for a foundation trying to improve Pacific salmon abundance and diversity."
+  - id: minto_eval_003_sales_growth_gap
+    prompt: "A company with a long-stable sales process expects sales to decline rather than continue growing. The process has three simple stages: prospect list, sales script, and pitch delivery. Build a diagnostic tree and a first-pass research plan."
+  - id: minto_eval_006_energy_cost_driver_tree
+    prompt: "A factory wants an energy-cost reduction strategy. Candidate topics include operating practices, low-capital engineering, major capital projects, fuel mix, sourcing, government incentives, organization, and product-to-mill assignments. Build a clean full tree and a pruned decision tree."
+  - id: mind_acme_thrum_mat_cost
+    prompt: "Build an issue tree for a manufacturer evaluating whether a new shorter curing process can lower marginal cost for a product."
+  - id: mind_hsdd_market_sizing
+    prompt: "Build an issue tree to estimate the market potential for a drug addressing a condition that is defined in specialist literature but rarely diagnosed by general physicians."
+novel_stress_cases:
+  - id: novel_public_company_diligence_001
+    prompt: "A consulting partner asks whether a mid-market PE client should pursue a take-private of a public specialty chemicals company whose revenue is flat, margins are improving, and end markets are shifting toward electrification. Build the issue tree that should govern diligence before any research is launched."
+  - id: novel_technical_architecture_001
+    prompt: "A startup wants to decide whether to rebuild its brittle monolith into microservices before launching enterprise customers. The CEO says reliability is the issue, the CTO says developer velocity is the issue, and the sales lead says procurement security reviews are the issue. Build the issue tree for deciding what architecture path to take."
+  - id: novel_policy_001
+    prompt: "A state government is considering whether to subsidize residential heat pump adoption. The governor wants a recommendation that balances emissions impact, affordability, grid reliability, fiscal cost, and political feasibility. Build the issue tree for the policy analysis."
+  - id: novel_scientific_evidence_001
+    prompt: "A foundation wants to know whether to fund a large randomized trial of a nutritional intervention that has promising observational evidence, mixed small trials, and plausible biological mechanisms. Build the issue tree for deciding whether the trial is worth funding."
+  - id: novel_operations_diagnostic_001
+    prompt: "A regional hospital system has rising emergency department wait times despite adding staff. Leadership wants to know what is causing the issue and what interventions would matter most. Build the issue tree for the diagnostic and prioritization work."
+  - id: novel_messy_prompt_001
+    prompt: "We need to figure out what's going on with the new product and what to do next. Sales says customers like it but usage is bad, finance says margins are worse than expected, and product says the roadmap is overloaded. Build the issue tree and identify the clarifying questions that must be answered before expensive research."

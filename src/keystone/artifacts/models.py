@@ -171,6 +171,14 @@ class IssueTreeNodeArtifact(ArtifactBase):
     approval_status: ApprovalStatus = ApprovalStatus.REQUIRED
 
 
+class IssueTreePackageArtifact(ArtifactBase):
+    """Durable specification-stage issue-tree package."""
+
+    artifact_type: str = "issue_tree_package"
+    package: dict[str, Any]
+    approval_status: ApprovalStatus = ApprovalStatus.REQUIRED
+
+
 class ProviderJobArtifact(ArtifactBase):
     """Provider/browser/CLI job lifecycle proof."""
 
